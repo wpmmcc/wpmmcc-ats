@@ -1,0 +1,140 @@
+name: WP compatibility matrix
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Verifies the plugin header claims the hard way: real WordPress installs
+# (CLI) across PHP x WP combinations, plus activate / deactivate / uninstall
+# (uninstall.php cleanup) and a clean re-install round.
+#
+# Header claims under test: Requires at least 6.2 / Tested up to 7.1 /
+# Requires PHP 7.4. Matrix covers min/latest/max of each axis. If a cell
+# fails because WordPress itself cannot install under that PHP (not a
+# plugin defect), drop that cell and record why here.
+jobs:
+  wp-compat:
+    name: WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.3']
+        wp: ['6.2', '6.7', '7.1']
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wp
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=localhost -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      WP_PATH: /tmp/wp
+      WP_URL: http://127.0.0.1:8080
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli
+          coverage: none
+
+      - name: Install wp-cli
+        run: |
+          curl -sSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /tmp/wp-cli.phar
+          sudo install -m 0755 /tmp/wp-cli.phar /usr/local/bin/wp
+          wp --allow-root --info | head -n 4
+
+      - name: Install WordPress ${{ matrix.wp }}
+        run: |
+          set -euo pipefail
+          wp core download --version='${{ matrix.wp }}' --path="$WP_PATH" --allow-root
+          wp config create --path="$WP_PATH" --dbname=wp --dbuser=root --dbpass=root \
+            --dbhost=127.0.0.1:3306 --allow-root
+          wp db create --path="$WP_PATH" --allow-root
+          wp core install --path="$WP_PATH" --url="$WP_URL" --title=WPTSALL \
+            --admin_user=admin --admin_password=ci-admin-pass-2026 \
+            --admin_email=ci@example.com --skip-email --allow-root
+          wp core version --path="$WP_PATH" --allow-root
+
+      - name: Copy plugin under test into the site
+        run: |
+          set -euo pipefail
+          mkdir -p "$WP_PATH/wp-content/plugins/wpmmcc-ats"
+          tar -C "$GITHUB_WORKSPACE" --exclude=./.git -cf - . \
+            | tar -C "$WP_PATH/wp-content/plugins/wpmmcc-ats" -xf -
+
+      - name: Activate and smoke-test the plugin
+        run: |
+          set -euo pipefail
+          wp plugin activate wpmmcc-ats --path="$WP_PATH" --allow-root
+          cat > /tmp/activation-smoke.php <<'PHP'
+          <?php
+          // Activation smoke: version constant, REST namespace, core tables.
+          if ( ! defined( 'WPTSALL_VERSION' ) ) {
+            fwrite( STDERR, "WPTSALL_VERSION is not defined\n" );
+            exit( 1 );
+          }
+          global $wpdb;
+          $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          if ( empty( $tables ) ) {
+            fwrite( STDERR, "no wptsall tables exist after activation\n" );
+            exit( 1 );
+          }
+          $routes = rest_get_server()->get_routes();
+          if ( empty( $routes['/wptsall/v2'] ) ) {
+            fwrite( STDERR, "wptsall/v2 REST namespace is not registered\n" );
+            exit( 1 );
+          }
+          echo 'activation-smoke-ok version=' . WPTSALL_VERSION
+            . ' tables=' . count( $tables )
+            . ' routes=' . count( $routes['/wptsall/v2'] ) . "\n";
+          PHP
+          wp eval-file /tmp/activation-smoke.php --path="$WP_PATH" --allow-root
+
+      - name: Deactivate, uninstall, and verify cleanup
+        run: |
+          set -euo pipefail
+          wp plugin deactivate wpmmcc-ats --path="$WP_PATH" --allow-root
+          wp plugin uninstall wpmmcc-ats --path="$WP_PATH" --allow-root
+          if [ -d "$WP_PATH/wp-content/plugins/wpmmcc-ats" ]; then
+            echo "plugin directory survived uninstall" >&2
+            exit 1
+          fi
+          cat > /tmp/uninstall-smoke.php <<'PHP'
+          <?php
+          // uninstall.php must have dropped the wptsall table family.
+          global $wpdb;
+          $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          if ( ! empty( $tables ) ) {
+            fwrite( STDERR, "wptsall tables survived uninstall: " . implode( ',', $tables ) . "\n" );
+            exit( 1 );
+          }
+          echo "uninstall-cleanup-ok\n";
+          PHP
+          wp eval-file /tmp/uninstall-smoke.php --path="$WP_PATH" --allow-root
+
+      - name: Re-install and re-activate (clean round 2)
+        run: |
+          set -euo pipefail
+          mkdir -p "$WP_PATH/wp-content/plugins/wpmmcc-ats"
+          tar -C "$GITHUB_WORKSPACE" --exclude=./.git -cf - . \
+            | tar -C "$WP_PATH/wp-content/plugins/wpmmcc-ats" -xf -
+          wp plugin activate wpmmcc-ats --path="$WP_PATH" --allow-root
+          wp eval-file /tmp/activation-smoke.php --path="$WP_PATH" --allow-root
+          echo "matrix cell OK: WP ${{ matrix.wp }} x PHP ${{ matrix.php }}"
