@@ -6,9 +6,17 @@
  * into the model_object_fields table with source='manual'.
  *
  * Can be run manually:
- *   wp eval-file includes/models/database/migrate-manual-fields-to-object-fields.php
+ *   wp eval 'require_once "wp-content/plugins/wpmmcc-ats/includes/models/database/migrate-manual-fields-to-object-fields.php"; wptsall_migrate_manual_fields_to_object_fields();'
  *
  * Or automatically via the migration chain (v1.0.3).
+ *
+ * Output contract: CLI lines go through wptsall_migration_cli_line() below.
+ * Never bare-echo from here — `wp plugin activate` runs with WP_CLI defined,
+ * and core's activate_plugin() buffers the activation window and fails with
+ * `unexpected_output` if any PHP output is produced inside it (2026-09-08
+ * public plugin-check CI failure). The file also must not self-execute on
+ * include; the migration chain (includes/core/database/migrations.php) is the
+ * only automatic runner.
  *
  * @package WPTSALL\Models\Database
  * @since 1.0.3
@@ -16,6 +24,24 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Access denied.' );
+}
+
+/**
+ * Print one CLI migration line without polluting PHP output buffers.
+ *
+ * WP_CLI::log() writes to the process stdout directly (bypasses ob_*),
+ * so banners stay visible for manual runs while remaining invisible to
+ * core's activate_plugin() output check.
+ *
+ * @param string $line Message text (without trailing newline).
+ * @return void
+ */
+function wptsall_migration_cli_line( $line ) {
+	if ( class_exists( '\WP_CLI' ) ) {
+		\WP_CLI::log( esc_html( $line ) );
+	} else {
+		echo esc_html( $line ) . "\n";
+	}
 }
 
 /**
@@ -37,9 +63,9 @@ function wptsall_migrate_manual_fields_to_object_fields() {
 	);
 
 	if ( $is_cli ) {
-		echo "\n";
-		echo esc_html( "ISS-MOD-027: Migrating manual fields from meta_fields → model_object_fields\n" );
-		echo esc_html( str_repeat( '-', 60 ) ) . "\n";
+		wptsall_migration_cli_line( '' );
+		wptsall_migration_cli_line( 'ISS-MOD-027: Migrating manual fields from meta_fields → model_object_fields' );
+		wptsall_migration_cli_line( str_repeat( '-', 60 ) );
 	}
 
 	// Check required service classes.
@@ -49,7 +75,7 @@ function wptsall_migrate_manual_fields_to_object_fields() {
 			require_once $service_path;
 		} else {
 			if ( $is_cli ) {
-				echo "Error: Model_Object_Service not found\n";
+				wptsall_migration_cli_line( 'Error: Model_Object_Service not found' );
 			}
 			return $stats;
 		}
@@ -69,7 +95,7 @@ function wptsall_migrate_manual_fields_to_object_fields() {
 
 	if ( empty( $models ) ) {
 		if ( $is_cli ) {
-			echo "No models with meta_fields found. Nothing to migrate.\n";
+			wptsall_migration_cli_line( 'No models with meta_fields found. Nothing to migrate.' );
 		}
 
 		if ( function_exists( 'wptsall_log_info' ) ) {
@@ -173,18 +199,18 @@ function wptsall_migrate_manual_fields_to_object_fields() {
 		++$stats['models_migrated'];
 
 		if ( $is_cli ) {
-			echo esc_html( "  {$plugin_slug}: {$result['saved']} fields migrated, {$result['skipped']} skipped\n" );
+			wptsall_migration_cli_line( "  {$plugin_slug}: {$result['saved']} fields migrated, {$result['skipped']} skipped" );
 		}
 	}
 
 	if ( $is_cli ) {
-		echo "\n";
-		echo esc_html( "Migration complete:\n" );
-		echo esc_html( "  Models scanned:  {$stats['models_scanned']}\n" );
-		echo esc_html( "  Models migrated: {$stats['models_migrated']}\n" );
-		echo esc_html( "  Fields migrated: {$stats['fields_migrated']}\n" );
-		echo esc_html( "  Fields skipped:  {$stats['fields_skipped']}\n" );
-		echo "\n";
+		wptsall_migration_cli_line( '' );
+		wptsall_migration_cli_line( 'Migration complete:' );
+		wptsall_migration_cli_line( "  Models scanned:  {$stats['models_scanned']}" );
+		wptsall_migration_cli_line( "  Models migrated: {$stats['models_migrated']}" );
+		wptsall_migration_cli_line( "  Fields migrated: {$stats['fields_migrated']}" );
+		wptsall_migration_cli_line( "  Fields skipped:  {$stats['fields_skipped']}" );
+		wptsall_migration_cli_line( '' );
 	}
 
 	if ( function_exists( 'wptsall_log_info' ) ) {
@@ -192,9 +218,4 @@ function wptsall_migrate_manual_fields_to_object_fields() {
 	}
 
 	return $stats;
-}
-
-// Allow direct execution via WP-CLI.
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	wptsall_migrate_manual_fields_to_object_fields();
 }
