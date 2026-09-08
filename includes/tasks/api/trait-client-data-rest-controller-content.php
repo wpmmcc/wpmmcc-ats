@@ -1343,7 +1343,7 @@ trait Client_Data_REST_Controller_Content_Trait {
 		}
 
 		// Expand static SQL per branch so PHPCS can count prepare placeholders.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- {$include_sql} is a placeholder-only IN(...) fragment produced by wptsall_db_prepare_int_in(); every value binds through the merged prepare arrays.
 		if ( ! empty( $subtype ) ) {
 			$total = (int) $wpdb->get_var(
 				$wpdb->prepare(
@@ -1357,7 +1357,6 @@ trait Client_Data_REST_Controller_Content_Trait {
 					)
 				)
 			);
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT e.id AS entry_id, e.template_id, e.msgid, e.msgid_plural,
@@ -1390,7 +1389,6 @@ trait Client_Data_REST_Controller_Content_Trait {
 					)
 				)
 			);
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT e.id AS entry_id, e.template_id, e.msgid, e.msgid_plural,
@@ -1411,6 +1409,7 @@ trait Client_Data_REST_Controller_Content_Trait {
 				ARRAY_A
 			);
 		}
+		// phpcs:enable PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$items = array();
 		foreach ( (array) $rows as $row ) {

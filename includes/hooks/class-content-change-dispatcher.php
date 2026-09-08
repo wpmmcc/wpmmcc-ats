@@ -315,6 +315,7 @@ class Content_Change_Dispatcher {
 		if ( $source_attachment_id > 0 ) {
 			// A translated target was removed. Keep the source mapping as a
 			// tombstone so the next client run can recreate the target media.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- tombstone write path; caching is not applicable.
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE %i
@@ -328,6 +329,7 @@ class Content_Change_Dispatcher {
 				)
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- tombstone write path; caching is not applicable.
 			$wpdb->query(
 				$wpdb->prepare(
 					"UPDATE %i
@@ -415,6 +417,7 @@ class Content_Change_Dispatcher {
 		// the domain event itself is coalesced to one per attachment/request.
 		if ( ! isset( self::$media_events_emitted[ $attachment_id ] ) ) {
 			self::$media_events_emitted[ $attachment_id ] = true;
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- 'meta_key' below is an event payload array key, not a meta_key DB query.
 			self::enqueue_change( 'media', $attachment_id, (string) $event, array( 'meta_key' => (string) $meta_key ) );
 			do_action(
 				'wptsall_media_changed',
@@ -488,6 +491,7 @@ class Content_Change_Dispatcher {
 		$relations      = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
 		$source_site_id = (int) get_current_blog_id();
 		$now            = current_time( 'mysql', true );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- dirty-mark write path; caching is not applicable.
 		$wpdb->query(
 			$wpdb->prepare(
 				'UPDATE %i pm
@@ -687,6 +691,7 @@ class Content_Change_Dispatcher {
 
 		// Do not fall back to relation_id=0. Legacy rows without a relation
 		// cannot prove which target site/relation owns the object.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT pm.target_post_id, pm.target_post_type, pm.target_site_id,
@@ -759,27 +764,55 @@ class Content_Change_Dispatcher {
 		if ( $source_term_id <= 0 ) {
 			return array();
 		}
-		$where  = 'tm.source_term_id = %d AND tm.source_site_id = %d AND tm.relation_id > 0 AND tm.target_term_id > 0 AND tm.target_site_id <> %s';
-		$params = array( $table, $relations, 'active', (int) $source_term_id, $source_site_id, '' );
-		if ( '' !== (string) $taxonomy ) {
-			$where   .= ' AND tm.source_taxonomy = %s';
-			$params[] = sanitize_key( (string) $taxonomy );
+		$taxonomy = sanitize_key( (string) $taxonomy );
+		if ( '' !== $taxonomy ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT tm.target_term_id, tm.target_taxonomy, tm.target_site_id,
+							tm.relation_id, r.target_site_type
+					 FROM %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.source_site_id = tm.source_site_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.status = %s
+					 WHERE tm.source_term_id = %d AND tm.source_site_id = %d
+						AND tm.relation_id > 0 AND tm.target_term_id > 0
+						AND tm.target_site_id <> %s AND tm.source_taxonomy = %s',
+					$table,
+					$relations,
+					'active',
+					(int) $source_term_id,
+					$source_site_id,
+					'',
+					$taxonomy
+				),
+				ARRAY_A
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT tm.target_term_id, tm.target_taxonomy, tm.target_site_id,
+							tm.relation_id, r.target_site_type
+					 FROM %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.source_site_id = tm.source_site_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.status = %s
+					 WHERE tm.source_term_id = %d AND tm.source_site_id = %d
+						AND tm.relation_id > 0 AND tm.target_term_id > 0
+						AND tm.target_site_id <> %s',
+					$table,
+					$relations,
+					'active',
+					(int) $source_term_id,
+					$source_site_id,
+					''
+				),
+				ARRAY_A
+			);
 		}
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is composed of literal placeholders only; every value is bound via $params below.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT tm.target_term_id, tm.target_taxonomy, tm.target_site_id,
-						tm.relation_id, r.target_site_type
-				 FROM %i tm
-				 INNER JOIN %i r ON r.id = tm.relation_id
-					AND r.source_site_id = tm.source_site_id
-					AND r.target_site_id = tm.target_site_id
-					AND r.status = %s
-				 WHERE ' . $where,
-				$params
-			),
-			ARRAY_A
-		);
 		return is_array( $rows ) ? $rows : array();
 	}
 
@@ -796,31 +829,51 @@ class Content_Change_Dispatcher {
 		$table          = function_exists( 'wptsall_table' ) ? wptsall_table( 'term_mappings' ) : $wpdb->prefix . 'wptsall_term_mappings';
 		$relations      = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
 		$current_site_id = (int) get_current_blog_id();
-		$where           = 'tm.target_term_id = %d AND tm.target_site_id = %s AND tm.relation_id > 0';
-		$params          = array( $table, $relations, 'active', (int) $term_id, (string) $current_site_id );
-		if ( '' !== (string) $taxonomy ) {
-			$where   .= ' AND tm.target_taxonomy = %s';
-			$params[] = sanitize_key( (string) $taxonomy );
-		}
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is placeholder-only; values bound via the merged param list.
-		$source_id = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT tm.source_term_id
-				 FROM %i tm
-				 INNER JOIN %i r ON r.id = tm.relation_id
-					AND r.target_site_id = tm.target_site_id
-					AND r.target_site_type = %s
-					AND r.status = %s
-				 WHERE ' . $where . ' LIMIT 1',
-				array_merge(
-					array( $table, $relations, 'wp', 'active' ),
-					array( (int) $term_id, (string) $current_site_id ),
-					( '' !== (string) $taxonomy ? array( sanitize_key( (string) $taxonomy ) ) : array() )
+		$taxonomy        = sanitize_key( (string) $taxonomy );
+		$source_id       = 0;
+		if ( '' !== $taxonomy ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$source_id = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT tm.source_term_id
+					 FROM %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.target_site_type = %s
+						AND r.status = %s
+					 WHERE tm.target_term_id = %d AND tm.target_site_id = %s
+						AND tm.relation_id > 0 AND tm.target_taxonomy = %s LIMIT 1',
+					$table,
+					$relations,
+					'wp',
+					'active',
+					(int) $term_id,
+					(string) $current_site_id,
+					$taxonomy
 				)
-			)
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
-		return (int) $source_id > 0;
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$source_id = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT tm.source_term_id
+					 FROM %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.target_site_type = %s
+						AND r.status = %s
+					 WHERE tm.target_term_id = %d AND tm.target_site_id = %s
+						AND tm.relation_id > 0 LIMIT 1',
+					$table,
+					$relations,
+					'wp',
+					'active',
+					(int) $term_id,
+					(string) $current_site_id
+				)
+			);
+		}
+		return $source_id > 0;
 	}
 
 	/**
@@ -836,26 +889,50 @@ class Content_Change_Dispatcher {
 		$relations      = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
 		$source_site_id = (int) get_current_blog_id();
 		$now            = current_time( 'mysql', true );
-		$where          = 'tm.source_term_id = %d AND tm.source_site_id = %d AND tm.relation_id > 0 AND tm.needs_resync = 0';
-		$params         = array( $table, $relations, 'active', $now, (int) $source_term_id, $source_site_id );
-		if ( '' !== (string) $taxonomy ) {
-			$where   .= ' AND tm.source_taxonomy = %s';
-			$params[] = sanitize_key( (string) $taxonomy );
+		$taxonomy       = sanitize_key( (string) $taxonomy );
+		if ( '' !== $taxonomy ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- dirty-mark write path; caching is not applicable.
+			$wpdb->query(
+				$wpdb->prepare(
+					'UPDATE %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.source_site_id = tm.source_site_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.status = %s
+					 SET tm.needs_resync = 1, tm.updated_at = %s
+					 WHERE tm.source_term_id = %d AND tm.source_site_id = %d
+						AND tm.relation_id > 0 AND tm.needs_resync = 0
+						AND tm.source_taxonomy = %s',
+					$table,
+					$relations,
+					'active',
+					$now,
+					(int) $source_term_id,
+					$source_site_id,
+					$taxonomy
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- dirty-mark write path; caching is not applicable.
+			$wpdb->query(
+				$wpdb->prepare(
+					'UPDATE %i tm
+					 INNER JOIN %i r ON r.id = tm.relation_id
+						AND r.source_site_id = tm.source_site_id
+						AND r.target_site_id = tm.target_site_id
+						AND r.status = %s
+					 SET tm.needs_resync = 1, tm.updated_at = %s
+					 WHERE tm.source_term_id = %d AND tm.source_site_id = %d
+						AND tm.relation_id > 0 AND tm.needs_resync = 0',
+					$table,
+					$relations,
+					'active',
+					$now,
+					(int) $source_term_id,
+					$source_site_id
+				)
+			);
 		}
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is placeholder-only; values bound via $params.
-		$wpdb->query(
-			$wpdb->prepare(
-				'UPDATE %i tm
-				 INNER JOIN %i r ON r.id = tm.relation_id
-					AND r.source_site_id = tm.source_site_id
-					AND r.target_site_id = tm.target_site_id
-					AND r.status = %s
-				 SET tm.needs_resync = 1, tm.updated_at = %s
-				 WHERE ' . $where,
-				$params
-			)
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**
@@ -977,12 +1054,18 @@ class Content_Change_Dispatcher {
 			}
 			// Conditional update is the claim CAS: concurrent workers can select
 			// the same row but only one acquires its lease.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$claim_args = array( $table, 'processing', $now, $now, (int) $row['id'], 'pending', 'processing', $cutoff );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- queue claim CAS; caching is not applicable to a compare-and-set write.
 			$updated = $wpdb->query(
 				$wpdb->prepare(
 					'UPDATE %i SET status = %s, attempts = attempts + 1, claimed_at = %s, updated_at = %s WHERE id = %d AND (status = %s OR (status = %s AND claimed_at < %s))',
-					...$claim_args
+					$table,
+					'processing',
+					$now,
+					$now,
+					(int) $row['id'],
+					'pending',
+					'processing',
+					$cutoff
 				)
 			);
 			if ( 1 === (int) $updated ) {
@@ -999,6 +1082,7 @@ class Content_Change_Dispatcher {
 						: hash( 'sha256', 'wptsall-claim-owner-v1|' . $claim_owner . '|' . (int) $row['relation_id'] . '||outbox' );
 					$payload['_wptsall_claim_owner_hash'] = $owner_hash;
 					unset( $payload['_wptsall_claim_device_id'] );
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- claim-owner hash projection on a just-claimed row; caching is not applicable.
 					$wpdb->query(
 						$wpdb->prepare(
 							'UPDATE %i SET payload = %s, updated_at = %s WHERE id = %d AND status = %s',
@@ -1032,20 +1116,41 @@ class Content_Change_Dispatcher {
 		// Read the task association before closing the lease. A task is only a
 		// compatibility/audit projection of this outbox row, but it must reach a
 		// terminal state too or an older task-pull worker can run it again.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease-state read; caching is not applicable.
 		$row = $wpdb->get_row(
 			$wpdb->prepare( 'SELECT payload FROM %i WHERE id = %d AND status = %s', $outbox_table, (int) $id, 'processing' ),
 			ARRAY_A
 		);
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $complete_sql is a fixed placeholder template; optional claim-owner clause adds one more %s bound in $complete_args.
-		$complete_sql  = 'UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s WHERE id = %d AND status = %s';
-		$complete_args = array( $outbox_table, 'completed', $now, $now, (int) $id, 'processing' );
 		if ( '' !== $claim_owner_hash ) {
-			$complete_sql .= " AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s";
-			$complete_args[] = $claim_owner_hash;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease completion CAS; caching is not applicable.
+			$completed = 1 === (int) $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s
+					 WHERE id = %d AND status = %s
+					 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s",
+					$outbox_table,
+					'completed',
+					$now,
+					$now,
+					(int) $id,
+					'processing',
+					$claim_owner_hash
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease completion CAS; caching is not applicable.
+			$completed = 1 === (int) $wpdb->query(
+				$wpdb->prepare(
+					'UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s WHERE id = %d AND status = %s',
+					$outbox_table,
+					'completed',
+					$now,
+					$now,
+					(int) $id,
+					'processing'
+				)
+			);
 		}
-		$completed = 1 === (int) $wpdb->query( $wpdb->prepare( $complete_sql, $complete_args ) );
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! $completed ) {
 			return false;
 		}
@@ -1077,26 +1182,50 @@ class Content_Change_Dispatcher {
 			return false;
 		}
 		$outbox_table = wptsall_table( 'content_change_outbox' );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease-state read; caching is not applicable.
 		$row = $wpdb->get_row(
 			$wpdb->prepare( 'SELECT payload FROM %i WHERE id = %d AND status = %s', $outbox_table, (int) $id, 'processing' ),
 			ARRAY_A
 		);
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $fail_sql is a fixed placeholder template; optional claim-owner clause adds one more %s bound in $fail_args.
-		$fail_sql  = 'UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s WHERE id = %d AND status = %s';
-		$fail_args = array( $outbox_table, 'pending', $now, sanitize_text_field( $error ), $now, (int) $id, 'processing' );
 		if ( '' !== $claim_owner_hash ) {
-			$fail_sql .= " AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s";
-			$fail_args[] = $claim_owner_hash;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease failure CAS; caching is not applicable.
+			$failed = 1 === (int) $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s
+					 WHERE id = %d AND status = %s
+					 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s",
+					$outbox_table,
+					'pending',
+					$now,
+					sanitize_text_field( $error ),
+					$now,
+					(int) $id,
+					'processing',
+					$claim_owner_hash
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease failure CAS; caching is not applicable.
+			$failed = 1 === (int) $wpdb->query(
+				$wpdb->prepare(
+					'UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s WHERE id = %d AND status = %s',
+					$outbox_table,
+					'pending',
+					$now,
+					sanitize_text_field( $error ),
+					$now,
+					(int) $id,
+					'processing'
+				)
+			);
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$failed = 1 === (int) $wpdb->query( $wpdb->prepare( $fail_sql, $fail_args ) );
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! $failed ) {
 			return false;
 		}
 		$payload = json_decode( (string) ( $row['payload'] ?? '' ), true );
 		$task_id = absint( is_array( $payload ) ? ( $payload['task_id'] ?? 0 ) : 0 );
 		if ( $task_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- task projection write; caching is not applicable.
 			$wpdb->query(
 				$wpdb->prepare(
 					'UPDATE %i SET status = %s, status_note = %s, retry_at = %s, updated_at = %s WHERE id = %d AND status IN (%s, %s, %s, %s)',

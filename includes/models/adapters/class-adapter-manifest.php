@@ -70,7 +70,9 @@ class Adapter_Manifest {
 		}
 		$discovered = array();
 		foreach ( array_keys( get_plugins() ) as $plugin_file ) {
-			$plugin_dir = dirname( WP_PLUGIN_DIR . '/' . $plugin_file );
+			$plugin_dir = function_exists( 'wptsall_resolve_plugin_path' )
+				? dirname( wptsall_resolve_plugin_path( $plugin_file, true ) )
+				: dirname( WP_PLUGIN_DIR . '/' . $plugin_file );
 			$json_path  = $plugin_dir . '/wptsall-field-rules.json';
 			if ( ! is_readable( $json_path ) ) {
 				continue;

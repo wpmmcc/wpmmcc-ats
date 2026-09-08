@@ -2248,14 +2248,15 @@ class Client_Data_REST_Controller {
 				$sql_args[] = '';
 			}
 
-			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is placeholder-only; values bound via the merged arg list.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- entry claim CAS; caching is not applicable to a compare-and-set write.
+			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $where is composed of literal placeholders only; the source-type IN-list placeholders come from wptsall_db_prepare_string_in(); every value binds through the merged arg list.
 			$result = $wpdb->query(
 				$wpdb->prepare(
 					'UPDATE %i e INNER JOIN %i t ON e.template_id = t.id SET e.claimed_at = %s, e.updated_at = %s, e.claim_owner_hash = %s WHERE ' . $where,
 					array_merge( array( $entries_table, $templates_table, $now, $now, $owner_hash ), array_slice( $sql_args, 4 ) )
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 
 			if ( false !== $result && $result > 0 ) {
 				++$claimed_count;

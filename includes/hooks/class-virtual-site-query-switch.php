@@ -441,6 +441,7 @@ class Virtual_Site_Query_Switch {
 		} else {
 			$meta_query[] = self::exclude_virtual_site_meta_query();
 		}
+		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- single clause on plugin-owned meta key '_wptsall_virtual_site_id' (bounded cardinality, core meta_key index); the standard virtual-site isolation pattern.
 		$args['meta_query'] = $meta_query;
 		return $args;
 	}
@@ -500,12 +501,13 @@ class Virtual_Site_Query_Switch {
 		}
 		$existing[] = $clause;
 		if ( is_object( $query ) && method_exists( $query, 'set' ) ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- merges one plugin-owned '_wptsall_virtual_site_id' clause (bounded cardinality, core meta_key index).
 			$query->set( 'meta_query', $existing );
 		} elseif ( is_object( $query ) ) {
 			if ( ! isset( $query->query_vars ) || ! is_array( $query->query_vars ) ) {
 				$query->query_vars = array();
 			}
-			$query->query_vars['meta_query'] = $existing;
+			$query->query_vars['meta_query'] = $existing; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- same single plugin-owned clause as above.
 		}
 		return $existing;
 	}

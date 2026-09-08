@@ -209,30 +209,58 @@ class Sync_Service {
 		}
 		$table     = wptsall_table( 'post_mappings' );
 		$relations = wptsall_table( 'site_relations' );
-		$where     = 'pm.source_post_id = %d AND pm.source_site_id = %d AND pm.relation_id > 0 AND pm.target_post_id > 0 AND pm.target_site_id <> %s';
-		$params    = array( $table, $relations, 'active', $source_id, $source_site_id, '' );
 		if ( $relation_id > 0 ) {
-			$where   .= ' AND pm.relation_id = %d';
-			$params[] = $relation_id;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT pm.target_post_id, pm.target_post_type, pm.target_site_id,
+							pm.relation_id, r.target_site_type, r.target_lang,
+							pm.relationship_type
+					 FROM %i pm
+					 INNER JOIN %i r ON r.id = pm.relation_id
+						AND r.source_site_id = pm.source_site_id
+						AND r.target_site_id = pm.target_site_id
+						AND r.status = %s
+					 WHERE pm.source_post_id = %d AND pm.source_site_id = %d
+						AND pm.relation_id > 0 AND pm.target_post_id > 0
+						AND pm.target_site_id <> %s AND pm.relation_id = %d
+					 ORDER BY pm.id ASC',
+					$table,
+					$relations,
+					'active',
+					$source_id,
+					$source_site_id,
+					'',
+					$relation_id
+				),
+				ARRAY_A
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- mapping read; freshness required, caches would go stale on mapping writes.
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT pm.target_post_id, pm.target_post_type, pm.target_site_id,
+							pm.relation_id, r.target_site_type, r.target_lang,
+							pm.relationship_type
+					 FROM %i pm
+					 INNER JOIN %i r ON r.id = pm.relation_id
+						AND r.source_site_id = pm.source_site_id
+						AND r.target_site_id = pm.target_site_id
+						AND r.status = %s
+					 WHERE pm.source_post_id = %d AND pm.source_site_id = %d
+						AND pm.relation_id > 0 AND pm.target_post_id > 0
+						AND pm.target_site_id <> %s
+					 ORDER BY pm.id ASC',
+					$table,
+					$relations,
+					'active',
+					$source_id,
+					$source_site_id,
+					''
+				),
+				ARRAY_A
+			);
 		}
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is placeholder-only; values bound via $params.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT pm.target_post_id, pm.target_post_type, pm.target_site_id,
-						pm.relation_id, r.target_site_type, r.target_lang,
-						pm.relationship_type
-				 FROM %i pm
-				 INNER JOIN %i r ON r.id = pm.relation_id
-					AND r.source_site_id = pm.source_site_id
-					AND r.target_site_id = pm.target_site_id
-					AND r.status = %s
-				 WHERE ' . $where . '
-				 ORDER BY pm.id ASC',
-				$params
-			),
-			ARRAY_A
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 		return is_array( $rows ) ? $rows : array();
 	}
 

@@ -70,8 +70,8 @@ class Menu_Sync_Page {
 		if ( ! $table ) {
 			return;
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot admin notice count; freshness preferred over cache.
+		$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
 		if ( $count > 0 ) {
 			return;
 		}
@@ -181,7 +181,7 @@ class Menu_Sync_Page {
 			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
 		}
 		check_admin_referer( 'wptsall_menu_sync' );
-		$source_id = (int) ( $_POST['source_menu'] ?? 0 );
+		$source_id = isset( $_POST['source_menu'] ) ? absint( wp_unslash( $_POST['source_menu'] ) ) : 0;
 		$vs_id     = sanitize_text_field( wp_unslash( (string) ( $_POST['virtual_site'] ?? '' ) ) );
 		$name      = sanitize_text_field( wp_unslash( (string) ( $_POST['menu_name'] ?? '' ) ) );
 

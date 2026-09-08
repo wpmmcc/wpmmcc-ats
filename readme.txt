@@ -4,7 +4,7 @@ Tags: multilingual, translation, multisite, virtual-site
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -157,6 +157,13 @@ Optional product documentation links (for the separate client distribution, not 
 * Privacy Policy: https://www.wpmm.cc/privacy
 
 == Changelog ==
+
+= 2.1.1 =
+* Added: Bundled Simplified Chinese (zh_CN) translation (1,790 strings), loaded automatically on Chinese sites.
+* Added: Multilingual readme/ directory (16 languages) with a language index at the top of the main README.
+* Fixed (WordPress.org review): closed the remaining 34 dynamic-SQL sites with literal branching, inline arguments, and %i identifier bindings.
+* Fixed: model field-rules editor script enqueued instead of inline output; input sanitization inlined at 8 call sites; WP_PLUGIN_DIR uses replaced with plugin resolution helpers.
+* Maintained: Plugin Check reports 0 ERROR and 0 SQL findings; remaining warnings are trademark terms only.
 
 = 2.1.0 =
 * Added relation-scoped, device-owned claim leases for options, content mappings, language packs, site strings, and durable outbox callbacks.

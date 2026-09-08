@@ -42,8 +42,9 @@ jobs:
           # The workflow directory is repo infrastructure, not plugin payload.
           exclude-directories: '.github'
           # ERROR-level findings fail CI. Warnings are tracked against the
-          # private-monorepo live baseline (2026-09-08: 0 errors / 103
-          # warnings, all categories dispositioned); trademarked_term is a
-          # recorded permanent exemption.
+          # private-monorepo live baseline (2026-09-09 rework: 0 errors / 3
+          # warnings, all trademarked_term — the only remaining category, a
+          # recorded permanent exemption; full disposition log in the
+          # monorepo tests/docs/hardening/pcp-20260902-dispositions.md).
           ignore-warnings: 'true'
           ignore-codes: 'trademarked_term'

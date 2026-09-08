@@ -207,6 +207,7 @@ class Media_Translation_Service {
 		$relations_table = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
 		// Canonical rows are keyed by target site ID. Count their resolved
 		// languages for the admin-facing statistic while retaining legacy rows.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot admin statistic; freshness preferred over cache.
 		$langs = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				'SELECT COUNT(DISTINCT COALESCE(NULLIF(r.target_lang, \'\'), m.target_site_id))

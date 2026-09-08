@@ -920,7 +920,7 @@ class Virtual_Site_SEO {
 			return $title;
 		}
 		$site = trim( (string) get_bloginfo( 'name', 'display' ) );
-		$sep  = (string) apply_filters( 'document_title_separator', '-' );
+		$sep  = (string) apply_filters( 'document_title_separator', '-' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- 'document_title_separator' is a WordPress core filter tag, not a plugin-invented hook.
 		if ( '' !== $site ) {
 			return $fixed . ' ' . $sep . ' ' . $site;
 		}
@@ -1441,7 +1441,7 @@ class Virtual_Site_SEO {
 		}
 		if ( ! $query->get( 'sitemap' ) && ! $query->get( 'sitemap_n' ) ) {
 			// Rank Math may use 'sitemap' query var; also check request path.
-			$uri = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+			$uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( (string) wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
 			if ( ! preg_match( '#/(?:sitemap_index\.xml|[\w-]+-sitemap\d*\.xml)(?:$|\?)#i', $uri ) ) {
 				return;
 			}

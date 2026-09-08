@@ -1778,17 +1778,29 @@ function wptsall_get_mapped_id( $source_blog, $object_type, $subtype, $source_id
     $relation_id = absint( $relation_id );
     // Use base_prefix to ensure mapping table is on the main site, shared across sites
     $table = $wpdb->base_prefix . 'wptsall_mappings';
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $sql is a fixed placeholder template; optional relation clause appends one %d bound in $args.
-    $sql    = 'SELECT target_object_id FROM %i WHERE source_blog_id = %d AND source_object_type = %s AND source_subtype = %s AND source_object_id = %d AND target_blog_id = %d';
-    $args   = array( $table, intval( $source_blog ), sanitize_key( $object_type ), sanitize_key( $subtype ), intval( $source_id ), intval( $target_blog ) );
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- correctness-critical mapping lookup; batch API exists for loops, cross-request caching would go stale on mapping writes.
     if ( $relation_id > 0 ) {
-        $sql   .= ' AND relation_id = %d';
-        $args[] = $relation_id;
+        $result = $wpdb->get_var( $wpdb->prepare(
+            'SELECT target_object_id FROM %i WHERE source_blog_id = %d AND source_object_type = %s AND source_subtype = %s AND source_object_id = %d AND target_blog_id = %d AND relation_id = %d LIMIT 1',
+            $table,
+            intval( $source_blog ),
+            sanitize_key( $object_type ),
+            sanitize_key( $subtype ),
+            intval( $source_id ),
+            intval( $target_blog ),
+            $relation_id
+        ) );
+    } else {
+        $result = $wpdb->get_var( $wpdb->prepare(
+            'SELECT target_object_id FROM %i WHERE source_blog_id = %d AND source_object_type = %s AND source_subtype = %s AND source_object_id = %d AND target_blog_id = %d LIMIT 1',
+            $table,
+            intval( $source_blog ),
+            sanitize_key( $object_type ),
+            sanitize_key( $subtype ),
+            intval( $source_id ),
+            intval( $target_blog )
+        ) );
     }
-    $sql   .= ' LIMIT 1';
-    $result = $wpdb->get_var( $wpdb->prepare( $sql, $args ) );
-    // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
     return $result ? intval( $result ) : null;
 }
 

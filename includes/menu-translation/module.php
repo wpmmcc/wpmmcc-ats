@@ -21,7 +21,7 @@ class Module {
 		if ( empty( $_GET['wptsall_menu_resync'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
 		}
-		$source = (int) ( $_GET['source_menu'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$source = isset( $_GET['source_menu'] ) ? absint( wp_unslash( $_GET['source_menu'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- capability-gated admin resync trigger.
 		if ( $source > 0 && class_exists( '\\WPTSALL\\MenuTranslation\\Menu_Mapping_Service' ) ) {
 			\WPTSALL\MenuTranslation\Menu_Mapping_Service::resync_pending_for_source( $source );
 		}

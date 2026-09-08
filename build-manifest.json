@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-07T11:50:08+08:00",
-  "version": "2.1.0",
+  "generated_at": "2026-09-08T22:23:25+08:00",
+  "version": "2.1.1",
   "source": "wp-plugin/source",
-  "wpmmcc_ats_php_sha256": "f59dee5b1882a9424cf9c0ebd98c0b6e4329149c7b4689e2249c36ea9795a739",
-  "bootstrap_sha256": "20533116131403b315201fe3794a0db5930986f4cff83d250388b4bd085163db",
-  "seo_sha256": "2ae5c3af33a241dd07f128a950e2db801444530890db69246587ca16c3840adc"
+  "wpmmcc_ats_php_sha256": "48fd1860f34bfaea7788aeb0500a72cf6b5f282625cc861f8b6cf0f7bee8a53a",
+  "bootstrap_sha256": "88ab1b6189ad9451de6b3c31e10129641ca5dafd20dcaa42635e77d1c991a20d",
+  "seo_sha256": "03b98a0bc8e14edc745b45465106187c5e29a52e1a7f29c88b31624ae740803e"
 }

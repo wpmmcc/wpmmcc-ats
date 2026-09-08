@@ -193,7 +193,7 @@ class Theme_Plugin_Localization_Page {
 			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
 		}
 		check_admin_referer( 'wptsall_scan_i18n' );
-		$relation_id = (int) ( $_POST['relation_id'] ?? 0 );
+		$relation_id = isset( $_POST['relation_id'] ) ? absint( wp_unslash( $_POST['relation_id'] ) ) : 0;
 		if ( $relation_id > 0 ) {
 			Language_Pack_Scanner::scan_relation( $relation_id, Language_Pack_Scanner::SCAN_ALL );
 		}
@@ -226,7 +226,7 @@ class Theme_Plugin_Localization_Page {
 			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
 		}
 		check_admin_referer( 'wptsall_save_i18n_config' );
-		$relation_id = (int) ( $_POST['relation_id'] ?? 0 );
+		$relation_id = isset( $_POST['relation_id'] ) ? absint( wp_unslash( $_POST['relation_id'] ) ) : 0;
 		$whitelist_raw = sanitize_textarea_field( wp_unslash( (string) ( $_POST['gettext_domain_whitelist'] ?? '' ) ) );
 		$whitelist = array_values( array_filter( array_map( 'trim', explode( ',', $whitelist_raw ) ) ) );
 		$config = array(

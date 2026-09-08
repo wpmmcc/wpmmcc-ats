@@ -2478,8 +2478,8 @@ class Manual_Content_Service {
 	private static function find_virtual_site_translation( int $source_post_id, string $virtual_site_id, int $relation_id = 0 ): ?int {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( $relation_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 			$existing_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT p.ID FROM %i p
@@ -2498,6 +2498,7 @@ class Manual_Content_Service {
 				)
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 			$existing_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT p.ID FROM %i p
@@ -2540,8 +2541,8 @@ class Manual_Content_Service {
 		}
 
 		try {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( $relation_id > 0 ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 				$existing_id = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT p.ID FROM %i p
@@ -2560,6 +2561,7 @@ class Manual_Content_Service {
 					)
 				);
 			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 				$existing_id = $wpdb->get_var(
 					$wpdb->prepare(
 						"SELECT p.ID FROM %i p
@@ -2823,8 +2825,8 @@ class Manual_Content_Service {
 	private static function find_wp_subsite_translation_internal( int $source_post_id, int $source_blog_id, int $relation_id = 0 ): ?int {
 		global $wpdb;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( $relation_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 			$existing_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT p.ID FROM %i p
@@ -2843,6 +2845,7 @@ class Manual_Content_Service {
 				)
 			);
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- shadow-post lookup; freshness required, caches would go stale on shadow inserts.
 			$existing_id = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT p.ID FROM %i p

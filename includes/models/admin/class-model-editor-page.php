@@ -364,6 +364,21 @@ class Model_Editor_Page {
 					),
 				) );
 			}
+
+			// Field Rules (Hot-plug) tab JS (was an inline <script> block;
+			// enqueued per WordPress.org review feedback).
+			wp_enqueue_script(
+				'wptsall-model-field-rules',
+				WPTSALL_URL . 'assets/js/model-field-rules.js',
+				array(),
+				WPTSALL_VERSION,
+				true
+			);
+
+			wp_localize_script( 'wptsall-model-field-rules', 'wptsallFieldRules', array(
+				'restUrl' => esc_url_raw( rest_url( 'wptsall/v2/field-rules-docs' ) ),
+				'nonce'   => wp_create_nonce( 'wp_rest' ),
+			) );
 		}
 	}
 
@@ -853,12 +868,13 @@ class Model_Editor_Page {
 	/**
 	 * Admin UI: validate / save JSON field-rules without SSH into plugin dirs.
 	 *
+	 * The tab's JS lives in assets/js/model-field-rules.js and is enqueued by
+	 * enqueue_scripts() (WordPress.org review: no inline <script> output).
+	 *
 	 * @since 2.1.0
 	 */
 	protected static function render_field_rules_tab() {
 		$docs = \WPTSALL\Models\Adapters\Field_Rules_Store::discover_all_documents();
-		$rest = esc_url_raw( rest_url( 'wptsall/v2/field-rules-docs' ) );
-		$nonce = wp_create_nonce( 'wp_rest' );
 		?>
 		<div class="wptsall-field-rules-tab" style="max-width:960px">
 			<div class="notice notice-info inline" style="margin:0 0 16px">
@@ -920,49 +936,6 @@ class Model_Editor_Page {
 				<button type="button" class="button" id="wptsall-fr-delete"><?php esc_html_e( 'Delete site doc', 'wpmmcc-ats' ); ?></button>
 			</p>
 			<pre id="wptsall-fr-result" style="background:#f6f7f7;padding:12px;max-height:240px;overflow:auto"></pre>
-			<script>
-			(function () {
-				const restBase = <?php echo wp_json_encode( $rest ); ?>;
-				const nonce = <?php echo wp_json_encode( $nonce ); ?>;
-				const out = document.getElementById('wptsall-fr-result');
-				function headers() {
-					return { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce };
-				}
-				function slug() { return (document.getElementById('wptsall-fr-slug').value || '').trim(); }
-				function raw() { return document.getElementById('wptsall-fr-json').value || ''; }
-				async function show(res) {
-					const text = await res.text();
-					try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
-					catch (e) { out.textContent = text; }
-				}
-				document.getElementById('wptsall-fr-validate').addEventListener('click', async function () {
-					const res = await fetch(restBase + '/validate', {
-						method: 'POST', headers: headers(),
-						body: JSON.stringify({ raw: raw() })
-					});
-					await show(res);
-				});
-				document.getElementById('wptsall-fr-save').addEventListener('click', async function () {
-					const s = slug();
-					if (!s) { out.textContent = 'plugin slug required'; return; }
-					const res = await fetch(restBase + '/' + encodeURIComponent(s), {
-						method: 'PUT', headers: headers(),
-						body: JSON.stringify({ raw: raw() })
-					});
-					await show(res);
-					if (res.ok) { window.location.reload(); }
-				});
-				document.getElementById('wptsall-fr-delete').addEventListener('click', async function () {
-					const s = slug();
-					if (!s) { out.textContent = 'plugin slug required'; return; }
-					const res = await fetch(restBase + '/' + encodeURIComponent(s), {
-						method: 'DELETE', headers: headers()
-					});
-					await show(res);
-					if (res.ok) { window.location.reload(); }
-				});
-			})();
-			</script>
 		</div>
 		<?php
 	}

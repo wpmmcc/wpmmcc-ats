@@ -137,16 +137,16 @@ class WPML_Config_Reader {
 	public static function discover_config_files() {
 		$files = array();
 
-		if ( defined( 'WP_PLUGIN_DIR' ) && is_dir( WP_PLUGIN_DIR ) && function_exists( 'get_plugins' ) ) {
-			if ( ! function_exists( 'get_plugins' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/plugin.php';
-			}
+		if ( ! function_exists( 'get_plugins' ) && defined( 'ABSPATH' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		if ( function_exists( 'get_plugins' ) && function_exists( 'wptsall_resolve_plugin_dir_by_slug' ) ) {
 			foreach ( get_plugins() as $plugin_file => $unused ) {
 				$slug = dirname( $plugin_file );
 				if ( '.' === $slug || '' === $slug ) {
 					$slug = basename( $plugin_file, '.php' );
 				}
-				$dir = WP_PLUGIN_DIR . '/' . $slug;
+				$dir = wptsall_resolve_plugin_dir_by_slug( $slug );
 				foreach ( array( 'wpml-config.xml', 'wpm-config.json' ) as $name ) {
 					$path = $dir . '/' . $name;
 					if ( is_readable( $path ) ) {

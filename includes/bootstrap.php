@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define plugin constants.
 // ISS-COR-011: canonical version is in wpmmcc-ats.php plugin header. Keep in sync.
 if ( ! defined( 'WPTSALL_VERSION' ) ) {
-	define( 'WPTSALL_VERSION', '2.1.0' );
+	define( 'WPTSALL_VERSION', '2.1.1' );
 }
 
 if ( ! defined( 'WPTSALL_PATH' ) ) {
@@ -58,12 +58,27 @@ $wptsall_autoloader->register();
 /**
  * Text domain is `wpmmcc-ats` (matches plugin slug).
  *
- * WordPress.org auto-loads translations for hosted plugins (WP 4.6+).
- * Bundled languages/wpmmcc-ats-*.mo files are picked up by the same mechanism
- * when present under the plugin languages directory; no load_plugin_textdomain().
+ * WordPress core auto-loads translations from WP_LANG_DIR only (language packs
+ * for WordPress.org-hosted plugins, WP 4.6+). It does not scan a plugin's own
+ * Domain Path, so bundled languages/wpmmcc-ats-*.mo files need an explicit
+ * load_plugin_textdomain() call to register the directory with
+ * WP_Textdomain_Registry. Verified 2026-09-08: without this call a zh_CN site
+ * keeps rendering English while the bundled .mo sits unused.
+ *
+ * Legacy override: Langpack_Service::load_uploads_textdomain() (init, priority 1)
+ * re-loads wp-content/uploads/wpmmcc-ats/languages/*.mo last and keeps its
+ * historical precedence over the bundled pack.
  *
  * @since 1.9.0
  */
+add_action(
+	'init',
+	function () {
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- bundled languages/*.mo require this call: WP 4.6+ JIT loading only scans WP_LANG_DIR, never a plugin's own Domain Path (Lab-verified 2026-09-08; see docblock above).
+		load_plugin_textdomain( 'wpmmcc-ats', false, dirname( WPTSALL_BASENAME ) . '/languages' );
+	},
+	0
+);
 
 /**
  * Early initialization of Runtime_Tracker (Approach B)

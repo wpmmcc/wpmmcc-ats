@@ -182,12 +182,12 @@ class Dashboard_Page {
 		$pt    = wptsall_table( 'post_mappings' );
 		$tt    = wptsall_table( 'term_mappings' );
 		if ( $pt ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$posts = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$pt} WHERE needs_resync = 1" );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot admin dashboard count; freshness preferred over cache.
+			$posts = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE needs_resync = 1', $pt ) );
 		}
 		if ( $tt ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$terms = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$tt} WHERE needs_resync = 1" );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot admin dashboard count; freshness preferred over cache.
+			$terms = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE needs_resync = 1', $tt ) );
 		}
 		return array(
 			'posts' => $posts,

@@ -75,8 +75,8 @@ class String_Translation_Service {
 			$default = Language_Service::get_default();
 			$source_lang = $default ? (string) $default['code'] : 'zh_CN';
 		}
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( null === $object_id ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- registration dedupe read; caching is not applicable during writes.
 			$existing_id = (int) $wpdb->get_var( $wpdb->prepare(
 				'SELECT id FROM %i WHERE context = %s AND object_id IS NULL AND string_key = %s AND source_lang = %s',
 				self::table(),
@@ -85,6 +85,7 @@ class String_Translation_Service {
 				$source_lang
 			) );
 		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- registration dedupe read; caching is not applicable during writes.
 			$existing_id = (int) $wpdb->get_var( $wpdb->prepare(
 				'SELECT id FROM %i WHERE context = %s AND object_id = %d AND string_key = %s AND source_lang = %s',
 				self::table(),
@@ -461,15 +462,16 @@ class String_Translation_Service {
 				$params                  = array_merge( $params, $in_args );
 			}
 
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- $where is placeholder-only; every value is bound via the merged param list.
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- claim CAS write; caching is not applicable to a compare-and-set.
+			// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $where is composed of literal placeholders only; the context IN-list placeholders come from wptsall_db_prepare_string_in(); every value binds through the merged param list.
 			$updated = $wpdb->query(
 				$wpdb->prepare(
 					'UPDATE %i SET claimed_at = %s, claim_owner_hash = %s, updated_at = %s WHERE ' . $where,
 					array_merge( array( self::table(), $now, $claim_owner_hash ?: null, $now ), array_slice( $params, 1 ) )
 				)
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 			if ( false !== $updated && $updated > 0 ) {
 				$claimed_ids[] = $id;
 			}
@@ -537,6 +539,7 @@ class String_Translation_Service {
 				$where['claim_owner_hash'] = $claim_owner_hash;
 				$where_formats             = array( '%d', '%s', '%s', '%s' );
 			}
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- conditional write guarded on the observed row version; caching is not applicable.
 			$written = $wpdb->update(
 				self::table(),
 				array(
@@ -550,6 +553,7 @@ class String_Translation_Service {
 				array( '%s', '%s', '%s', '%s', '%s' ),
 				$where_formats
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( false !== $written && $written > 0 ) {
 				do_action( 'wptsall_string_translated', $id, $target_lang, $msgstr );
 				++$updated;
@@ -569,7 +573,7 @@ class String_Translation_Service {
 		global $wpdb;
 		$by_context = array();
 		if ( self::table_exists() ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- dashboard aggregate; one GROUP BY over a bounded strings table, freshness preferred over cache.
 			$ctx_rows = $wpdb->get_results(
 				$wpdb->prepare(
 					'SELECT context, status, COUNT(*) AS cnt FROM %i GROUP BY context, status',
@@ -577,6 +581,7 @@ class String_Translation_Service {
 				),
 				ARRAY_A
 			);
+			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			foreach ( (array) $ctx_rows as $r ) {
 				$ctx = (string) $r['context'];
 				if ( ! isset( $by_context[ $ctx ] ) ) {

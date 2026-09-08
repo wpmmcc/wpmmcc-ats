@@ -329,10 +329,11 @@ class Virtual_Site_Router {
 	 * @return void
 	 */
 	private static function detect_virtual_site_by_search_vs_param(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public front routing.
-		$raw = isset( $_REQUEST['wptsall_vs'] ) ? wp_unslash( $_REQUEST['wptsall_vs'] ) : '';
-		$vs_param = sanitize_text_field( (string) $raw );
-		$vs_param = trim( $vs_param, '/' );
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- public front routing.
+		$vs_param = isset( $_REQUEST['wptsall_vs'] )
+			? trim( sanitize_text_field( (string) wp_unslash( $_REQUEST['wptsall_vs'] ) ), '/' )
+			: '';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		if ( '' === $vs_param ) {
 			return;
 		}
@@ -367,9 +368,11 @@ class Virtual_Site_Router {
 	 * @return void
 	 */
 	private static function detect_virtual_site_by_param(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public front routing.
-		$raw = isset( $_GET['wptsall_lang'] ) ? wp_unslash( $_GET['wptsall_lang'] ) : ( isset( $_GET['lang'] ) ? wp_unslash( $_GET['lang'] ) : '' );
-		$lang = sanitize_text_field( (string) $raw );
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- public front routing.
+		$lang = isset( $_GET['wptsall_lang'] )
+			? sanitize_text_field( (string) wp_unslash( $_GET['wptsall_lang'] ) )
+			: ( isset( $_GET['lang'] ) ? sanitize_text_field( (string) wp_unslash( $_GET['lang'] ) ) : '' );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		if ( '' === $lang ) {
 			return;
 		}

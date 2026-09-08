@@ -901,7 +901,7 @@ class Translation_Rule_REST_Controller {
 				'total'       => count( $manifests ),
 				'schema'      => 'adapter-manifest-v1',
 				'merge_order' => array(
-					'meta_key'     => array( 'php_adapter', 'json_hotplug', 'manual_model_fields' ),
+					'meta_key'     => array( 'php_adapter', 'json_hotplug', 'manual_model_fields' ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- merge-order documentation array key, not a meta_key DB query.
 					'plugin_slug'  => array( 'php_adapter', 'json_hotplug' ),
 					'doc_source'   => array( 'option', 'plugin_file' ),
 					'notes'        => 'Highest listed first wins on conflict. Manual model fields apply at rule generation.',
@@ -922,7 +922,7 @@ class Translation_Rule_REST_Controller {
 				'items'       => $docs,
 				'total'       => count( $docs ),
 				'merge_order' => array(
-					'meta_key'    => array( 'php_adapter', 'json_hotplug', 'manual_model_fields' ),
+					'meta_key'    => array( 'php_adapter', 'json_hotplug', 'manual_model_fields' ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- merge-order documentation array key, not a meta_key DB query.
 					'doc_source'  => array( 'option overrides plugin_file' ),
 				),
 				'schema'      => 'field-rules-v1',

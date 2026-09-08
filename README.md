@@ -2,6 +2,7 @@
 
 **Multilingual WordPress, made practical: scan, relate, translate.**
 
+**English** | [简体中文](readme/README.zh-CN.md) | [繁體中文](readme/README.zh-TW.md) | [日本語](readme/README.ja.md) | [한국어](readme/README.ko.md) | [Español](readme/README.es.md) | [Français](readme/README.fr.md) | [Deutsch](readme/README.de.md) | [Português (Brasil)](readme/README.pt-BR.md) | [Italiano](readme/README.it.md) | [Русский](readme/README.ru.md) | [العربية](readme/README.ar.md) | [हिन्दी](readme/README.hi.md) | [Türkçe](readme/README.tr.md) | [Tiếng Việt](readme/README.vi.md) | [Bahasa Indonesia](readme/README.id.md)
 
 WPMMCC ATS is a WordPress plugin that turns a single-language site into a multilingual one. It scans content plugins, themes and menus for translatable fields, builds reusable translation rules, manages site relations between languages, and ships a complete manual translation editor inside wp-admin. Automatic translation is available through the companion WPTSALL Client — no account, no license, no vendor lock-in.
 
@@ -11,7 +12,7 @@ WPMMCC ATS is a WordPress plugin that turns a single-language site into a multil
 - Manual translation editor — translate posts and fields entirely inside WordPress admin
 - Translation rules — one rule set shared by the manual editor and the client API
 - Protocol v2 client API — lets the WPTSALL Client claim tasks and write results back
-- Language packs — English built in; Simplified Chinese in progress (see below)
+- Language packs — English built in; Simplified Chinese (zh_CN) bundled and auto-loaded when your site language is set (see below)
 
 ## Requirements
 - WordPress 6.2 or newer
@@ -32,7 +33,7 @@ WPMMCC ATS is a WordPress plugin that turns a single-language site into a multil
 For automatic translation, install the companion WPTSALL Client (WebUI or Desktop). It connects to your site directly with a device-scoped token, claims translation tasks, calls the translation provider you configure, and writes the results back. See the client repository: https://github.com/wpmmcc/wptsall-client
 
 ## Languages
-English is the built-in source language and the only language shipped today. Translations (starting with Simplified Chinese) are planned and will be produced from this English text.
+English is the built-in source language. A complete Simplified Chinese (zh_CN) pack ships in languages/ and WordPress loads it automatically once the site language is set to 简体中文 under Settings → General. To add another language, translate languages/wpmmcc-ats.pot with your favourite PO editor and contribute it back.
 
 ## License
 GPL-2.0-or-later. See [LICENSE](LICENSE).
