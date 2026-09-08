@@ -1,0 +1,131 @@
+.wptsall-init-page {
+    max-width: 760px;
+}
+
+.wptsall-init-intro,
+.wptsall-init-plugins,
+.wptsall-v4-scan-section,
+.wptsall-consent-section {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.wptsall-init-plugins h2,
+.wptsall-v4-scan-section h2,
+.wptsall-consent-section h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.wptsall-init-plugin-list,
+.wptsall-pending-scans,
+.wptsall-consent-list {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 15px 0;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.wptsall-init-plugin,
+.wptsall-plugin-item,
+.wptsall-consent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.wptsall-init-plugin:last-child,
+.wptsall-plugin-item:last-child,
+.wptsall-consent-item:last-child {
+    border-bottom: none;
+}
+
+.wptsall-init-plugin input[type="checkbox"],
+.wptsall-consent-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.wptsall-init-plugin-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.wptsall-init-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.wptsall-progress-bar {
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 24px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.wptsall-progress-fill {
+    background: #0073aa;
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+.wptsall-progress-text {
+    text-align: center;
+    color: #666;
+}
+
+.wptsall-init-stats {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    margin: 15px 0;
+}
+
+.wptsall-init-stats p {
+    margin: 5px 0;
+}
+
+.wptsall-consent-item {
+    cursor: pointer;
+}
+
+.wptsall-consent-item:hover {
+    background: #f0f0f0;
+}
+
+.plugin-name {
+    font-weight: 500;
+}
+
+.plugin-types {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.wptsall-consent-note {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+}
+
+@media (max-width: 782px) {
+    .wptsall-init-actions,
+    .wptsall-init-plugin-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

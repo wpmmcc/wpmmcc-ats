@@ -1,0 +1,1037 @@
+/**
+ * Site Relations Management Styles
+ *
+ * @package WPTSALL
+ * @since 0.3.0
+ */
+
+/* ============================================================================
+   Tab Navigation
+   ========================================================================= */
+
+.wptsall-site-relations-wrap .nav-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.wptsall-site-relations-wrap .nav-tab .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+/* ============================================================================
+   Empty State
+   ========================================================================= */
+
+.wptsall-empty-state {
+	text-align: center;
+	padding: 60px 20px;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	margin-top: 20px;
+}
+
+.wptsall-empty-state .dashicons {
+	font-size: 64px;
+	width: 64px;
+	height: 64px;
+	color: #c3c4c7;
+	margin-bottom: 20px;
+}
+
+.wptsall-empty-state h3 {
+	margin: 20px 0 10px;
+	font-size: 18px;
+}
+
+.wptsall-empty-state p {
+	color: #646970;
+	margin-bottom: 20px;
+}
+
+/* ============================================================================
+   Badges
+   ========================================================================= */
+
+.wptsall-badge {
+	display: inline-block;
+	padding: 3px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.wptsall-badge-success {
+	background: #d4edda;
+	color: #155724;
+}
+
+.wptsall-badge-warning {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.wptsall-badge-error {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.wptsall-badge-unknown {
+	background: #e2e3e5;
+	color: #383d41;
+}
+
+/* ============================================================================
+   Relation Actions
+   ========================================================================= */
+
+.wptsall-relation-actions {
+	display: flex;
+	gap: 5px;
+	flex-wrap: wrap;
+}
+
+.wptsall-target-count {
+	display: inline-block;
+	margin-right: 8px;
+}
+
+/* ============================================================================
+   Wizard Steps
+   ========================================================================= */
+
+.wptsall-wizard {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	margin-top: 20px;
+	padding: 30px;
+}
+
+.wptsall-wizard-steps {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 40px;
+	position: relative;
+}
+
+.wptsall-wizard-steps::before {
+	content: '';
+	position: absolute;
+	top: 20px;
+	left: 50px;
+	right: 50px;
+	height: 2px;
+	background: #e0e0e0;
+	z-index: 0;
+}
+
+.wptsall-wizard-step {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	position: relative;
+	z-index: 1;
+	flex: 1;
+}
+
+.wptsall-step-number {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: #f0f0f1;
+	color: #646970;
+	font-weight: 600;
+	font-size: 16px;
+	border: 2px solid #e0e0e0;
+	transition: all 0.3s ease;
+}
+
+.wptsall-step-label {
+	font-size: 14px;
+	color: #646970;
+	font-weight: 500;
+}
+
+.wptsall-wizard-step-active .wptsall-step-number {
+	background: #2271b1;
+	color: #fff;
+	border-color: #2271b1;
+}
+
+.wptsall-wizard-step-active .wptsall-step-label {
+	color: #2271b1;
+}
+
+.wptsall-wizard-step-completed .wptsall-step-number {
+	background: #00a32a;
+	color: #fff;
+	border-color: #00a32a;
+}
+
+.wptsall-wizard-step-completed .wptsall-step-number::after {
+	content: '\f147'; /* checkmark */
+	font-family: dashicons;
+	position: absolute;
+}
+
+/* ============================================================================
+   Wizard Content
+   ========================================================================= */
+
+.wptsall-wizard-content {
+	min-height: 300px;
+	margin-bottom: 30px;
+}
+
+.wptsall-wizard-content h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 18px;
+}
+
+.wptsall-wizard-content > .description {
+	margin-bottom: 30px;
+}
+
+/* ============================================================================
+   Model Selection
+   ========================================================================= */
+
+.wptsall-model-selection {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.wptsall-model-card {
+	display: block;
+	cursor: pointer;
+	margin: 0;
+}
+
+.wptsall-model-card input[type="radio"] {
+	display: none;
+}
+
+.wptsall-model-card-content {
+	display: flex;
+	gap: 15px;
+	padding: 20px;
+	border: 2px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	transition: all 0.2s ease;
+}
+
+.wptsall-model-card:hover .wptsall-model-card-content {
+	border-color: #2271b1;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wptsall-model-card input[type="radio"]:checked + .wptsall-model-card-content {
+	border-color: #2271b1;
+	background: #f0f6fc;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.wptsall-model-icon {
+	flex-shrink: 0;
+}
+
+.wptsall-model-icon .dashicons {
+	font-size: 40px;
+	width: 40px;
+	height: 40px;
+	color: #2271b1;
+}
+
+.wptsall-model-info h4 {
+	margin: 0 0 8px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.wptsall-model-info p {
+	margin: 0;
+	color: #646970;
+	font-size: 14px;
+}
+
+/* ============================================================================
+   Form Fields
+   ========================================================================= */
+
+.wptsall-field-group {
+	margin-bottom: 25px;
+}
+
+.wptsall-field-group label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wptsall-field-group .description {
+	margin-top: 8px;
+	margin-bottom: 0;
+}
+
+.wptsall-select2 {
+	width: 100% !important;
+	max-width: 600px;
+}
+
+/* ============================================================================
+   Wizard Actions
+   ========================================================================= */
+
+.wptsall-wizard-actions {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	padding-top: 20px;
+	border-top: 1px solid #e0e0e0;
+}
+
+.wptsall-wizard-actions .button {
+	min-width: 120px;
+}
+
+/* ============================================================================
+   Stats Boxes
+   ========================================================================= */
+
+.wptsall-stats {
+	margin-top: 20px;
+}
+
+.wptsall-stats-boxes {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 20px;
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+
+.wptsall-stat-box {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px;
+	text-align: center;
+}
+
+.wptsall-stat-value {
+	font-size: 36px;
+	font-weight: 700;
+	color: #2271b1;
+	line-height: 1.2;
+	margin-bottom: 5px;
+}
+
+.wptsall-stat-label {
+	font-size: 14px;
+	color: #646970;
+	font-weight: 500;
+}
+
+.wptsall-stats-details {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px;
+}
+
+.wptsall-stats-details h3 {
+	margin-top: 0;
+	margin-bottom: 15px;
+	font-size: 16px;
+}
+
+/* ============================================================================
+   Responsive
+   ========================================================================= */
+
+@media screen and (max-width: 782px) {
+	.wptsall-wizard-steps {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.wptsall-wizard-steps::before {
+		display: none;
+	}
+
+	.wptsall-model-selection {
+		grid-template-columns: 1fr;
+	}
+
+	.wptsall-relation-actions {
+		flex-direction: column;
+	}
+
+	.wptsall-wizard-actions {
+		flex-direction: column-reverse;
+	}
+
+	.wptsall-wizard-actions .button {
+		width: 100%;
+	}
+}
+
+/* ============================================================================
+   Loading States
+   ========================================================================= */
+
+.wptsall-loading {
+	position: relative;
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.wptsall-loading::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 20px;
+	height: 20px;
+	margin: -10px 0 0 -10px;
+	border: 2px solid #2271b1;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: wptsall-spin 0.6s linear infinite;
+}
+
+@keyframes wptsall-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ============================================================================
+   Plugin Status Check
+   ========================================================================= */
+
+#wptsall-plugin-status-check {
+	background: #f0f6fc;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 15px;
+}
+
+#wptsall-plugin-status-check.wptsall-status-error {
+	background: #fcf0f1;
+	border-color: #d63638;
+}
+
+#wptsall-plugin-status-check.wptsall-status-success {
+	background: #edfaef;
+	border-color: #00a32a;
+}
+
+/* ============================================================================
+   Relation Summary
+   ========================================================================= */
+
+#wptsall-relation-summary {
+	background: #f0f6fc;
+	border: 1px solid #2271b1;
+	border-radius: 4px;
+	padding: 20px;
+}
+
+#wptsall-relation-summary h4 {
+	margin-top: 0;
+	margin-bottom: 15px;
+	color: #2271b1;
+}
+
+#wptsall-relation-summary ul {
+	margin: 0;
+	padding-left: 20px;
+}
+
+#wptsall-relation-summary li {
+	margin-bottom: 8px;
+}
+
+/* ============================================================================
+   Modal Styles
+   ========================================================================= */
+
+/* Modal Container */
+.wptsall-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Modal Overlay */
+.wptsall-modal-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7);
+	animation: wptsall-fade-in 0.2s ease-out;
+}
+
+/* Modal Content */
+.wptsall-modal-content {
+	position: relative;
+	background: #fff;
+	border-radius: 4px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	width: 90%;
+	max-width: 600px;
+	max-height: 85vh;
+	display: flex;
+	flex-direction: column;
+	animation: wptsall-slide-in 0.3s ease-out;
+	z-index: 1;
+}
+
+.wptsall-modal-content.wptsall-modal-large {
+	max-width: 800px;
+}
+
+/* Modal Header */
+.wptsall-modal-header {
+	padding: 20px 24px;
+	border-bottom: 1px solid #dcdcde;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-shrink: 0;
+}
+
+.wptsall-modal-header h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wptsall-modal-close {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	color: #646970;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 3px;
+	transition: all 0.2s ease;
+}
+
+.wptsall-modal-close:hover {
+	background: #f0f0f1;
+	color: #1d2327;
+}
+
+.wptsall-modal-close .dashicons {
+	width: 20px;
+	height: 20px;
+	font-size: 20px;
+}
+
+/* Modal Body */
+.wptsall-modal-body {
+	padding: 24px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.wptsall-modal-body::-webkit-scrollbar {
+	width: 8px;
+}
+
+.wptsall-modal-body::-webkit-scrollbar-track {
+	background: #f0f0f1;
+}
+
+.wptsall-modal-body::-webkit-scrollbar-thumb {
+	background: #c3c4c7;
+	border-radius: 4px;
+}
+
+.wptsall-modal-body::-webkit-scrollbar-thumb:hover {
+	background: #a7aaad;
+}
+
+/* Modal Footer */
+.wptsall-modal-footer {
+	padding: 16px 24px;
+	border-top: 1px solid #dcdcde;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+/* Modal Loading */
+.wptsall-modal-loading {
+	text-align: center;
+	padding: 40px 20px;
+}
+
+.wptsall-modal-loading .spinner {
+	float: none;
+	margin: 0 auto 16px;
+}
+
+.wptsall-modal-loading p {
+	color: #646970;
+	margin: 0;
+}
+
+/* Modal Error */
+.wptsall-modal-error {
+	background: #fcf0f1;
+	border: 1px solid #d63638;
+	border-radius: 4px;
+	padding: 12px 16px;
+	margin-top: 16px;
+	color: #d63638;
+}
+
+.wptsall-modal-error ul {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.wptsall-modal-error li {
+	margin-bottom: 4px;
+}
+
+/* Target Sites List */
+.wptsall-target-sites-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.wptsall-target-site-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	margin-bottom: 8px;
+	background: #fff;
+	transition: all 0.2s ease;
+}
+
+.wptsall-target-site-item:hover {
+	background: #f6f7f7;
+	border-color: #c3c4c7;
+}
+
+.wptsall-target-site-info {
+	flex: 1;
+}
+
+.wptsall-target-site-name {
+	font-weight: 500;
+	color: #1d2327;
+	margin-bottom: 4px;
+}
+
+.wptsall-target-site-meta {
+	font-size: 13px;
+	color: #646970;
+}
+
+.wptsall-target-site-type {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+	margin-left: 8px;
+}
+
+.wptsall-target-site-type.type-wp {
+	background: #e5f5fa;
+	color: #0073aa;
+}
+
+.wptsall-target-site-type.type-virtual {
+	background: #f0e5f5;
+	color: #7e3fb8;
+}
+
+/* Relation Details */
+.wptsall-relation-details {
+	display: grid;
+	gap: 20px;
+}
+
+.wptsall-detail-section {
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 16px;
+}
+
+.wptsall-detail-section h3 {
+	margin: 0 0 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.wptsall-detail-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.wptsall-detail-row:last-child {
+	border-bottom: none;
+}
+
+.wptsall-detail-label {
+	font-weight: 500;
+	color: #646970;
+}
+
+.wptsall-detail-value {
+	color: #1d2327;
+	text-align: right;
+}
+
+/* Animations */
+@keyframes wptsall-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes wptsall-slide-in {
+	from {
+		opacity: 0;
+		transform: translateY(-50px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Responsive Modal */
+@media screen and (max-width: 782px) {
+	.wptsall-modal-content {
+		width: 95%;
+		max-height: 90vh;
+	}
+
+	.wptsall-modal-header,
+	.wptsall-modal-body,
+	.wptsall-modal-footer {
+		padding: 16px;
+	}
+
+	.wptsall-modal-footer {
+		flex-direction: column-reverse;
+	}
+
+	.wptsall-modal-footer .button {
+		width: 100%;
+		text-align: center;
+	}
+
+	.wptsall-target-site-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.wptsall-target-site-info {
+		margin-bottom: 8px;
+	}
+}
+
+/* ========================================================================
+   Virtual Site Management Styles
+   ======================================================================== */
+
+/* URL conflict detection */
+#virtual-site-path-conflict {
+	margin-top: 8px;
+	padding: 8px 12px;
+	border-radius: 3px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+#virtual-site-path-conflict .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	vertical-align: text-top;
+	margin-right: 4px;
+}
+
+#virtual-site-path-conflict.wptsall-conflict-error {
+	background: #fcf0f1;
+	color: #d63638;
+	border: 1px solid #f0b8b8;
+}
+
+#virtual-site-path-conflict.wptsall-conflict-success {
+	background: #edfaef;
+	color: #00a32a;
+	border: 1px solid #9dd29e;
+}
+
+#virtual-site-path-conflict ul {
+	margin: 4px 0 0 20px;
+	list-style: disc;
+}
+
+#virtual-site-path-conflict .spinner {
+	float: none;
+	margin: 0 4px 0 0;
+	vertical-align: middle;
+}
+
+/* Blog source site field */
+.wptsall-blog-source-field {
+	display: none;
+}
+
+/* Loading state */
+.wptsall-loading {
+	opacity: 0.6;
+	pointer-events: none;
+	position: relative;
+}
+
+.wptsall-modal-body.wptsall-loading::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.7);
+	z-index: 10;
+}
+
+/* Virtual sites table loading row */
+.wptsall-virtual-sites-table tr.wptsall-loading {
+	background-color: #f0f0f1;
+}
+
+.wptsall-virtual-sites-table tr.wptsall-loading td {
+	opacity: 0.5;
+}
+
+/* ========================================================================
+   v0.6.0: Model Association Styles
+   ======================================================================== */
+
+/* Model count link */
+.wptsall-models-count {
+	display: inline-block;
+	background: #2271b1;
+	color: #fff;
+	padding: 2px 8px;
+	border-radius: 10px;
+	font-size: 12px;
+	font-weight: 600;
+	min-width: 18px;
+	text-align: center;
+}
+
+.wptsall-view-models-btn {
+	text-decoration: none;
+}
+
+.wptsall-view-models-btn:hover .wptsall-models-count {
+	background: #135e96;
+}
+
+.wptsall-no-models {
+	color: #999;
+	font-style: italic;
+}
+
+/* Model modal */
+.wptsall-models-modal .wptsall-modal-content {
+	max-width: 700px;
+}
+
+.wptsall-models-modal .wptsall-modal-header h3 {
+	margin: 0;
+	font-size: 16px;
+}
+
+/* Model list table */
+.wptsall-models-list table {
+	margin: 0;
+}
+
+.wptsall-models-list table th,
+.wptsall-models-list table td {
+	padding: 10px 12px;
+}
+
+/* Available models area */
+.wptsall-available-models {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #dcdcde;
+}
+
+.wptsall-available-models h4 {
+	margin: 0 0 12px;
+	font-size: 14px;
+	color: #1d2327;
+}
+
+.wptsall-model-checkboxes {
+	max-height: 200px;
+	overflow-y: auto;
+	padding: 10px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	margin-bottom: 12px;
+}
+
+.wptsall-model-checkboxes label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 0;
+	cursor: pointer;
+}
+
+.wptsall-model-checkboxes label:hover {
+	background: #fff;
+	margin: 0 -8px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+/* Status badge */
+.wptsall-status {
+	display: inline-block;
+	padding: 3px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.wptsall-status-active {
+	background: #d4edda;
+	color: #155724;
+}
+
+.wptsall-status-inactive {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+.wptsall-status-pending {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.wptsall-status-missing {
+	background: #f0f0f1;
+	color: #666;
+}
+
+/* Language badge */
+.lang-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	background: #e5f5fa;
+	color: #0073aa;
+	border-radius: 3px;
+	font-size: 12px;
+	font-family: monospace;
+}
+
+/* ========================================================================
+   v0.6.0: Language Pack Match Status Styles
+   ======================================================================== */
+
+.wptsall-language-pack-status {
+	margin-bottom: 20px;
+	padding: 16px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.wptsall-language-pack-status h4 {
+	margin: 0 0 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wptsall-lang-pack-loading {
+	text-align: center;
+	padding: 20px;
+	color: #646970;
+}
+
+.wptsall-lang-pack-loading .spinner {
+	float: none;
+	margin-right: 8px;
+}
+
+.wptsall-lang-pack-section {
+	padding: 8px 0;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.wptsall-lang-pack-section:last-of-type {
+	border-bottom: none;
+}
+
+.wptsall-lang-pack-summary {
+	margin-top: 12px;
+	padding: 10px 12px;
+	background: #fff;
+	border-radius: 4px;
+	font-size: 13px;
+}
+
+.wptsall-lang-pack-content .error {
+	color: #d63638;
+}

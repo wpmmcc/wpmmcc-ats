@@ -1,0 +1,13 @@
+{
+  "post_types": {
+    "at_biz_dir": {}
+  },
+  "post_fields": {
+    "_address": { "action": "translate" },
+    "_phone": { "action": "copy" },
+    "_email": { "action": "copy" },
+    "_website": { "action": "copy" },
+    "_price_range": { "action": "copy" },
+    "_business_hours": { "action": "translate" }
+  }
+}

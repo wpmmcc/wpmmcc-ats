@@ -1,0 +1,18 @@
+{
+  "post_types": {
+    "event": {},
+    "location": {}
+  },
+  "post_fields": {
+    "_location_address": { "action": "translate" },
+    "_location_town": { "action": "translate" },
+    "_location_state": { "action": "translate" },
+    "_location_country": { "action": "translate" },
+    "_event_start_date": { "action": "copy" },
+    "_event_end_date": { "action": "copy" },
+    "_event_start_time": { "action": "copy" },
+    "_event_end_time": { "action": "copy" },
+    "_event_tickets_price": { "action": "copy" },
+    "_location_id": { "action": "copy" }
+  }
+}

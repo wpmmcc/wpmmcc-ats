@@ -1,0 +1,497 @@
+/**
+ * WPTSALL Conflict Manager Styles
+ *
+ * Conflict management page styles
+ *
+ * @package WPTSALL
+ * @since 0.9.0
+ */
+
+/* ============================================
+   Page Layout
+   ============================================ */
+
+.wptsall-conflict-page {
+    max-width: 1400px;
+}
+
+.wptsall-conflict-page h1 {
+    margin-bottom: 20px;
+}
+
+/* ============================================
+   Stats Cards
+   ============================================ */
+
+.wptsall-conflict-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px 30px;
+    text-align: center;
+    min-width: 120px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.stat-card .stat-number {
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 5px;
+}
+
+.stat-card .stat-label {
+    font-size: 13px;
+    color: #646970;
+}
+
+.stat-total .stat-number {
+    color: #2271b1;
+}
+
+.stat-pending .stat-number {
+    color: #d63638;
+}
+
+.stat-resolved .stat-number {
+    color: #00a32a;
+}
+
+.stats-loading,
+.stats-error {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    color: #646970;
+}
+
+/* ============================================
+   Toolbar
+   ============================================ */
+
+.wptsall-conflict-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 0;
+}
+
+.toolbar-left {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 10px;
+}
+
+.conflict-filter {
+    min-width: 150px;
+}
+
+#btn-refresh .dashicons,
+#btn-auto-resolve .dashicons {
+    vertical-align: middle;
+    margin-right: 3px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================
+   Conflict List Table
+   ============================================ */
+
+.wptsall-conflict-list {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+}
+
+.wptsall-conflict-list .wp-list-table {
+    margin: 0;
+    border: none;
+}
+
+.wptsall-conflict-list .wp-list-table th,
+.wptsall-conflict-list .wp-list-table td {
+    padding: 10px 12px;
+}
+
+.column-id {
+    width: 60px;
+}
+
+.column-type {
+    width: 150px;
+}
+
+.column-conflict-type {
+    width: 120px;
+}
+
+.column-source,
+.column-target {
+    width: 130px;
+}
+
+.column-status {
+    width: 80px;
+}
+
+.column-detected {
+    width: 150px;
+}
+
+.column-actions {
+    width: 80px;
+    text-align: center;
+}
+
+.object-type {
+    display: block;
+    font-weight: 500;
+}
+
+.object-subtype {
+    display: block;
+    font-size: 12px;
+    color: #646970;
+}
+
+.site-id {
+    display: block;
+}
+
+.object-id {
+    display: block;
+    font-size: 12px;
+    color: #646970;
+}
+
+.conflict-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-pending {
+    background: #fcf0f1;
+    color: #d63638;
+}
+
+.status-resolved {
+    background: #edfaef;
+    color: #00a32a;
+}
+
+.list-loading,
+.list-error,
+.no-conflicts {
+    padding: 40px 20px;
+    text-align: center;
+    color: #646970;
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+
+.wptsall-conflict-pagination {
+    margin-top: 15px;
+}
+
+.wptsall-conflict-pagination .tablenav-pages {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wptsall-conflict-pagination .displaying-num {
+    color: #646970;
+    font-size: 13px;
+}
+
+.wptsall-conflict-pagination .pagination-links {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.wptsall-conflict-pagination .paging-input {
+    font-size: 13px;
+    padding: 0 10px;
+}
+
+/* ============================================
+   Modal
+   ============================================ */
+
+.wptsall-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wptsall-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.wptsall-modal-content {
+    position: relative;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.wptsall-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dcdcde;
+}
+
+.wptsall-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.wptsall-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #646970;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.wptsall-modal-close:hover {
+    color: #d63638;
+}
+
+.wptsall-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.wptsall-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dcdcde;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ============================================
+   Conflict Info
+   ============================================ */
+
+.conflict-info {
+    background: #f6f7f7;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 8px;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    font-weight: 500;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.info-value {
+    color: #1d2327;
+}
+
+/* ============================================
+   Comparison Table
+   ============================================ */
+
+.conflict-comparison {
+    margin-bottom: 20px;
+}
+
+.conflict-comparison h3 {
+    font-size: 14px;
+    margin: 0 0 10px 0;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #dcdcde;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 10px 12px;
+    border: 1px solid #dcdcde;
+    text-align: left;
+    font-size: 13px;
+}
+
+.comparison-table th {
+    background: #f6f7f7;
+    font-weight: 500;
+}
+
+.comparison-table .field-name {
+    font-weight: 500;
+    width: 150px;
+}
+
+.comparison-table .source-value,
+.comparison-table .target-value {
+    max-width: 250px;
+    word-break: break-word;
+}
+
+.comparison-table tr.field-different .source-value {
+    background: #fcf0f1;
+}
+
+.comparison-table tr.field-different .target-value {
+    background: #fff8e5;
+}
+
+.manual-select-col {
+    width: 100px;
+}
+
+.manual-select-col select {
+    width: 100%;
+}
+
+/* ============================================
+   Strategy Options
+   ============================================ */
+
+.conflict-strategy h3 {
+    font-size: 14px;
+    margin: 0 0 10px 0;
+}
+
+.strategy-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.strategy-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: #f6f7f7;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.strategy-option:hover {
+    background: #f0f0f1;
+}
+
+.strategy-option input[type="radio"] {
+    margin-top: 3px;
+}
+
+.strategy-option input[type="radio"]:checked ~ .strategy-label {
+    color: #2271b1;
+}
+
+.strategy-option:has(input:checked) {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.strategy-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.strategy-label strong {
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+
+.strategy-label small {
+    font-size: 12px;
+    color: #646970;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media screen and (max-width: 782px) {
+    .wptsall-conflict-stats {
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .wptsall-conflict-toolbar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+        justify-content: center;
+    }
+
+    .wptsall-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .strategy-options {
+        gap: 8px;
+    }
+}

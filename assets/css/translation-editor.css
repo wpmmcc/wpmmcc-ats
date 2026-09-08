@@ -1,0 +1,622 @@
+/**
+ * WPTSALL Translation Editor Styles
+ *
+ * Two-panel layout for the manual translation editor.
+ * Left panel: source content (read-only)
+ * Right panel: target content (editable)
+ *
+ * @package WPTSALL
+ * @since 1.0.0
+ */
+
+/* Translation Editor Layout */
+.wptsall-translation-editor {
+    max-width: 1400px;
+    margin: 20px 0;
+}
+
+/* Info bar */
+.wptsall-editor-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    margin-bottom: 16px;
+    border-radius: 4px;
+}
+
+.wptsall-editor-relation {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+/* Status indicator */
+.wptsall-editor-status {
+    font-style: italic;
+    color: #666;
+    font-size: 13px;
+}
+
+.wptsall-editor-status.is-saving {
+    color: #d63638;
+}
+
+.wptsall-editor-status.is-saved {
+    color: #00a32a;
+}
+
+/* Two-panel layout */
+.wptsall-editor-panels {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.wptsall-source-panel,
+.wptsall-target-panel {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    padding: 16px;
+    border-radius: 4px;
+    min-width: 0;
+}
+
+.wptsall-source-panel {
+    background: #f9f9f9;
+}
+
+.wptsall-source-panel h3,
+.wptsall-target-panel h3 {
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+/* Field rows */
+.wptsall-field {
+    margin-bottom: 16px;
+}
+
+.wptsall-field:last-child {
+    margin-bottom: 0;
+}
+
+.wptsall-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-field .wptsall-field-value {
+    padding: 8px;
+    background: #f0f0f1;
+    border-radius: 3px;
+    min-height: 20px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #2c3338;
+    border: 1px solid #dcdcde;
+}
+
+.wptsall-field textarea {
+    width: 100%;
+    min-height: 200px;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.wptsall-field input[type="text"] {
+    width: 100%;
+}
+
+.wptsall-field input[disabled] {
+    background: #f0f0f1;
+    color: #8c8f94;
+    cursor: not-allowed;
+}
+
+/* Field badges */
+.wptsall-field-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    font-weight: normal;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+
+.wptsall-badge-translate {
+    background: #d4edda;
+    color: #155724;
+}
+
+.wptsall-badge-sync {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.wptsall-badge-compute {
+    background: #cce5ff;
+    color: #004085;
+}
+
+/* ID mapping badge */
+.wptsall-badge-id_mapping {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Non-text field notice */
+.wptsall-nontext-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #f0f6fc;
+    border: 1px solid #c5d9ed;
+    border-radius: 3px;
+    color: #2c3338;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.wptsall-nontext-icon {
+    color: #72aee6;
+    font-size: 16px;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+
+.wptsall-nontext-message {
+    color: #50575e;
+    font-style: italic;
+}
+
+.wptsall-nontext-value {
+    width: 100%;
+    margin-top: 4px;
+    padding: 6px 8px;
+    background: #f0f0f1;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #8c8f94;
+    word-break: break-all;
+}
+
+/* Media field styles */
+.wptsall-media-picker {
+    padding: 8px;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.wptsall-media-preview {
+    margin-bottom: 8px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f6f7f7;
+    border-radius: 3px;
+    padding: 8px;
+}
+
+.wptsall-media-preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    height: auto;
+    border-radius: 3px;
+    display: block;
+}
+
+.wptsall-source-panel .wptsall-field-value .wptsall-media-preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    height: auto;
+    border-radius: 3px;
+    display: block;
+}
+
+.wptsall-media-no-image {
+    color: #8c8f94;
+    font-style: italic;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+.wptsall-media-preview-loading {
+    color: #8c8f94;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.wptsall-media-placeholder-icon {
+    font-size: 32px;
+    color: #c3c4c7;
+    margin-right: 8px;
+}
+
+.wptsall-media-buttons {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.wptsall-media-buttons .button {
+    font-size: 12px;
+    min-height: 28px;
+    line-height: 26px;
+    padding: 0 10px;
+}
+
+.wptsall-media-remove-btn {
+    color: #b32d2e !important;
+    border-color: #b32d2e !important;
+}
+
+.wptsall-media-remove-btn:hover {
+    background: #b32d2e !important;
+    color: #fff !important;
+}
+
+/* Breadcrumb navigation */
+.wptsall-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #50575e;
+}
+
+.wptsall-breadcrumb a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.wptsall-breadcrumb a:hover {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+.wptsall-breadcrumb-sep {
+    color: #c3c4c7;
+    font-size: 14px;
+}
+
+.wptsall-breadcrumb-item {
+    color: #50575e;
+}
+
+.wptsall-breadcrumb-current {
+    color: #1d2327;
+    font-weight: 600;
+}
+
+/* Mode toggle */
+.wptsall-editor-info-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wptsall-mode-toggle {
+    display: inline-flex;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wptsall-mode-btn {
+    background: #f0f0f1;
+    border: none;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #50575e;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1.4;
+    outline: none;
+}
+
+.wptsall-mode-btn:hover {
+    background: #e0e0e0;
+}
+
+.wptsall-mode-btn + .wptsall-mode-btn {
+    border-left: 1px solid #c3c4c7;
+}
+
+.wptsall-mode-btn-active {
+    background: #2271b1;
+    color: #fff;
+}
+
+.wptsall-mode-btn-active:hover {
+    background: #135e96;
+}
+
+/* Edit mode indicator on sync fields */
+.wptsall-mode-edit .wptsall-field-type-sync .wptsall-editor-field {
+    background: #fff !important;
+    color: #2c3338 !important;
+    cursor: text !important;
+    border-color: #8c8f94;
+}
+
+/* TinyMCE containers */
+.wptsall-tinymce-container {
+    margin: 0;
+}
+
+.wptsall-tinymce-slot {
+    min-height: 100px;
+}
+
+.wptsall-tinymce-slot .wp-editor-wrap {
+    margin-bottom: 0;
+}
+
+.wptsall-tinymce-slot .wp-editor-container {
+    border: 1px solid #dcdcde;
+    border-radius: 0 0 3px 3px;
+}
+
+.wptsall-tinymce-slot .mce-edit-area iframe {
+    min-height: 200px;
+}
+
+.wptsall-tinymce-slot .wp-editor-tools {
+    z-index: 1;
+}
+
+/* Taxonomy section */
+.wptsall-taxonomy-section {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.wptsall-taxonomy-section h3 {
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.wptsall-taxonomy-picker {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.wptsall-taxonomy-picker:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.wptsall-taxonomy-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-badge-taxonomy {
+    background: #e8daef;
+    color: #6c3483;
+}
+
+/* Hierarchical taxonomy checklist */
+.wptsall-taxonomy-checklist {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    background: #fff;
+}
+
+.wptsall-taxonomy-checklist .categorychecklist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.wptsall-taxonomy-checklist .categorychecklist li {
+    margin: 2px 0;
+    padding: 0;
+}
+
+.wptsall-taxonomy-checklist .categorychecklist ul {
+    margin-left: 18px;
+    padding: 0;
+    list-style: none;
+}
+
+.wptsall-taxonomy-checklist label {
+    font-weight: normal;
+    display: inline;
+    font-size: 13px;
+}
+
+/* Flat taxonomy tag input */
+.wptsall-taxonomy-tags {
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    padding: 8px;
+    background: #fff;
+}
+
+.wptsall-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+    min-height: 20px;
+}
+
+.wptsall-tag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 12px;
+    color: #2c3338;
+    line-height: 1.4;
+}
+
+.wptsall-tag-item.wptsall-tag-new {
+    background: #d4edda;
+    border-color: #b1dfbb;
+}
+
+.wptsall-tag-remove {
+    background: none;
+    border: none;
+    color: #b32d2e;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+}
+
+.wptsall-tag-remove:hover {
+    color: #8b0000;
+}
+
+.wptsall-tag-input-wrap {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.wptsall-tag-input {
+    flex: 1;
+    min-width: 120px;
+    font-size: 13px;
+    padding: 4px 8px;
+}
+
+.wptsall-tag-add-btn {
+    flex-shrink: 0;
+}
+
+.wptsall-source-terms-hint {
+    margin-top: 8px;
+}
+
+.wptsall-source-terms-hint .description {
+    font-style: italic;
+    color: #8c8f94;
+    font-size: 12px;
+}
+
+/* Action bar */
+.wptsall-editor-actions {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.wptsall-editor-actions .button {
+    min-height: 32px;
+}
+
+.wptsall-editor-actions .button[disabled] {
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+    .wptsall-editor-panels {
+        flex-direction: column;
+    }
+
+    .wptsall-source-panel,
+    .wptsall-target-panel {
+        flex: none;
+        width: 100%;
+    }
+
+    .wptsall-editor-info {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .wptsall-editor-info-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .wptsall-breadcrumb {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 600px) {
+    .wptsall-translation-editor {
+        margin: 10px 0;
+    }
+
+    .wptsall-editor-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .wptsall-editor-actions .button {
+        text-align: center;
+    }
+
+    .wptsall-mode-toggle {
+        width: 100%;
+    }
+
+    .wptsall-mode-btn {
+        flex: 1;
+        text-align: center;
+        padding: 8px 10px;
+    }
+
+    .wptsall-taxonomy-checklist {
+        max-height: 150px;
+    }
+
+    .wptsall-tag-input-wrap {
+        flex-direction: column;
+    }
+
+    .wptsall-tag-input {
+        width: 100%;
+    }
+}

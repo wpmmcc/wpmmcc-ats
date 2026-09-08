@@ -1,0 +1,407 @@
+/**
+ * WPTSALL Field Configurator Styles
+ *
+ * @since 0.5.0
+ */
+
+/* Main Container */
+.wptsall-field-configurator {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* Header */
+.wptsall-fc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+.wptsall-fc-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.wptsall-fc-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Content Layout */
+.wptsall-fc-content {
+    display: flex;
+    gap: 20px;
+    min-height: 600px;
+}
+
+/* Sidebar */
+.wptsall-fc-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+}
+
+.wptsall-fc-field-pool {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 15px;
+    height: 100%;
+}
+
+.wptsall-fc-field-pool h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.wptsall-fc-search {
+    margin-bottom: 10px;
+}
+
+.wptsall-fc-search input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.wptsall-fc-fields-list {
+    max-height: 450px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+/* Available Field Item */
+.wptsall-fc-field-item {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    cursor: move;
+    transition: all 0.2s;
+}
+
+.wptsall-fc-field-item:hover {
+    background: #f0f6fc;
+    border-color: #2271b1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.wptsall-fc-field-name {
+    display: block;
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 13px;
+}
+
+.wptsall-fc-field-type {
+    display: inline-block;
+    background: #f0f0f1;
+    color: #50575e;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-top: 4px;
+}
+
+.wptsall-fc-field-desc {
+    display: block;
+    font-size: 11px;
+    color: #646970;
+    margin-top: 4px;
+}
+
+/* Main Area */
+.wptsall-fc-main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+/* Category Container */
+.wptsall-fc-category {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wptsall-fc-category-header {
+    background: #f6f7f7;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #dcdcde;
+}
+
+.wptsall-fc-category-icon {
+    font-size: 18px;
+}
+
+.wptsall-fc-category-header h4 {
+    margin: 0;
+    font-size: 14px;
+    flex: 1;
+}
+
+.wptsall-fc-count {
+    background: #2271b1;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Category Body - Droppable Area */
+.wptsall-fc-category-body {
+    padding: 10px;
+    min-height: 200px;
+}
+
+.wptsall-fc-droppable {
+    border: 2px dashed transparent;
+    border-radius: 3px;
+    transition: all 0.2s;
+}
+
+.wptsall-fc-drop-hover {
+    background: #f0f6fc;
+    border-color: #2271b1;
+}
+
+.wptsall-fc-empty-message {
+    color: #8c8f94;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 13px;
+}
+
+/* Configured Field */
+.wptsall-fc-configured-field {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.wptsall-fc-configured-field:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.wptsall-fc-field-header {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wptsall-fc-drag-handle {
+    cursor: move;
+    color: #8c8f94;
+    font-size: 16px;
+}
+
+.wptsall-fc-field-header strong {
+    flex: 1;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-fc-config-btn,
+.wptsall-fc-remove-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    transition: all 0.2s;
+}
+
+.wptsall-fc-config-btn:hover {
+    background: #f0f0f1;
+}
+
+.wptsall-fc-remove-btn:hover {
+    background: #d63638;
+    color: #fff;
+}
+
+/* Field Config Panel */
+.wptsall-fc-field-config {
+    padding: 10px;
+    background: #f6f7f7;
+    border-top: 1px solid #dcdcde;
+}
+
+.wptsall-fc-field-config label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #1d2327;
+}
+
+.wptsall-fc-field-config select,
+.wptsall-fc-field-config input[type="text"] {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.wptsall-fc-field-config input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+/* Loading/Error States */
+.wptsall-fc-loading,
+.wptsall-fc-error {
+    text-align: center;
+    padding: 20px;
+    color: #646970;
+    font-size: 13px;
+}
+
+.wptsall-fc-error {
+    color: #d63638;
+}
+
+/* Dragging States */
+.ui-draggable-dragging {
+    opacity: 0.7;
+    z-index: 1000;
+}
+
+.ui-sortable-helper {
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .wptsall-fc-main {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .wptsall-fc-content {
+        flex-direction: column;
+    }
+
+    .wptsall-fc-sidebar {
+        width: 100%;
+    }
+
+    .wptsall-fc-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Accessibility */
+.wptsall-fc-field-item:focus,
+.wptsall-fc-configured-field:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wptsall-fc-configured-field {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* ==========================================================================
+   G4: Content Format Selector (translate fields)
+   ========================================================================== */
+
+.wptsall-fc-content-format-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    margin-right: 4px;
+}
+
+.wptsall-fc-content-format {
+    font-size: 11px;
+    padding: 2px 4px;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    background: #fff;
+    color: #1d2327;
+    min-width: 110px;
+    max-width: 150px;
+    cursor: pointer;
+}
+
+.wptsall-fc-content-format:hover {
+    border-color: #2271b1;
+}
+
+.wptsall-fc-content-format:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.wptsall-fc-auto-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+    background: #72aee6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+/* v3: Reference info badge for id_mapping fields */
+.wptsall-fc-ref-badge {
+    display: inline-block;
+    font-size: 10px;
+    color: #135e96;
+    background: #e7f3ff;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+    border: 1px solid #c3d8ed;
+}
+
+/* v3: Value format badge for sync fields */
+.wptsall-fc-value-format-badge {
+    display: inline-block;
+    font-size: 10px;
+    color: #50575e;
+    background: #f0f0f1;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+    border: 1px solid #dcdcde;
+}

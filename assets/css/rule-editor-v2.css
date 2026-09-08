@@ -1,0 +1,922 @@
+/**
+ * WPTSALL Rule Editor V2 - Styles
+ *
+ * Supports new form validation and error highlighting
+ */
+
+/* ============================================
+   Model List Page
+   ============================================ */
+
+.wptsall-models-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.wptsall-models-stats {
+    display: flex;
+    gap: 20px;
+    padding: 15px 20px;
+    background: #f6f7f7;
+    border-left: 4px solid #2271b1;
+    margin-bottom: 20px;
+}
+
+.wptsall-stat-item {
+    text-align: center;
+}
+
+.wptsall-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.wptsall-stat-label {
+    display: block;
+    font-size: 12px;
+    color: #50575e;
+    text-transform: uppercase;
+}
+
+/* Model Table */
+.wptsall-models-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.wptsall-models-table th,
+.wptsall-models-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wptsall-models-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+}
+
+.wptsall-models-table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+.wptsall-model-name {
+    font-weight: 500;
+}
+
+.wptsall-model-name a {
+    text-decoration: none;
+    color: #2271b1;
+}
+
+.wptsall-model-name a:hover {
+    color: #135e96;
+}
+
+.wptsall-model-slug {
+    color: #888;
+    font-size: 12px;
+}
+
+.wptsall-rule-count {
+    display: inline-block;
+    background: #e0e0e0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+/* ============================================
+   Model Detail Page - Rule Cards
+   ============================================ */
+
+.wptsall-rules-section {
+    margin-bottom: 30px;
+}
+
+.wptsall-rules-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wptsall-rules-section h3 .count {
+    background: #2271b1;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.wptsall-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+}
+
+/* Rule Card */
+.wptsall-rule-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.wptsall-rule-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wptsall-rule-card.inactive {
+    opacity: 0.6;
+    background: #f9f9f9;
+}
+
+.wptsall-rule-card.inactive .wptsall-rule-header {
+    background: #f0f0f0;
+}
+
+.wptsall-rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f6f7f7;
+    cursor: pointer;
+    user-select: none;
+}
+
+.wptsall-rule-header:hover {
+    background: #eaeaea;
+}
+
+.wptsall-rule-title {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wptsall-rule-type {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.wptsall-rule-type.single { background: #d4edda; color: #155724; }
+.wptsall-rule-type.archive { background: #cce5ff; color: #004085; }
+.wptsall-rule-type.taxonomy { background: #fff3cd; color: #856404; }
+.wptsall-rule-type.author { background: #f8d7da; color: #721c24; }
+
+.wptsall-rule-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.wptsall-rule-actions button {
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 3px;
+}
+
+.wptsall-rule-actions button:hover {
+    background: #f0f0f0;
+}
+
+.wptsall-rule-actions .wptsall-delete-rule-btn {
+    color: #dc3232;
+    border-color: #dc3232;
+}
+
+.wptsall-rule-actions .wptsall-delete-rule-btn:hover {
+    background: #ffeaea;
+}
+
+.wptsall-rule-body {
+    display: none;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.wptsall-rule-card.expanded .wptsall-rule-body {
+    display: block;
+}
+
+.wptsall-rule-detail {
+    margin-bottom: 10px;
+}
+
+.wptsall-rule-detail label {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.wptsall-rule-detail code {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.wptsall-rule-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.wptsall-rule-fields .field-tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #1a73e8;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+/* Add Rule Button */
+.wptsall-add-rule-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.wptsall-add-rule-btn:hover {
+    background: #135e96;
+}
+
+/* ============================================
+   Rule Edit Modal
+   ============================================ */
+
+.wptsall-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+}
+
+.wptsall-modal-content {
+    background-color: #fff;
+    margin: 50px auto;
+    max-width: 700px;
+    border-radius: 4px;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+}
+
+.wptsall-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wptsall-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.wptsall-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    line-height: 1;
+}
+
+.wptsall-modal-close:hover {
+    color: #000;
+}
+
+.wptsall-modal-body {
+    padding: 20px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.wptsall-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 20px;
+    background: #f6f7f7;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* ============================================
+   Form Styles
+   ============================================ */
+
+.wptsall-form-section {
+    margin-bottom: 25px;
+}
+
+.wptsall-form-section h3 {
+    font-size: 14px;
+    margin: 0 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #1d2327;
+}
+
+.wptsall-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.wptsall-form-row.full {
+    grid-template-columns: 1fr;
+}
+
+.wptsall-form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.wptsall-form-field label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-form-field label .required {
+    color: #dc3232;
+}
+
+.wptsall-form-field input[type="text"],
+.wptsall-form-field input[type="number"],
+.wptsall-form-field select,
+.wptsall-form-field textarea {
+    padding: 8px 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wptsall-form-field input:focus,
+.wptsall-form-field select:focus,
+.wptsall-form-field textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.wptsall-form-field .hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Checkbox Styles */
+.wptsall-form-field.checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.wptsall-form-field.checkbox label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+
+/* ============================================
+   Form Validation Error Styles
+   ============================================ */
+
+.wptsall-form-field input.wptsall-field-error,
+.wptsall-form-field select.wptsall-field-error,
+.wptsall-form-field textarea.wptsall-field-error {
+    border-color: #dc3232;
+    background-color: #fef7f7;
+}
+
+.wptsall-form-field input.wptsall-field-error:focus,
+.wptsall-form-field select.wptsall-field-error:focus,
+.wptsall-form-field textarea.wptsall-field-error:focus {
+    box-shadow: 0 0 0 1px #dc3232;
+}
+
+.wptsall-field-error-msg {
+    display: block;
+    color: #dc3232;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.wptsall-field-warning-msg {
+    display: block;
+    color: #dba617;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Field List
+   ============================================ */
+
+.wptsall-fields-section {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.wptsall-fields-section h4 {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-fields-list {
+    min-height: 40px;
+}
+
+.wptsall-field-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.wptsall-field-row input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.wptsall-field-remove {
+    background: none;
+    border: none;
+    color: #dc3232;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.wptsall-field-remove:hover {
+    color: #a00;
+}
+
+.wptsall-add-field-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: #f0f0f0;
+    border: 1px dashed #8c8f94;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #50575e;
+    margin-top: 5px;
+}
+
+.wptsall-add-field-btn:hover {
+    background: #e8e8e8;
+    border-color: #666;
+}
+
+/* ============================================
+   Button Styles
+   ============================================ */
+
+.button-primary {
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-primary:hover {
+    background: #135e96;
+    border-color: #135e96;
+}
+
+.button-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.button-secondary {
+    background: #f6f7f7;
+    border: 1px solid #8c8f94;
+    color: #1d2327;
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-secondary:hover {
+    background: #e8e8e8;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 782px) {
+    .wptsall-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .wptsall-rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .wptsall-modal-content {
+        margin: 20px;
+        max-width: none;
+    }
+
+    .wptsall-models-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* ============================================
+   Rule List Page (V2 - No Tabs)
+   ============================================ */
+
+.wptsall-rules-list-page {
+    max-width: 1200px;
+}
+
+.wptsall-model-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 12px 20px;
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    margin-bottom: 20px;
+    border-radius: 0 4px 4px 0;
+}
+
+.wptsall-info-item {
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.wptsall-info-item strong {
+    color: #50575e;
+}
+
+.wptsall-no-rules-notice {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 40px;
+    text-align: center;
+    color: #50575e;
+}
+
+.wptsall-no-rules-notice p {
+    margin: 0 0 15px;
+}
+
+.wptsall-rules-table {
+    margin-top: 0;
+}
+
+.wptsall-rules-table th {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.wptsall-rules-table code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.wptsall-url-type-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.wptsall-url-type-badge.wptsall-type-single {
+    background: #d4edda;
+    color: #155724;
+}
+
+.wptsall-url-type-badge.wptsall-type-archive {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.wptsall-url-type-badge.wptsall-type-taxonomy {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* ============================================
+   Rule Edit Page (Standalone)
+   ============================================ */
+
+.wptsall-rule-edit-page {
+    max-width: 900px;
+}
+
+/* URL Relationship Chain Visualization */
+.wptsall-url-chain-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.wptsall-chain-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    min-width: 100px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.wptsall-chain-step:hover {
+    transform: translateY(-2px);
+}
+
+.wptsall-chain-step.active {
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.wptsall-chain-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.wptsall-chain-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1d2327;
+    text-align: center;
+}
+
+.wptsall-chain-arrow {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: bold;
+}
+
+/* Rule Form Section */
+.wptsall-rule-form .wptsall-form-section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.wptsall-rule-form .wptsall-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 15px 20px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.wptsall-section-icon {
+    font-size: 20px;
+}
+
+.wptsall-section-desc {
+    margin: 0;
+    padding: 10px 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #666;
+}
+
+.wptsall-rule-form .form-table {
+    margin: 0;
+}
+
+.wptsall-rule-form .form-table th {
+    padding: 15px 20px;
+    width: 180px;
+}
+
+.wptsall-rule-form .form-table td {
+    padding: 15px 20px;
+}
+
+.wptsall-rule-form .form-table .description {
+    margin-top: 6px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* Field Container */
+.wptsall-fields-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.wptsall-fields-group {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.wptsall-fields-group h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.wptsall-fields-group > .description {
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: #666;
+}
+
+.wptsall-fields-list {
+    min-height: 50px;
+    margin-bottom: 10px;
+}
+
+.wptsall-field-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.wptsall-field-item input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.wptsall-remove-field-btn {
+    background: #fef7f7;
+    border: 1px solid #dc3232;
+    color: #dc3232;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.wptsall-remove-field-btn:hover {
+    background: #dc3232;
+    color: #fff;
+}
+
+/* Other Options Section */
+.wptsall-form-section-other {
+    background: #f9f9f9 !important;
+}
+
+.wptsall-form-section-other .wptsall-section-title {
+    background: #f0f0f0;
+}
+
+/* Form Action Buttons */
+.wptsall-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: #f6f7f7;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.wptsall-form-actions .button-large {
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+.wptsall-form-actions .button-link-delete {
+    color: #dc3232;
+}
+
+.wptsall-form-actions .button-link-delete:hover {
+    color: #a00;
+}
+
+/* Required Marker */
+.required {
+    color: #dc3232;
+}
+
+/* Responsive - Rule Edit Page */
+@media (max-width: 782px) {
+    .wptsall-url-chain-visual {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .wptsall-chain-arrow {
+        transform: rotate(90deg);
+    }
+
+    .wptsall-chain-step {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .wptsall-fields-container {
+        grid-template-columns: 1fr;
+    }
+
+    .wptsall-rule-form .form-table th {
+        display: block;
+        width: 100%;
+        padding-bottom: 5px;
+    }
+
+    .wptsall-rule-form .form-table td {
+        display: block;
+        padding-top: 0;
+    }
+
+    .wptsall-form-actions {
+        flex-wrap: wrap;
+    }
+
+    .wptsall-form-actions .button-link-delete {
+        width: 100%;
+        margin-top: 10px;
+        float: none !important;
+    }
+}

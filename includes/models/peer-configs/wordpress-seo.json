@@ -1,0 +1,12 @@
+{
+  "post_fields": {
+    "_yoast_wpseo_title": { "action": "translate" },
+    "_yoast_wpseo_metadesc": { "action": "translate" },
+    "_yoast_wpseo_focuskw": { "action": "translate" },
+    "_yoast_wpseo_bctitle": { "action": "translate" },
+    "_yoast_wpseo_opengraph-title": { "action": "translate" },
+    "_yoast_wpseo_opengraph-description": { "action": "translate" },
+    "_yoast_wpseo_twitter-title": { "action": "translate" },
+    "_yoast_wpseo_twitter-description": { "action": "translate" }
+  }
+}

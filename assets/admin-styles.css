@@ -1,0 +1,567 @@
+/**
+ * WPTSALL Admin Styles
+ *
+ * Enhanced visual styles for WPTSALL admin pages.
+ */
+
+/* ==========================================================================
+   Status Badges
+   ========================================================================== */
+
+.wptsall-status-badge {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+}
+
+.wptsall-status-badge.pending {
+	background: #0073aa;
+	color: #fff;
+}
+
+.wptsall-status-badge.processing {
+	background: #f0b849;
+	color: #fff;
+}
+
+.wptsall-status-badge.completed {
+	background: #46b450;
+	color: #fff;
+}
+
+.wptsall-status-badge.retry {
+	background: #dc3232;
+	color: #fff;
+}
+
+.wptsall-status-badge.enabled {
+	background: #46b450;
+	color: #fff;
+}
+
+.wptsall-status-badge.disabled {
+	background: #646970;
+	color: #fff;
+}
+
+/* ==========================================================================
+   Status Summary
+   ========================================================================== */
+
+.wptsall-status-summary {
+	margin: 15px 0;
+	padding: 15px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+.wptsall-status-summary > span {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 14px;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.wptsall-status-summary .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+/* ==========================================================================
+   Enhanced Cards
+   ========================================================================== */
+
+.wptsall-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px;
+	margin-bottom: 20px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wptsall-card h2 {
+	margin: 0 0 15px 0;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #2271b1;
+	font-size: 18px;
+	color: #1d2327;
+}
+
+.wptsall-card h3 {
+	margin: 15px 0 10px 0;
+	font-size: 14px;
+	color: #1d2327;
+	font-weight: 600;
+}
+
+/* ==========================================================================
+   Form Enhancements
+   ========================================================================== */
+
+.wptsall-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 15px;
+	margin: 15px 0;
+}
+
+.wptsall-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.wptsall-form-field label {
+	font-weight: 600;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.wptsall-form-field input[type="text"],
+.wptsall-form-field input[type="url"],
+.wptsall-form-field input[type="number"],
+.wptsall-form-field select,
+.wptsall-form-field textarea {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	font-size: 13px;
+}
+
+.wptsall-form-field .description {
+	font-size: 12px;
+	color: #646970;
+	margin-top: 5px;
+}
+
+.wptsall-form-actions {
+	margin-top: 20px;
+	padding-top: 15px;
+	border-top: 1px solid #dcdcde;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+/* ==========================================================================
+   Action Buttons
+   ========================================================================== */
+
+.wptsall-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 14px;
+	border-radius: 3px;
+	font-size: 13px;
+	text-decoration: none;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.wptsall-btn .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.wptsall-btn-primary {
+	background: #2271b1;
+	color: #fff;
+	border: 1px solid #2271b1;
+}
+
+.wptsall-btn-primary:hover {
+	background: #135e96;
+	color: #fff;
+}
+
+.wptsall-btn-secondary {
+	background: #f6f7f7;
+	color: #2c3338;
+	border: 1px solid #8c8f94;
+}
+
+.wptsall-btn-secondary:hover {
+	background: #dcdcde;
+	color: #2c3338;
+}
+
+.wptsall-btn-danger {
+	background: #d63638;
+	color: #fff;
+	border: 1px solid #d63638;
+}
+
+.wptsall-btn-danger:hover {
+	background: #b32d2e;
+	color: #fff;
+}
+
+.wptsall-btn-success {
+	background: #00a32a;
+	color: #fff;
+	border: 1px solid #00a32a;
+}
+
+.wptsall-btn-success:hover {
+	background: #008a20;
+	color: #fff;
+}
+
+/* ==========================================================================
+   Stats Grid
+   ========================================================================== */
+
+.wptsall-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 15px;
+	margin: 20px 0;
+}
+
+.wptsall-stat-box {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #2271b1;
+	border-radius: 4px;
+	padding: 20px;
+	text-align: center;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.wptsall-stat-box.status-pending {
+	border-left-color: #0073aa;
+}
+
+.wptsall-stat-box.status-processing {
+	border-left-color: #f0b849;
+}
+
+.wptsall-stat-box.status-completed {
+	border-left-color: #46b450;
+}
+
+.wptsall-stat-box.status-retry {
+	border-left-color: #dc3232;
+}
+
+.wptsall-stat-number {
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 1;
+	margin: 10px 0;
+	color: #1d2327;
+}
+
+.wptsall-stat-label {
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #646970;
+	font-weight: 600;
+}
+
+.wptsall-stat-icon {
+	font-size: 24px;
+	color: #8c8f94;
+}
+
+/* ==========================================================================
+   Import/Export Grid
+   ========================================================================== */
+
+.wptsall-ie-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.wptsall-export-buttons {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.wptsall-export-buttons .button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	justify-content: center;
+	padding: 10px 15px;
+}
+
+/* ==========================================================================
+   Enhanced Tables
+   ========================================================================== */
+
+.wptsall-table-wrapper {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	overflow: hidden;
+	margin: 20px 0;
+}
+
+.wptsall-table-header {
+	background: #f6f7f7;
+	padding: 15px 20px;
+	border-bottom: 1px solid #c3c4c7;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.wptsall-table-header h2 {
+	margin: 0;
+	font-size: 16px;
+	color: #1d2327;
+}
+
+/* ==========================================================================
+   Notices
+   ========================================================================== */
+
+.wptsall-notice {
+	padding: 12px 20px;
+	border-left: 4px solid #2271b1;
+	background: #f0f6fc;
+	margin: 15px 0;
+	border-radius: 3px;
+}
+
+.wptsall-notice.info {
+	border-left-color: #0073aa;
+	background: #f0f6fc;
+}
+
+.wptsall-notice.success {
+	border-left-color: #46b450;
+	background: #ecf7ed;
+}
+
+.wptsall-notice.warning {
+	border-left-color: #f0b849;
+	background: #fcf9e8;
+}
+
+.wptsall-notice.error {
+	border-left-color: #d63638;
+	background: #fcf0f1;
+}
+
+.wptsall-notice p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+/* ==========================================================================
+   Loading States
+   ========================================================================== */
+
+.wptsall-loading {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 15px;
+	background: #f6f7f7;
+	border-radius: 3px;
+	color: #646970;
+	font-size: 13px;
+}
+
+.wptsall-loading::before {
+	content: "";
+	width: 16px;
+	height: 16px;
+	border: 2px solid #dcdcde;
+	border-top-color: #2271b1;
+	border-radius: 50%;
+	animation: wptsall-spin 0.8s linear infinite;
+}
+
+@keyframes wptsall-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+	.wptsall-ie-container,
+	.wptsall-stats-grid,
+	.wptsall-form-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.wptsall-status-summary {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.wptsall-status-summary > span {
+		justify-content: center;
+	}
+
+	.wptsall-table-header {
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
+	.wptsall-form-actions {
+		flex-direction: column;
+	}
+
+	.wptsall-btn {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.wptsall-card {
+		padding: 15px;
+	}
+
+	.wptsall-stat-number {
+		font-size: 28px;
+	}
+
+	.wptsall-export-buttons .button {
+		padding: 12px;
+	}
+}
+
+/* ==========================================================================
+   Admin Bar Enhancements
+   ========================================================================== */
+
+#wpadminbar .wptsall-badge {
+	display: inline-block;
+	background: #d63638;
+	color: #fff;
+	border-radius: 10px;
+	padding: 2px 6px;
+	font-size: 11px;
+	font-weight: 600;
+	margin-left: 5px;
+	vertical-align: middle;
+}
+
+#wpadminbar #wp-admin-bar-wptsall .ab-icon::before {
+	content: "\f325";
+	top: 2px;
+}
+
+/* ==========================================================================
+   List Table Enhancements
+   ========================================================================== */
+
+.wp-list-table .column-id {
+	width: 80px;
+}
+
+.wp-list-table .column-status {
+	width: 120px;
+}
+
+.wp-list-table .column-created_at {
+	width: 140px;
+}
+
+.wp-list-table .row-actions {
+	font-size: 12px;
+}
+
+.wp-list-table .row-actions span {
+	padding-right: 8px;
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.wptsall-text-center {
+	text-align: center;
+}
+
+.wptsall-text-right {
+	text-align: right;
+}
+
+.wptsall-mt-0 {
+	margin-top: 0;
+}
+
+.wptsall-mb-0 {
+	margin-bottom: 0;
+}
+
+.wptsall-mt-10 {
+	margin-top: 10px;
+}
+
+.wptsall-mb-10 {
+	margin-bottom: 10px;
+}
+
+.wptsall-mt-20 {
+	margin-top: 20px;
+}
+
+.wptsall-mb-20 {
+	margin-bottom: 20px;
+}
+
+.wptsall-flex {
+	display: flex;
+	gap: 10px;
+}
+
+.wptsall-flex-wrap {
+	flex-wrap: wrap;
+}
+
+.wptsall-items-center {
+	align-items: center;
+}
+
+.wptsall-justify-between {
+	justify-content: space-between;
+}
+
+.wptsall-gap-5 {
+	gap: 5px;
+}
+
+.wptsall-gap-10 {
+	gap: 10px;
+}
+
+.wptsall-gap-15 {
+	gap: 15px;
+}

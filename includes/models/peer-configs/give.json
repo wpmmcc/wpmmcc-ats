@@ -1,0 +1,16 @@
+{
+  "post_types": {
+    "give_forms": {}
+  },
+  "post_fields": {
+    "_give_form_content": { "action": "translate" },
+    "_give_checkout_label": { "action": "translate" },
+    "_give_reveal_label": { "action": "translate" },
+    "_give_display_content": { "action": "copy" },
+    "_give_content_placement": { "action": "copy" },
+    "_give_set_price": { "action": "copy" },
+    "_give_custom_amount": { "action": "copy" },
+    "_give_goal_option": { "action": "copy" },
+    "_give_set_goal": { "action": "copy" }
+  }
+}

@@ -1,0 +1,19 @@
+/* WPTSALL Translation Flags — compact post list column styling (1.2.0) */
+.wptsall-translation-flags { display:inline-flex; gap:4px; flex-wrap:wrap; }
+.wptsall-flag {
+  display:inline-block;
+  padding:2px 6px;
+  border-radius:3px;
+  font-size:11px;
+  line-height:1.4;
+  text-decoration:none;
+  background:#f0f0f1;
+  color:#50575e;
+  border:1px solid #c3c4c7;
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+}
+.wptsall-flag-yes       { background:#dff7e0; color:#1a5920; border-color:#7ad17f; }
+.wptsall-flag-source    { background:#e5e5e5; color:#1d2327; }
+.wptsall-flag-missing   { background:#fff; color:#2271b1; border-color:#72aee6; opacity:0.7; }
+.wptsall-flag:hover     { filter:brightness(0.95); }
+.column-wptsall_translations { width: 220px; }

@@ -1,0 +1,412 @@
+/**
+ * WPTSALL Sites Page Styles
+ */
+
+/* Sites Page Container */
+.wptsall-sites-page {
+    max-width: 1200px;
+}
+
+/* Tabs */
+.wptsall-sites-page .nav-tab-wrapper {
+    margin-bottom: 20px;
+}
+
+/* Tab Content */
+.wptsall-tab-content {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    padding: 20px;
+}
+
+/* No Sites Message */
+.wptsall-no-sites {
+    text-align: center;
+    padding: 40px;
+}
+
+.wptsall-no-sites p {
+    margin: 10px 0;
+}
+
+/* Sites List */
+.wptsall-sites-list .wp-list-table {
+    margin-top: 0;
+}
+
+/* Status Badge */
+.wptsall-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.wptsall-status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.wptsall-status-inactive,
+.wptsall-status-missing {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Actions Column */
+.wptsall-actions {
+    white-space: nowrap;
+}
+
+.wptsall-actions .button {
+    margin-right: 5px;
+}
+
+/* Add Site Form */
+.wptsall-add-site {
+    max-width: 600px;
+}
+
+.wptsall-add-site .form-table th {
+    width: 150px;
+}
+
+/* Site Selector */
+.wptsall-site-selector {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f6f7f7;
+    border-radius: 4px;
+}
+
+.wptsall-site-selector label {
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.wptsall-site-selector select {
+    min-width: 300px;
+}
+
+/* Hook Categories */
+.wptsall-hook-category {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f6f7f7;
+    border-radius: 4px;
+}
+
+.wptsall-hook-category h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.wptsall-hook-category .description {
+    margin-bottom: 15px;
+    color: #646970;
+}
+
+.wptsall-hook-category .wp-list-table {
+    margin-bottom: 15px;
+}
+
+.wptsall-no-hooks {
+    color: #646970;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+/* Site Info Box */
+.wptsall-site-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #e7f3ff;
+    border-radius: 4px;
+    border-left: 4px solid #2271b1;
+}
+
+.wptsall-site-info h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.wptsall-site-info p {
+    margin: 0;
+}
+
+/* Languages Section */
+.wptsall-languages-config h3 {
+    margin-top: 0;
+}
+
+.wptsall-site-languages {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f6f7f7;
+    border-radius: 4px;
+}
+
+.wptsall-site-languages h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.lang-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+/* Hook Modal */
+.wptsall-hook-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.wptsall-hook-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px 30px;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.wptsall-hook-modal-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.wptsall-hook-modal-close:hover {
+    color: #000;
+}
+
+/* Form Row */
+.wptsall-form-row {
+    margin-bottom: 15px;
+}
+
+.wptsall-form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.wptsall-form-row input[type="text"],
+.wptsall-form-row select {
+    width: 100%;
+}
+
+.wptsall-form-row .description {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #646970;
+}
+
+/* ========================================
+ * v0.4.0 - Grouped Relations View
+ * ======================================== */
+
+/* Relation Group Card */
+.wptsall-relation-group {
+    margin-bottom: 25px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wptsall-relation-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Group Header */
+.wptsall-group-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: #f6f7f7;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.wptsall-group-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wptsall-group-header h3 .dashicons {
+    color: #2271b1;
+}
+
+.wptsall-group-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 8px;
+    width: 100%;
+    font-size: 13px;
+    color: #50575e;
+}
+
+.wptsall-meta-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.wptsall-meta-item strong {
+    margin-right: 4px;
+    color: #1d2327;
+}
+
+.wptsall-group-actions {
+    margin-left: auto;
+}
+
+.wptsall-group-actions .button .dashicons {
+    margin-right: 4px;
+    line-height: 1.4;
+}
+
+/* Group Table */
+.wptsall-relation-group .wp-list-table {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.wptsall-relation-group .wp-list-table thead th {
+    background: #f6f7f7;
+}
+
+/* Group Footer */
+.wptsall-group-footer {
+    padding: 12px 20px;
+    background: #f6f7f7;
+    border-top: 1px solid #c3c4c7;
+}
+
+.wptsall-group-footer .button .dashicons {
+    margin-right: 4px;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+
+/* Lang Badge in Table */
+.wptsall-relation-group .lang-badge {
+    margin-left: 0;
+}
+
+/* Edit Relation Modal */
+.wptsall-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.wptsall-modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px 30px;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.wptsall-modal-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.wptsall-modal-close:hover {
+    color: #000;
+}
+
+/* Add Relation Form */
+.wptsall-add-site h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.wptsall-add-site .form-table h4 {
+    color: #1d2327;
+    padding: 10px 0 5px;
+    border-bottom: 1px dashed #c3c4c7;
+}
+
+/* Notice in Form */
+.wptsall-add-site .notice.inline {
+    padding: 10px 15px;
+}
+
+/* Sync Theme Button Animation */
+.wptsall-sync-theme-btn.loading .dashicons {
+    animation: wptsall-spin 1s linear infinite;
+}
+
+@keyframes wptsall-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .wptsall-site-selector select {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .wptsall-actions .button {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .wptsall-group-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .wptsall-group-actions {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .wptsall-group-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}

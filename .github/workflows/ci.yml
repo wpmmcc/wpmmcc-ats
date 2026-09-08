@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  php-lint:
+    name: PHP lint (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - name: php -l every file
+        run: |
+          set -uo pipefail
+          status=0
+          while IFS= read -r -d '' f; do
+            if ! php -l "$f" > /dev/null; then
+              echo "lint failed: $f"
+              status=1
+            fi
+          done < <(find . -path './.git' -prune -o -name '*.php' -print0)
+          exit "$status"
+
+  plugin-check:
+    name: WordPress plugin-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run WordPress plugin-check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: '.'
+          # The workflow directory is repo infrastructure, not plugin payload.
+          exclude-directories: '.github'
+          # ERROR-level findings fail CI. Warnings are tracked against the
+          # private-monorepo live baseline (2026-09-08: 0 errors / 103
+          # warnings, all categories dispositioned); trademarked_term is a
+          # recorded permanent exemption.
+          ignore-warnings: 'true'
+          ignore-codes: 'trademarked_term'

@@ -1,0 +1,10 @@
+{
+  "post_types": {
+    "hp_listing": {},
+    "hp_vendor": {}
+  },
+  "post_fields": {
+    "hp_vendor_verified": { "action": "copy" },
+    "hp_vendor_rating": { "action": "copy" }
+  }
+}

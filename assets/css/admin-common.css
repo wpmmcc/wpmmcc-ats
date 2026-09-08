@@ -1,0 +1,1236 @@
+/**
+ * WPTSALL Admin Common Styles
+ *
+ * Shared styles for all admin pages.
+ * This file should be loaded on all WPTSALL admin pages.
+ *
+ * @package WPTSALL
+ * @since 0.9.3
+ */
+
+/* ==========================================================================
+   Page Structure - WordPress Standard Layout
+   ========================================================================== */
+
+/**
+ * WordPress standard page structure:
+ * <div class="wrap wptsall-admin-page">
+ *     <h1 class="wp-heading-inline">Title</h1>
+ *     <a class="page-title-action">Action</a>
+ *     <hr class="wp-header-end">
+ *     <!-- WordPress admin notices are displayed here -->
+ *     <nav class="nav-tab-wrapper">...</nav>  (optional)
+ *     <div class="wptsall-tab-content">...</div>
+ * </div>
+ *
+ * This is the standard WordPress admin page structure. Admin notices appear between the title and content.
+ */
+
+.wptsall-admin-page {
+	max-width: 100%;
+}
+
+/* ==========================================================================
+   Legacy Page Box Structure (deprecated, kept for backward compatibility)
+   ========================================================================== */
+
+/* Unified content container - only for special pages requiring box styling */
+.wptsall-page-box {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	box-shadow: 0 1px 1px rgba(0,0,0,.04);
+	margin-top: 20px;
+}
+
+/* Page header - only for use inside page-box */
+.wptsall-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 15px 20px;
+	border-bottom: 1px solid #c3c4c7;
+	background: #f6f7f7;
+}
+
+.wptsall-page-header .wptsall-page-title {
+	margin: 0;
+	padding: 0;
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+.wptsall-page-header .button {
+	flex-shrink: 0;
+}
+
+.wptsall-page-header .wptsall-header-actions {
+	display: flex;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.wptsall-page-header .wptsall-header-actions .button {
+	margin: 0;
+}
+
+/* ==========================================================================
+   Custom Tab Navigation (wptsall-page-tabs style)
+   ========================================================================== */
+
+.wptsall-page-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0;
+	padding: 0;
+	background: #fff;
+	border-bottom: 1px solid #c3c4c7;
+}
+
+.wptsall-tab {
+	display: inline-block;
+	padding: 10px 15px;
+	text-decoration: none;
+	color: #50575e;
+	font-size: 14px;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+
+.wptsall-tab:hover {
+	color: #135e96;
+	background: #f0f0f1;
+}
+
+.wptsall-tab.active {
+	color: #1d2327;
+	border-bottom-color: #2271b1;
+	font-weight: 500;
+}
+
+/* ==========================================================================
+   Page Content Area
+   ========================================================================== */
+
+/* Page content area - base styles */
+.wptsall-admin-page .wptsall-page-content,
+.wptsall-admin-page .wptsall-tab-content {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 20px;
+	margin-top: 20px;
+}
+
+/* Content area inside page-box (backward compatible) */
+.wptsall-page-box .wptsall-page-content {
+	padding: 20px;
+	margin-top: 0;
+	border: none;
+	background: transparent;
+}
+
+/* ==========================================================================
+   WordPress Standard Header Elements
+   ========================================================================== */
+
+.wptsall-admin-page .wp-heading-inline {
+	display: inline-block;
+	margin-right: 5px;
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.3;
+}
+
+/* Page title action buttons - WordPress standard style */
+/* Using !important to override WordPress .button style conflicts */
+.wptsall-admin-page .page-title-action,
+.wptsall-admin-page .page-title-action.button {
+	display: inline-block !important;
+	margin-left: 4px !important;
+	padding: 4px 8px !important;
+	position: relative !important;
+	top: -3px !important;
+	text-decoration: none !important;
+	border: 1px solid #2271b1 !important;
+	border-radius: 3px !important;
+	background: #f6f7f7 !important;
+	color: #2271b1 !important;
+	font-size: 13px !important;
+	font-weight: normal !important;
+	line-height: 1.5 !important;
+	cursor: pointer !important;
+	white-space: nowrap !important;
+	min-height: 0 !important;
+	height: auto !important;
+	vertical-align: baseline !important;
+	box-shadow: none !important;
+}
+
+.wptsall-admin-page .page-title-action:hover,
+.wptsall-admin-page .page-title-action:focus,
+.wptsall-admin-page .page-title-action.button:hover,
+.wptsall-admin-page .page-title-action.button:focus {
+	background: #f0f0f1 !important;
+	border-color: #0a4b78 !important;
+	color: #0a4b78 !important;
+}
+
+/* Primary action button variant */
+.wptsall-admin-page .page-title-action.button-primary {
+	background: #2271b1 !important;
+	border-color: #2271b1 !important;
+	color: #fff !important;
+}
+
+.wptsall-admin-page .page-title-action.button-primary:hover,
+.wptsall-admin-page .page-title-action.button-primary:focus {
+	background: #135e96 !important;
+	border-color: #135e96 !important;
+	color: #fff !important;
+}
+
+/* WordPress uses this to position admin notices */
+.wptsall-admin-page .wp-header-end {
+	visibility: hidden;
+	margin: -2px 0 0;
+	clear: both;
+}
+
+/* ==========================================================================
+   Tab Navigation
+   ========================================================================== */
+
+.wptsall-admin-page .nav-tab-wrapper {
+	margin-top: 20px;
+	margin-bottom: 0;
+	border-bottom: 1px solid #c3c4c7;
+	padding-top: 9px;
+}
+
+.wptsall-admin-page .nav-tab-wrapper .nav-tab {
+	margin-left: 0;
+	margin-right: 4px;
+	padding: 5px 12px;
+	font-size: 14px;
+	line-height: 1.71428571;
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-bottom: none;
+	color: #50575e;
+	cursor: pointer;
+}
+
+.wptsall-admin-page .nav-tab-wrapper .nav-tab:hover {
+	background: #fff;
+	color: #135e96;
+}
+
+.wptsall-admin-page .nav-tab-wrapper .nav-tab-active {
+	background: #fff;
+	border-bottom: 1px solid #fff;
+	color: #1d2327;
+	margin-bottom: -1px;
+}
+
+/* ==========================================================================
+   Tab Content - Following Tab Navigation
+   ========================================================================== */
+
+/* Content area following tab navigation (remove top spacing, connect borders) */
+.wptsall-admin-page .nav-tab-wrapper + .wptsall-tab-content,
+.wptsall-admin-page .nav-tab-wrapper + .wptsall-page-content,
+.wptsall-admin-page .wptsall-page-tabs + .wptsall-tab-content,
+.wptsall-admin-page .wptsall-page-tabs + .wptsall-page-content {
+	margin-top: 0;
+	border-top: none;
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.wptsall-empty-state {
+	text-align: center;
+	padding: 40px 20px;
+	background: #f9f9f9;
+	border: 1px dashed #c3c4c7;
+	border-radius: 4px;
+	margin: 20px 0;
+}
+
+.wptsall-empty-message {
+	font-size: 16px;
+	color: #1d2327;
+	margin: 0 0 10px;
+}
+
+.wptsall-empty-description {
+	color: #646970;
+	margin: 0 0 20px;
+}
+
+.wptsall-empty-actions .button {
+	margin: 0 5px;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.wptsall-admin-page .wp-list-table {
+	margin-top: 0;
+}
+
+.wptsall-admin-page .wp-list-table th,
+.wptsall-admin-page .wp-list-table td {
+	vertical-align: middle;
+}
+
+/* ==========================================================================
+   Filters
+   ========================================================================== */
+
+.wptsall-filters {
+	padding: 15px 0;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.wptsall-filters select,
+.wptsall-filters input[type="text"] {
+	margin-right: 5px;
+}
+
+/* ==========================================================================
+   Badges & Status
+   ========================================================================== */
+
+.wptsall-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.5;
+	border-radius: 3px;
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.wptsall-badge-primary {
+	background: #2271b1;
+	color: #fff;
+}
+
+.wptsall-badge-success {
+	background: #00a32a;
+	color: #fff;
+}
+
+.wptsall-badge-warning {
+	background: #dba617;
+	color: #1d2327;
+}
+
+.wptsall-badge-error {
+	background: #d63638;
+	color: #fff;
+}
+
+.wptsall-count-badge {
+	display: inline-block;
+	min-width: 20px;
+	padding: 2px 6px;
+	font-size: 11px;
+	font-weight: 600;
+	text-align: center;
+	background: #f0f0f1;
+	border-radius: 10px;
+	color: #50575e;
+}
+
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+
+.wptsall-modal {
+	display: none;
+	position: fixed;
+	z-index: 100000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.6);
+	overflow: auto;
+}
+
+.wptsall-modal-content {
+	background-color: #fff;
+	margin: 5% auto;
+	padding: 0;
+	border: 1px solid #c3c4c7;
+	width: 90%;
+	max-width: 600px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	position: relative;
+}
+
+.wptsall-modal-header {
+	padding: 15px 20px;
+	border-bottom: 1px solid #dcdcde;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.wptsall-modal-header h2 {
+	margin: 0;
+	font-size: 18px;
+	line-height: 1.4;
+}
+
+.wptsall-modal-close {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	color: #646970;
+	font-size: 24px;
+	font-weight: 300;
+	cursor: pointer;
+	line-height: 1;
+	padding: 5px;
+}
+
+.wptsall-modal-close:hover {
+	color: #1d2327;
+}
+
+.wptsall-modal-body {
+	padding: 20px;
+}
+
+.wptsall-modal-footer {
+	padding: 15px 20px;
+	border-top: 1px solid #dcdcde;
+	text-align: right;
+}
+
+.wptsall-modal-footer .button {
+	margin-left: 10px;
+}
+
+/* Legacy modal structure support */
+.wptsall-modal-content > h2 {
+	padding: 15px 20px;
+	margin: 0;
+	border-bottom: 1px solid #dcdcde;
+	font-size: 18px;
+}
+
+.wptsall-modal-content > p,
+.wptsall-modal-content > form,
+.wptsall-modal-content > .form-table {
+	padding: 0 20px;
+}
+
+.wptsall-modal-content > .submit {
+	padding: 15px 20px;
+	margin: 0;
+	border-top: 1px solid #dcdcde;
+}
+
+/* ==========================================================================
+   Form Elements
+   ========================================================================== */
+
+.wptsall-admin-page .form-table th {
+	width: 200px;
+	padding: 15px 10px 15px 0;
+}
+
+.wptsall-admin-page .form-table td {
+	padding: 15px 10px;
+}
+
+.wptsall-admin-page .form-table .description {
+	margin-top: 6px;
+	color: #646970;
+}
+
+.wptsall-admin-page .required {
+	color: #d63638;
+}
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+
+.wptsall-row-actions {
+	visibility: hidden;
+}
+
+tr:hover .wptsall-row-actions {
+	visibility: visible;
+}
+
+.wptsall-row-actions span {
+	padding-right: 10px;
+}
+
+.wptsall-row-actions span::after {
+	content: '|';
+	padding-left: 10px;
+	color: #c3c4c7;
+}
+
+.wptsall-row-actions span:last-child::after {
+	display: none;
+}
+
+.wptsall-row-actions .delete a {
+	color: #d63638;
+}
+
+.wptsall-row-actions .delete a:hover {
+	color: #a00;
+}
+
+/* ==========================================================================
+   Loading State
+   ========================================================================== */
+
+.wptsall-loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.wptsall-spinner {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #2271b1;
+	border-radius: 50%;
+	animation: wptsall-spin 1s linear infinite;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+
+@keyframes wptsall-spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+	.wptsall-admin-page .nav-tab-wrapper .nav-tab {
+		display: block;
+		margin: 0 0 5px;
+		width: 100%;
+		text-align: center;
+	}
+
+	.wptsall-admin-page .nav-tab-wrapper .nav-tab-active {
+		margin-bottom: 5px;
+	}
+
+	.wptsall-filters {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.wptsall-modal-content {
+		width: 95%;
+		margin: 10% auto;
+	}
+}
+
+/* ==========================================================================
+   Admin Notices Manager
+   ========================================================================== */
+
+.wptsall-notices-collapsed {
+	background: #f0f0f1;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #72aee6;
+	margin: 5px 20px 15px 0;
+	padding: 0;
+	border-radius: 2px;
+}
+
+.wptsall-notices-toggle {
+	display: flex;
+	align-items: center;
+	padding: 10px 12px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.wptsall-notices-toggle:hover {
+	background: #e5e5e5;
+}
+
+.wptsall-notices-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	background: #72aee6;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	border-radius: 11px;
+	margin-right: 8px;
+}
+
+.wptsall-notices-text {
+	flex: 1;
+	color: #50575e;
+	font-size: 13px;
+}
+
+.wptsall-notices-arrow {
+	color: #72aee6;
+	font-size: 16px;
+}
+
+.wptsall-notices-content {
+	border-top: 1px solid #c3c4c7;
+	padding: 10px;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.wptsall-notices-content > .notice,
+.wptsall-notices-content > .updated,
+.wptsall-notices-content > .error,
+.wptsall-notices-content > div[class*="notice"] {
+	margin: 5px 0 !important;
+}
+
+/* ==========================================================================
+   Feature Showcase (Tasks page)
+   ========================================================================== */
+
+.wptsall-feature-showcase {
+	max-width: 900px;
+}
+
+.wptsall-feature-intro {
+	margin-bottom: 24px;
+}
+
+.wptsall-feature-intro h3 {
+	font-size: 18px;
+	font-weight: 400;
+	margin: 0 0 8px;
+}
+
+.wptsall-feature-intro p {
+	color: #646970;
+	font-size: 14px;
+	margin: 0;
+}
+
+.wptsall-feature-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.wptsall-feature-card {
+	display: flex;
+	gap: 12px;
+	padding: 16px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+}
+
+.wptsall-feature-icon {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #2271b1;
+	border-radius: 4px;
+}
+
+.wptsall-feature-icon .dashicons {
+	color: #fff;
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.wptsall-feature-body h4 {
+	margin: 0 0 4px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.wptsall-feature-body p {
+	margin: 0;
+	font-size: 13px;
+	color: #646970;
+	line-height: 1.5;
+}
+
+.wptsall-feature-cta {
+	text-align: center;
+	padding: 16px 0;
+}
+
+@media screen and (max-width: 782px) {
+	.wptsall-feature-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ==========================================================================
+   G1: Cascading Field Selector Panel
+   ========================================================================== */
+
+.wptsall-cascade-panel {
+	position: relative;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 16px;
+	margin-top: 12px;
+	margin-bottom: 12px;
+	max-width: 600px;
+}
+
+.wptsall-cascade-close {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	background: none;
+	border: none;
+	font-size: 20px;
+	color: #646970;
+	cursor: pointer;
+	line-height: 1;
+	padding: 4px;
+}
+
+.wptsall-cascade-close:hover {
+	color: #d63638;
+}
+
+.wptsall-cascade-step {
+	margin-bottom: 16px;
+}
+
+.wptsall-cascade-step:last-child {
+	margin-bottom: 0;
+}
+
+.wptsall-cascade-step-title {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	margin: 0 0 10px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.wptsall-cascade-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.wptsall-cascade-options-scroll {
+	max-height: 240px;
+	overflow-y: auto;
+	border: 1px solid #f0f0f1;
+	border-radius: 3px;
+	padding: 8px;
+}
+
+.wptsall-cascade-option {
+	text-align: left;
+	padding: 8px 14px !important;
+	min-height: 0 !important;
+	height: auto !important;
+	line-height: 1.4 !important;
+	white-space: normal !important;
+}
+
+.wptsall-cascade-option.active {
+	background: #2271b1 !important;
+	border-color: #2271b1 !important;
+	color: #fff !important;
+}
+
+.wptsall-cascade-option.active strong {
+	color: #fff;
+}
+
+.wptsall-cascade-option-sm {
+	font-size: 12px;
+	padding: 5px 10px !important;
+	display: block;
+	width: 100%;
+}
+
+.wptsall-cascade-option-sm code {
+	background: transparent;
+	font-size: 12px;
+}
+
+.wptsall-cascade-option.active code {
+	color: #fff;
+	background: transparent;
+}
+
+.wptsall-cascade-count {
+	color: #646970;
+	font-size: 11px;
+}
+
+.wptsall-cascade-loading {
+	color: #646970;
+	font-style: italic;
+	padding: 8px 0;
+}
+
+.wptsall-cascade-filter {
+	width: 100%;
+	margin-bottom: 8px;
+	padding: 6px 10px;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	font-size: 13px;
+}
+
+.wptsall-cascade-summary {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 3px;
+	padding: 12px 16px;
+	margin-bottom: 12px;
+}
+
+.wptsall-cascade-summary p {
+	margin: 4px 0;
+	font-size: 13px;
+}
+
+.wptsall-cascade-sample {
+	margin-bottom: 12px;
+}
+
+.wptsall-cascade-sample-list {
+	list-style: none;
+	margin: 6px 0 0;
+	padding: 0;
+}
+
+.wptsall-cascade-sample-list li {
+	padding: 3px 0;
+	font-size: 12px;
+	color: #50575e;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.wptsall-cascade-sample-list li:last-child {
+	border-bottom: none;
+}
+
+.wptsall-cascade-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	padding-top: 12px;
+	border-top: 1px solid #f0f0f1;
+}
+
+.wptsall-cascade-manual {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px dashed #c3c4c7;
+}
+
+.wptsall-cascade-manual-input {
+	flex: 1;
+	min-width: 0;
+}
+
+/* ==========================================================================
+   G2: Field Configurator Badges (available fields sidebar)
+   ========================================================================== */
+
+.wptsall-fc-field-badge {
+	display: inline-block;
+	padding: 1px 6px;
+	font-size: 10px;
+	font-weight: 500;
+	line-height: 1.6;
+	border-radius: 3px;
+	margin-left: 6px;
+	vertical-align: middle;
+}
+
+.wptsall-fc-field-unclassified {
+	background: #fcf0f1;
+	color: #d63638;
+	border: 1px solid #d63638;
+}
+
+.wptsall-fc-field-unconfigured {
+	border-left: 3px solid #dba617;
+}
+
+.wptsall-fc-field-configured {
+	border-left: 3px solid #00a32a;
+	opacity: 0.7;
+}
+
+.wptsall-fc-field-configured:hover {
+	opacity: 1;
+}
+
+/* ==========================================================================
+   G5: Validation Results Panel
+   ========================================================================== */
+
+.wptsall-validation-panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 16px 20px;
+	margin: 20px 0;
+}
+
+.wptsall-validation-panel h3 {
+	margin: 0 0 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wptsall-validation-panel .validation-status {
+	margin-bottom: 10px;
+}
+
+.wptsall-validation-panel .validation-error {
+	color: #d63638;
+	font-weight: 600;
+	font-size: 14px;
+	padding: 6px 0;
+}
+
+.wptsall-validation-panel .validation-error .dashicons {
+	color: #d63638;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+.wptsall-validation-panel .validation-warning {
+	color: #dba617;
+	font-weight: 600;
+	font-size: 14px;
+	padding: 6px 0;
+}
+
+.wptsall-validation-panel .validation-warning .dashicons {
+	color: #dba617;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+.wptsall-validation-panel .validation-pass {
+	color: #00a32a;
+	font-weight: 600;
+	font-size: 14px;
+	padding: 6px 0;
+}
+
+.wptsall-validation-panel .validation-pass .dashicons {
+	color: #00a32a;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+
+.wptsall-validation-panel .validation-item {
+	padding: 6px 10px;
+	margin-bottom: 4px;
+	border-radius: 3px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.wptsall-validation-panel .validation-item.error {
+	background: #fcf0f1;
+	border-left: 3px solid #d63638;
+	color: #1d2327;
+}
+
+.wptsall-validation-panel .validation-item.warning {
+	background: #fcf9e8;
+	border-left: 3px solid #dba617;
+	color: #1d2327;
+}
+
+.wptsall-validation-panel .validation-item strong {
+	color: #50575e;
+}
+
+/* ==========================================================================
+   G6: New Field Highlighting
+   ========================================================================== */
+
+#wptsall-fields-table tr[data-status="new"] {
+	background-color: #fff8e1;
+	border-left: 3px solid #f0b849;
+}
+
+#wptsall-fields-table tr[data-status="new"] td:first-child::before {
+	content: "NEW";
+	display: inline-block;
+	font-size: 10px;
+	font-weight: bold;
+	color: #fff;
+	background: #f0b849;
+	padding: 1px 5px;
+	border-radius: 3px;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+
+.wptsall-new-fields-banner {
+	background: #fff8e1;
+	border: 1px solid #f0b849;
+	border-left-width: 4px;
+	padding: 10px 14px;
+	margin-bottom: 12px;
+	border-radius: 2px;
+	display: flex;
+	align-items: center;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.wptsall-new-fields-banner:hover {
+	background: #fff3cd;
+}
+
+tr.flash-highlight {
+	animation: wptsall-flash 1s ease-in-out;
+}
+
+@keyframes wptsall-flash {
+	0%, 100% { background-color: #fff8e1; }
+	50% { background-color: #ffe082; }
+}
+
+/* ==========================================================================
+   H3: Import Conflict Override Dialog
+   ========================================================================== */
+
+.wptsall-import-overlay {
+	display: none;
+	position: fixed;
+	z-index: 100001;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	overflow: auto;
+}
+
+.wptsall-import-conflict-dialog {
+	background-color: #fff;
+	margin: 5% auto;
+	padding: 0;
+	border: 1px solid #c3c4c7;
+	width: 90%;
+	max-width: 700px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	position: relative;
+}
+
+.wptsall-import-conflict-dialog .dialog-header {
+	padding: 15px 20px;
+	border-bottom: 1px solid #dcdcde;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.wptsall-import-conflict-dialog .dialog-header h2 {
+	margin: 0;
+	font-size: 18px;
+	line-height: 1.4;
+	color: #1d2327;
+}
+
+.wptsall-import-conflict-dialog .dialog-close {
+	background: none;
+	border: none;
+	font-size: 24px;
+	color: #646970;
+	cursor: pointer;
+	line-height: 1;
+	padding: 5px;
+}
+
+.wptsall-import-conflict-dialog .dialog-close:hover {
+	color: #d63638;
+}
+
+.wptsall-import-conflict-dialog .dialog-body {
+	padding: 20px;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.wptsall-import-conflict-dialog .conflict-info {
+	background: #fcf9e8;
+	border-left: 4px solid #dba617;
+	padding: 12px 16px;
+	margin-bottom: 16px;
+	border-radius: 2px;
+}
+
+.wptsall-import-conflict-dialog .conflict-info p {
+	margin: 4px 0;
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.wptsall-import-conflict-dialog .conflict-info strong {
+	color: #50575e;
+}
+
+.conflict-diff-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 16px;
+	font-size: 13px;
+}
+
+.conflict-diff-table th {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	padding: 8px 12px;
+	text-align: left;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.conflict-diff-table td {
+	border: 1px solid #c3c4c7;
+	padding: 8px 12px;
+	vertical-align: top;
+	color: #50575e;
+}
+
+.conflict-diff-table tr:nth-child(even) {
+	background: #f9f9f9;
+}
+
+.conflict-diff-table .diff-added {
+	background: #edfaef;
+	color: #00a32a;
+}
+
+.conflict-diff-table .diff-removed {
+	background: #fcf0f1;
+	color: #d63638;
+}
+
+.conflict-diff-table .diff-changed {
+	background: #fcf9e8;
+	color: #996800;
+}
+
+.conflict-actions {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+	padding: 15px 20px;
+	border-top: 1px solid #dcdcde;
+	background: #f6f7f7;
+	border-radius: 0 0 4px 4px;
+}
+
+.conflict-actions .button {
+	min-width: 120px;
+	text-align: center;
+}
+
+.conflict-actions .button-primary {
+	background: #2271b1;
+	border-color: #2271b1;
+	color: #fff;
+}
+
+.conflict-actions .button-primary:hover {
+	background: #135e96;
+	border-color: #135e96;
+}
+
+.conflict-actions .button-link-delete {
+	color: #d63638;
+}
+
+.conflict-actions .button-link-delete:hover {
+	color: #a00;
+}
+
+/* Import processing spinner */
+.wptsall-import-processing {
+	text-align: center;
+	padding: 20px;
+	color: #646970;
+	font-size: 14px;
+}
+
+.wptsall-import-processing .spinner {
+	float: none;
+	display: inline-block;
+	visibility: visible;
+	margin: 0 8px 0 0;
+	vertical-align: middle;
+}
+
+/* Hidden file input for import */
+.wptsall-import-file-input {
+	display: none !important;
+}
+
+@media screen and (max-width: 782px) {
+	.wptsall-import-conflict-dialog {
+		width: 95%;
+		margin: 10% auto;
+	}
+
+	.conflict-actions {
+		flex-direction: column;
+	}
+
+	.conflict-actions .button {
+		width: 100%;
+	}
+}

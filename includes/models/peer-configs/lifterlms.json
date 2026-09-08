@@ -1,0 +1,11 @@
+{
+  "post_types": {
+    "course": {},
+    "lesson": {},
+    "llms_quiz": {}
+  },
+  "post_fields": {
+    "_llms_length": { "action": "copy" },
+    "_llms_difficulty": { "action": "copy" }
+  }
+}
