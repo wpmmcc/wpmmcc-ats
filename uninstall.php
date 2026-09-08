@@ -7,6 +7,12 @@
  *
  * Security: This file will only run if WP_UNINSTALL_PLUGIN is defined.
  *
+ * Scope: WordPress core includes this file INSIDE uninstall_plugin()'s function
+ * scope, so the top-level $wptsall_* arrays below are local to that function.
+ * They are therefore passed to the cleanup helpers as parameters; a `global`
+ * statement inside a helper would fetch nothing and silently skip the cleanup
+ * (the bug that left the whole wptsall_* table family behind on uninstall).
+ *
  * @package WPTSALL
  * @since 0.3.0
  */
@@ -77,20 +83,23 @@ $wptsall_tables = array(
 	// Templates module.
 	'wptsall_templates',
 	'wptsall_template_entries',
-);
 
-// Tasks module tables (unified single-plugin mode).
-$wptsall_tables = array_merge(
-	$wptsall_tables,
-	array(
-		'wptsall_tasks',
-		'wptsall_task_logs',
-		'wptsall_task_items',
-		'wptsall_task_jobs',
-		'wptsall_origin_visits',
-		'wptsall_translation_results',
-		'wptsall_manual_queue',
-	)
+	// Tasks module tables (unified single-plugin mode).
+	'wptsall_tasks',
+	'wptsall_task_logs',
+	'wptsall_task_items',
+	'wptsall_task_jobs',
+	'wptsall_origin_visits',
+	'wptsall_translation_results',
+	'wptsall_manual_queue',
+
+	// Client API / language packs / site strings (rate limits, per-relation
+	// languages, menu mappings, option sync leases; v1.0+ modules).
+	'wptsall_client_rate_limits',
+	'wptsall_languages',
+	'wptsall_strings',
+	'wptsall_menu_mappings',
+	'wptsall_option_sync_state',
 );
 
 /**
@@ -208,11 +217,21 @@ function wptsall_drop_remaining_tables( $wpdb ) {
 
 /**
  * Uninstall single site
+ *
+ * Receives the cleanup lists as parameters because WordPress includes
+ * uninstall.php inside uninstall_plugin()'s function scope: the file's
+ * top-level $wptsall_* arrays never reach the global scope, so a `global`
+ * statement here would fetch empty lists and skip the cleanup.
+ *
+ * @param array $wptsall_tables     Tables to drop (without prefix).
+ * @param array $wptsall_options    Options to delete.
+ * @param array $wptsall_cron_hooks Cron hooks to clear.
+ * @return void
  */
-function wptsall_uninstall_single_site() {
-	global $wpdb, $wptsall_tables, $wptsall_options, $wptsall_cron_hooks;
+function wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks ) {
+	global $wpdb;
 
-	// Guard: ensure lists are arrays (WP-CLI may not populate globals as expected).
+	// Guard: ensure lists are arrays (callers pass the file-scope arrays above).
 	if ( ! is_array( $wptsall_tables ) ) {
 		$wptsall_tables = array();
 	}
@@ -388,7 +407,7 @@ if ( is_multisite() ) {
 
 	foreach ( $wptsall_blog_ids as $wptsall_blog_id ) {
 		switch_to_blog( $wptsall_blog_id );
-		wptsall_uninstall_single_site();
+		wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks );
 		restore_current_blog();
 	}
 
@@ -406,7 +425,14 @@ if ( is_multisite() ) {
 	// Clean up any remaining wptsall tables with non-standard prefixes (e.g., Plugin Check sandbox wp_pc_).
 	wptsall_drop_remaining_tables( $wpdb );
 } else {
-	wptsall_uninstall_single_site();
+	global $wpdb;
+
+	wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks );
+
+	// Defensive cleanup: remove any remaining wptsall tables with non-standard
+	// prefixes or names missing from the list above. Single-site counterpart of
+	// the multisite sweep above.
+	wptsall_drop_remaining_tables( $wpdb );
 }
 
 // Flush rewrite rules.

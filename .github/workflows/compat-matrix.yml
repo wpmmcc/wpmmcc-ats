@@ -55,7 +55,7 @@ jobs:
         run: |
           curl -sSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /tmp/wp-cli.phar
           sudo install -m 0755 /tmp/wp-cli.phar /usr/local/bin/wp
-          wp --allow-root --info | head -n 4
+          wp --allow-root --info | sed -n '1,4p'
 
       - name: Install WordPress ${{ matrix.wp }}
         run: |

@@ -80,6 +80,14 @@ class Plugin_Lifecycle {
 		'wptsall_origin_visits',
 		'wptsall_manual_queue',
 
+		// Client API / language packs / site strings (rate limits, per-relation
+		// languages, menu mappings, option sync leases; v1.0+ modules).
+		'wptsall_client_rate_limits',
+		'wptsall_languages',
+		'wptsall_strings',
+		'wptsall_menu_mappings',
+		'wptsall_option_sync_state',
+
 		// Translation memory module.
 		'wptsall_translation_memory',
 		'wptsall_terminology',
