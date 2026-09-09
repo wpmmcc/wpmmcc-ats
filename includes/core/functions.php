@@ -381,6 +381,30 @@ function wptsall_is_test_only_source_revision_fallback_enabled() {
 }
 
 /**
+ * Whether a deliberately enabled test harness may skip Protocol v2
+ * request-signature validation.
+ *
+ * Production requests are always signature-verified by
+ * Transport_Middleware. The in-process integration harness issues
+ * business-logic requests without replaying the Rust client's signing
+ * path; before 2026-09-09 it only passed because an unrelated lab plugin
+ * accidentally swallowed the middleware's WP_Error on the shared test
+ * site — clean installs (e.g. the module-ci runner) enforced the
+ * signatures and correctly rejected it. Like the source-revision
+ * fallback, this constant is not defined by the plugin; a harness must
+ * opt in explicitly before WordPress/plugin bootstrap. Signature
+ * enforcement itself is covered by the protocol-v2 security unit tests
+ * and the signed Rust-client e2e lanes.
+ *
+ * @since 2.1.2
+ * @return bool
+ */
+function wptsall_is_test_only_transport_signature_fallback_enabled() {
+	return defined( 'WPTSALL_TEST_ONLY_TRANSPORT_SIGNATURE_FALLBACK' )
+		&& true === WPTSALL_TEST_ONLY_TRANSPORT_SIGNATURE_FALLBACK;
+}
+
+/**
  * Whether an option name is on the deny list for sync/read.
  *
  * @since 1.7.0
@@ -846,8 +870,25 @@ function wptsall_get_site_url_from_relation( $site_rel, $role = 'source' ) {
 		$tables = apply_filters( 'wptsall_table_names', $tables );
 
 		$suffix = isset( $tables[ $key ] ) ? $tables[ $key ] : $key;
-		// Mappings table uses base_prefix for cross-site sharing.
-		$prefix = ( 'mappings' === $key ) ? $wpdb->base_prefix : $wpdb->prefix;
+		/*
+		 * Cross-site identity mapping tables resolve via base_prefix so a
+		 * claim (recorded on the source blog) and the callback write-back
+		 * (recorded while switched to the target blog) hit the same shared
+		 * table. Without this, wp-target syncs registered their mapping rows
+		 * on the target blog's per-blog copy while the claim placeholder
+		 * lived on the main copy — a split-brain that left
+		 * post_mappings.target_post_id stuck at 0 for automatic write-backs
+		 * (found by the T1 subsite-translation gate, 2026-09-09).
+		 */
+		$base_prefixed_keys = array(
+			'mappings',
+			'post_mappings',
+			'term_mappings',
+			'menu_mappings',
+			'media_mappings',
+			'user_mappings',
+		);
+		$prefix = in_array( $key, $base_prefixed_keys, true ) ? $wpdb->base_prefix : $wpdb->prefix;
 		// Escape for SQL safety, even though we use whitelist.
 		return esc_sql( $prefix . $suffix );
 	}

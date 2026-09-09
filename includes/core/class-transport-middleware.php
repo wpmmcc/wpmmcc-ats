@@ -266,6 +266,14 @@ class Transport_Middleware {
 		if ( '2' !== $protocol ) {
 			return true;
 		}
+		// Test-only opt-out (see wptsall_is_test_only_transport_signature_fallback_enabled):
+		// in-process integration harnesses explicitly declare that they do not
+		// replay the Rust client's signing path. Production never defines the
+		// constant, so every real Protocol v2 request stays signature-verified.
+		if ( function_exists( 'wptsall_is_test_only_transport_signature_fallback_enabled' )
+			&& wptsall_is_test_only_transport_signature_fallback_enabled() ) {
+			return true;
+		}
 		$token     = (string) $request->get_header( 'X-WPTSALL-Client-Token' );
 		$timestamp = trim( (string) $request->get_header( 'X-WPTSALL-Timestamp' ) );
 		$nonce     = trim( (string) $request->get_header( 'X-WPTSALL-Signature-Nonce' ) );
