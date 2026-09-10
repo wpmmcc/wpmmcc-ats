@@ -16,6 +16,14 @@ WPMMCC ATS is a multilingual content translation manager for WordPress. It scans
 
 **All features are free and fully functional.** No license key, trial period, or payment is required to use any feature of this plugin.
 
+= Project links =
+
+* Project website: https://www.wpmm.cc/
+* Documentation and usage help (English / 简体中文): https://www.wpmm.cc/docs/
+* This plugin on WordPress.org: https://wordpress.org/plugins/wpmmcc-ats/
+* Plugin source code: https://github.com/wpmmcc/wpmmcc-ats
+* Optional companion translation client: https://github.com/wpmmcc/wptsall-client
+
 = Key Features =
 
 * **Automatic Field Discovery** — Scans WordPress post types, taxonomies, custom fields, and third-party plugin data (WooCommerce, Elementor, Yoast SEO, ACF, and more) to find all translatable content.
@@ -30,12 +38,20 @@ WPMMCC ATS is a multilingual content translation manager for WordPress. It scans
 
 This plugin can expose a REST API on **your own WordPress site** so an optional standalone translation client (a separate program you install) can pull work and push translations back. The plugin does **not** call www.wpmm.cc or any other remote host for this flow. Communication is only between the client and your site.
 
-* **Client Download**: Separate free application (not part of this plugin zip):
-  * Linux/macOS: [install script](https://github.com/wpmmcc/wptsall-client-releases/raw/main/install.sh) — review it, then run: `bash install.sh` (WebUI) or follow Desktop install notes in the same repo
+* **Client download and documentation**: usage help at https://www.wpmm.cc/docs/, source code at https://github.com/wpmmcc/wptsall-client, signed installers and kits at https://github.com/wpmmcc/wptsall-client-releases
+  * Linux/macOS: [install script](https://github.com/wpmmcc/wptsall-client-releases/raw/main/install.sh) — review it, then run: `bash install.sh` (WebUI) or follow Desktop install notes in the same repository
   * Windows: [installation guide](https://github.com/wpmmcc/wptsall-client-releases)
-* **Client documentation**: [https://github.com/wpmmcc/wptsall-client-releases](https://github.com/wpmmcc/wptsall-client-releases)
 
 The client is NOT required. All plugin features work for manual translation without it.
+
+== Installation ==
+
+1. In wp-admin go to Plugins → Add New and search for "WPMMCC ATS" (or upload the ZIP via Plugins → Add New → Upload Plugin), then click Activate.
+2. Open the WPTSALL menu in wp-admin. The built-in setup wizard walks you through the initial configuration: content languages, a scan of your content plugins, and your first site relation.
+3. Translate posts in the manual translation editor, entirely inside wp-admin — no external service is needed.
+4. (Optional) For automatic translation, enable the Client API under Task Management → Authorization, install the companion WPTSALL Client, and connect it with the generated client token.
+
+Minimum requirements: WordPress 6.2 or newer, PHP 7.4 or newer.
 
 When you configure the optional client with a third-party translation provider, **the client** (not this plugin) may send content you choose to translate to that provider under your own API keys and account terms.
 
@@ -63,7 +79,16 @@ This plugin can coexist with Polylang and WPML. However, it provides its own ind
 
 = Where do plugin interface translations come from? =
 
-Interface translations for this plugin are provided by the WordPress.org translation system (translate.wordpress.org) after the plugin is listed. This plugin does not download language packs from any third-party server and does not ship compiled language packs in the plugin zip.
+English is built in. This plugin's strings are registered with the WordPress.org translation system (translate.wordpress.org): once the plugin is listed, language packs (starting with Simplified Chinese) install automatically from there when your site language is set under Settings → General. The GitHub source distribution additionally bundles a complete zh_CN translation in its languages/ directory. The plugin never downloads language packs from a third-party server.
+
+== Screenshots ==
+
+1. Translation Dashboard — progress overview per translation layer
+2. Model Management — translatable fields discovered by the content scan
+3. Sites — site relations and language-specific virtual sites
+4. Manual Translation Hub — posts and fields pending translation
+5. Translation Editor — two-panel manual translation inside wp-admin
+6. Task Management — client API authorization for the optional automatic translation client
 
 == External services ==
 
@@ -157,6 +182,13 @@ Optional product documentation links (for the separate client distribution, not 
 * Privacy Policy: https://www.wpmm.cc/privacy
 
 == Changelog ==
+
+= 2.1.2 =
+* Unified the release version across the plugin and the optional companion client.
+* Renamed the internal client-authorization module to client pairing (no feature or data change; legacy settings are migrated and cleaned up automatically on upgrade).
+* Added clearer client installer pre-flight errors when the install directory is not writable (INSTALL_DIR_NOT_WRITABLE).
+* Updated the bundled Simplified Chinese (zh_CN) translation and the multilingual README set.
+* Maintained: Plugin Check reports 0 ERROR and 0 SQL findings; remaining warnings are trademark terms only.
 
 = 2.1.1 =
 * Added: Bundled Simplified Chinese (zh_CN) translation (1,790 strings), loaded automatically on Chinese sites.

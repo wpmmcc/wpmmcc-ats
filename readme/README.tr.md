@@ -6,6 +6,12 @@
 
 WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPress eklentisidir. İçerik eklentilerini, temaları ve menüleri tarayarak çevrilebilir alanları bulur, yeniden kullanılabilir çeviri kuralları oluşturur, diller arası site ilişkilerini yönetir ve wp-admin içinde eksiksiz bir manuel çeviri editörü sunar. Otomatik çeviri için companion istemci WPTSALL Client ile mümkündür — hesap yok, lisans yok, satıcı kilidi yok.
 
+## Links
+- Project website — https://www.wpmm.cc/
+- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
+- Companion client repository — https://github.com/wpmmcc/wptsall-client
+
 ## Özellikler
 - İçerik tarama — yazılarda, taksonomilerde, meta verilerde, üçüncü taraf içerik eklentilerinde ve temalarda çevrilebilir alanları tespit eder
 - Site ilişkileri — kaynak ve hedef dili bağlar; kendi URL önekine sahip sanal siteleri destekler

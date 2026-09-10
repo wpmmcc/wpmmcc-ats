@@ -6,6 +6,12 @@
 
 WPMMCC ATS 是一個把單語 WordPress 網站變成多語系網站的外掛。它掃描內容外掛、佈景主題與選單中的可翻譯欄位,產生可重用的翻譯規則,管理語言之間的站台關聯,並在 wp-admin 內提供完整的手動翻譯編輯器。搭配獨立的 WPTSALL 用戶端可實現自動翻譯——無需帳號、無需授權、沒有廠商綁定。
 
+## 相關連結
+- 專案官網 — https://www.wpmm.cc/
+- 文件與使用說明(English / 簡體中文)— https://www.wpmm.cc/docs/
+- WordPress.org 外掛頁 — https://wordpress.org/plugins/wpmmcc-ats/
+- 配套用戶端儲存庫 — https://github.com/wpmmcc/wptsall-client
+
 ## 功能
 - 內容掃描——偵測文章、分類法、meta、第三方內容外掛與佈景主題中的可翻譯欄位
 - 站台關聯——關聯來源語言與目標語言,支援帶獨立 URL 前綴的虛擬站台

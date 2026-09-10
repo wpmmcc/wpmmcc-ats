@@ -6,6 +6,12 @@
 
 WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸는 플러그인입니다. 콘텐츠 플러그인·테마·메뉴에서 번역 가능한 필드를 스캔하고, 재사용 가능한 번역 규칙을 만들고, 언어 간 사이트 관계를 관리하며, wp-admin 안에서 완결되는 수동 번역 에디터를 제공합니다. 자동 번역은 함께 제공되는 WPTSALL Client로 가능합니다. 계정도, 라이선스도, 벤더 종속도 없습니다.
 
+## Links
+- Project website — https://www.wpmm.cc/
+- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
+- Companion client repository — https://github.com/wpmmcc/wptsall-client
+
 ## 기능
 - 콘텐츠 스캔 — 글·텍소노미·meta·서드파티 콘텐츠 플러그인·테마의 번역 가능 필드 탐지
 - 사이트 관계 — 원본 언어와 대상 언어를 연결하고, 전용 URL 접두어를 가진 가상 사이트 지원
