@@ -199,7 +199,7 @@ class Security_Command extends \WP_CLI_Command {
 	 */
 	public function list_devices( $args, $assoc_args ) {
 		unset( $args );
-		$svc = function_exists( 'wptsall_license_service' ) ? wptsall_license_service() : null;
+		$svc = function_exists( 'wptsall_client_token_service' ) ? wptsall_client_token_service() : null;
 		if ( ! $svc || ! method_exists( $svc, 'list_devices' ) ) {
 			\WP_CLI::error( 'Device list unavailable.' );
 		}

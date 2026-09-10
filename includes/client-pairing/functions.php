@@ -1,6 +1,6 @@
 <?php
 /**
- * Enterprise helper functions.
+ * Client pairing helper functions.
  *
  * All features are fully functional in the wp.org version.
  * The client API token is used for communication with the
@@ -8,6 +8,8 @@
  *
  * @package WPTSALL
  * @since 1.0.0
+ * @updated 2.1.2 Renamed from the historical `enterprise` module
+ *               (wptsall_license_service -> wptsall_client_token_service).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,12 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Get enterprise license service instance.
+ * Get the client token service instance.
  *
- * @return \WPTSALL\Enterprise\Services\License_Service
+ * @return \WPTSALL\Client_Pairing\Services\Client_Token_Service
  */
-function wptsall_license_service() {
-	return \WPTSALL\Enterprise\Services\License_Service::instance();
+function wptsall_client_token_service() {
+	return \WPTSALL\Client_Pairing\Services\Client_Token_Service::instance();
 }
 
 /**
@@ -58,7 +60,7 @@ function wptsall_is_client_api_enabled() {
  * @return string
  */
 function wptsall_get_client_api_token( $regenerate = false ) {
-	return wptsall_license_service()->get_client_token( (bool) $regenerate );
+	return wptsall_client_token_service()->get_client_token( (bool) $regenerate );
 }
 
 /**
@@ -72,7 +74,7 @@ function wptsall_verify_client_api_token( $token ) {
 	if ( isset( $_SERVER['HTTP_X_WPTSALL_DEVICE_ID'] ) ) {
 		$device_id = sanitize_key( wp_unslash( (string) $_SERVER['HTTP_X_WPTSALL_DEVICE_ID'] ) );
 	}
-	return wptsall_license_service()->verify_client_token( (string) $token, $device_id, true );
+	return wptsall_client_token_service()->verify_client_token( (string) $token, $device_id, true );
 }
 
 /**
@@ -85,7 +87,7 @@ function wptsall_verify_client_api_token( $token ) {
  * @return array{device_id:string,token:string,created_at:string,expires_at:int,expires_in:int}
  */
 function wptsall_issue_client_device_token( $device_id = '', $label = '', $ttl_seconds = null ) {
-	return wptsall_license_service()->issue_device_token( (string) $device_id, (string) $label, $ttl_seconds );
+	return wptsall_client_token_service()->issue_device_token( (string) $device_id, (string) $label, $ttl_seconds );
 }
 
 /**
@@ -96,7 +98,7 @@ function wptsall_issue_client_device_token( $device_id = '', $label = '', $ttl_s
  * @return bool
  */
 function wptsall_revoke_client_device_token( $device_id ) {
-	return wptsall_license_service()->revoke_device_token( (string) $device_id );
+	return wptsall_client_token_service()->revoke_device_token( (string) $device_id );
 }
 
 /**

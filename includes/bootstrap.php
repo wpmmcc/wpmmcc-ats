@@ -150,9 +150,9 @@ function wptsall_load_modules() {
 		add_filter( 'pre_http_request', array( '\\WPTSALL\\Core\\Egress_Guard', 'filter_pre_http_request' ), 5, 3 );
 	}
 
-	// Enterprise module (client API token; all features free).
-	require_once WPTSALL_PATH . 'includes/enterprise/module.php';
-	\WPTSALL\Enterprise\Module::init();
+	// Client pairing module (client API token + pairing codes; all features free).
+	require_once WPTSALL_PATH . 'includes/client-pairing/module.php';
+	\WPTSALL\Client_Pairing\Module::init();
 
 	// Models module
 	require_once WPTSALL_PATH . 'includes/models/module.php';

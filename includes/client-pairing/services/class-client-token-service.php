@@ -1,16 +1,17 @@
 <?php
 /**
- * Client API token service (class name License_Service — internal historical).
+ * Client API token service.
  *
  * Device-scoped tokens only (ISS S2): hash-at-rest, per-device revoke, expiry.
  * Install-level shared bearer is not used for auth (pre-release single truth).
  *
- * @package WPTSALL\Enterprise\Services
+ * @package WPTSALL\Client_Pairing\Services
  * @since 1.0.0
  * @updated 2.0.1 Device-scoped tokens.
+ * @updated 2.1.2 Renamed from historical License_Service (enterprise module).
  */
 
-namespace WPTSALL\Enterprise\Services;
+namespace WPTSALL\Client_Pairing\Services;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Client API token service.
  */
-class License_Service {
+class Client_Token_Service {
 
 	const OPTION_CLIENT_TOKEN        = 'wptsall_client_api_token';
 	const OPTION_CLIENT_TOKEN_STATE  = 'wptsall_client_api_token_state';

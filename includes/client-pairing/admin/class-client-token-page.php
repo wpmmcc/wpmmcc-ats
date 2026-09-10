@@ -2,26 +2,27 @@
 /**
  * Client API authorization admin helpers.
  *
- * Legacy file kept for backward-compatible admin-post handlers.
- * The live Authorization tab is rendered by Tasks_Page::render_authorization_tab().
+ * Registers the admin-post handler for issuing device tokens; the live
+ * Authorization tab is rendered by Tasks_Page::render_authorization_tab().
  *
- * @package WPTSALL\Enterprise\Admin
+ * @package WPTSALL\Client_Pairing\Admin
  * @since 1.0.0
+ * @updated 2.1.2 Renamed from historical License_Page (enterprise module).
  */
 
-namespace WPTSALL\Enterprise\Admin;
+namespace WPTSALL\Client_Pairing\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Client API authorization page helpers (historical class name License_Page).
+ * Client API authorization page helpers (historical class name Client_Token_Page).
  * Manages Client API device auth — not commercial licensing.
  *
  * @since 1.0.0
  */
-class License_Page {
+class Client_Token_Page {
 
 	/**
 	 * Register admin handlers.
@@ -68,7 +69,7 @@ class License_Page {
 	 * @return void
 	 */
 	private static function render_authorization_content() {
-		$token_info   = wptsall_license_service()->get_client_token_snapshot();
+		$token_info   = wptsall_client_token_service()->get_client_token_snapshot();
 		$reveal_token = self::consume_reveal_token();
 
 		self::render_notice();

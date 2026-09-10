@@ -188,7 +188,7 @@ class Client_Tasks_REST_Controller {
 
 		$token = (string) $request->get_header( 'X-WPTSALL-Client-Token' );
 		$device = sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) );
-		if ( empty( $token ) || ! function_exists( 'wptsall_license_service' ) ) {
+		if ( empty( $token ) || ! function_exists( 'wptsall_client_token_service' ) ) {
 			return new \WP_Error(
 				'client_unauthorized',
 				__( 'Client authentication failed', 'wpmmcc-ats' ),
@@ -202,7 +202,7 @@ class Client_Tasks_REST_Controller {
 				array( 'status' => 401 )
 			);
 		}
-		if ( ! wptsall_license_service()->verify_client_token( $token, $device, true ) ) {
+		if ( ! wptsall_client_token_service()->verify_client_token( $token, $device, true ) ) {
 			return new \WP_Error(
 				'client_unauthorized',
 				__( 'Client authentication failed', 'wpmmcc-ats' ),

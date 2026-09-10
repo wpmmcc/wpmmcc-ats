@@ -271,7 +271,7 @@ class Client_Data_REST_Controller {
 
 		$token = (string) $request->get_header( 'X-WPTSALL-Client-Token' );
 		$device = sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) );
-		if ( empty( $token ) || ! function_exists( 'wptsall_license_service' ) ) {
+		if ( empty( $token ) || ! function_exists( 'wptsall_client_token_service' ) ) {
 			return new \WP_Error(
 				'client_unauthorized',
 				__( 'Client authentication failed', 'wpmmcc-ats' ),
@@ -285,7 +285,7 @@ class Client_Data_REST_Controller {
 				array( 'status' => 401 )
 			);
 		}
-		$ok = wptsall_license_service()->verify_client_token( $token, $device, true );
+		$ok = wptsall_client_token_service()->verify_client_token( $token, $device, true );
 		if ( ! $ok ) {
 			return new \WP_Error(
 				'client_unauthorized',
