@@ -3132,7 +3132,10 @@ class Translation_Rule_REST_Controller {
 				'success'     => true,
 				'data_type'   => $data_type,
 				'object_name' => $object_name,
-				'fields'      => $fields,
+				// array_values(): detect_* builders merge string-keyed core fields with
+				// appended meta/taxonomy fields, which JSON-encodes as a mixed-key
+				// object instead of the array the client expects.
+				'fields'      => array_values( $fields ),
 			)
 		);
 	}

@@ -21,10 +21,13 @@
     class FieldConfigurator {
         constructor(containerId, options = {}) {
             this.container = $(`#${containerId}`);
+            // PHP passes rule_id='new' for the add-rule form; treat non-numeric
+            // ids as "no rule yet" so the loader uses the model/object path
+            // instead of hitting /rules/new/available-fields (404).
             this.options = $.extend({
                 restUrl: wptsallFieldConfig.restUrl,
                 nonce: wptsallFieldConfig.nonce,
-                ruleId: wptsallFieldConfig.ruleId,
+                ruleId: Number(wptsallFieldConfig.ruleId) || 0,
                 relationId: wptsallFieldConfig.relationId || 0,
                 modelId: wptsallFieldConfig.modelId,
                 objectName: wptsallFieldConfig.objectName,
@@ -34,6 +37,7 @@
                 noObjectsLabel: wptsallFieldConfig.noObjectsLabel || 'No model object is available for the selected data type',
                 manualFields: wptsallFieldConfig.manualFields || []
             }, options);
+            this.options.ruleId = Number(this.options.ruleId) || 0;
 
             this.fieldTypes = {
                 // WPML four-state labels (+ advanced id_mapping / compute).
@@ -160,6 +164,11 @@
 
             if (!modelId || !dataType || !objectName) {
                 this.templateFieldNameSet = new Set();
+                // Show an actionable hint instead of leaving the loading/detecting
+                // placeholder spinning forever while nothing is being fetched.
+                $('#wptsall-fc-available-fields').html(
+                    '<p class="wptsall-fc-empty">Select the rule target object to load its template fields.</p>'
+                );
                 if (this.options.manualFields && this.options.manualFields.length > 0) {
                     this.renderAvailableFields(this.mergeManualFields([]));
                 }
@@ -837,16 +846,22 @@
 
             // Form submission - serialize configuration.
             // G5: Intercept the rule edit form to do AJAX save and show validation panel.
-            $('form#wptsall-rule-edit-form').on('submit', function (e) {
-                e.preventDefault();
-                self.serializeConfiguration();
-                self._ajaxSaveRule($(this));
-            });
+            // Namespace + off() first: importConfiguration() re-renders and re-binds,
+            // and accumulating submit handlers double-saves the rule (two POSTs).
+            $('form#wptsall-rule-edit-form')
+                .off('submit.wptsallFcSave')
+                .on('submit.wptsallFcSave', function (e) {
+                    e.preventDefault();
+                    self.serializeConfiguration();
+                    self._ajaxSaveRule($(this));
+                });
 
             // For any other forms, just serialize.
-            $('form').not('#wptsall-rule-edit-form').on('submit', function () {
-                self.serializeConfiguration();
-            });
+            $('form').not('#wptsall-rule-edit-form')
+                .off('submit.wptsallFcSerialize')
+                .on('submit.wptsallFcSerialize', function () {
+                    self.serializeConfiguration();
+                });
         }
 
         normalizeRuleDataType(dataType) {
@@ -969,10 +984,21 @@
                     object_name: objectName
                 },
                 success: function (response) {
-                    if (response.fields) {
-                        const allFields = self.mergeManualFields(response.fields);
+                    // The endpoint may return the field list as a JSON object with
+                    // numeric keys (PHP mixed-key array) — normalize before use.
+                    let fields = response ? response.fields : null;
+                    if (fields && !Array.isArray(fields) && typeof fields === 'object') {
+                        fields = Object.values(fields);
+                    }
+                    if (Array.isArray(fields)) {
+                        const allFields = self.mergeManualFields(fields);
                         self.renderAvailableFields(allFields);
                         self.showInlineNotice('Using runtime-detected fields (template-constrained list unavailable).', 'warning');
+                    } else {
+                        $('#wptsall-fc-available-fields').html(
+                            '<p class="wptsall-fc-error">No fields were detected for this object.</p>'
+                        );
+                        self.showInlineNotice('Field detection returned no fields. Verify the data type and object, then retry.', 'warning');
                     }
                 },
                 error: function () {
@@ -1024,8 +1050,10 @@
         renderAvailableFields(fields) {
             const self = this;
             const configured = this._getConfiguredFieldNames();
+            // Defensive: never render a non-array payload (mixed-key JSON objects).
+            const list = Array.isArray(fields) ? fields : [];
 
-            const html = fields.map(field => {
+            const html = list.map(field => {
                 const fieldName = field.name;
                 const isConfigured = configured.has(fieldName);
                 const category = isConfigured ? this._getFieldCategory(fieldName) : '';
