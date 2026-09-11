@@ -38,21 +38,22 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 ## 自动翻译
 自动翻译请安装配套的 WPTSALL 客户端（WebUI 或 Desktop）。它使用设备级令牌直连站点，领取翻译任务，调用配置的翻译厂商端点，并把结果写回。客户端仓库：https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## 更新
+- 通过标准 WordPress 更新程序升级 — 仪表盘 → 更新，或插件列表页。无需手动操作
+- 升级绝不会影响你的翻译数据：数据表、虚拟站点、翻译记忆、术语表与配置均完整保留
+- 每个版本的发布说明均可在 readme.txt 的 Changelog 章节中查看
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## 卸载
+- 在插件列表页停用该插件，然后删除
+- 自 2.1.3 版本起，删除插件默认保留你的翻译数据（数据表、已翻译文章/分类、翻译记忆、术语表、语言包），重新安装即可完整恢复
+- 如需彻底清理，可在删除前进入插件设置开启“卸载时删除数据”。无论如何选择，插件配置项、临时缓存与计划任务均会被彻底移除
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## 开源组件
+- 不捆绑任何第三方代码：基于纯原生 PHP 与 WordPress 核心 API（REST、WPDB/dbDelta、cron、gettext），管理后台采用原生 JavaScript 与 WordPress 内置 jQuery 构建
+- 界面本地化翻译来源于 WordPress.org 翻译协作系统（GlotPress）— translate.wordpress.org
+- 字段探测功能仅读取 WooCommerce、Elementor、ACF、Yoast SEO 等第三方内容插件的数据；未对这些项目进行捆绑或修改
+- 与 WPML、Polylang 等多语言插件友好并存 — 未引用两者的任何代码
+
 ## 多语言
 英文为内置源语言。简体中文（zh_CN）语言包位于 languages/ 目录，切换 WordPress 站点语言至“简体中文”后自动生效。如需新增更多语言，请使用常用的 PO 编辑器翻译 languages/wpmmcc-ats.pot 并欢迎贡献回馈。
 

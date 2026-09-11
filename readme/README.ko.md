@@ -38,21 +38,22 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 ## 자동 번역
 자동 번역에는 함께 제공되는 WPTSALL Client(WebUI 또는 Desktop)를 설치하세요. 기기 토큰으로 사이트에 직접 연결해 번역 작업을 가져오고, 설정한 번역 제공자를 호출한 뒤 결과를 다시 기록합니다. 클라이언트 저장소: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## 업데이트
+- 표준 WordPress 업데이터(알림판 → 업데이트 또는 플러그인 페이지)를 통해 설치됩니다. 수동 작업은 필요하지 않습니다
+- 업데이트해도 번역 데이터는 안전합니다: 테이블, 가상 사이트, 번역 메모리, 용어집, 설정이 모두 유지됩니다
+- 모든 버전의 릴리스 노트는 readme.txt의 Changelog 섹션에서 확인할 수 있습니다
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## 제거
+- 플러그인 페이지에서 플러그인을 비활성화한 다음 삭제하세요
+- 2.1.3부터 플러그인을 삭제해도 번역 데이터(테이블, 번역된 글/용어, 번역 메모리, 용어집, 언어 팩)가 기본적으로 보존되므로 재설치 시 모두 복원됩니다
+- 완전한 정리를 원하시면 삭제 전 플러그인 설정에서 "제거 시 데이터 삭제"를 활성화하세요. 플러그인 설정, 임시 캐시, 예약 작업은 어떤 경우에도 완전히 삭제됩니다
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## 오픈소스 구성 요소
+- 서드파티 코드가 번들되어 있지 않습니다: WordPress 코어 API(REST, WPDB/dbDelta, cron, gettext) 기반 순수 PHP와 WordPress에 번들된 바닐라 JavaScript + jQuery로 관리 화면 구성
+- UI 번역은 WordPress.org 번역 시스템(GlotPress) — translate.wordpress.org 에서 제공됩니다
+- 필드 검색 기능은 WooCommerce, Elementor, ACF, Yoast SEO 등의 서드파티 콘텐츠 플러그인 데이터를 읽으며, 해당 프로젝트는 번들되거나 수정되지 않습니다
+- 다국어 플러그인 WPML 및 Polylang과 공존 가능 — 두 프로젝트의 코드를 일절 사용하지 않습니다
+
 ## Languages
 영어가 내장 원본 언어입니다. 간체 중국어(zh_CN) 팩은 languages/에서 번역을 진행 중입니다. 카탈로그 컴파일 후 설정 → 일반에서 사이트 언어를 선택하면 자동으로 로드됩니다. 다른 언어 추가는 languages/wpmmcc-ats.pot을 PO 편집기로 번역해 기여해 주세요.
 

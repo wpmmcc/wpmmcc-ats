@@ -38,21 +38,22 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 ## Dịch tự động
 Để dịch tự động, hãy cài client đi kèm WPTSALL Client (WebUI hoặc Desktop). Nó kết nối trực tiếp tới site của bạn bằng token thiết bị, nhận tác vụ dịch, gọi nhà cung cấp bạn cấu hình và ghi kết quả về. Repo client: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## Cập nhật
+- Các bản cập nhật được cài đặt qua trình cập nhật tiêu chuẩn của WordPress — Bảng tin → Cập nhật, hoặc trang Plugin. Không cần thực hiện thao tác thủ công
+- Việc cập nhật không bao giờ ảnh hưởng đến dữ liệu dịch của bạn: bảng cơ sở dữ liệu, site ảo, bộ nhớ dịch, thuật ngữ và cài đặt đều được giữ nguyên
+- Ghi chú phát hành cho từng phiên bản có trong mục Changelog của readme.txt
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## Gỡ cài đặt
+- Hủy kích hoạt plugin trên trang Plugin, sau đó xóa
+- Từ phiên bản 2.1.3, việc xóa plugin giữ lại dữ liệu dịch của bạn theo mặc định (các bảng, bài viết/thuật ngữ đã dịch, bộ nhớ dịch, bảng thuật ngữ, gói ngôn ngữ), do đó cài đặt lại sẽ khôi phục tất cả
+- Để dọn dẹp hoàn toàn, hãy bật tùy chọn "Xóa dữ liệu khi gỡ cài đặt" trong cài đặt plugin trước khi xóa. Cài đặt plugin, dữ liệu tạm (transients) và các tác vụ đã lên lịch luôn được dọn dẹp sạch sẽ trong cả hai trường hợp
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## Thành phần mã nguồn mở
+- Không đóng gói mã nguồn bên thứ ba: PHP thuần trên các API lõi WordPress (REST, WPDB/dbDelta, cron, gettext), với các trang quản trị bằng JavaScript thuần và jQuery đi kèm WordPress
+- Bản dịch giao diện đến từ hệ thống dịch thuật WordPress.org (GlotPress) — translate.wordpress.org
+- Tính năng quét trường đọc dữ liệu từ các plugin nội dung bên thứ ba như WooCommerce, Elementor, ACF và Yoast SEO; những dự án đó không bị đóng gói hay chỉnh sửa
+- Cùng tồn tại hài hòa với các plugin đa ngôn ngữ WPML và Polylang — không sử dụng mã nguồn từ bất kỳ dự án nào
+
 ## Languages
 Tiếng Anh là ngôn ngữ gốc tích hợp. Gói tiếng Trung giản thể (zh_CN) đang tiến hành trong languages/; sau khi biên dịch catalog, chọn ngôn ngữ site trong Settings → General và WordPress tự nạp. Để thêm ngôn ngữ khác, hãy dịch languages/wpmmcc-ats.pot bằng trình soạn PO ưa thích và đóng góp.
 

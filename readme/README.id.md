@@ -38,21 +38,22 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 ## Terjemahan otomatis
 Untuk terjemahan otomatis, pasang klien pendamping WPTSALL Client (WebUI atau Desktop). Ia terhubung langsung ke situs Anda dengan token perangkat, mengambil tugas terjemahan, memanggil penyedia yang Anda konfigurasi, dan menulis hasilnya kembali. Repositori klien: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## Pembaruan
+- Pembaruan diinstal melalui pembaru standar WordPress — Dasbor → Pembaruan, atau halaman Plugin. Tidak ada langkah manual yang diperlukan
+- Memperbarui tidak pernah menyentuh data terjemahan Anda: tabel, situs virtual, memori terjemahan, terminologi, dan pengaturan semuanya tetap terjaga
+- Catatan rilis untuk setiap versi ada di bagian Changelog pada file readme.txt
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## Copot Pemasangan
+- Nonaktifkan plugin di halaman Plugin, lalu hapus
+- Sejak 2.1.3, menghapus plugin tetap mempertahankan data terjemahan Anda secara default (tabel, pos/istilah yang diterjemahkan, memori terjemahan, terminologi, paket bahasa), sehingga instalasi ulang akan memulihkan semuanya
+- Untuk pembersihan total, aktifkan "Hapus data saat mencopot pemasangan" di pengaturan plugin sebelum menghapus. Pengaturan plugin, transient, dan tugas terjadwal akan selalu dihapus dalam kedua kondisi
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## Komponen sumber terbuka
+- Tidak ada kode pihak ketiga yang dibundel: PHP murni di atas API inti WordPress (REST, WPDB/dbDelta, cron, gettext), dengan halaman admin menggunakan JavaScript murni ditambah jQuery bawaan WordPress
+- Terjemahan antarmuka berasal dari sistem terjemahan WordPress.org (GlotPress) — translate.wordpress.org
+- Penemuan bidang membaca data dari plugin konten pihak ketiga seperti WooCommerce, Elementor, ACF, dan Yoast SEO; proyek-proyek tersebut tidak dibundel atau dimodifikasi
+- Berdampingan dengan lancar bersama plugin multibahasa WPML dan Polylang — tidak ada kode dari kedua proyek yang digunakan
+
 ## Languages
 Bahasa Inggris adalah bahasa sumber bawaan. Paket Mandarin sederhana (zh_CN) sedang dikerjakan di languages/; setelah katalog dikompilasi, pilih bahasa situs di Settings → General dan WordPress memuatnya otomatis. Untuk menambah bahasa lain, terjemahkan languages/wpmmcc-ats.pot dengan editor PO favorit Anda dan kontribusikan.
 

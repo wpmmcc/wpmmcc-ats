@@ -38,21 +38,22 @@ WPMMCC ATS es un plugin de WordPress que convierte un sitio monolingüe en un si
 ## Traducción automática
 Para traducción automática, instala el cliente complementario WPTSALL Client (WebUI o Desktop). Se conecta directamente a tu sitio con un token de dispositivo, reclama tareas de traducción, llama al proveedor que configures y escribe los resultados. Repositorio del cliente: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## Actualización
+- Las actualizaciones se instalan a través del actualizador estándar de WordPress: Escritorio → Actualizaciones, o la página de Plugins. No requiere pasos manuales
+- La actualización nunca afecta tus datos de traducción: tablas, sitios virtuales, memoria de traducción, terminología y ajustes se conservan intactos
+- Las notas de versión de cada versión se encuentran en la sección Changelog de readme.txt
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## Desinstalación
+- Desactiva el plugin en la página de Plugins y luego elimínalo
+- Desde la versión 2.1.3, al eliminar el plugin se conservan tus datos de traducción por defecto (tablas, entradas/términos traducidos, memoria de traducción, terminología, paquetes de idioma), por lo que una reinstalación restaura todo
+- Para una limpieza completa, activa "Eliminar datos al desinstalar" en los ajustes del plugin antes de eliminarlo. Los ajustes del plugin, transitorios y tareas programadas se eliminan en ambos casos
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## Componentes de código abierto
+- No incluye código de terceros: PHP puro sobre APIs centrales de WordPress (REST, WPDB/dbDelta, cron, gettext), con páginas de administración en JavaScript nativo y jQuery incluido en WordPress
+- Las traducciones de la interfaz provienen del sistema de traducción de WordPress.org (GlotPress) — translate.wordpress.org
+- La detección de campos lee datos de plugins de contenido de terceros como WooCommerce, Elementor, ACF y Yoast SEO; dichos proyectos no están incluidos ni modificados
+- Coexiste con los plugins multilingües WPML y Polylang; no se utiliza código de ninguno de ellos
+
 ## Languages
 El inglés es el idioma de origen integrado. Un paquete de chino simplificado (zh_CN) está en progreso en languages/; una vez compilado el catálogo, elige el idioma del sitio en Ajustes → General y WordPress lo carga automáticamente. Para añadir otro idioma, traduce languages/wpmmcc-ats.pot con tu editor de PO favorito y contribúyelo.
 

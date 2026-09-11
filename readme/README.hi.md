@@ -38,21 +38,22 @@ WPMMCC ATS एक WordPress प्लगइन है जो एकभाषी 
 ## स्वचालित अनुवाद
 स्वचालित अनुवाद के लिए साथी क्लाइंट WPTSALL Client (WebUI या Desktop) स्थापित करें। यह डिवाइस टोकन से आपकी साइट से सीधे जुड़ता है, अनुवाद कार्य लेता है, आपके विन्यस्त प्रोवाइडर को कॉल करता है और परिणाम वापस लिखता है। क्लाइंट रिपॉज़िटरी: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## अपडेट करना
+- अपडेट मानक WordPress अपडेटर के माध्यम से इंस्टॉल होते हैं — डैशबोर्ड → अपडेट, या प्लगइन पृष्ठ। किसी मैन्युअल कदम की आवश्यकता नहीं है
+- अपडेट करने से आपका अनुवाद डेटा कभी प्रभावित नहीं होता: टेबल, वर्चुअल साइट, अनुवाद स्मृति, शब्दावली और सेटिंग्स सभी सुरक्षित रहते हैं
+- प्रत्येक संस्करण के रिलीज़ नोट readme.txt के Changelog अनुभाग में उपलब्ध हैं
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## अनइंस्टॉल करना
+- प्लगइन पृष्ठ पर प्लगइन को निष्क्रिय करें, फिर उसे हटाएँ
+- संस्करण 2.1.3 से, प्लगइन हटाने पर आपका अनुवाद डेटा डिफ़ॉल्ट रूप से सुरक्षित रहता है (टेबल, अनूदित पोस्ट/टर्म, अनुवाद स्मृति, शब्दावली, भाषा पैक), इसलिए पुनः इंस्टॉल करने पर सब कुछ वापस आ जाता है
+- पूरी तरह सफाई के लिए हटाने से पहले प्लगइन सेटिंग्स में "अनइंस्टॉल पर डेटा हटाएं" सक्षम करें। प्लगइन सेटिंग्स, ट्रांजिएंट और शेड्यूल्ड टास्क दोनों ही स्थितियों में हटा दिए जाते हैं
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## ओपन-सोर्स घटक
+- कोई थर्ड-पार्टी कोड बंडल नहीं है: WordPress कोर API (REST, WPDB/dbDelta, cron, gettext) पर शुद्ध PHP, और WordPress के साथ आने वाले वैनिला JavaScript तथा jQuery से बने एडमिन पृष्ठ
+- इंटरफ़ेस अनुवाद WordPress.org अनुवाद प्रणाली (GlotPress) से आते हैं — translate.wordpress.org
+- फ़ील्ड खोज सुविधा WooCommerce, Elementor, ACF और Yoast SEO जैसे थर्ड-पार्टी कंटेंट प्लगइन का डेटा पढ़ती है; उन प्रोजेक्ट्स को न तो बंडल किया गया है और न ही बदला गया है
+- बहुभाषी प्लगइन WPML और Polylang के साथ सुचारू रूप से सह-अस्तित्व में रहता है — किसी भी प्रोजेक्ट का कोई कोड उपयोग नहीं किया गया है
+
 ## Languages
 अंग्रेज़ी अंतर्निहित स्रोत भाषा है। सरलीकृत चीनी (zh_CN) पैक languages/ में प्रगति पर है; कैटलॉग संकलित होने पर Settings → General में साइट की भाषा चुनें, WordPress इसे स्वतः लोड करेगा। नई भाषा जोड़ने के लिए languages/wpmmcc-ats.pot को अपने PO संपादक से अनुवाद करके योगदान दें।
 

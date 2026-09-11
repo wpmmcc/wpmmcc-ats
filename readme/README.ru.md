@@ -38,21 +38,22 @@ WPMMCC ATS — плагин WordPress, превращающий одноязыч
 ## Автоматический перевод
 Для автоматического перевода установите клиент-компаньон WPTSALL Client (WebUI или Desktop). Он подключается к вашему сайту напрямую с токеном устройства, забирает задачи перевода, вызывает настроенного провайдера и записывает результаты обратно. Репозиторий клиента: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## Обновление
+- Обновления устанавливаются через стандартный инструмент обновления WordPress — Консоль → Обновления или на странице «Плагины». Ручных действий не требуется
+- Обновление никогда не затрагивает данные перевода: таблицы, виртуальные сайты, память переводов, терминология и настройки полностью сохраняются
+- Примечания к каждому выпуску находятся в разделе Changelog файла readme.txt
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## Удаление
+- Деактивируйте плагин на странице «Плагины», затем удалите его
+- Начиная с версии 2.1.3, при удалении плагина данные перевода по умолчанию сохраняются (таблицы, переведённые записи/термины, память переводов, терминология, языковые пакеты), поэтому повторная установка полностью всё восстановит
+- Для полной очистки включите «Удалять данные при удалении» в настройках плагина перед его удалением. Настройки плагина, временные данные (transients) и запланированные задачи удаляются в любом случае
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## Компоненты с открытым исходным кодом
+- Сторонний код не поставляется: чистый PHP на базе базовых API WordPress (REST, WPDB/dbDelta, cron, gettext), интерфейс панели управления на чистом JavaScript и встроенном в WordPress jQuery
+- Переводы интерфейса поступают из системы переводов WordPress.org (GlotPress) — translate.wordpress.org
+- Обнаружение полей считывает данные из сторонних контентных плагинов, таких как WooCommerce, Elementor, ACF и Yoast SEO; эти проекты не включаются в состав и не модифицируются
+- Беспрепятственно сосуществует с многоязычными плагинами WPML и Polylang — никакой код этих проектов не используется
+
 ## Languages
 Английский — встроенный исходный язык. Пакет упрощённого китайского (zh_CN) готовится в languages/; после компиляции каталога выберите язык сайта в Настройки → Общие, и WordPress загрузит его автоматически. Чтобы добавить язык, переведите languages/wpmmcc-ats.pot в любом PO-редакторе и внесите вклад.
 

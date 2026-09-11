@@ -38,21 +38,22 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 ## الترجمة الآلية
 للترجمة الآلية، ثبّت العميل المرافق WPTSALL Client (WebUI أو Desktop). يتصل بموقعك مباشرة برمز جهاز، ويستلم مهام الترجمة، ويستدعي مزوّد الترجمة الذي ضبطته، ثم يكتب النتائج. مستودع العميل: https://github.com/wpmmcc/wptsall-client
 
-## Updating
-- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
-- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
-- Release notes for every version are in the Changelog section of readme.txt
+## التحديث
+- تُثبّت التحديثات عبر أداة تحديث ووردبريس القياسية — لوحة التحكم ← التحديثات، أو صفحة الإضافات. لا يلزم اتخاذ أي خطوات يدوية
+- لا يمس التحديث بيانات الترجمة أبدًا: الجداول والمواقع الافتراضية وذاكرة الترجمة والمصطلحات والإعدادات تبقى محفوظة بالكامل
+- تتوفر ملاحظات الإصدار لكل نسخة في قسم Changelog ضمن ملف readme.txt
 
-## Uninstalling
-- Deactivate the plugin on the Plugins page, then delete it
-- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
-- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+## إلغاء التثبيت
+- عطّل الإضافة من صفحة الإضافات، ثم احذفها
+- بدءًا من الإصدار 2.1.3، يحتفظ حذف الإضافة ببيانات الترجمة افتراضيًا (الجداول، المقالات/المصطلحات المترجمة، ذاكرة الترجمة، المصطلحات، حزم اللغات)، مما يتيح استعادة كل شيء عند إعادة التثبيت
+- لإجراء تنظيف شامل، فعّل خيار "حذف البيانات عند إلغاء التثبيت" في إعدادات الإضافة قبل الحذف. تُحذف إعدادات الإضافة والبيانات المؤقتة والمهام المجدولة في كلتا الحالتين
 
-## Open-source components
-- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
-- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
-- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
-- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+## المكونات مفتوحة المصدر
+- لا تتضمن الإضافة أي كود لطرف ثالث: كود PHP خالص مبني على واجهات ووردبريس الأساسية (REST وWPDB/dbDelta وcron وgettext)، مع صفحات إدارة مكتوبة بـ JavaScript الصافية ومكتبة jQuery المدمجة في ووردبريس
+- تأتي ترجمات الواجهة من نظام ترجمة WordPress.org الرسمي (GlotPress) — translate.wordpress.org
+- تقرأ ميزة اكتشاف الحقول بيانات إضافات المحتوى الخارجية مثل WooCommerce وElementor وACF وYoast SEO؛ دون حزم تلك المشاريع أو تعديلها
+- تتعايش الإضافة بسلاسة مع إضافات تعدد اللغات WPML وPolylang — ولا تستخدم أي كود من أي منهما
+
 ## Languages
 الإنجليزية هي لغة المصدر المدمجة. حزمة الصينية المبسطة (zh_CN) قيد الإنجاز في languages/؛ بعد تجميع الفهرس، اختر لغة الموقع من الإعدادات → عام ليحمّلها ووردبريس تلقائيًا. لإضافة لغة أخرى، ترجم ملف languages/wpmmcc-ats.pot بمحرر PO الذي تفضله وقدّم مساهمتك.
 

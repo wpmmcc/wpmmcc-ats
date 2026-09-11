@@ -53,6 +53,7 @@ For automatic translation, install the companion WPTSALL Client (WebUI or Deskto
 - Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
 - Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
 - Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
+
 ## Languages
 English is the built-in source language. A complete Simplified Chinese (zh_CN) pack ships in languages/ and WordPress loads it automatically once the site language is set to 简体中文 under Settings → General. To add another language, translate languages/wpmmcc-ats.pot with your favourite PO editor and contribute it back.
 
