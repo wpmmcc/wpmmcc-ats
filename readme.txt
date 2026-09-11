@@ -4,7 +4,7 @@ Tags: multilingual, translation, multisite, virtual-site
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,7 +83,11 @@ English is built in. This plugin's strings are registered with the WordPress.org
 
 = Does the plugin write debug logs? =
 
-No. Debug logging is disabled by default and all features work without any logging. A developer can enable file logging by defining WPTSALL_LOG_ENABLED as true in wp-config.php (minimum level and channel filters: WPTSALL_LOG_LEVEL, WPTSALL_LOG_CHANNELS). Logs are then written to wp-content/uploads/wptsall-logs/ (protected from web access), credentials are automatically redacted before anything is written, and files older than 30 days are pruned automatically.
+No. Debug logging is disabled by default and all features work without any logging. A developer can enable file logging by defining WPTSALL_LOG_ENABLED as true in wp-config.php (minimum level and channel filters: WPTSALL_LOG_LEVEL, WPTSALL_LOG_CHANNELS). Logs are then written to wp-content/uploads/wptsall-logs-<hash>/ — a directory whose suffix is derived from your site's security salts so its name cannot be guessed from outside (WPTSALL_LOG_DIR overrides the location; legacy wptsall-logs/ is moved there automatically) — protected from web access. Credentials are automatically redacted before anything is written, and files older than 30 days are pruned automatically.
+
+= What happens to my data when I delete the plugin? =
+
+Since 2.1.3, deleting the plugin keeps your translation data (tables, virtual posts/terms, translation memory, terminology, language packs) by default, so a reinstall restores everything. Enable "Delete data on uninstall" in Settings if you want a full cleanup instead. Plugin settings, transients and scheduled tasks are always removed either way.
 
 == Screenshots ==
 
@@ -186,6 +190,16 @@ Optional product documentation links (for the separate client distribution, not 
 * Privacy Policy: https://www.wpmm.cc/privacy
 
 == Changelog ==
+
+= 2.1.3 =
+* Changed: Deleting the plugin now keeps translation data by default; enable "Delete data on uninstall" in Settings for a full cleanup (settings, transients and scheduled tasks are always removed).
+* Added: Multisite support for new and deleted subsites — new subsites get their data tables automatically, and deleted subsites have their tables cleaned up.
+* Fixed: The debug log directory now carries a suffix derived from the site's security salts so its name cannot be guessed from outside; existing log folders are migrated automatically.
+* Fixed: Migration version checks now compare against the running plugin version instead of stale hardcoded values.
+* Fixed (companion client): runtime, database and log files now live in the OS data directory instead of the folder the program was launched from, on Windows/macOS/Linux.
+* Fixed (companion client): self-update on Windows now replaces the running binary safely (rename-aside with rollback), and updates restart the service reliably; the WebUI only exits when a service manager can bring it back.
+* Fixed (companion client): credential values are redacted at the logging boundary, and the log viewer parses structured log lines correctly.
+* Maintained: Plugin Check reports 0 ERROR and 0 SQL findings; remaining warnings are trademark terms only.
 
 = 2.1.2 =
 * Unified the release version across the plugin and the optional companion client.

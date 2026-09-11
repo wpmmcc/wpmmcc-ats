@@ -41,6 +41,10 @@ class Settings_Service {
 			// Menu Sync: clone newly created nav menus for active virtual sites
 			// automatically (default off keeps manual Menu Sync behaviour).
 			'menu_auto_clone'                  => false,
+			// Uninstall policy: full data deletion (tables, virtual posts, translation
+			// memory, language packs) only when explicitly opted in. The default
+			// (false) keeps user translation data when the plugin is deleted.
+			'delete_data_on_uninstall'         => false,
 		);
 	}
 
@@ -69,6 +73,7 @@ class Settings_Service {
 		$merged['prefer_sitemap_hreflang'] = (bool) ( $merged['prefer_sitemap_hreflang'] ?? true );
 		$merged['directory_for_default_language'] = (bool) ( $merged['directory_for_default_language'] ?? false );
 		$merged['menu_auto_clone']         = (bool) ( $merged['menu_auto_clone'] ?? false );
+		$merged['delete_data_on_uninstall'] = (bool) ( $merged['delete_data_on_uninstall'] ?? false );
 		$merged['log_retention_days'] = max( 0, (int) $merged['log_retention_days'] );
 		$merged['default_language']   = (string) $merged['default_language'];
 
@@ -99,7 +104,7 @@ class Settings_Service {
 				$clean[ $k ] = $partial[ $k ];
 			}
 		}
-		foreach ( array( 'detect_browser', 'debug_mode', 'client_api_enabled', 'permalink_fallback', 'prefer_sitemap_hreflang', 'directory_for_default_language', 'menu_auto_clone' ) as $b ) {
+		foreach ( array( 'detect_browser', 'debug_mode', 'client_api_enabled', 'permalink_fallback', 'prefer_sitemap_hreflang', 'directory_for_default_language', 'menu_auto_clone', 'delete_data_on_uninstall' ) as $b ) {
 			if ( isset( $clean[ $b ] ) ) {
 				$clean[ $b ] = ! empty( $clean[ $b ] ) ? 1 : 0;
 			}

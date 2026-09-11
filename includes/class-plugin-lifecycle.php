@@ -21,7 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Manages all plugin lifecycle events including:
  * - Activation: Create database tables, set default options, flush rewrite rules
  * - Deactivation: Clean up temporary data, flush rewrite rules
- * - Uninstallation: Remove all plugin data (tables, options, transients)
+ * - Multisite: Initialize subsites created after network activation and
+ *   declare per-site tables for subsite deletion
+ *
+ * Uninstallation is handled by the root uninstall.php (WordPress includes it
+ * directly on plugin deletion); this class deliberately carries no uninstall
+ * logic so the two implementations cannot drift apart.
  */
 class Plugin_Lifecycle {
 
@@ -245,32 +250,63 @@ class Plugin_Lifecycle {
 	}
 
 	/**
-	 * Run uninstall tasks
+	 * Initialize a newly created multisite subsite (wp_initialize_site).
 	 *
-	 * Called when plugin is deleted.
-	 * Removes ALL plugin data including database tables and options.
+	 * Network activation only initializes blogs that exist at activation time;
+	 * without this handler, subsites created later never receive the wptsall_*
+	 * tables, default options, cron schedule, or rewrite rules, and their
+	 * admin/frontend pages hit missing-table errors. wp_initialize_site fires
+	 * after core has installed the new subsite's own tables, so option writes
+	 * below are safe.
 	 *
+	 * @param WP_Site|int $new_site New site object (or blog ID from legacy callers).
 	 * @return void
 	 */
-	public static function uninstall() {
-		// Security check - only allow uninstall through WordPress.
-		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-			exit;
-		}
-
-		// Check user capability.
-		// WP-CLI may run without a logged-in user context.
-		if ( ! current_user_can( 'delete_plugins' ) && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+	public static function handle_new_site( $new_site ) {
+		if ( ! is_multisite() ) {
 			return;
 		}
 
-		if ( is_multisite() ) {
-			// Network uninstall.
-			self::network_uninstall();
-		} else {
-			// Single site uninstall.
-			self::single_site_uninstall();
+		$blog_id = is_object( $new_site ) ? (int) $new_site->id : (int) $new_site;
+		if ( $blog_id < 1 ) {
+			return;
 		}
+
+		// Only initialize when the plugin is active for the network.
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			return;
+		}
+		if ( ! is_plugin_active_for_network( plugin_basename( WPTSALL_FILE ) ) ) {
+			return;
+		}
+
+		switch_to_blog( $blog_id );
+		self::single_site_activate();
+		restore_current_blog();
+	}
+
+	/**
+	 * Append per-site plugin tables to the multisite blog-deletion drop list.
+	 *
+	 * WordPress core only drops registered core tables when a subsite is
+	 * deleted (wpmu_delete_blog()); plugin tables using the subsite prefix
+	 * would be orphaned. The `wpmu_drop_tables` filter is the canonical core
+	 * mechanism for plugins to declare their per-site tables.
+	 *
+	 * @param array $tables Tables core (and other plugins) will drop.
+	 * @return array Merged drop list.
+	 */
+	public static function filter_wpmu_drop_tables( $tables ) {
+		if ( ! is_array( $tables ) ) {
+			$tables = array();
+		}
+
+		global $wpdb;
+		foreach ( self::$tables as $table ) {
+			$tables[] = $wpdb->prefix . $table;
+		}
+
+		return $tables;
 	}
 
 	/**
@@ -399,73 +435,6 @@ class Plugin_Lifecycle {
 			switch_to_blog( $blog_id );
 			self::single_site_deactivate();
 			restore_current_blog();
-		}
-	}
-
-	/**
-	 * Single site uninstall
-	 *
-	 * @return void
-	 */
-	private static function single_site_uninstall() {
-		// Drop database tables.
-		self::drop_tables();
-
-		// Delete options.
-		self::delete_options();
-
-		// Delete transients.
-		self::delete_all_transients();
-
-		// Clear cron events.
-		self::clear_cron_events();
-
-		// Delete user meta.
-		self::delete_user_meta();
-
-		// Delete virtual site content (posts and terms).
-		self::delete_virtual_content();
-
-		// Delete post meta and term meta.
-		self::delete_content_meta();
-
-		// Fire uninstall action.
-		do_action( 'wptsall_uninstalled' );
-	}
-
-	/**
-	 * Network uninstall (multisite)
-	 *
-	 * @return void
-	 */
-	private static function network_uninstall() {
-		global $wpdb;
-
-		// Get all blog IDs.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$blog_ids = $wpdb->get_col( $wpdb->prepare( 'SELECT blog_id FROM %i', $wpdb->blogs ) );
-
-		foreach ( $blog_ids as $blog_id ) {
-			switch_to_blog( $blog_id );
-			self::single_site_uninstall();
-			restore_current_blog();
-		}
-
-		// Clean up any remaining wptsall tables with non-standard prefixes (e.g., Plugin Check sandbox wp_pc_).
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$all_wptsall_tables = $wpdb->get_col(
-			$wpdb->prepare(
-				'SHOW TABLES LIKE %s',
-				'%' . $wpdb->esc_like( 'wptsall' ) . '%'
-			)
-		);
-		foreach ( (array) $all_wptsall_tables as $table_name ) {
-			// Sanitize table name - only allow alphanumeric and underscore.
-			$safe_table = preg_replace( '/[^a-zA-Z0-9_]/', '', (string) $table_name );
-			if ( $safe_table === $table_name && '' !== $safe_table ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
-				$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $safe_table ) );
-			}
 		}
 	}
 
@@ -619,23 +588,6 @@ class Plugin_Lifecycle {
 	}
 
 	/**
-	 * Drop database tables
-	 *
-	 * @return void
-	 */
-	private static function drop_tables() {
-		global $wpdb;
-
-		foreach ( self::$tables as $table ) {
-			$table_name = $wpdb->prefix . $table;
-			// Sanitize table name - only allow alphanumeric and underscore.
-			$table_name = preg_replace( '/[^a-zA-Z0-9_]/', '', $table_name );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
-		}
-	}
-
-	/**
 	 * Set default options
 	 *
 	 * @return void
@@ -657,28 +609,6 @@ class Plugin_Lifecycle {
 		if ( false === get_option( 'wptsall_db_version' ) ) {
 			add_option( 'wptsall_db_version', '0.0.0' );
 		}
-	}
-
-	/**
-	 * Delete options
-	 *
-	 * @return void
-	 */
-	private static function delete_options() {
-		foreach ( self::$options as $option ) {
-			delete_option( $option );
-		}
-
-		// Delete template options (dynamic names).
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE option_name LIKE %s',
-				$wpdb->options,
-				$wpdb->esc_like( 'wptsall_template_' ) . '%'
-			)
-		);
 	}
 
 	/**
@@ -729,155 +659,6 @@ class Plugin_Lifecycle {
 		// Only clear cache transients, keep important ones.
 		delete_transient( 'wptsall_cache_scan_results' );
 		delete_transient( 'wptsall_cache_templates' );
-	}
-
-	/**
-	 * Delete all transients (full cleanup)
-	 *
-	 * @return void
-	 */
-	private static function delete_all_transients() {
-		global $wpdb;
-
-		// Delete transients.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s',
-				$wpdb->options,
-				$wpdb->esc_like( '_transient_' . self::$transient_prefix ) . '%',
-				$wpdb->esc_like( '_transient_timeout_' . self::$transient_prefix ) . '%'
-			)
-		);
-
-		// Delete site transients (multisite).
-		if ( is_multisite() ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query(
-				$wpdb->prepare(
-					'DELETE FROM %i WHERE meta_key LIKE %s OR meta_key LIKE %s',
-					$wpdb->sitemeta,
-					$wpdb->esc_like( '_site_transient_' . self::$transient_prefix ) . '%',
-					$wpdb->esc_like( '_site_transient_timeout_' . self::$transient_prefix ) . '%'
-				)
-			);
-		}
-	}
-
-	/**
-	 * Delete user meta
-	 *
-	 * @return void
-	 */
-	private static function delete_user_meta() {
-		global $wpdb;
-
-		// Delete user meta related to plugin.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE meta_key LIKE %s',
-				$wpdb->usermeta,
-				$wpdb->esc_like( 'wptsall_' ) . '%'
-			)
-		);
-	}
-
-	/**
-	 * Delete virtual site content (posts and terms)
-	 *
-	 * Virtual site content is stored in wp_posts/wp_terms with meta markers.
-	 * This must be called BEFORE delete_content_meta() to find virtual copies.
-	 *
-	 * @since 0.5.0
-	 * @return void
-	 */
-	private static function delete_virtual_content() {
-		global $wpdb;
-
-		// Delete virtual site posts.
-		// Use '_wptsall_virtual_site_id' which is the actual meta key set by sync code.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$virtual_post_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				'SELECT p.ID
-				 FROM %i p
-				 INNER JOIN %i pm ON p.ID = pm.post_id
-				 	AND pm.meta_key = %s',
-				$wpdb->posts,
-				$wpdb->postmeta,
-				'_wptsall_virtual_site_id'
-			)
-		);
-
-		foreach ( $virtual_post_ids as $post_id ) {
-			wp_delete_post( $post_id, true ); // Force delete, bypass trash.
-		}
-
-		// Delete virtual site terms.
-		// Use '_wptsall_virtual_site_id' which is the actual meta key set by sync code.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$virtual_term_data = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT t.term_id, tt.taxonomy
-				 FROM %i t
-				 INNER JOIN %i tt ON t.term_id = tt.term_id
-				 INNER JOIN %i tm ON t.term_id = tm.term_id
-				 	AND tm.meta_key = %s',
-				$wpdb->terms,
-				$wpdb->term_taxonomy,
-				$wpdb->termmeta,
-				'_wptsall_virtual_site_id'
-			),
-			ARRAY_A
-		);
-
-		foreach ( $virtual_term_data as $term ) {
-			wp_delete_term( $term['term_id'], $term['taxonomy'] );
-		}
-	}
-
-	/**
-	 * Delete content meta (post meta, term meta, comment meta)
-	 *
-	 * This must be called AFTER delete_virtual_content() to ensure
-	 * virtual posts/terms are deleted first.
-	 *
-	 * @since 0.5.0
-	 * @return void
-	 */
-	private static function delete_content_meta() {
-		global $wpdb;
-
-		// Delete post meta.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE meta_key LIKE %s',
-				$wpdb->postmeta,
-				$wpdb->esc_like( '_wptsall_' ) . '%'
-			)
-		);
-
-		// Delete term meta.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE meta_key LIKE %s',
-				$wpdb->termmeta,
-				$wpdb->esc_like( '_wptsall_' ) . '%'
-			)
-		);
-
-		// Delete comment meta.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query(
-			$wpdb->prepare(
-				'DELETE FROM %i WHERE meta_key LIKE %s',
-				$wpdb->commentmeta,
-				$wpdb->esc_like( '_wptsall_' ) . '%'
-			)
-		);
 	}
 
 	/**
@@ -933,3 +714,10 @@ class Plugin_Lifecycle {
 		return $status;
 	}
 }
+
+// Multisite lifecycle wiring:
+// - Initialize subsites created after network activation (BUG-LC-01).
+// - Declare per-site tables so core drops them when a subsite is deleted.
+// Both callbacks no-op on single-site installs.
+add_action( 'wp_initialize_site', array( __NAMESPACE__ . '\Plugin_Lifecycle', 'handle_new_site' ) );
+add_filter( 'wpmu_drop_tables', array( __NAMESPACE__ . '\Plugin_Lifecycle', 'filter_wpmu_drop_tables' ) );

@@ -20,7 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function wptsall_run_migrations() {
 	$current_version = get_option( 'wptsall_db_version', '0.0.0' );
-	$plugin_version  = '2.1.0';
+	// WPTSALL_VERSION, NOT a hardcoded literal: a stale literal here stamps
+	// wptsall_db_version with an old version and mis-gates future migrations
+	// (found during the 2026-09 lifecycle audit; was pinned to '2.1.0' while
+	// the plugin shipped 2.1.2).
+	$plugin_version  = defined( 'WPTSALL_VERSION' ) ? WPTSALL_VERSION : '2.1.0';
 
 	// Keep task language columns wide enough for all supported locale/provider
 	// identifiers. This is intentionally checked on every migration pass so an
@@ -1139,7 +1143,10 @@ function wptsall_get_site_theme_info_for_migration( $site_id ) {
  */
 function wptsall_needs_migration() {
 	$current_version = wptsall_get_db_version();
-	$plugin_version  = '1.1.0';
+	// Same WPTSALL_VERSION rule as wptsall_run_migrations(); the fallback only
+	// covers standalone test harnesses that load this file without the plugin
+	// header.
+	$plugin_version  = defined( 'WPTSALL_VERSION' ) ? WPTSALL_VERSION : '1.1.0';
 	return version_compare( $current_version, $plugin_version, '<' );
 }
 

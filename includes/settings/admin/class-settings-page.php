@@ -158,6 +158,14 @@ class Settings_Page {
 						<p class="description"><?php esc_html_e( 'Old log entries (wptsall_task_logs) are purged after this many days. 0 = keep forever.', 'wpmmcc-ats' ); ?></p>
 					</td>
 				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Delete data on uninstall', 'wpmmcc-ats' ); ?></th>
+					<td>
+						<label><input type="checkbox" name="delete_data_on_uninstall" value="1" <?php checked( ! empty( $settings['delete_data_on_uninstall'] ) ); ?>>
+						<?php esc_html_e( 'When the plugin is deleted, also remove all translation data (tables, virtual posts/terms, translation memory, terminology, language packs).', 'wpmmcc-ats' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Off (default): deleting the plugin keeps your translation data so a reinstall restores it. Plugin settings, transients and cron events are always cleaned up.', 'wpmmcc-ats' ); ?></p>
+					</td>
+				</tr>
 			</table>
 			<p>
 				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save Settings', 'wpmmcc-ats' ); ?></button>
@@ -258,6 +266,7 @@ class Settings_Page {
 			'client_api_enabled' => ! empty( $_POST['client_api_enabled'] ),
 			'debug_mode'         => ! empty( $_POST['debug_mode'] ),
 			'log_retention_days' => (int) ( isset( $_POST['log_retention_days'] ) ? sanitize_text_field( wp_unslash( $_POST['log_retention_days'] ) ) : 7 ),
+			'delete_data_on_uninstall' => ! empty( $_POST['delete_data_on_uninstall'] ),
 		);
 		Settings_Service::update( $partial );
 		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'updated' => '1' ), admin_url( 'admin.php' ) ) );

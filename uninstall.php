@@ -13,6 +13,16 @@
  * statement inside a helper would fetch nothing and silently skip the cleanup
  * (the bug that left the whole wptsall_* table family behind on uninstall).
  *
+ * Data-retention policy (v2.1.3+): user translation data is KEPT by default.
+ * Deleting the plugin always removes settings-level state (options, transients,
+ * cron events, user meta) and debug log files. Full deletion — dropping the
+ * wptsall_* tables, removing virtual posts/terms and their meta, translation
+ * memory, terminology, and language packs — only happens when the site owner
+ * enabled "Delete data on uninstall" in Settings (wptsall_settings
+ * .delete_data_on_uninstall, default false). This matches the WooCommerce /
+ * WPML / Polylang convention: a plugin delete must not destroy years of
+ * translation memory without explicit consent.
+ *
  * @package WPTSALL
  * @since 0.3.0
  */
@@ -30,6 +40,20 @@ if ( ! current_user_can( 'delete_plugins' ) && ! is_super_admin() ) {
 	if ( ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 		exit;
 	}
+}
+
+/**
+ * Whether the site owner explicitly opted in to full data deletion.
+ *
+ * Must be read BEFORE any option cleanup deletes wptsall_settings. On
+ * multisite each subsite carries its own setting, so call this after
+ * switch_to_blog() in the per-site loop.
+ *
+ * @return bool True only when wptsall_settings.delete_data_on_uninstall is set.
+ */
+function wptsall_uninstall_delete_data_requested() {
+	$wptsall_settings = get_option( 'wptsall_settings', array() );
+	return ! empty( $wptsall_settings['delete_data_on_uninstall'] );
 }
 
 /**
@@ -223,12 +247,18 @@ function wptsall_drop_remaining_tables( $wpdb ) {
  * top-level $wptsall_* arrays never reach the global scope, so a `global`
  * statement here would fetch empty lists and skip the cleanup.
  *
+ * Data-retention policy: settings-level state (options, transients, cron,
+ * user meta) and debug logs are always removed. User translation data
+ * (tables, virtual posts/terms, content meta, language packs) is only
+ * removed when $wptsall_delete_data is true (explicit opt-in).
+ *
  * @param array $wptsall_tables     Tables to drop (without prefix).
  * @param array $wptsall_options    Options to delete.
  * @param array $wptsall_cron_hooks Cron hooks to clear.
+ * @param bool  $wptsall_delete_data Whether full data deletion was requested.
  * @return void
  */
-function wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks ) {
+function wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks, $wptsall_delete_data = false ) {
 	global $wpdb;
 
 	// Guard: ensure lists are arrays (callers pass the file-scope arrays above).
@@ -242,13 +272,16 @@ function wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wpts
 		$wptsall_cron_hooks = array();
 	}
 
-	// 1. Drop database tables.
-	foreach ( $wptsall_tables as $table ) {
-		$table_name = $wpdb->prefix . $table;
-		// Sanitize table name - only allow alphanumeric and underscore.
-		$table_name = preg_replace( '/[^a-zA-Z0-9_]/', '', $table_name );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
+	// 1. Drop database tables (full-deletion mode only; kept by default so a
+	//    reinstall restores existing translation data).
+	if ( $wptsall_delete_data ) {
+		foreach ( $wptsall_tables as $table ) {
+			$table_name = $wpdb->prefix . $table;
+			// Sanitize table name - only allow alphanumeric and underscore.
+			$table_name = preg_replace( '/[^a-zA-Z0-9_]/', '', $table_name );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
+		}
 	}
 
 	// 2. Delete options.
@@ -312,87 +345,101 @@ function wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wpts
 		)
 	);
 
-	// 7. Delete virtual site posts (BEFORE deleting post meta).
-	// Virtual site content is stored in wp_posts with meta markers.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$virtual_post_ids = $wpdb->get_col(
-		$wpdb->prepare(
-			'SELECT p.ID
-			 FROM %i p
-			 INNER JOIN %i pm ON p.ID = pm.post_id
-			 	AND pm.meta_key = %s',
-			$wpdb->posts,
-			$wpdb->postmeta,
-			'_wptsall_virtual_site_id'
-		)
-	);
+	// 7-11. Delete virtual site content and content meta (full-deletion mode
+	//       only): virtual posts/terms are translated user content.
+	if ( $wptsall_delete_data ) {
+		// Delete virtual site posts (BEFORE deleting post meta).
+		// Virtual site content is stored in wp_posts with meta markers.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$virtual_post_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				'SELECT p.ID
+				 FROM %i p
+				 INNER JOIN %i pm ON p.ID = pm.post_id
+				 	AND pm.meta_key = %s',
+				$wpdb->posts,
+				$wpdb->postmeta,
+				'_wptsall_virtual_site_id'
+			)
+		);
 
-	foreach ( $virtual_post_ids as $post_id ) {
-		wp_delete_post( $post_id, true ); // Force delete, bypass trash.
+		foreach ( $virtual_post_ids as $post_id ) {
+			wp_delete_post( $post_id, true ); // Force delete, bypass trash.
+		}
+
+		// Delete virtual site terms (BEFORE deleting term meta).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$virtual_term_data = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT t.term_id, tt.taxonomy
+				 FROM %i t
+				 INNER JOIN %i tt ON t.term_id = tt.term_id
+				 INNER JOIN %i tm ON t.term_id = tm.term_id
+				 	AND tm.meta_key = %s',
+				$wpdb->terms,
+				$wpdb->term_taxonomy,
+				$wpdb->termmeta,
+				'_wptsall_virtual_site_id'
+			),
+			ARRAY_A
+		);
+
+		foreach ( $virtual_term_data as $term ) {
+			wp_delete_term( $term['term_id'], $term['taxonomy'] );
+		}
+
+		// Delete post meta (after deleting virtual posts).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE meta_key LIKE %s',
+				$wpdb->postmeta,
+				$wpdb->esc_like( '_wptsall_' ) . '%'
+			)
+		);
+
+		// Delete term meta (after deleting virtual terms).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE meta_key LIKE %s',
+				$wpdb->termmeta,
+				$wpdb->esc_like( '_wptsall_' ) . '%'
+			)
+		);
+
+		// Delete comment meta.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				'DELETE FROM %i WHERE meta_key LIKE %s',
+				$wpdb->commentmeta,
+				$wpdb->esc_like( '_wptsall_' ) . '%'
+			)
+		);
 	}
 
-	// 8. Delete virtual site terms (BEFORE deleting term meta).
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$virtual_term_data = $wpdb->get_results(
-		$wpdb->prepare(
-			'SELECT t.term_id, tt.taxonomy
-			 FROM %i t
-			 INNER JOIN %i tt ON t.term_id = tt.term_id
-			 INNER JOIN %i tm ON t.term_id = tm.term_id
-			 	AND tm.meta_key = %s',
-			$wpdb->terms,
-			$wpdb->term_taxonomy,
-			$wpdb->termmeta,
-			'_wptsall_virtual_site_id'
-		),
-		ARRAY_A
-	);
-
-	foreach ( $virtual_term_data as $term ) {
-		wp_delete_term( $term['term_id'], $term['taxonomy'] );
-	}
-
-	// 9. Delete post meta (after deleting virtual posts).
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM %i WHERE meta_key LIKE %s',
-			$wpdb->postmeta,
-			$wpdb->esc_like( '_wptsall_' ) . '%'
-		)
-	);
-
-	// 10. Delete term meta (after deleting virtual terms).
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM %i WHERE meta_key LIKE %s',
-			$wpdb->termmeta,
-			$wpdb->esc_like( '_wptsall_' ) . '%'
-		)
-	);
-
-	// 11. Delete comment meta.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM %i WHERE meta_key LIKE %s',
-			$wpdb->commentmeta,
-			$wpdb->esc_like( '_wptsall_' ) . '%'
-		)
-	);
-
-	// 12. Delete plugin log files under uploads (best effort).
+	// 12. Delete plugin log files under uploads (best effort; debug artifacts
+	//     are not user data, so they go in both modes). The directory name
+	//     carries a per-installation hash suffix since v2.1.3; match both the
+	//     legacy and hashed names.
 	$upload_dir = wp_upload_dir();
 	if ( ! empty( $upload_dir['basedir'] ) ) {
-		$log_dir = rtrim( (string) $upload_dir['basedir'], '/\\' ) . '/wptsall-logs';
-		wptsall_delete_dir_recursive( $log_dir );
-		$langpack_dir = rtrim( (string) $upload_dir['basedir'], '/\\' ) . '/wpmmcc-ats/languages';
-		wptsall_delete_dir_recursive( $langpack_dir );
-		$wpmmcc_dir = rtrim( (string) $upload_dir['basedir'], '/\\' ) . '/wpmmcc-ats';
-		if ( is_dir( $wpmmcc_dir ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
-			@rmdir( $wpmmcc_dir );
+		$uploads_base = rtrim( (string) $upload_dir['basedir'], '/\\' );
+		foreach ( (array) glob( $uploads_base . '/wptsall-logs*', GLOB_ONLYDIR ) as $wptsall_log_dir ) {
+			wptsall_delete_dir_recursive( $wptsall_log_dir );
+		}
+
+		// Language packs are downloaded translation assets: remove them only
+		// in full-deletion mode.
+		if ( $wptsall_delete_data ) {
+			$langpack_dir = $uploads_base . '/wpmmcc-ats/languages';
+			wptsall_delete_dir_recursive( $langpack_dir );
+			$wpmmcc_dir = $uploads_base . '/wpmmcc-ats';
+			if ( is_dir( $wpmmcc_dir ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+				@rmdir( $wpmmcc_dir );
+			}
 		}
 	}
 }
@@ -405,9 +452,17 @@ if ( is_multisite() ) {
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wptsall_blog_ids = $wpdb->get_col( $wpdb->prepare( 'SELECT blog_id FROM %i', $wpdb->blogs ) );
 
+	// Track whether any subsite opted in to full data deletion; the global
+	// non-standard-prefix table sweep only runs when at least one did.
+	$wptsall_any_delete = false;
+
 	foreach ( $wptsall_blog_ids as $wptsall_blog_id ) {
 		switch_to_blog( $wptsall_blog_id );
-		wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks );
+		// Read the per-site policy BEFORE wptsall_uninstall_single_site()
+		// deletes the option bucket that stores it.
+		$wptsall_delete_data  = wptsall_uninstall_delete_data_requested();
+		$wptsall_any_delete   = $wptsall_any_delete || $wptsall_delete_data;
+		wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks, $wptsall_delete_data );
 		restore_current_blog();
 	}
 
@@ -423,16 +478,24 @@ if ( is_multisite() ) {
 	);
 
 	// Clean up any remaining wptsall tables with non-standard prefixes (e.g., Plugin Check sandbox wp_pc_).
-	wptsall_drop_remaining_tables( $wpdb );
+	// Only when full deletion was requested somewhere: keeping data means
+	// keeping these tables too.
+	if ( $wptsall_any_delete ) {
+		wptsall_drop_remaining_tables( $wpdb );
+	}
 } else {
 	global $wpdb;
 
-	wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks );
+	// Read the policy before the option bucket is deleted.
+	$wptsall_delete_data = wptsall_uninstall_delete_data_requested();
+	wptsall_uninstall_single_site( $wptsall_tables, $wptsall_options, $wptsall_cron_hooks, $wptsall_delete_data );
 
 	// Defensive cleanup: remove any remaining wptsall tables with non-standard
 	// prefixes or names missing from the list above. Single-site counterpart of
-	// the multisite sweep above.
-	wptsall_drop_remaining_tables( $wpdb );
+	// the multisite sweep above; only in full-deletion mode.
+	if ( $wptsall_delete_data ) {
+		wptsall_drop_remaining_tables( $wpdb );
+	}
 }
 
 // Flush rewrite rules.

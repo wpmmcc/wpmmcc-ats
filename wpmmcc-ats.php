@@ -3,7 +3,7 @@
  * Plugin Name: WPMMCC ATS
  * Plugin URI: https://www.wpmm.cc
  * Description: Scan content plugins for models and fields, build translation templates, manage site relations, and provide manual post translation for multilingual WordPress sites.
- * Version: 2.1.2
+ * Version: 2.1.3
  * Requires at least: 6.2
  * Tested up to: 7.1
  * Requires PHP: 7.4
