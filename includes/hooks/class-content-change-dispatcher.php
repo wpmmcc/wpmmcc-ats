@@ -539,6 +539,19 @@ class Content_Change_Dispatcher {
 			return;
 		}
 
+		// A brand-new subsite fires option updates during role population
+		// (wp_initialize_site -> populate_roles) before Plugin_Lifecycle::
+		// handle_new_site() provisions its table family; without this guard
+		// every such update queries a not-yet-existing table and logs a
+		// database error (surfaced by the public compat-matrix multisite
+		// lane). The cached existence check keeps the hot path cheap.
+		if ( ! function_exists( 'wptsall_schema_table_exists' ) || ! function_exists( 'wptsall_table' ) ) {
+			return;
+		}
+		if ( ! wptsall_schema_table_exists( wptsall_table( 'site_relations' ) ) ) {
+			return;
+		}
+
 		$source_site_id = (int) get_current_blog_id();
 		$relations = (array) \WPTSALL\Sites\Services\Site_Relation_Service::get_all_relations(
 			array(

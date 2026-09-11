@@ -271,15 +271,23 @@ jobs:
       - name: "Subsite lifecycle: provision on create, cleanup on delete"
         run: |
           set -euo pipefail
-          SITE_ID="$(wp site create --slug=extra --porcelain --path="$WP_PATH" --allow-root)"
-          echo "created subsite id=$SITE_ID"
+          # No --porcelain: plugin activation banners print to stdout during
+          # site creation, so the id is derived inside the smoke instead.
+          wp site create --slug=extra --path="$WP_PATH" --allow-root
           cat > /tmp/ms-subsite-smoke.php <<'PHP'
           <?php
           // A new subsite under a network-active install must get its own
           // wptsall table family (wp_initialize_site -> handle_new_site).
-          $blog_id = (int) $argv[1];
-          switch_to_blog( $blog_id );
+          // The subsite id is derived as MAX(blog_id) on this fresh network
+          // (main = 1, subsite = 2); wp eval-file exposes no $argv.
           global $wpdb;
+          $blog_id = (int) $wpdb->get_var( "SELECT MAX(blog_id) FROM {$wpdb->blogs}" );
+          if ( $blog_id < 2 ) {
+            fwrite( STDERR, "no subsite was created (max blog_id=$blog_id)\n" );
+            exit( 1 );
+          }
+          file_put_contents( '/tmp/ms-site-id.txt', (string) $blog_id );
+          switch_to_blog( $blog_id );
           $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
           $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
           restore_current_blog();
@@ -289,13 +297,18 @@ jobs:
           }
           echo "ms-subsite-provisioned-ok blog=$blog_id tables=" . count( $tables ) . "\n";
           PHP
-          wp eval-file /tmp/ms-subsite-smoke.php "$SITE_ID" --url="$WP_URL" --path="$WP_PATH" --allow-root
+          wp eval-file /tmp/ms-subsite-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
+          SITE_ID="$(cat /tmp/ms-site-id.txt)"
           wp site delete "$SITE_ID" --yes --path="$WP_PATH" --allow-root
           cat > /tmp/ms-subsite-delete-smoke.php <<'PHP'
           <?php
           // Deleting a subsite must drop that subsite's wptsall tables
           // (wpmu_drop_tables filter) while the main-site family survives.
-          $blog_id = (int) $argv[1];
+          $blog_id = (int) file_get_contents( '/tmp/ms-site-id.txt' );
+          if ( $blog_id < 2 ) {
+            fwrite( STDERR, "no subsite id on record\n" );
+            exit( 1 );
+          }
           global $wpdb;
           $pattern = '%' . $wpdb->esc_like( 'wptsall' ) . '%';
           $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
@@ -313,7 +326,7 @@ jobs:
           }
           echo 'ms-subsite-delete-ok remaining=' . count( $tables ) . "\n";
           PHP
-          wp eval-file /tmp/ms-subsite-delete-smoke.php "$SITE_ID" --url="$WP_URL" --path="$WP_PATH" --allow-root
+          wp eval-file /tmp/ms-subsite-delete-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
 
       - name: Network uninstall keeps data by default
         run: |
