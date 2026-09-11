@@ -301,8 +301,8 @@ class Initialization_Page {
 			'restUrl'          => rest_url( 'wptsall/v2' ),
 			'restNonce'        => wp_create_nonce( 'wp_rest' ),
 			'restApiAvailable' => $rest_api_available,
-			'redirectUrl'      => admin_url( 'admin.php?page=wptsall&tab=templates' ),
-			'homeUrl'          => admin_url( 'admin.php?page=wptsall' ),
+			'redirectUrl'      => admin_url( 'admin.php?page=wpmmcc-ats&tab=templates' ),
+			'homeUrl'          => admin_url( 'admin.php?page=wpmmcc-ats' ),
 			'plugins'          => $available_plugins,
 			'i18n'        => array(
 				'scanSummary'       => __( 'Scan Results:', 'wpmmcc-ats' ),
@@ -418,7 +418,7 @@ class Initialization_Page {
 				<?php endif; ?>
 
 				<p>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wptsall' ) ); ?>" class="button button-primary">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpmmcc-ats' ) ); ?>" class="button button-primary">
 						<?php esc_html_e( 'Enter Plugin', 'wpmmcc-ats' ); ?>
 					</a>
 					<button type="button" id="wptsall-rescan-btn" class="button">

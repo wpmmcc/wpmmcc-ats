@@ -277,7 +277,7 @@ class Setup_Wizard {
 		$state = self::get_state();
 		$state['completed'] = true;
 		self::set_state( $state );
-		wp_safe_redirect( admin_url( 'admin.php?page=wptsall' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=wpmmcc-ats' ) );
 		exit;
 	}
 

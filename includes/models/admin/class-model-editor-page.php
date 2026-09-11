@@ -696,7 +696,7 @@ class Model_Editor_Page {
 			array( 'wptsall-model-editor' )
 		);
 
-		Admin_Page_Helper::render_tabs( $tabs, $current_tab, admin_url( 'admin.php?page=wptsall' ), 'wp' );
+		Admin_Page_Helper::render_tabs( $tabs, $current_tab, admin_url( 'admin.php?page=wpmmcc-ats' ), 'wp' );
 		?>
 			<div class="wptsall-page-content">
 
@@ -1653,7 +1653,7 @@ class Model_Editor_Page {
 		</div>
 
 		<?php
-		$rules_url    = admin_url( 'admin.php?page=wptsall&tab=rules' );
+		$rules_url    = admin_url( 'admin.php?page=wpmmcc-ats&tab=rules' );
 		$script_rel   = 'assets/js/model-rules-filter.js';
 		$script_path  = WPTSALL_PATH . $script_rel;
 		wp_enqueue_script(

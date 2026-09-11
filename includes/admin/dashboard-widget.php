@@ -153,7 +153,7 @@ function wptsall_render_dashboard_widget() {
 					<span class="dashicons dashicons-list-view"></span>
 					<?php esc_html_e( 'View Tasks', 'wpmmcc-ats' ); ?>
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wptsall' ) ); ?>" class="wptsall-action-btn">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpmmcc-ats' ) ); ?>" class="wptsall-action-btn">
 					<span class="dashicons dashicons-admin-tools"></span>
 					<?php esc_html_e( 'Manage Templates', 'wpmmcc-ats' ); ?>
 				</a>
@@ -161,7 +161,7 @@ function wptsall_render_dashboard_widget() {
 					<span class="dashicons dashicons-admin-plugins"></span>
 					<?php esc_html_e( 'Manage Sites', 'wpmmcc-ats' ); ?>
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wptsall' ) ); ?>" class="wptsall-action-btn">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpmmcc-ats' ) ); ?>" class="wptsall-action-btn">
 					<span class="dashicons dashicons-update"></span>
 					<?php esc_html_e( 'Import/Export', 'wpmmcc-ats' ); ?>
 				</a>
@@ -204,7 +204,7 @@ function wptsall_add_admin_bar_menu( $wp_admin_bar ) {
 		array(
 			'id'    => 'wpmmcc-ats',
 			'title' => '<span class="ab-icon dashicons dashicons-networking"></span><span class="ab-label">WPTSALL</span>',
-			'href'  => admin_url( 'admin.php?page=wptsall' ),
+			'href'  => admin_url( 'admin.php?page=wpmmcc-ats' ),
 			'meta'  => array(
 				'title' => __( 'WPTSALL Management', 'wpmmcc-ats' ),
 			),
@@ -240,7 +240,7 @@ function wptsall_add_admin_bar_menu( $wp_admin_bar ) {
 			'parent' => 'wpmmcc-ats',
 			'id'     => 'wptsall-models',
 			'title'  => __( 'Models', 'wpmmcc-ats' ),
-			'href'   => admin_url( 'admin.php?page=wptsall' ),
+			'href'   => admin_url( 'admin.php?page=wpmmcc-ats' ),
 		)
 	);
 
