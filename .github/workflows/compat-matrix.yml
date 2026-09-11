@@ -10,13 +10,19 @@ concurrency:
   cancel-in-progress: true
 
 # Verifies the plugin header claims the hard way: real WordPress installs
-# (CLI) across PHP x WP combinations, plus activate / deactivate / uninstall
-# (uninstall.php cleanup) and a clean re-install round.
+# (CLI) across a full PHP x WP cross matrix, plus activate / deactivate /
+# uninstall (uninstall.php cleanup) and a clean re-install round.
 #
 # Header claims under test: Requires at least 6.2 / Tested up to 7.1 /
-# Requires PHP 7.4. Matrix covers min/latest/max of each axis. If a cell
-# fails because WordPress itself cannot install under that PHP (not a
-# plugin defect), drop that cell and record why here.
+# Requires PHP 7.4. The single-site job crosses every supported PHP minor
+# (7.4 / 8.0 / 8.1 / 8.2 / 8.3) with every WP minor from the floor to the
+# tested max (6.2 .. 6.7, 7.1). The multisite job repeats the whole
+# lifecycle on representative floor / mid / max cells: multisite install,
+# network activation, subsite table provisioning on site create, per-site
+# table cleanup on subsite delete, default keep-data uninstall and opt-in
+# full-delete uninstall.
+# If a cell fails because WordPress itself cannot install under that PHP
+# (not a plugin defect), drop that cell and record why here.
 jobs:
   wp-compat:
     name: WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
@@ -25,8 +31,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.3']
-        wp: ['6.2', '6.7', '7.1']
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        wp: ['6.2', '6.3', '6.4', '6.5', '6.6', '6.7', '7.1']
     services:
       mysql:
         image: mysql:8.0
@@ -162,3 +168,207 @@ jobs:
           PHP
           wp eval-file /tmp/uninstall-full-smoke.php --path="$WP_PATH" --allow-root
           echo "matrix cell OK: WP ${{ matrix.wp }} x PHP ${{ matrix.php }}"
+
+  wp-compat-multisite:
+    name: multisite WP ${{ matrix.wp }} on PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '7.4'
+            wp: '6.2'
+          - php: '8.0'
+            wp: '6.7'
+          - php: '8.3'
+            wp: '7.1'
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=localhost -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      WP_PATH: /tmp/wp
+      WP_URL: http://127.0.0.1:8080
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli
+          coverage: none
+
+      - name: Install wp-cli
+        run: |
+          curl -sSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /tmp/wp-cli.phar
+          sudo install -m 0755 /tmp/wp-cli.phar /usr/local/bin/wp
+          wp --allow-root --info | sed -n '1,4p'
+
+      - name: Install WordPress multisite ${{ matrix.wp }}
+        run: |
+          set -euo pipefail
+          wp core download --version='${{ matrix.wp }}' --path="$WP_PATH" --allow-root
+          wp config create --path="$WP_PATH" --dbname=wp --dbuser=root --dbpass=root \
+            --dbhost=127.0.0.1:3306 --allow-root
+          wp db create --path="$WP_PATH" --allow-root
+          # wp-cli writes the MULTISITE / SUBDOMAIN_INSTALL / DOMAIN_CURRENT_SITE
+          # constants into wp-config.php itself (subdirectory network on the IP).
+          wp core multisite-install --path="$WP_PATH" --url="$WP_URL" --title=WPTSALL \
+            --admin_user=admin --admin_password=ci-multisite-admin \
+            --admin_email=ci@example.com --skip-email --allow-root
+          wp core version --path="$WP_PATH" --allow-root
+
+      - name: Copy plugin under test into the site
+        run: |
+          set -euo pipefail
+          mkdir -p "$WP_PATH/wp-content/plugins/wpmmcc-ats"
+          tar -C "$GITHUB_WORKSPACE" --exclude=./.git -cf - . \
+            | tar -C "$WP_PATH/wp-content/plugins/wpmmcc-ats" -xf -
+
+      - name: Network-activate and smoke-test the plugin
+        run: |
+          set -euo pipefail
+          wp plugin activate wpmmcc-ats --network --path="$WP_PATH" --allow-root
+          cat > /tmp/ms-activation-smoke.php <<'PHP'
+          <?php
+          // Network activation smoke: multisite bootstrap, version constant,
+          // main-site table family, REST namespace.
+          if ( ! is_multisite() ) {
+            fwrite( STDERR, "multisite constants are not in effect\n" );
+            exit( 1 );
+          }
+          if ( ! defined( 'WPTSALL_VERSION' ) ) {
+            fwrite( STDERR, "WPTSALL_VERSION is not defined\n" );
+            exit( 1 );
+          }
+          global $wpdb;
+          $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          if ( empty( $tables ) ) {
+            fwrite( STDERR, "no wptsall tables exist after network activation\n" );
+            exit( 1 );
+          }
+          $routes = rest_get_server()->get_routes();
+          if ( empty( $routes['/wptsall/v2'] ) ) {
+            fwrite( STDERR, "wptsall/v2 REST namespace is not registered\n" );
+            exit( 1 );
+          }
+          echo 'ms-activation-smoke-ok version=' . WPTSALL_VERSION
+            . ' tables=' . count( $tables )
+            . ' routes=' . count( $routes['/wptsall/v2'] ) . "\n";
+          PHP
+          wp eval-file /tmp/ms-activation-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
+
+      - name: "Subsite lifecycle: provision on create, cleanup on delete"
+        run: |
+          set -euo pipefail
+          SITE_ID="$(wp site create --slug=extra --porcelain --path="$WP_PATH" --allow-root)"
+          echo "created subsite id=$SITE_ID"
+          cat > /tmp/ms-subsite-smoke.php <<'PHP'
+          <?php
+          // A new subsite under a network-active install must get its own
+          // wptsall table family (wp_initialize_site -> handle_new_site).
+          $blog_id = (int) $argv[1];
+          switch_to_blog( $blog_id );
+          global $wpdb;
+          $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          restore_current_blog();
+          if ( empty( $tables ) ) {
+            fwrite( STDERR, "subsite $blog_id did not get its wptsall tables\n" );
+            exit( 1 );
+          }
+          echo "ms-subsite-provisioned-ok blog=$blog_id tables=" . count( $tables ) . "\n";
+          PHP
+          wp eval-file /tmp/ms-subsite-smoke.php "$SITE_ID" --url="$WP_URL" --path="$WP_PATH" --allow-root
+          wp site delete "$SITE_ID" --yes --path="$WP_PATH" --allow-root
+          cat > /tmp/ms-subsite-delete-smoke.php <<'PHP'
+          <?php
+          // Deleting a subsite must drop that subsite's wptsall tables
+          // (wpmu_drop_tables filter) while the main-site family survives.
+          $blog_id = (int) $argv[1];
+          global $wpdb;
+          $pattern = '%' . $wpdb->esc_like( 'wptsall' ) . '%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          $infix   = '_' . $blog_id . '_wptsall_';
+          foreach ( $tables as $table ) {
+            if ( false !== strpos( (string) $table, $infix ) ) {
+              fwrite( STDERR, "deleted subsite table survived: $table\n" );
+              exit( 1 );
+            }
+          }
+          $main = preg_grep( '/^' . preg_quote( $wpdb->prefix, '/' ) . 'wptsall_/', $tables );
+          if ( empty( $main ) ) {
+            fwrite( STDERR, "main-site wptsall tables disappeared on subsite delete\n" );
+            exit( 1 );
+          }
+          echo 'ms-subsite-delete-ok remaining=' . count( $tables ) . "\n";
+          PHP
+          wp eval-file /tmp/ms-subsite-delete-smoke.php "$SITE_ID" --url="$WP_URL" --path="$WP_PATH" --allow-root
+
+      - name: Network uninstall keeps data by default
+        run: |
+          set -euo pipefail
+          wp plugin deactivate wpmmcc-ats --network --path="$WP_PATH" --allow-root
+          wp plugin uninstall wpmmcc-ats --path="$WP_PATH" --allow-root
+          if [ -d "$WP_PATH/wp-content/plugins/wpmmcc-ats" ]; then
+            echo "plugin directory survived uninstall" >&2
+            exit 1
+          fi
+          cat > /tmp/ms-uninstall-smoke.php <<'PHP'
+          <?php
+          // Default multisite uninstall: main-site tables survive (keep-data
+          // contract since 2.1.3) while per-site settings are removed.
+          global $wpdb;
+          $pattern = $wpdb->esc_like( $wpdb->prefix ) . 'wptsall%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          if ( empty( $tables ) ) {
+            fwrite( STDERR, "wptsall tables were dropped by a default (keep-data) multisite uninstall\n" );
+            exit( 1 );
+          }
+          if ( get_option( 'wptsall_settings' ) !== false ) {
+            fwrite( STDERR, "wptsall_settings option survived multisite uninstall\n" );
+            exit( 1 );
+          }
+          echo 'ms-uninstall-retention-ok tables=' . count( $tables ) . "\n";
+          PHP
+          wp eval-file /tmp/ms-uninstall-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
+
+      - name: Re-install, network re-activate, and opt-in full delete
+        run: |
+          set -euo pipefail
+          mkdir -p "$WP_PATH/wp-content/plugins/wpmmcc-ats"
+          tar -C "$GITHUB_WORKSPACE" --exclude=./.git -cf - . \
+            | tar -C "$WP_PATH/wp-content/plugins/wpmmcc-ats" -xf -
+          wp plugin activate wpmmcc-ats --network --path="$WP_PATH" --allow-root
+          wp eval-file /tmp/ms-activation-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
+          # Opt in on the main site; uninstall must then drop its family
+          # (the deleted subsite's tables are already gone).
+          wp option update wptsall_settings '{"delete_data_on_uninstall":true}' \
+            --format=json --url="$WP_URL" --path="$WP_PATH" --allow-root
+          wp plugin deactivate wpmmcc-ats --network --path="$WP_PATH" --allow-root
+          wp plugin uninstall wpmmcc-ats --path="$WP_PATH" --allow-root
+          cat > /tmp/ms-uninstall-full-smoke.php <<'PHP'
+          <?php
+          // With delete_data_on_uninstall enabled, the multisite uninstall
+          // must leave no wptsall table anywhere in the network.
+          global $wpdb;
+          $pattern = '%' . $wpdb->esc_like( 'wptsall' ) . '%';
+          $tables  = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $pattern ) );
+          if ( ! empty( $tables ) ) {
+            fwrite( STDERR, "wptsall tables survived opt-in full multisite uninstall: " . implode( ',', $tables ) . "\n" );
+            exit( 1 );
+          }
+          echo "ms-uninstall-full-delete-ok\n";
+          PHP
+          wp eval-file /tmp/ms-uninstall-full-smoke.php --url="$WP_URL" --path="$WP_PATH" --allow-root
+          echo "multisite cell OK: WP ${{ matrix.wp }} x PHP ${{ matrix.php }}"
