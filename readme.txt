@@ -41,6 +41,7 @@ This plugin can expose a REST API on **your own WordPress site** so an optional 
 * **Client download and documentation**: usage help at https://www.wpmm.cc/docs/, source code at https://github.com/wpmmcc/wptsall-client, signed installers and kits at https://github.com/wpmmcc/wptsall-client-releases
   * Linux/macOS: [install script](https://github.com/wpmmcc/wptsall-client-releases/raw/main/install.sh) — review it, then run: `bash install.sh` (WebUI) or follow Desktop install notes in the same repository
   * Windows: [installation guide](https://github.com/wpmmcc/wptsall-client-releases)
+* The client's local web UI listens on 127.0.0.1:8977 by default (loopback only, on the machine where you run the client). Port 8977 is unregistered and uncommon, so conflicts are rare; if another program has taken it, the WPTSALL_WEB_UI_PORT environment variable selects a different port.
 
 The client is NOT required. All plugin features work for manual translation without it.
 
