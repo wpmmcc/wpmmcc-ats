@@ -34,6 +34,7 @@ class Tasks_Page {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		// Legacy admin-post hook: clear stale license options from older builds.
 		add_action( 'admin_post_wptsall_delete_license', array( __CLASS__, 'handle_delete_license' ) );
+		add_action( 'admin_post_wptsall_issue_connection_pack', array( __CLASS__, 'handle_issue_connection_pack' ) );
 	}
 
 	/**
@@ -71,6 +72,65 @@ class Tasks_Page {
 			return;
 		}
 		// admin-common.css is already loaded globally by menu.php
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab switch
+		if ( isset( $_GET['tab'] ) && 'authorization' === sanitize_key( wp_unslash( $_GET['tab'] ) ) ) {
+			$copy_js = <<<'JS'
+jQuery(function($){
+	$('#wptsall-copy-pack').on('click', function(){
+		var box = $('#wptsall-connection-pack-json')[0];
+		if (box) { box.focus(); box.select(); }
+		try { document.execCommand('copy'); } catch (e) {}
+		if (navigator.clipboard && navigator.clipboard.writeText && box) {
+			navigator.clipboard.writeText(box.value);
+		}
+		$(this).text($(this).data('copied'));
+	});
+});
+JS;
+			wp_add_inline_script( 'jquery', $copy_js );
+		}
+	}
+
+	/**
+	 * Issue a one-time site connection pack from the Authorization tab.
+	 *
+	 * Mirrors `wp wptsall security issue-pairing-pack` for admins without
+	 * WP-CLI access: the pack JSON is shown once and can be pasted into the
+	 * standalone client (Sites -> Import Connection Pack).
+	 *
+	 * @since 2.1.5
+	 * @return void
+	 */
+	public static function handle_issue_connection_pack() {
+		if ( ! wptsall_user_can_manage_translations() ) {
+			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
+		}
+		check_admin_referer( 'wptsall_issue_connection_pack' );
+
+		if ( ! function_exists( 'wptsall_create_site_connection_pack' ) ) {
+			wp_die( esc_html__( 'Site connection pack API unavailable.', 'wpmmcc-ats' ) );
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above via check_admin_referer()
+		$post      = wp_unslash( $_POST );
+		$device_id = isset( $post['wptsall_device_id'] ) ? sanitize_key( $post['wptsall_device_id'] ) : '';
+		$label     = isset( $post['wptsall_device_label'] ) ? sanitize_text_field( $post['wptsall_device_label'] ) : '';
+		$ttl       = isset( $post['wptsall_pack_ttl'] ) ? max( 30, min( 3600, (int) $post['wptsall_pack_ttl'] ) ) : 300;
+
+		$pack = wptsall_create_site_connection_pack( $device_id, $label, $ttl );
+		set_transient( 'wptsall_conn_pack_' . get_current_user_id(), $pack, MINUTE_IN_SECONDS * 2 );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page' => self::PAGE_SLUG,
+					'tab'  => 'authorization',
+					'pack' => '1',
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	private static function get_tabs() {
@@ -450,6 +510,56 @@ class Tasks_Page {
 	private static function render_authorization_tab() {
 		echo '<p>' . esc_html__( 'All features are free. No license key required.', 'wpmmcc-ats' ) . '</p>';
 		echo '<p>' . esc_html__( 'The client API token is automatically generated for communication with the translation client.', 'wpmmcc-ats' ) . '</p>';
+
+		// Freshly issued connection pack: kept in a short-lived transient so it survives
+		// the post/redirect/get round trip (browser prefetch would consume a one-shot read).
+		// The pairing code itself is single-claim, so re-displaying it to the same admin
+		// within the TTL is safe; the transient expires on its own.
+		$pack = get_transient( 'wptsall_conn_pack_' . get_current_user_id() );
+		if ( ! empty( $pack['pairing_code'] ) ) {
+			$expires_in = (int) ( $pack['expires_in'] ?? 0 );
+			$expires_at = (int) ( $pack['expires_at'] ?? 0 );
+
+			echo '<div class="notice notice-success inline" style="margin-top:8px;">';
+			echo '<p><strong>' . esc_html__( 'Connection pack issued. It expires soon — copy it into the client now.', 'wpmmcc-ats' ) . '</strong></p>';
+			echo '<p>' . esc_html__( 'Pairing code (enter separately when importing):', 'wpmmcc-ats' ) . ' <code style="font-size:14px;">' . esc_html( (string) $pack['pairing_code'] ) . '</code></p>';
+			echo '<p>';
+			echo '<textarea id="wptsall-connection-pack-json" rows="10" class="large-text code" readonly>' . esc_textarea( wp_json_encode( $pack, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ) . '</textarea>';
+			echo '</p>';
+			echo '<p>';
+			echo '<button type="button" class="button button-primary" id="wptsall-copy-pack" data-copied="' . esc_attr__( 'Copied!', 'wpmmcc-ats' ) . '">' . esc_html__( 'Copy pack JSON', 'wpmmcc-ats' ) . '</button> ';
+			printf(
+				/* translators: 1: lifetime in seconds */
+				esc_html__( 'Valid for %d seconds (until %s). Regenerate if it expires.', 'wpmmcc-ats' ),
+				$expires_in,
+				esc_html( gmdate( 'H:i:s T', $expires_at ) )
+			);
+			echo '</p>';
+			echo '<p class="description">' . esc_html__( 'In the client WebUI: Sites -> Add site -> paste this JSON as the connection pack and enter the pairing code above.', 'wpmmcc-ats' ) . '</p>';
+			echo '</div>';
+		}
+
+		echo '<h3 style="margin-top:16px;">' . esc_html__( 'Connect a translation client', 'wpmmcc-ats' ) . '</h3>';
+		echo '<p class="description">' . esc_html__( 'Generate a short-lived connection pack and paste it into the WPTSALL Client (WebUI or Desktop). The pack carries the site URL, route secret and a one-time pairing code; no license or account is needed.', 'wpmmcc-ats' ) . '</p>';
+
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:8px;">';
+		wp_nonce_field( 'wptsall_issue_connection_pack' );
+		echo '<input type="hidden" name="action" value="wptsall_issue_connection_pack" />';
+		echo '<table class="form-table" role="presentation"><tbody>';
+		echo '<tr><th scope="row"><label for="wptsall_device_id">' . esc_html__( 'Client Device ID', 'wpmmcc-ats' ) . '</label></th>';
+		echo '<td><input type="text" id="wptsall_device_id" name="wptsall_device_id" class="regular-text" autocomplete="off" />';
+		echo '<p class="description">' . esc_html__( 'Optional. Shown in the client under Settings. Leave blank to let any single client claim the pack while it is valid.', 'wpmmcc-ats' ) . '</p></td></tr>';
+		echo '<tr><th scope="row"><label for="wptsall_device_label">' . esc_html__( 'Device Label', 'wpmmcc-ats' ) . '</label></th>';
+		echo '<td><input type="text" id="wptsall_device_label" name="wptsall_device_label" class="regular-text" autocomplete="off" />';
+		echo '<p class="description">' . esc_html__( 'Optional human-readable label for the paired device.', 'wpmmcc-ats' ) . '</p></td></tr>';
+		echo '<tr><th scope="row"><label for="wptsall_pack_ttl">' . esc_html__( 'Validity (seconds)', 'wpmmcc-ats' ) . '</label></th>';
+		echo '<td><input type="number" id="wptsall_pack_ttl" name="wptsall_pack_ttl" value="300" min="30" max="3600" step="30" class="small-text" />';
+		echo '<p class="description">' . esc_html__( 'How long the pairing code stays claimable (30-3600 seconds).', 'wpmmcc-ats' ) . '</p></td></tr>';
+		echo '</tbody></table>';
+		submit_button( __( 'Generate Connection Pack', 'wpmmcc-ats' ) );
+		echo '</form>';
+
+		echo '<p class="description" style="margin-top:12px;">' . esc_html__( 'WP-CLI alternative:', 'wpmmcc-ats' ) . ' <code>wp wptsall security issue-pairing-pack --device-id=&lt;client-device-id&gt;</code></p>';
 	}
 
 	// =====================================================================

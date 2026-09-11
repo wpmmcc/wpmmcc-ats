@@ -7442,4 +7442,54 @@ msgstr "目标语言：%s"
 #~ msgid "Not scheduled"
 #~ msgstr "未计划"
 
+msgid "Site connection pack API unavailable."
+msgstr "站点连接包接口不可用。"
+
+msgid "Connection pack issued. It expires soon — copy it into the client now."
+msgstr "连接包已签发，即将过期——请立即复制到客户端。"
+
+msgid "Pairing code (enter separately when importing):"
+msgstr "配对码（导入时单独填写）："
+
+msgid "Copied!"
+msgstr "已复制！"
+
+msgid "Copy pack JSON"
+msgstr "复制连接包 JSON"
+
+msgid "Valid for %d seconds (until %s). Regenerate if it expires."
+msgstr "有效期 %d 秒（至 %s）。过期请重新生成。"
+
+msgid "In the client WebUI: Sites -> Add site -> paste this JSON as the connection pack and enter the pairing code above."
+msgstr "在客户端 WebUI 中：站点 → 添加站点 → 将此 JSON 作为连接包粘贴，并输入上面的配对码。"
+
+msgid "Connect a translation client"
+msgstr "连接翻译客户端"
+
+msgid "Generate a short-lived connection pack and paste it into the WPTSALL Client (WebUI or Desktop). The pack carries the site URL, route secret and a one-time pairing code; no license or account is needed."
+msgstr "生成一个短期有效的连接包并粘贴到 WPTSALL 客户端（WebUI 或桌面端）。连接包包含站点地址、路由密钥与一次性配对码；无需账号或许可。"
+
+msgid "Client Device ID"
+msgstr "客户端设备 ID"
+
+msgid "Optional. Shown in the client under Settings. Leave blank to let any single client claim the pack while it is valid."
+msgstr "选填。可在客户端的“设置”中查看。留空表示有效期内的任意一台客户端都可认领。"
+
+msgid "Device Label"
+msgstr "设备标签"
+
+msgid "Optional human-readable label for the paired device."
+msgstr "选填，已配对设备的可读标签。"
+
+msgid "Validity (seconds)"
+msgstr "有效期（秒）"
+
+msgid "How long the pairing code stays claimable (30-3600 seconds)."
+msgstr "配对码可被认领的时长（30-3600 秒）。"
+
+msgid "Generate Connection Pack"
+msgstr "生成连接包"
+
+msgid "WP-CLI alternative:"
+msgstr "WP-CLI 等价方式："
 

@@ -41,7 +41,7 @@ class Translation_Rule_Service {
 	/**
 	 * Get all models with optional filtering
 	 *
-	 * @param array $args Query arguments.
+	 * @param array $args Query arguments. 'per_page' <= 0 means no limit.
 	 * @return array
 	 */
 	public static function get_models( $args = array() ) {
@@ -75,7 +75,20 @@ class Translation_Rule_Service {
 		}
 
 		$where_sql = implode( ' AND ', $where_clauses );
-		$offset    = ( $args['page'] - 1 ) * $args['per_page'];
+
+		// per_page <= 0 means "no limit" (same convention as Plugin_Mapping_Service::get_all()).
+		$per_page  = (int) $args['per_page'];
+		$unlimited = $per_page <= 0;
+		$offset    = ( (int) $args['page'] - 1 ) * max( 1, $per_page );
+
+		// MySQL rejects a negative LIMIT ("LIMIT -1 OFFSET 0" is a syntax error), which used to
+		// make this query return nothing and blank every rule count in the admin models list.
+		$pagination_sql    = '';
+		$pagination_values = array();
+		if ( ! $unlimited ) {
+			$pagination_sql    = ' LIMIT %d OFFSET %d';
+			$pagination_values = array( $per_page, $offset );
+		}
 
 		// Build orderby
 		$allowed_orderby = array( 'id', 'plugin_slug', 'plugin_name', 'status', 'created_at', 'updated_at' );
@@ -96,15 +109,14 @@ class Translation_Rule_Service {
 					LEFT JOIN %i r ON m.id = r.model_id
 					WHERE ' . $where_sql . '
 					GROUP BY m.id
-					ORDER BY ' . $orderby . ' ' . $order . '
-					LIMIT %d OFFSET %d',
-				array_merge( array( $models_table, $rules_table ), $where_values, array( $args['per_page'], $offset ) ),
+					ORDER BY ' . $orderby . ' ' . $order . $pagination_sql,
+				array_merge( array( $models_table, $rules_table ), $where_values, $pagination_values ),
 				ARRAY_A
 			);
 		} else {
 			$models = wptsall_db_get_results(
-				'SELECT * FROM %i m WHERE ' . $where_sql . ' ORDER BY ' . $orderby . ' ' . $order . ' LIMIT %d OFFSET %d',
-				array_merge( array( $models_table ), $where_values, array( $args['per_page'], $offset ) ),
+				'SELECT * FROM %i m WHERE ' . $where_sql . ' ORDER BY ' . $orderby . ' ' . $order . $pagination_sql,
+				array_merge( array( $models_table ), $where_values, $pagination_values ),
 				ARRAY_A
 			);
 		}
@@ -121,9 +133,9 @@ class Translation_Rule_Service {
 		return array(
 			'models'      => $models,
 			'total'       => $total,
-			'page'        => $args['page'],
-			'per_page'    => $args['per_page'],
-			'total_pages' => (int) ceil( $total / $args['per_page'] ),
+			'page'        => $unlimited ? 1 : (int) $args['page'],
+			'per_page'    => $per_page,
+			'total_pages' => $unlimited ? 1 : (int) ceil( $total / max( 1, $per_page ) ),
 		);
 	}
 
