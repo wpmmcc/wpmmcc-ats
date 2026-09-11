@@ -81,6 +81,10 @@ This plugin can coexist with Polylang and WPML. However, it provides its own ind
 
 English is built in. This plugin's strings are registered with the WordPress.org translation system (translate.wordpress.org): once the plugin is listed, language packs (starting with Simplified Chinese) install automatically from there when your site language is set under Settings → General. The GitHub source distribution additionally bundles a complete zh_CN translation in its languages/ directory. The plugin never downloads language packs from a third-party server.
 
+= Does the plugin write debug logs? =
+
+No. Debug logging is disabled by default and all features work without any logging. A developer can enable file logging by defining WPTSALL_LOG_ENABLED as true in wp-config.php (minimum level and channel filters: WPTSALL_LOG_LEVEL, WPTSALL_LOG_CHANNELS). Logs are then written to wp-content/uploads/wptsall-logs/ (protected from web access), credentials are automatically redacted before anything is written, and files older than 30 days are pruned automatically.
+
 == Screenshots ==
 
 1. Translation Dashboard — progress overview per translation layer

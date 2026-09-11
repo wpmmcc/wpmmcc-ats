@@ -50,8 +50,34 @@ function init() {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		file_put_contents( $index, '<?php // Silence is golden' );
 	}
+
+	// Retention: prune log files older than 30 days at most once a day.
+	// Runs only when logging is enabled (release default: disabled), so the
+	// usual request path never touches the filesystem here.
+	if ( wptsall_log_enabled() ) {
+		wptsall_log_retention_tick();
+	}
 }
 add_action( 'plugins_loaded', __NAMESPACE__ . '\init', 1 );
+
+/**
+ * Run the daily log-retention tick: delete log files older than 30 days and
+ * record the run timestamp so it executes at most once per day.
+ *
+ * Split out of init() so the retention logic itself stays unit-testable
+ * without requiring the WPTSALL_LOG_ENABLED constant to be set.
+ *
+ * @return int Number of files deleted by this tick (0 when the daily guard
+ *             is still fresh).
+ */
+function wptsall_log_retention_tick() {
+	$last_run = (int) get_option( 'wptsall_log_cleanup_last_run', 0 );
+	if ( ( time() - $last_run ) <= DAY_IN_SECONDS ) {
+		return 0;
+	}
+	update_option( 'wptsall_log_cleanup_last_run', time(), false );
+	return wptsall_clean_old_logs( 30 );
+}
 
 // Load logger functions.
 require_once __DIR__ . '/logger.php';
