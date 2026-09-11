@@ -1952,7 +1952,7 @@ function wptsall_get_translated_field( int $post_id, string $field, string $lang
 	}
 
 	if ( class_exists( '\\WPTSALL\\Sites\\Services\\Manual_Content_Service' ) ) {
-		$relations = \WPTSALL\Sites\Services\Site_Relation_Service::get_all( array( 'status' => 'active' ) );
+		$relations = \WPTSALL\Sites\Services\Site_Relation_Service::get_all_relations( array( 'status' => 'active' ) );
 		foreach ( $relations as $relation ) {
 			$relation_id = (int) $relation['id'];
 			$existing    = \WPTSALL\Sites\Services\Manual_Content_Service::find_existing_translation( $post_id, $relation_id );
@@ -2066,7 +2066,8 @@ function wptsall_raw_term_meta( $term_id, $meta_key ) {
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 	$raw = $wpdb->get_var(
 		$wpdb->prepare(
-			"SELECT meta_value FROM {$wpdb->termmeta} WHERE term_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1",
+			'SELECT meta_value FROM %i WHERE term_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1',
+			$wpdb->termmeta,
 			$term_id,
 			$meta_key
 		)

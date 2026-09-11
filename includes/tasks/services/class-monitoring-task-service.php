@@ -1001,10 +1001,61 @@ class Monitoring_Task_Service {
 	/**
 	 * Get monitoring tasks due for check
 	 *
+	 * @param int $limit Maximum tasks to return.
 	 * @return array Tasks due for check.
 	 */
-	public static function get_due_tasks() {
-		return self::get_active_tasks( 10 );
+	public static function get_due_tasks( $limit = 10 ) {
+		return self::get_active_tasks( max( 1, (int) $limit ) );
+	}
+
+	/**
+	 * Run one monitoring check for a task (the CLI 'tasks monitor' path).
+	 *
+	 * Current monitoring semantics: the task's i18n scan is recovered when
+	 * incomplete (the same pass the wptsall_process_monitoring_tasks cron
+	 * performs in the tasks module) and the check window is stamped via
+	 * record_check(). There is no per-item content sweep in the current
+	 * architecture; the stats report the check itself.
+	 *
+	 * @param int $task_id Monitoring task ID.
+	 * @return array {
+	 *     bool  $success Whether the check ran.
+	 *     array $stats   { checked, synced, errors } counters.
+	 *     string $error  Failure reason when success is false.
+	 * }
+	 */
+	public static function process( $task_id ) {
+		$task_id = absint( $task_id );
+		$task    = $task_id > 0 ? self::get( $task_id ) : null;
+		if ( ! $task ) {
+			return array(
+				'success' => false,
+				'error'   => 'not_found',
+			);
+		}
+
+		$relation_id = (int) ( $task['relation_id'] ?? 0 );
+
+		// Same recovery conditions as the cron pass (module handle_monitoring_cron).
+		$scan   = $task['meta']['i18n_scan'] ?? null;
+		$status = $scan['status'] ?? 'not_started';
+		if ( $scan && ! in_array( $status, array( 'completed', 'not_started' ), true )
+			&& ( $scan['retry_count'] ?? 0 ) < self::I18N_SCAN_MAX_RETRIES
+			&& $relation_id > 0 ) {
+			// run_i18n_scan checks its lock internally; safe to call directly.
+			self::run_i18n_scan( $relation_id );
+		}
+
+		self::record_check( $task_id, 0, 0 );
+
+		return array(
+			'success' => true,
+			'stats'   => array(
+				'checked' => 1,
+				'synced'  => 0,
+				'errors'  => 0,
+			),
+		);
 	}
 
 	/**

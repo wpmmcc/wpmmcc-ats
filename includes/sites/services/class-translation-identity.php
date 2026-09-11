@@ -52,7 +52,8 @@ class Translation_Identity {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1",
+				'SELECT meta_value FROM %i WHERE post_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1',
+				$wpdb->postmeta,
 				$post_id,
 				$meta_key
 			)

@@ -85,6 +85,70 @@ class Translation_Memory_Service {
 	}
 
 	/**
+	 * Suggest stored translation pairs for one manual-editor field.
+	 *
+	 * Domain-scoped variant of lookup() used by the manual content service:
+	 * the relation supplies the language pair, the resolved text domain
+	 * scopes the query (idx_domain), and exact source_text matches are
+	 * ordered by usage so the most-used translation is suggested first.
+	 * Suggestions are read-only; lookup() keeps the occurrence bumping.
+	 *
+	 * @since 2.1.4
+	 * @param int    $relation_id Site relation ID.
+	 * @param string $text_domain Resolved text domain (e.g. 'wordpress-blog').
+	 * @param string $source_text Normalized source text.
+	 * @param string $context     Optional context filter.
+	 * @param int    $limit       Max suggestions (1-10).
+	 * @return array List of suggestion items; empty array on any mismatch.
+	 */
+	public static function suggest_for_relation_domain( $relation_id, $text_domain, $source_text, $context = '', $limit = 5 ) {
+		$source_text = trim( (string) $source_text );
+		if ( '' === $source_text || ! self::table_exists() ) {
+			return array();
+		}
+
+		if ( ! class_exists( '\WPTSALL\Sites\Services\Site_Relation_Service' ) ) {
+			return array();
+		}
+		$relation = \WPTSALL\Sites\Services\Site_Relation_Service::get_relation( (int) $relation_id );
+		if ( ! is_array( $relation ) ) {
+			return array();
+		}
+
+		$source_lang = (string) ( $relation['source_lang'] ?? '' );
+		$target_lang = (string) ( $relation['target_lang'] ?? '' );
+		if ( '' === $source_lang || '' === $target_lang ) {
+			return array();
+		}
+
+		$limit = max( 1, min( 10, (int) $limit ) );
+
+		$sql  = 'SELECT id, target_text, domain, context, occurrences, last_used_at FROM %i
+			 WHERE source_text = %s AND source_lang = %s AND target_lang = %s AND domain = %s';
+		$args = array( self::table(), $source_text, $source_lang, $target_lang, (string) $text_domain );
+		if ( '' !== trim( (string) $context ) ) {
+			$sql   .= ' AND context = %s';
+			$args[] = (string) $context;
+		}
+		$sql   .= ' ORDER BY occurrences DESC, updated_at DESC LIMIT %d';
+		$args[] = $limit;
+
+		$rows = wptsall_db_get_results( $sql, $args, ARRAY_A );
+
+		$items = array();
+		foreach ( (array) $rows as $row ) {
+			$items[] = array(
+				'target_text'  => (string) ( $row['target_text'] ?? '' ),
+				'domain'       => (string) ( $row['domain'] ?? '' ),
+				'context'      => (string) ( $row['context'] ?? '' ),
+				'occurrences'  => (int) ( $row['occurrences'] ?? 0 ),
+				'last_used_at' => (string) ( $row['last_used_at'] ?? '' ),
+			);
+		}
+		return $items;
+	}
+
+	/**
 	 * Record a translation pair. If a row exists, refresh target_text + bump occurrences.
 	 *
 	 * @param string $source_text Source text.

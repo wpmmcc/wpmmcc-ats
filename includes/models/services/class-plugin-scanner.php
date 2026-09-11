@@ -1187,6 +1187,18 @@ class Plugin_Scanner {
 	);
 
 	/**
+	 * Structural taxonomies whose terms are site chrome, not translatable
+	 * content. Term changes in these must not enter the sync outbox.
+	 *
+	 * @var array
+	 */
+	protected static $excluded_taxonomies = array(
+		'nav_menu',
+		'link_category',
+		'post_format',
+	);
+
+	/**
 	 * Merge peer language configs + field adapters into a scan result.
 	 *
 	 * Lets overlay plugins (Elementor JSON, ACF fields) and dynamic CPTs
@@ -1340,6 +1352,19 @@ class Plugin_Scanner {
 	public static function is_excluded_post_type( $post_type ) {
 		$post_type = sanitize_key( (string) $post_type );
 		return in_array( $post_type, self::$excluded_post_types, true );
+	}
+
+	/**
+	 * Whether this taxonomy is structural (site chrome) and its term changes
+	 * must be skipped by the content-change dispatcher.
+	 *
+	 * @since 2.1.4
+	 * @param string $taxonomy Taxonomy slug.
+	 * @return bool
+	 */
+	public static function is_excluded_taxonomy( $taxonomy ) {
+		$taxonomy = sanitize_key( (string) $taxonomy );
+		return in_array( $taxonomy, self::$excluded_taxonomies, true );
 	}
 
 	/**

@@ -352,7 +352,8 @@ class Field_Ownership_Service {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->termmeta} WHERE term_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1",
+				'SELECT meta_value FROM %i WHERE term_id = %d AND meta_key = %s ORDER BY meta_id DESC LIMIT 1',
+				$wpdb->termmeta,
 				$term_id,
 				$meta_key
 			)

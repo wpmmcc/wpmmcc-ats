@@ -781,6 +781,29 @@ class Site_Relation_Service {
 	}
 
 	/**
+	 * Whether a relation targets the source site itself (self-translation).
+	 *
+	 * Self-translation relations overwrite the source post in place (the
+	 * sync executor backs up the original into _wptsall_original_* meta);
+	 * they are the only 'wp' target whose site id equals the source site id.
+	 *
+	 * @since 2.1.4
+	 * @param array|null $relation Relation row (from get_relation()).
+	 * @return bool
+	 */
+	public static function is_self_translation( $relation ) {
+		if ( ! is_array( $relation ) ) {
+			return false;
+		}
+		if ( 'wp' !== (string) ( $relation['target_site_type'] ?? '' ) ) {
+			return false;
+		}
+		$target_site_id = (int) ( $relation['target_site_id'] ?? 0 );
+		return $target_site_id > 0
+			&& $target_site_id === (int) ( $relation['source_site_id'] ?? 0 );
+	}
+
+	/**
 	 * Get all target sites for a source site
 	 *
 	 * Used for fast lookup by the Hooks module

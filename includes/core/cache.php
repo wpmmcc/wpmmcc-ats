@@ -168,8 +168,9 @@ function wptsall_idempotency_clear_all(): int {
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 	$deleted = (int) $wpdb->query(
 		$wpdb->prepare(
-			"DELETE FROM {$wpdb->options}
-			 WHERE option_name LIKE %s OR option_name LIKE %s",
+			'DELETE FROM %i
+			 WHERE option_name LIKE %s OR option_name LIKE %s',
+			$wpdb->options,
 			$wpdb->esc_like( '_transient_wptsall_idem_' ) . '%',
 			$wpdb->esc_like( '_transient_timeout_wptsall_idem_' ) . '%'
 		)

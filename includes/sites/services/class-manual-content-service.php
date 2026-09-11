@@ -633,8 +633,8 @@ class Manual_Content_Service {
 		$limit = max( 1, min( 10, $limit ) );
 		$items = array();
 
-		if ( class_exists( '\\WPTSALL\\Templates\\Services\\Translation_Memory_Service' ) && '' !== $text_domain ) {
-			$items = \WPTSALL\Templates\Services\Translation_Memory_Service::suggest_for_relation_domain(
+		if ( class_exists( '\WPTSALL\TranslationMemory\Services\Translation_Memory_Service' ) && '' !== $text_domain ) {
+			$items = \WPTSALL\TranslationMemory\Services\Translation_Memory_Service::suggest_for_relation_domain(
 				$relation_id,
 				$text_domain,
 				$normalized_source_text,
@@ -643,9 +643,9 @@ class Manual_Content_Service {
 			);
 		}
 
-		if ( empty( $items ) && 'wordpress-blog' !== $text_domain && class_exists( '\\WPTSALL\\Templates\\Services\\Translation_Memory_Service' ) ) {
+		if ( empty( $items ) && 'wordpress-blog' !== $text_domain && class_exists( '\WPTSALL\TranslationMemory\Services\Translation_Memory_Service' ) ) {
 			$text_domain = 'wordpress-blog';
-			$items = \WPTSALL\Templates\Services\Translation_Memory_Service::suggest_for_relation_domain(
+			$items = \WPTSALL\TranslationMemory\Services\Translation_Memory_Service::suggest_for_relation_domain(
 				$relation_id,
 				$text_domain,
 				$normalized_source_text,

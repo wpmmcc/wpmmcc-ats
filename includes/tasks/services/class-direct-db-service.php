@@ -890,6 +890,49 @@ class Direct_DB_Service {
 	}
 
 	/**
+	 * Read post meta directly from the postmeta table.
+	 *
+	 * Bypasses the plugin's get_post_metadata filter on purpose: sync write
+	 * paths (copy_once target checks, _elementor_data URL rewrites) must
+	 * see the stored value, not the filtered one.
+	 *
+	 * @param int    $post_id  Post ID.
+	 * @param string $meta_key Meta key.
+	 * @param bool   $single   Return the first value only (matches get_post_meta()).
+	 * @return mixed Stored value; '' (single) or array() (multi) when absent.
+	 */
+	public static function get_post_meta( $post_id, $meta_key, $single = true ) {
+		global $wpdb;
+
+		$post_id  = absint( $post_id );
+		$meta_key = (string) $meta_key;
+		if ( $post_id <= 0 || '' === $meta_key ) {
+			return $single ? '' : array();
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT meta_value FROM %i WHERE post_id = %d AND meta_key = %s ORDER BY meta_id',
+				$wpdb->postmeta,
+				$post_id,
+				$meta_key
+			),
+			ARRAY_A
+		);
+
+		$values = array();
+		foreach ( (array) $rows as $row ) {
+			$values[] = maybe_unserialize( $row['meta_value'] ?? '' );
+		}
+
+		if ( $single ) {
+			return $values[0] ?? '';
+		}
+		return $values;
+	}
+
+	/**
 	 * Copy post meta from one post to another (direct copy)
 	 *
 	 * @param int   $source_post_id Source post ID.

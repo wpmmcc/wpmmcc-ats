@@ -22,6 +22,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Template_Entry_Service {
 
 	/**
+	 * Normalize a source string for entry/memory matching.
+	 *
+	 * Canonical form used at both storage time (template scanners store the
+	 * trimmed original) and lookup time (translation memory pairs are keyed
+	 * on trimmed source_text), so both sides compare identical strings.
+	 *
+	 * @since 2.1.4
+	 * @param string $text Raw source text.
+	 * @return string Normalized source text ('' when nothing remains).
+	 */
+	public static function normalize_original_string( $text ) {
+		$text = trim( (string) $text );
+		return $text;
+	}
+
+	/**
 	 * Get a single entry
 	 *
 	 * @param int $id Entry ID
