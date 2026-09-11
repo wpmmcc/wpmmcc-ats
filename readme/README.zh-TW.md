@@ -38,6 +38,21 @@ WPMMCC ATS 是一個把單語 WordPress 網站變成多語系網站的外掛。�
 ## 自動翻譯
 自動翻譯請安裝配套的 WPTSALL 用戶端(WebUI 或 Desktop)。它使用裝置級權杖直連你的網站,領取翻譯任務,呼叫你設定的翻譯廠商,並把結果寫回。用戶端儲存庫:https://github.com/wpmmcc/wptsall-client
 
+## Updating
+- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
+- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
+- Release notes for every version are in the Changelog section of readme.txt
+
+## Uninstalling
+- Deactivate the plugin on the Plugins page, then delete it
+- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
+- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+
+## Open-source components
+- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
+- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
+- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
+- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
 ## Languages
 英文為內建來源語言。簡體中文(zh_CN)語言包正在 languages/ 目錄推進翻譯;訊息目錄編譯完成後,在 設定 → 一般 選擇網站語言即可自動載入。要新增語言,請用常用的 PO 編輯器翻譯 languages/wpmmcc-ats.pot 並歡迎回饋貢獻。
 

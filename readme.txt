@@ -55,6 +55,14 @@ Minimum requirements: WordPress 6.2 or newer, PHP 7.4 or newer.
 
 When you configure the optional client with a third-party translation provider, **the client** (not this plugin) may send content you choose to translate to that provider under your own API keys and account terms.
 
+= Updating =
+
+Updates arrive through the standard WordPress updater (Dashboard → Updates, or the Plugins page) — no manual steps are required. Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over to the new version. See the Changelog section for what each release changes.
+
+= Uninstalling =
+
+Deactivate the plugin on the Plugins page, then delete it. Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything — see the FAQ below. For a full cleanup instead, enable "Delete data on uninstall" in Settings before deleting; plugin settings, transients and scheduled tasks are always removed either way.
+
 == Frequently Asked Questions ==
 
 = Is this plugin free? =
@@ -188,6 +196,14 @@ If you use the optional translation client, that program talks only to **your** 
 Optional product documentation links (for the separate client distribution, not plugin outbound APIs):
 * Terms of Service: https://www.wpmm.cc/terms
 * Privacy Policy: https://www.wpmm.cc/privacy
+
+== Credits ==
+
+This plugin bundles no third-party libraries. It is plain PHP built on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), and its admin pages use vanilla JavaScript plus jQuery as shipped with WordPress core.
+
+Interface translations use the WordPress.org translation system (translate.wordpress.org, GlotPress).
+
+For field discovery the plugin reads data from third-party content plugins — WooCommerce, Elementor, ACF, Yoast SEO and more. Those projects are not bundled or modified. The plugin coexists with the multilingual plugins WPML and Polylang; no code from either project is used.
 
 == Changelog ==
 

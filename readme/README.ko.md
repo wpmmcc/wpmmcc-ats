@@ -38,6 +38,21 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 ## 자동 번역
 자동 번역에는 함께 제공되는 WPTSALL Client(WebUI 또는 Desktop)를 설치하세요. 기기 토큰으로 사이트에 직접 연결해 번역 작업을 가져오고, 설정한 번역 제공자를 호출한 뒤 결과를 다시 기록합니다. 클라이언트 저장소: https://github.com/wpmmcc/wptsall-client
 
+## Updating
+- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
+- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
+- Release notes for every version are in the Changelog section of readme.txt
+
+## Uninstalling
+- Deactivate the plugin on the Plugins page, then delete it
+- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
+- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+
+## Open-source components
+- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
+- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
+- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
+- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
 ## Languages
 영어가 내장 원본 언어입니다. 간체 중국어(zh_CN) 팩은 languages/에서 번역을 진행 중입니다. 카탈로그 컴파일 후 설정 → 일반에서 사이트 언어를 선택하면 자동으로 로드됩니다. 다른 언어 추가는 languages/wpmmcc-ats.pot을 PO 편집기로 번역해 기여해 주세요.
 

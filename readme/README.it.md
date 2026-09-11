@@ -38,6 +38,21 @@ WPMMCC ATS è un plugin WordPress che trasforma un sito monolingue in un sito mu
 ## Traduzione automatica
 Per la traduzione automatica installa il client companion WPTSALL Client (WebUI o Desktop). Si collega direttamente al tuo sito con un token di dispositivo, preleva le attività di traduzione, chiama il provider configurato e riscrive i risultati. Repository del client: https://github.com/wpmmcc/wptsall-client
 
+## Updating
+- Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required
+- Updating never touches your translation data: tables, virtual sites, translation memory, terminology and settings all carry over
+- Release notes for every version are in the Changelog section of readme.txt
+
+## Uninstalling
+- Deactivate the plugin on the Plugins page, then delete it
+- Since 2.1.3, deleting the plugin keeps your translation data by default (tables, translated posts/terms, translation memory, terminology, language packs), so a reinstall restores everything
+- For a full cleanup instead, enable "Delete data on uninstall" in the plugin settings before deleting. Plugin settings, transients and scheduled tasks are always removed either way
+
+## Open-source components
+- No third-party code is bundled: plain PHP on WordPress core APIs (REST, WPDB/dbDelta, cron, gettext), with admin pages in vanilla JavaScript plus jQuery as shipped with WordPress
+- Interface translations come from the WordPress.org translation system (GlotPress) — translate.wordpress.org
+- Field discovery reads data from third-party content plugins such as WooCommerce, Elementor, ACF and Yoast SEO; those projects are not bundled or modified
+- Coexists with the multilingual plugins WPML and Polylang — no code from either project is used
 ## Languages
 L'inglese è la lingua sorgente integrata. Un pacchetto cinese semplificato (zh_CN) è in corso in languages/; una volta compilato il catalogo, scegli la lingua del sito in Impostazioni → Generali e WordPress lo carica automaticamente. Per aggiungere un'altra lingua, traduci languages/wpmmcc-ats.pot con il tuo editor PO preferito e contribuisci.
 
