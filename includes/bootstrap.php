@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define plugin constants.
 // ISS-COR-011: canonical version is in wpmmcc-ats.php plugin header. Keep in sync.
 if ( ! defined( 'WPTSALL_VERSION' ) ) {
-	define( 'WPTSALL_VERSION', '2.1.3' );
+	define( 'WPTSALL_VERSION', '2.1.4' );
 }
 
 if ( ! defined( 'WPTSALL_PATH' ) ) {

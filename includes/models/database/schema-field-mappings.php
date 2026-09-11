@@ -301,51 +301,6 @@ function wptsall_ensure_relation_scoped_mapping_tables() {
 }
 
 /**
- * Check if term mappings table exists
- *
- * @return bool
- */
-function wptsall_term_mappings_table_exists() {
-	global $wpdb;
-	$table_name = wptsall_table( 'term_mappings' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$result = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-
-	return $result === $table_name;
-}
-
-/**
- * Check if media mappings table exists
- *
- * @return bool
- */
-function wptsall_media_mappings_table_exists() {
-	global $wpdb;
-	$table_name = wptsall_table( 'media_mappings' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$result = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-
-	return $result === $table_name;
-}
-
-/**
- * Check if post mappings table exists
- *
- * @return bool
- */
-function wptsall_post_mappings_table_exists() {
-	global $wpdb;
-	$table_name = wptsall_table( 'post_mappings' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$result = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-
-	return $result === $table_name;
-}
-
-/**
  * Drop field mapping tables (for uninstall only)
  *
  * Note: user_mappings table is managed by the Sites module

@@ -197,6 +197,88 @@ function wptsall_log_file_path( $channel ) {
 }
 
 /**
+ * Timestamp for log line prefixes: millisecond precision plus an explicit
+ * UTC offset, so operators never confuse log time with server local time
+ * and can order near-simultaneous events.
+ *
+ * @return string e.g. "2026-09-11 07:24:46.123+00:00" (always UTC).
+ */
+function wptsall_log_timestamp() {
+	$now = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+	return $now->format( 'Y-m-d H:i:s.vP' );
+}
+
+/**
+ * Metadata header written when a log file is created (first entry of the
+ * day or after size rotation): version, environment and timezone context
+ * so a log excerpt is self-identifying without server access.
+ *
+ * Lines carry a "#" prefix so any future line parser can skip them.
+ *
+ * @return string Header block including trailing newline.
+ */
+function wptsall_log_file_header() {
+	$site_tz  = wp_timezone();
+	$site_now = new DateTime( 'now', $site_tz );
+
+	$lines = array(
+		'=== WPMMCC ATS debug log ===',
+		'started: ' . wptsall_log_timestamp(),
+		'plugin: ' . WPTSALL_VERSION . ' (wpmmcc-ats)',
+		'wp: ' . get_bloginfo( 'version' ) . ' php: ' . PHP_VERSION . ' sapi: ' . PHP_SAPI,
+		'multisite: ' . ( is_multisite() ? 'yes' : 'no' ),
+		'site tz: ' . $site_tz->getName() . ' (utc ' . $site_now->format( 'P' ) . '); log timestamps are utc',
+	);
+
+	return '# ' . implode( "\n# ", $lines ) . "\n";
+}
+
+/**
+ * Per-file size cap before rotation. Filterable via
+ * wptsall_log_max_file_size; 0 disables rotation (unlimited growth).
+ *
+ * @return int Bytes (default 5 MB).
+ */
+function wptsall_log_max_file_size() {
+	$bytes = (int) apply_filters( 'wptsall_log_max_file_size', 5 * 1024 * 1024 );
+	return max( 0, $bytes );
+}
+
+/**
+ * Rotate the current day file when it exceeds the size cap.
+ *
+ * Keeps up to 3 backups (wptsall-<channel>-<date>.1.log … .3.log) by
+ * shifting .2→.3, .1→.2 and moving the live file to .1, mirroring the
+ * client's rotation scheme. Returns whether the live file was rotated.
+ *
+ * @param string $log_file Live log file path.
+ * @return bool True when the file was rotated away.
+ */
+function wptsall_maybe_rotate_log_file( $log_file ) {
+	$max = wptsall_log_max_file_size();
+
+	if ( $max < 1 || ! file_exists( $log_file ) || filesize( $log_file ) < $max ) {
+		return false;
+	}
+
+	$keep = 3;
+
+	// Drop the oldest backup to make room, then shift the chain.
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	@unlink( $log_file . '.' . $keep );
+	for ( $i = $keep - 1; $i >= 1; $i-- ) {
+		$src = $log_file . '.' . $i;
+		if ( file_exists( $src ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+			@rename( $src, $log_file . '.' . ( $i + 1 ) );
+		}
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+	return @rename( $log_file, $log_file . '.1' );
+}
+
+/**
  * Redact credentials and bearer material before it reaches any log sink.
  *
  * This is deliberately centralized at the logger boundary so new call sites
@@ -278,8 +360,8 @@ function wptsall_log( $channel, $level, $message, $context = array() ) {
 		return false;
 	}
 
-	// Build the log entry.
-	$timestamp = gmdate( 'Y-m-d H:i:s' );
+	// Build the log entry (ms precision + UTC offset; see wptsall_log_timestamp).
+	$timestamp = wptsall_log_timestamp();
 	$level_upper = strtoupper( $level );
 
 	$log_entry = "[{$timestamp}] [{$level_upper}] {$message}";
@@ -304,6 +386,16 @@ function wptsall_log( $channel, $level, $message, $context = array() ) {
 	if ( ! is_dir( $log_dir ) ) {
 		// Directory could not be created; skip writing silently.
 		return false;
+	}
+
+	// Rotate the day file when it exceeds the size cap; the fresh file then
+	// starts with a header again.
+	wptsall_maybe_rotate_log_file( $log_file );
+
+	// Fresh files (first entry of the day, or right after rotation) carry
+	// the metadata header.
+	if ( ! file_exists( $log_file ) || 0 === filesize( $log_file ) ) {
+		$log_entry = wptsall_log_file_header() . $log_entry;
 	}
 
 	// Write to the log file.

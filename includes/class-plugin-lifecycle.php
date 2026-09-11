@@ -469,9 +469,7 @@ class Plugin_Lifecycle {
 		// ═══════════════════════════════════════════════════════════════════
 		// 1. Core tables
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_ensure_mapping_table' ) ) {
-			wptsall_ensure_mapping_table();
-		}
+		wptsall_schema_ensure_once( 'mapping_table', 'wptsall_ensure_mapping_table' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 2. Hooks module - removed in v0.9.0 (hooks table deprecated since v0.7.0)
@@ -481,51 +479,33 @@ class Plugin_Lifecycle {
 		// ═══════════════════════════════════════════════════════════════════
 		// 3. Models module
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_create_model_tables' ) ) {
-			wptsall_create_model_tables();
-		}
+		wptsall_schema_ensure_once( 'model_tables', 'wptsall_create_model_tables' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 4. Sites module
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_create_site_relations_table' ) ) {
-			wptsall_create_site_relations_table();
-		}
-		if ( function_exists( 'wptsall_create_relation_models_table' ) ) {
-			wptsall_create_relation_models_table();
-		}
-		if ( function_exists( 'wptsall_create_virtual_sites_table' ) ) {
-			wptsall_create_virtual_sites_table();
-		}
-		if ( function_exists( 'wptsall_create_relation_post_type_configs_table' ) ) {
-			wptsall_create_relation_post_type_configs_table();
-		}
+		wptsall_schema_ensure_once( 'site_relations_table', 'wptsall_create_site_relations_table' );
+		wptsall_schema_ensure_once( 'relation_models_table', 'wptsall_create_relation_models_table' );
+		wptsall_schema_ensure_once( 'virtual_sites_table', 'wptsall_create_virtual_sites_table' );
+		wptsall_schema_ensure_once( 'relation_post_type_configs_table', 'wptsall_create_relation_post_type_configs_table' );
 		// user_mappings is part of Sites module (schema-user-mappings.php).
-		if ( function_exists( 'wptsall_create_user_mappings_table' ) ) {
-			wptsall_create_user_mappings_table();
-		}
+		wptsall_schema_ensure_once( 'user_mappings_table', 'wptsall_create_user_mappings_table' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 5. Field mappings (v0.5.0) — term/media/post; user_mappings above
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_create_field_mapping_tables' ) ) {
-			wptsall_create_field_mapping_tables();
-		}
+		wptsall_schema_ensure_once( 'field_mapping_tables', 'wptsall_create_field_mapping_tables' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 6. Templates module
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_ensure_templates_tables' ) ) {
-			wptsall_ensure_templates_tables();
-		}
+		wptsall_schema_ensure_once( 'templates_tables', 'wptsall_ensure_templates_tables' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 7. Tasks module (also registered via wptsall_activate action hook,
 		//    but calling explicitly here ensures correct ordering).
 		// ═══════════════════════════════════════════════════════════════════
-		if ( function_exists( 'wptsall_init_tasks_tables' ) ) {
-			wptsall_init_tasks_tables();
-		}
+		wptsall_schema_ensure_once( 'tasks_tables', 'wptsall_init_tasks_tables' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 8. Translation Memory
@@ -534,9 +514,7 @@ class Plugin_Lifecycle {
 		if ( ! function_exists( 'wptsall_create_translation_memory_table' ) && is_readable( $tm_schema ) ) {
 			require_once $tm_schema;
 		}
-		if ( function_exists( 'wptsall_create_translation_memory_table' ) ) {
-			wptsall_create_translation_memory_table();
-		}
+		wptsall_schema_ensure_once( 'translation_memory_table', 'wptsall_create_translation_memory_table' );
 
 		// ═══════════════════════════════════════════════════════════════════
 		// 9. Run migrations
@@ -546,12 +524,8 @@ class Plugin_Lifecycle {
 		}
 
 		// Run v0.8.x specific migrations.
-		if ( function_exists( 'wptsall_migrate_site_relations_080' ) ) {
-			wptsall_migrate_site_relations_080();
-		}
-		if ( function_exists( 'wptsall_migrate_site_relations_081' ) ) {
-			wptsall_migrate_site_relations_081();
-		}
+		wptsall_schema_ensure_once( 'migrate_site_relations_080', 'wptsall_migrate_site_relations_080' );
+		wptsall_schema_ensure_once( 'migrate_site_relations_081', 'wptsall_migrate_site_relations_081' );
 	}
 
 	/**

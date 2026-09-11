@@ -4,7 +4,7 @@ Tags: multilingual, translation, multisite, virtual-site
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -190,6 +190,13 @@ Optional product documentation links (for the separate client distribution, not 
 * Privacy Policy: https://www.wpmm.cc/privacy
 
 == Changelog ==
+
+= 2.1.4 =
+* Added: Companion client uninstallers (Linux, macOS, Windows) remove the service, shortcuts and PATH entries cleanly; client data is kept by default and removed only with an explicit purge option.
+* Added: Debug log files open with a metadata header (versions, environment, timezone) and every line carries a millisecond, explicitly-UTC timestamp.
+* Added: Daily debug log files rotate at a size cap (5 MB by default, adjustable via the `wptsall_log_max_file_size` filter) and keep three backups instead of growing without bound.
+* Fixed: Repeated table-creation passes within a single request (plugin activation, admin self-heal, module load) no longer re-run schema DDL and existence checks.
+* Fixed (companion client): log rotation on Windows no longer breaks permanently when a viewer or antivirus tool holds the log file open; the log viewer shows millisecond timestamps.
 
 = 2.1.3 =
 * Changed: Deleting the plugin now keeps translation data by default; enable "Delete data on uninstall" in Settings for a full cleanup (settings, transients and scheduled tasks are always removed).

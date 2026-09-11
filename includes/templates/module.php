@@ -65,9 +65,10 @@ class Module {
 	 * @return void
 	 */
 	public static function ensure_tables() {
-		if ( function_exists( 'wptsall_ensure_templates_tables' ) ) {
-			wptsall_ensure_templates_tables();
-		}
+		// Per-request dedupe (audit: repeated create_tables passes) — shares
+		// the lifecycle's stamp name so activation + module load + admin_init
+		// migration pass run the DDL ensure only once per request.
+		wptsall_schema_ensure_once( 'templates_tables', 'wptsall_ensure_templates_tables' );
 
 		// Create system templates after ensuring tables exist
 		if ( function_exists( 'wptsall_create_system_templates' ) ) {

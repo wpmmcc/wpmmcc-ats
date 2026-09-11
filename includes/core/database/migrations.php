@@ -33,29 +33,20 @@ function wptsall_run_migrations() {
 	$tasks_schema = dirname( __DIR__, 2 ) . '/tasks/database/schema-tasks.php';
 	if ( is_readable( $tasks_schema ) ) {
 		require_once $tasks_schema;
-		if ( function_exists( 'wptsall_ensure_task_language_columns' ) ) {
-			wptsall_ensure_task_language_columns();
-		}
+		wptsall_schema_ensure_once( 'task_language_columns', 'wptsall_ensure_task_language_columns' );
 	}
 
 	// Ensure new model object tables exist even when db_version doesn't change.
 	// This keeps developer upgrades safe without requiring de/activate.
 	require_once dirname( __DIR__, 2 ) . '/models/database/schema-models.php';
 	if ( function_exists( 'wptsall_create_model_objects_table' ) && function_exists( 'wptsall_create_model_object_fields_table' ) ) {
-		global $wpdb;
-
 		$model_objects_table = wptsall_table( 'model_objects' );
 		$model_fields_table  = wptsall_table( 'model_object_fields' );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$objects_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $model_objects_table ) );
-		if ( $objects_exists !== $model_objects_table ) {
+		if ( ! wptsall_schema_table_exists( $model_objects_table ) ) {
 			wptsall_create_model_objects_table();
 		}
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$fields_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $model_fields_table ) );
-		if ( $fields_exists !== $model_fields_table ) {
+		if ( ! wptsall_schema_table_exists( $model_fields_table ) ) {
 			wptsall_create_model_object_fields_table();
 		}
 	}
@@ -68,16 +59,10 @@ function wptsall_run_migrations() {
 	// version bump.
 	require_once dirname( __DIR__, 2 ) . '/models/database/schema-field-mappings.php';
 	if ( function_exists( 'wptsall_create_field_mapping_tables' ) ) {
-		global $wpdb;
+		$mapping_keys = array( 'post_mappings', 'term_mappings', 'media_mappings' );
 
-		$mapping_tables = array(
-			'post_mappings'  => 'wptsall_post_mappings_table_exists',
-			'term_mappings'  => 'wptsall_term_mappings_table_exists',
-			'media_mappings' => 'wptsall_media_mappings_table_exists',
-		);
-
-		foreach ( $mapping_tables as $mapping_key => $mapping_checker ) {
-			if ( function_exists( $mapping_checker ) && ! call_user_func( $mapping_checker ) ) {
+		foreach ( $mapping_keys as $mapping_key ) {
+			if ( ! wptsall_schema_table_exists( wptsall_table( $mapping_key ) ) ) {
 				wptsall_create_field_mapping_tables();
 				break;
 			}
@@ -88,11 +73,8 @@ function wptsall_run_migrations() {
 	// Manual multilingual setup must not depend on a client/matrix fixture.
 	require_once dirname( __DIR__, 2 ) . '/languages/database/schema-languages.php';
 	if ( function_exists( 'wptsall_create_languages_table' ) ) {
-		global $wpdb;
 		$languages_table = wptsall_table( 'languages' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$languages_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $languages_table ) );
-		if ( $languages_exists !== $languages_table ) {
+		if ( ! wptsall_schema_table_exists( $languages_table ) ) {
 			wptsall_create_languages_table();
 		}
 	}
@@ -101,11 +83,8 @@ function wptsall_run_migrations() {
 	// (v1.2.5 may have run before the 'strings' key was added to wptsall_table()).
 	require_once dirname( __DIR__, 2 ) . '/strings/database/schema-strings.php';
 	if ( function_exists( 'wptsall_create_strings_table' ) ) {
-		global $wpdb;
 		$strings_table = wptsall_table( 'strings' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$strings_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $strings_table ) );
-		if ( $strings_exists !== $strings_table ) {
+		if ( ! wptsall_schema_table_exists( $strings_table ) ) {
 			wptsall_create_strings_table();
 		}
 	}
@@ -113,11 +92,8 @@ function wptsall_run_migrations() {
 	// Translation Memory (admin TM page) — ensure even when db_version already current.
 	require_once dirname( __DIR__, 2 ) . '/translation-memory/database/schema-translation-memory.php';
 	if ( function_exists( 'wptsall_create_translation_memory_table' ) ) {
-		global $wpdb;
 		$tm_table = wptsall_table( 'translation_memory' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$tm_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $tm_table ) );
-		if ( $tm_exists !== $tm_table ) {
+		if ( ! wptsall_schema_table_exists( $tm_table ) ) {
 			wptsall_create_translation_memory_table();
 		}
 	}
@@ -125,11 +101,8 @@ function wptsall_run_migrations() {
 	// Menu mappings (classic menu language clones / locations).
 	require_once dirname( __DIR__, 2 ) . '/menu-translation/database/schema-menu-mappings.php';
 	if ( function_exists( 'wptsall_create_menu_mappings_table' ) ) {
-		global $wpdb;
 		$menu_table = wptsall_table( 'menu_mappings' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$menu_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $menu_table ) );
-		if ( $menu_exists !== $menu_table ) {
+		if ( ! wptsall_schema_table_exists( $menu_table ) ) {
 			wptsall_create_menu_mappings_table();
 		}
 	}
@@ -138,20 +111,15 @@ function wptsall_run_migrations() {
 	// transient read/modify/write cycle. Ensure the table on every migration
 	// pass, including installations whose recorded version is already current.
 	require_once dirname( __DIR__, 2 ) . '/tasks/database/schema-client-rate-limits.php';
-	if ( function_exists( 'wptsall_ensure_client_rate_limits_table' ) ) {
-		wptsall_ensure_client_rate_limits_table();
-	}
+	wptsall_schema_ensure_once( 'client_rate_limits_table', 'wptsall_ensure_client_rate_limits_table' );
 
 	// Option claims were introduced after the original field-mapping schema.
 	// Ensure the table exists even when an installation already recorded the
 	// current DB version and therefore will not revisit an older migration.
 	require_once dirname( __DIR__, 2 ) . '/models/database/schema-field-mappings.php';
 	if ( function_exists( 'wptsall_create_option_sync_state_table' ) ) {
-		global $wpdb;
 		$option_state_table = wptsall_table( 'option_sync_state' );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$option_state_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $option_state_table ) );
-		if ( $option_state_exists !== $option_state_table ) {
+		if ( ! wptsall_schema_table_exists( $option_state_table ) ) {
 			wptsall_create_option_sync_state_table();
 		}
 	}

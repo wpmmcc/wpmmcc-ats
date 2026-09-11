@@ -2077,3 +2077,66 @@ function wptsall_raw_term_meta( $term_id, $meta_key ) {
 	return maybe_unserialize( $raw );
 }
 
+/**
+ * Cached "does this table exist" check (non-persistent object cache).
+ *
+ * Several independent paths verify the same schema tables within one
+ * request: activation runs create_tables() twice by design (P1-TEST-03),
+ * the admin_init migration pass re-ensures the always-on family, and
+ * module plugins_loaded hooks check their own tables. This collapses those
+ * duplicate SHOW TABLES round-trips to one per table per request (audit
+ * remediation: dedupe repeated create_tables passes). The result lives
+ * only in the request-scoped object cache, and the key hashes the full
+ * (prefixed) table name so multisite switch_to_blog never crosses blogs.
+ *
+ * @param string $table_name Full (prefixed) table name.
+ * @return bool True when the table exists.
+ */
+function wptsall_schema_table_exists( $table_name ) {
+	global $wpdb;
+
+	$cache_key = 'wptsall_schema_table_exists_' . md5( (string) $table_name );
+	$cached    = wp_cache_get( $cache_key, 'wptsall_schema' );
+	if ( false !== $cached ) {
+		return '1' === $cached;
+	}
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+	$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) ) === $table_name;
+	wp_cache_set( $cache_key, $exists ? '1' : '0', 'wptsall_schema' );
+
+	return $exists;
+}
+
+/**
+ * Run a named schema-ensure registrar at most once per request per blog.
+ *
+ * Companion to wptsall_schema_table_exists() for registrars that do not
+ * check existence internally (unconditional dbDelta passes). The stamp is
+ * written only AFTER the function actually ran, so a registrar that was
+ * not loaded during an early pass (activation calls create_tables()
+ * before wptsall_load_modules()) still runs in a later pass; and nothing
+ * persists beyond the request.
+ *
+ * @param string $name          Stable ensure-pass name (caller-chosen).
+ * @param string $function_name Registrar function to call when unstamped.
+ * @return bool True when the registrar ran during this call.
+ */
+function wptsall_schema_ensure_once( $name, $function_name ) {
+	global $wpdb;
+
+	if ( ! function_exists( $function_name ) ) {
+		return false;
+	}
+
+	$cache_key = 'wptsall_schema_ensure_' . md5( $wpdb->prefix . '|' . $name );
+	if ( wp_cache_get( $cache_key, 'wptsall_schema' ) ) {
+		return false;
+	}
+
+	call_user_func( $function_name );
+	wp_cache_set( $cache_key, '1', 'wptsall_schema' );
+
+	return true;
+}
+
