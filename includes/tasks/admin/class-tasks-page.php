@@ -529,9 +529,9 @@ JS;
 			echo '<p>';
 			echo '<button type="button" class="button button-primary" id="wptsall-copy-pack" data-copied="' . esc_attr__( 'Copied!', 'wpmmcc-ats' ) . '">' . esc_html__( 'Copy pack JSON', 'wpmmcc-ats' ) . '</button> ';
 			printf(
-				/* translators: 1: lifetime in seconds */
-				esc_html__( 'Valid for %d seconds (until %s). Regenerate if it expires.', 'wpmmcc-ats' ),
-				$expires_in,
+				/* translators: 1: lifetime in seconds, 2: expiry clock time */
+				esc_html__( 'Valid for %1$d seconds (until %2$s). Regenerate if it expires.', 'wpmmcc-ats' ),
+				esc_html( (string) $expires_in ),
 				esc_html( gmdate( 'H:i:s T', $expires_at ) )
 			);
 			echo '</p>';

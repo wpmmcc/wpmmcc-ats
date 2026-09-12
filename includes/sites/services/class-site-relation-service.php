@@ -439,10 +439,24 @@ class Site_Relation_Service {
 		// Trigger action
 		do_action( 'wptsall_site_relations_created', $relation_ids, $data );
 
+		// v2.1.4: model_info completes the REST contract (the create endpoint
+		// already surfaced $result['model_info'] ?? null — it was never
+		// populated). #9 (public-repo deep E2E ledger 2026-09-11): the client
+		// uses it to guide the user to "Add First Rule" after creation.
+		$model_info = null;
+		if ( $auto_create_model && ! empty( $model_result['model_id'] ) ) {
+			$model_info = array(
+				'model_id' => (int) $model_result['model_id'],
+				'template' => (string) $data['template'],
+				'created'  => ! empty( $model_result['created'] ),
+			);
+		}
+
 		return array(
 			'success'      => true,
 			'relation_ids' => $relation_ids,
 			'errors'       => $errors,
+			'model_info'   => $model_info,
 		);
 	}
 

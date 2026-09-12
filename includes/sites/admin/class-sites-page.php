@@ -119,6 +119,32 @@ class Sites_Page {
 
 		Admin_Page_Helper::render_tabs( $tabs, self::$active_tab, $base_url );
 
+		// #9 (public-repo deep E2E ledger 2026-09-11): after a relation is
+		// created the scan has already set up the model automatically —
+		// guide the user to the next step (adding the first translation
+		// rule) instead of leaving the flow without direction.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$relation_created = ! empty( $_GET['wptsall_relation_created'] );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$created_model_id = isset( $_GET['wptsall_model_id'] ) ? absint( $_GET['wptsall_model_id'] ) : 0;
+		if ( $relation_created ) {
+			$rule_url = add_query_arg(
+				array(
+					'page'     => 'wpmmcc-ats',
+					'action'   => 'edit',
+					'model_id' => $created_model_id > 0 ? $created_model_id : false,
+				),
+				admin_url( 'admin.php' )
+			);
+			echo '<div class="notice notice-success is-dismissible"><p>';
+			printf(
+				/* translators: %s: link to add the first translation rule for the auto-created model */
+				esc_html__( 'Site relation created. The model was set up automatically by the scan. Next step: %s to start translating.', 'wpmmcc-ats' ),
+				'<a class="button button-primary" style="margin-left:6px;" href="' . esc_url( $rule_url ) . '">' . esc_html__( 'Add First Rule', 'wpmmcc-ats' ) . '</a>'
+			);
+			echo '</p></div>';
+		}
+
 		echo '<div class="wptsall-page-content">';
 		switch ( self::$active_tab ) {
 			case 'add':

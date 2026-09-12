@@ -3130,6 +3130,9 @@ class Client_Data_REST_Controller {
 		$sync_task_id  = null;
 		$sync_result   = null;
 		$sync_error    = null;
+		// False until the target write is confirmed; the response tail reads it
+		// even when the guarded write-back block below never runs.
+		$target_write_succeeded = false;
 
 		if ( function_exists( 'wptsall_insert_tasks' ) ) {
 			$task_data = array(

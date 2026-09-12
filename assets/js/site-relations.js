@@ -498,9 +498,20 @@
 					$form.removeClass('wptsall-loading');
 					$submitBtn.prop('disabled', false).text('Create Relation');
 
-					const message = data.message || 'Site relation created successfully';
-					alert(message);
-					window.location.href = window.location.href.replace(/&tab=add/, '');
+					// #9 (public-repo deep E2E ledger 2026-09-11): instead of a
+					// bare alert, land on the list with flags so the page renders
+					// the next-step guidance (Add First Rule) using model_info.
+					let listUrl = window.location.href.replace(/&tab=add/, '');
+					listUrl = listUrl
+						.replace(/[?&]wptsall_relation_created=1/, '')
+						.replace(/[?&]wptsall_model_id=\d+/, '');
+					const modelId = data.model_info && data.model_info.model_id
+						? parseInt(data.model_info.model_id, 10)
+						: 0;
+					const sep = listUrl.indexOf('?') === -1 ? '?' : '&';
+					window.location.href = listUrl
+						+ sep + 'wptsall_relation_created=1'
+						+ (modelId > 0 ? '&wptsall_model_id=' + modelId : '');
 				})
 				.catch(error => {
 					$form.removeClass('wptsall-loading');

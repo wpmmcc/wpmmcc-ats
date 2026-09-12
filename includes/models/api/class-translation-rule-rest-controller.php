@@ -1341,7 +1341,7 @@ class Translation_Rule_REST_Controller {
 	 * @since 1.1.0
 	 *
 	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function sync_fields_to_rules( $request ) {
 		$model_id = (int) $request->get_param( 'id' );

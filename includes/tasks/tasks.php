@@ -3710,6 +3710,9 @@ function wptsall_process_post_task( $task, $complete_data, $target_type, $site_i
     $source_blog = $task['blog_id'] ?? get_current_blog_id();
     $new_id      = 0;
     $note_prefix = '';
+    // Defined on every path so the shared post-processing below can reference it
+    // without a branch-correlation assumption (only read when target is virtual).
+    $virtual_site_id = '';
 
     // Collect id_mapping field keys so the meta loop below skips them.
     // These fields contain source IDs that must be resolved first by

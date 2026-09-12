@@ -226,29 +226,9 @@ class Settings_Page {
 		Admin_Page_Helper::render_footer();
 	}
 
-	public static function handle_locale_save() {
-		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
-		}
-		check_admin_referer( 'wptsall_locale_save' );
-		$lang = sanitize_text_field( wp_unslash( $_POST['override_lang'] ?? '' ) );
-		$loc  = sanitize_text_field( wp_unslash( $_POST['override_locale'] ?? '' ) );
-		if ( '' !== $lang ) {
-			\WPTSALL\ThemeLocalization\Theme_Localization::set_override( $lang, $loc );
-		}
-		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'updated' => '1' ), admin_url( 'admin.php' ) ) );
-		exit;
-	}
-
-	public static function handle_locale_clear() {
-		if ( ! current_user_can( self::CAP ) ) {
-			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
-		}
-		check_admin_referer( 'wptsall_locale_clear' );
-		\WPTSALL\ThemeLocalization\Theme_Localization::clear_override( sanitize_text_field( wp_unslash( $_POST['lang'] ?? '' ) ) );
-		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'updated' => '1' ), admin_url( 'admin.php' ) ) );
-		exit;
-	}
+	// handle_locale_save / handle_locale_clear removed 2026-09-12: zero
+	// callers (never registered on any admin_post_ action and referenced
+	// nowhere else) — dead handlers since the settings page was rewritten.
 
 	public static function handle_save() {
 		if ( ! current_user_can( self::CAP ) ) {

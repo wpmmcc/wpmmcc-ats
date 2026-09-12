@@ -932,7 +932,7 @@ class Tasks_REST_Controller {
 	 * Get task list
 	 *
 	 * @param \WP_REST_Request $request Request object
-	 * @return \WP_REST_Response
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function get_tasks( $request ) {
 		global $wpdb;
