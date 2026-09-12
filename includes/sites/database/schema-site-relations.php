@@ -23,6 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Core business rules:
  * - One record per target site (one-to-one structure)
  * - Five-tuple unique constraint: source_site_id + source_lang + template + target_site_id + target_lang
+ *
+ * models_count (v0.6.0 parity, 2026-09-12) is included in the fresh DDL and
+ * repaired per activation by wptsall_ensure_site_relations_models_count().
+ * NOTE: keep the CREATE body free of `--` comments containing semicolons —
+ * dbDelta splits queries on every ';' and would truncate this statement.
  */
 function wptsall_create_site_relations_table() {
 	global $wpdb;
@@ -49,6 +54,8 @@ function wptsall_create_site_relations_table() {
 		target_lang VARCHAR(20) NOT NULL DEFAULT '' COMMENT 'Target site language code',
 		target_theme_name VARCHAR(255) DEFAULT '' COMMENT 'Target site theme name (wp site)',
 		target_theme_path VARCHAR(255) DEFAULT '' COMMENT 'Target site theme path (wp site)',
+
+		models_count INT(11) DEFAULT 0 COMMENT 'Associated model count (cache)',
 
 		-- Sync configuration (v0.8.0)
 		media_handling VARCHAR(20) DEFAULT 'copy' COMMENT 'Media handling strategy: copy / reference',
@@ -211,6 +218,44 @@ function wptsall_migrate_site_relations_081() {
 				'table'         => $table_name,
 				'added_columns' => $added_columns,
 			)
+		);
+	}
+}
+
+/**
+ * Ensure site_relations.models_count exists (idempotent repair pass).
+ *
+ * The column is otherwise only added by the version-gated v0.6.0 migration.
+ * Installs whose recorded wptsall_db_version was stamped without that gate
+ * running (long-lived Lab volumes, partial restores) never received it, and
+ * Relation_Model_Service::update_models_count() then fails silently on every
+ * model add/remove. Wired into wptsall_run_migrations() via
+ * wptsall_schema_ensure_once() so every activation repairs the drift.
+ *
+ * @since 2.1.4
+ */
+function wptsall_ensure_site_relations_models_count() {
+	global $wpdb;
+	$table_name = wptsall_table( 'site_relations' );
+
+	if ( ! wptsall_site_relations_table_exists() ) {
+		return;
+	}
+
+	// Check if models_count column exists.
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$column_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM %i LIKE %s', $table_name, 'models_count' ) );
+
+	if ( empty( $column_exists ) ) {
+		wptsall_db_alter_table(
+			$table_name,
+			"ADD COLUMN models_count INT(11) DEFAULT 0 COMMENT 'Associated model count (cache)' AFTER target_theme_path"
+		);
+
+		wptsall_log(
+			'database',
+			'info',
+			'Site relations table: ensured models_count column'
 		);
 	}
 }

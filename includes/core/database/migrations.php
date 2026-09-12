@@ -113,6 +113,14 @@ function wptsall_run_migrations() {
 	require_once dirname( __DIR__, 2 ) . '/tasks/database/schema-client-rate-limits.php';
 	wptsall_schema_ensure_once( 'client_rate_limits_table', 'wptsall_ensure_client_rate_limits_table' );
 
+	// P0-SCHEMA-01 (2026-09-12): site_relations.models_count must exist on every
+	// install. It was only defined by the version-gated v0.6.0 migration, so
+	// installs whose recorded wptsall_db_version was stamped without that gate
+	// running (long-lived Lab volumes, partial restores) never received the
+	// column and Relation_Model_Service::update_models_count() fails silently.
+	require_once dirname( __DIR__, 2 ) . '/sites/database/schema-site-relations.php';
+	wptsall_schema_ensure_once( 'site_relations_models_count', 'wptsall_ensure_site_relations_models_count' );
+
 	// Option claims were introduced after the original field-mapping schema.
 	// Ensure the table exists even when an installation already recorded the
 	// current DB version and therefore will not revisit an older migration.
