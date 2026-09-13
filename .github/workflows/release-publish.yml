@@ -40,6 +40,10 @@ jobs:
     name: Gate - all tests green on this commit
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      # Job outputs are the ONLY way to carry the version to the release
+      # job — GITHUB_ENV writes do not cross job boundaries.
+      version: ${{ steps.version.outputs.version }}
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -61,12 +65,14 @@ jobs:
           echo "publishing $GITHUB_SHA (HEAD of $default_branch)"
 
       - name: Read and validate the version from the plugin header
+        id: version
         run: |
           set -euo pipefail
           version="$(sed -n 's/^ \* Version:[[:space:]]*//p' wpmmcc-ats.php | head -n 1 | tr -d '[:space:]')"
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
             echo "invalid plugin header Version '$version'" >&2; exit 1;
           }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
           echo "version: $version"
 
@@ -113,6 +119,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       NOTES: ${{ inputs.notes }}
+      RELEASE_VERSION: ${{ needs.gate.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
