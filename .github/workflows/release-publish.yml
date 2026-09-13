@@ -1,0 +1,140 @@
+name: Release publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: "Release notes (optional; a default is generated when empty)"
+        required: false
+        type: string
+
+# Publish a versioned GitHub Release (tag v{Version} from the plugin header)
+# on this repository. The plugin ships as source: the release carries the
+# auto-generated source archive plus notes, and the tag is the version
+# marker for the standard release loop (monorepo dev → oss sync → push →
+# ci + compat-matrix green → dispatch this workflow).
+#
+# Rigorous gating, mirroring the client repository's release-publish:
+#   - dispatched at the default-branch HEAD only;
+#   - the tag v{version} must not exist yet;
+#   - BOTH test workflows (ci / compat-matrix) must have a completed,
+#     successful push-run for exactly this commit.
+#
+# Distribution to WordPress.org SVN is a separate, explicitly authorized
+# step and is NOT triggered here.
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  gate:
+    name: Gate - all tests green on this commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse unless at default-branch HEAD
+        run: |
+          set -euo pipefail
+          default_branch="$(gh api repos/{owner}/{repo} --jq .default_branch)"
+          if [ "$GITHUB_REF_NAME" != "$default_branch" ]; then
+            echo "dispatched from '$GITHUB_REF_NAME', but releases publish only from the default branch '$default_branch'" >&2
+            exit 1
+          fi
+          head_sha="$(gh api "repos/{owner}/{repo}/branches/$default_branch" --jq .commit.sha)"
+          if [ "$GITHUB_SHA" != "$head_sha" ]; then
+            echo "dispatched at $GITHUB_SHA but $default_branch HEAD is $head_sha — re-dispatch from the current HEAD" >&2
+            exit 1
+          fi
+          echo "publishing $GITHUB_SHA (HEAD of $default_branch)"
+
+      - name: Read and validate the version from the plugin header
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^ \* Version:[[:space:]]*//p' wpmmcc-ats.php | head -n 1 | tr -d '[:space:]')"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "invalid plugin header Version '$version'" >&2; exit 1;
+          }
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "version: $version"
+
+      - name: Refuse if this version is already published
+        run: |
+          set -euo pipefail
+          tag="v$RELEASE_VERSION"
+          if gh api "repos/{owner}/{repo}/git/ref/tags/$tag" >/dev/null 2>&1; then
+            echo "tag $tag already exists — bump the plugin header Version and sync before releasing." >&2
+            exit 1
+          fi
+          echo "tag $tag is free"
+
+      - name: Require green push-runs of both test workflows on this commit
+        run: |
+          set -euo pipefail
+          missing=""
+          for wf in ci.yml compat-matrix.yml; do
+            runs="$(gh api "repos/{owner}/{repo}/actions/workflows/$wf/runs?head_sha=$GITHUB_SHA&event=push&per_page=20" \
+              --jq '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | length')"
+            inprogress="$(gh api "repos/{owner}/{repo}/actions/workflows/$wf/runs?head_sha=$GITHUB_SHA&event=push&per_page=20" \
+              --jq '[.workflow_runs[] | select(.status != "completed")] | length')"
+            if [ "${runs:-0}" -gt 0 ]; then
+              echo "OK: $wf has a green push-run at $GITHUB_SHA"
+            elif [ "${inprogress:-0}" -gt 0 ]; then
+              echo "WAIT: $wf is still running at $GITHUB_SHA — wait for it to finish and re-dispatch" >&2
+              missing="$missing $wf(running)"
+            else
+              echo "FAIL: $wf has no green push-run at $GITHUB_SHA" >&2
+              missing="$missing $wf(red-or-missing)"
+            fi
+          done
+          [ -z "$missing" ] || {
+            echo "release gate refused — not all tests are green:$missing" >&2
+            exit 1
+          }
+          echo "GATE OK: ci and compat-matrix are green at $GITHUB_SHA"
+
+  release:
+    name: Tag and publish the source release
+    needs: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      NOTES: ${{ inputs.notes }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create the GitHub Release (tag v{version}, source archive)
+        run: |
+          set -euo pipefail
+          notes="$RUNNER_TEMP/notes.md"
+          {
+            echo "wpmmcc-ats v$RELEASE_VERSION"
+            echo
+            echo "WordPress plugin source release, tagged from the repository tree at this commit. CI (php lint + WordPress plugin-check) and the compat-matrix (PHP 7.4-8.3 × WP 6.2-7.1 real-install matrix + multisite lanes) were green at this commit."
+            echo
+            echo "Install: upload the auto-generated source ZIP via wp-admin → Plugins → Add New → Upload Plugin, or download from WordPress.org once published there."
+            if [ -n "$NOTES" ]; then
+              echo
+              echo "## Notes"
+              echo
+              echo "$NOTES"
+            fi
+          } > "$notes"
+          gh release create "v$RELEASE_VERSION" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "wpmmcc-ats v$RELEASE_VERSION" \
+            --notes-file "$notes"
+          echo "release v$RELEASE_VERSION published (tag + source archive)"
