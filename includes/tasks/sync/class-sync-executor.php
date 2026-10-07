@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/trait-sync-executor-callback-receipts.php';
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom plugin tables and intentional meta/tax lookups; all dynamic values go through $wpdb->prepare() / wptsall_db_* helpers (no unprepared user input).
 /**
@@ -38,6 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Handles both WordPress multisite and virtual site targets.
  */
 class Sync_Executor {
+	use Sync_Executor_Callback_Receipts_Trait;
 
 
 	private static function update_translation_result_status( $translation_result_id, $status ) {
@@ -373,9 +375,6 @@ class Sync_Executor {
 		$source_lang       = $tr['source_lang'] ?? 'en_US';
 		$target_lang       = $tr['target_lang'] ?? 'zh_CN';
 
-		// Mark task as in-progress for crash recovery.
-		self::update_task_status( $sync_task_id, 'processing', array( 'status_note' => 'sync_started' ) );
-
 		wptsall_log_info( 'tasks-sync', 'Starting translation sync', array(
 			'sync_task_id'         => $sync_task_id,
 			'translation_result_id' => $translation_result_id,
@@ -416,7 +415,10 @@ class Sync_Executor {
 		}
 		if ( 'active' !== ( $relation['status'] ?? '' ) ) {
 			self::update_task_status( $sync_task_id, 'cancelled', array( 'error' => 'relation_inactive', 'relation_id' => $relation_id ) );
-			self::update_translation_result_status( $translation_result_id, 'cancelled' );
+			// `cancelled` on a result means "delivery skipped on purpose" and a
+			// replay answers 200 for it. Nothing was delivered here and the caller
+			// gets an error, so the result is a failure a later attempt may redo.
+			self::update_translation_result_status( $translation_result_id, 'failed' );
 			return new \WP_Error( 'relation_inactive', 'Site relation is inactive', array( 'relation_id' => $relation_id ) );
 		}
 
@@ -426,14 +428,52 @@ class Sync_Executor {
 			$target_id   = $relation['target_site_id'] ?? $target_blog;
 			$subtype     = $task['subtype'] ?? 'post';
 
-			if ( class_exists( '\\WPTSALL\\Tasks\\Services\\Origin_Visit_Service' ) && in_array( $object_type, array( 'post_type', 'taxonomy' ), true ) ) {
-				$origin = 'taxonomy' === $object_type
-					? Origin_Visit_Service::get_term_origin( $object_id, $object_type, $subtype, 'wp', (string) $source_blog )
-					: Origin_Visit_Service::get_post_origin( $object_id, $object_type, $subtype, 'wp', (string) $source_blog );
-			if ( Origin_Visit_Service::should_skip_delivery( $origin, (string) $target_type, (string) $target_id ) ) {
-				self::update_task_status( $sync_task_id, 'cancelled', array( 'error' => 'origin_backflow_guard', 'relation_id' => $relation_id ) );
-				self::update_translation_result_status( $translation_result_id, 'cancelled' );
-				return new \WP_Error( 'origin_backflow_guard', 'Origin delivery skipped by backflow guard', array( 'relation_id' => $relation_id ) );
+		if ( class_exists( '\\WPTSALL\\Tasks\\Services\\Origin_Visit_Service' ) && in_array( $object_type, array( 'post_type', 'taxonomy' ), true ) ) {
+			$origin = 'taxonomy' === $object_type
+				? Origin_Visit_Service::get_term_origin( $object_id, $object_type, $subtype, 'wp', (string) $source_blog )
+				: Origin_Visit_Service::get_post_origin( $object_id, $object_type, $subtype, 'wp', (string) $source_blog );
+
+			// WP-BUG-05: the origin-visit dedupe ("deliver once") must not block
+			// INCREMENTAL updates. When this relation already has a mapped target
+			// for the source object, the mapping itself is the dedupe and the
+			// update must go through. Only first deliveries (no target yet) are
+			// guarded against loops/duplicates.
+			$target_existing = self::check_target_exists( $relation_id, $object_type, $object_id, $target_type, $target_id, $target_blog );
+			$dest_is_origin  = (string) $target_type === (string) ( $origin['origin_site_type'] ?? '' )
+				&& (string) $target_id === (string) ( $origin['origin_site_id'] ?? '' );
+
+			if ( $dest_is_origin || ( ! $target_existing && Origin_Visit_Service::should_skip_delivery( $origin, (string) $target_type, (string) $target_id ) ) ) {
+				$receipt = self::finish_translation_callback_sync(
+					$sync_task_id, $translation_result_id, 'cancelled', 'cancelled',
+					array( 'error' => 'origin_backflow_guard', 'relation_id' => $relation_id, 'target_id' => 0 )
+				);
+				if ( is_wp_error( $receipt ) ) {
+					return $receipt;
+				}
+				wptsall_log_info(
+					'tasks-sync',
+					'Origin delivery skipped by backflow guard',
+					array(
+						'sync_task_id'         => $sync_task_id,
+						'relation_id'          => $relation_id,
+						'object_type'          => $object_type,
+						'object_id'            => $object_id,
+						'target_existing'      => (int) $target_existing,
+						'dest_is_origin'       => $dest_is_origin,
+					)
+				);
+				// Skipped-success instead of WP_Error: a guarded skip is an
+				// expected outcome (loop/duplicate first delivery), and the client
+				// callback must ack cleanly instead of surfacing 500s and driving
+				// retry storms (WP-BUG-05).
+				return array(
+					'success'     => true,
+					'skipped'     => true,
+					'skip_reason' => 'origin_backflow_guard',
+					'task_id'     => $sync_task_id,
+					'target_id'   => 0,
+					'write_back'  => null,
+				);
 			}
 		}
 
@@ -466,6 +506,24 @@ class Sync_Executor {
 			}
 		}
 
+		$field_formats = self::get_field_content_formats_for_sync( $relation_id, $subtype, $object_type, $object_id );
+		$translated_fields = array_filter(
+			$translated_fields,
+			static function ( $key ) use ( $field_formats, $object_type ) {
+				return array_key_exists( $key, $field_formats )
+					&& \WPTSALL\Core\Field_Write_Policy::allows_translation( (string) $key, $object_type );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+		$translated_meta = array_filter(
+			$translated_meta,
+			static function ( $key ) use ( $field_formats, $object_type ) {
+				return array_key_exists( $key, $field_formats )
+					&& \WPTSALL\Core\Field_Write_Policy::allows_translation( (string) $key, $object_type, true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
 		// Attachments have a binary lifecycle that is fundamentally different
 		// from a normal post insert.  This branch intentionally follows the
 		// immutable job-snapshot assertion above: media callbacks receive the
@@ -486,11 +544,6 @@ class Sync_Executor {
 				$media_mappings
 			);
 		}
-		$field_formats = self::get_field_content_formats_for_sync(
-			$relation_id,
-			$task['subtype'] ?? 'post',
-			$object_type
-		);
 		$target_existing = in_array( $object_type, array( 'post_type', 'taxonomy' ), true )
 			? self::check_target_exists( $relation_id, $object_type, $object_id, $target_type, $target_id, $target_blog )
 			: false;
@@ -550,6 +603,10 @@ class Sync_Executor {
 			'target_lang'       => $target_lang,
 		);
 
+		$started = self::begin_translation_callback_sync( $sync_task_id, $translation_result_id );
+		if ( is_wp_error( $started ) ) {
+			return $started;
+		}
 		$sync_result = self::sync_to_target( $object_type, $subtype, $merged_data, $target_blog, $target_type, $task_context );
 
 		if ( is_wp_error( $sync_result ) ) {
@@ -592,6 +649,34 @@ class Sync_Executor {
 			$write_back_summary = Write_Back_Dispatcher::dispatch_translation_media( $media_mappings, $dispatch_context );
 		}
 
+		// 8b. Rewrite source media URLs in the target post content now that the
+		// write-back above has created the id_reference mapping rows (with
+		// source/target file URLs). Path A (sync_post) rewrites inline after its
+		// own sideload step; Path B previously never rewrote content media URLs —
+		// virtual-site targets have no sideload/replace parity at all, and for
+		// multisite targets the inline rewrite would run before these mapping
+		// rows exist. Running after step 8 fixes both orderings.
+		if ( 'post_type' === $object_type && ! empty( $sync_result['target_id'] ) ) {
+			$rewrite_target_id = (int) $sync_result['target_id'];
+			$rewrite_switched  = false;
+			if ( 'wp' === $target_type && $target_blog && is_multisite() ) {
+				switch_to_blog( (int) $target_blog );
+				$rewrite_switched = true;
+			}
+			try {
+				self::replace_media_urls_in_content( $rewrite_target_id, $task_context, array() );
+			} catch ( \Throwable $e ) {
+				wptsall_log_error( 'tasks-sync', 'post-write-back media URL rewrite failed (non-fatal)', array(
+					'target_post_id' => $rewrite_target_id,
+					'error'          => $e->getMessage(),
+				) );
+			} finally {
+				if ( $rewrite_switched ) {
+					restore_current_blog();
+				}
+			}
+		}
+
 		// 9. Update task status.
 		$status_meta = array(
 			'target_id'             => $sync_result['target_id'],
@@ -613,8 +698,18 @@ class Sync_Executor {
 		$write_back_failed = (int) ( $write_back_summary['failed'] ?? 0 );
 		$write_back_queued = (int) ( $write_back_summary['queued'] ?? 0 );
 		$final_status      = ( $write_back_failed > 0 || $write_back_queued > 0 ) ? 'partial' : 'completed';
-		self::update_task_status( $sync_task_id, $final_status, $status_meta );
-		self::update_translation_result_status( $translation_result_id, 'completed' === $final_status ? 'synced' : 'partial' );
+		// `partial` on a result is an accepted outcome (the media remainder waits
+		// in the operator's manual queue). Items that reached neither the target
+		// nor the queue are lost work: report the callback as failed so the
+		// outbox row is retried instead of closed (ATS-02).
+		$receipt = self::finish_translation_callback_sync(
+			$sync_task_id, $translation_result_id, $final_status,
+			$write_back_failed > 0 ? 'failed' : ( 'completed' === $final_status ? 'synced' : 'partial' ),
+			$status_meta
+		);
+		if ( is_wp_error( $receipt ) ) {
+			return $receipt;
+		}
 		if ( class_exists( '\\WPTSALL\\Tasks\\Services\\Origin_Visit_Service' ) && ! empty( $sync_result['target_id'] ) && in_array( $object_type, array( 'post_type', 'taxonomy' ), true ) ) {
 			$origin = 'taxonomy' === $object_type
 				? Origin_Visit_Service::get_term_origin( $object_id, $object_type, $subtype, 'wp', (string) $source_blog )
@@ -633,8 +728,17 @@ class Sync_Executor {
 			'target_id'            => $sync_result['target_id'],
 		) );
 
+		if ( $write_back_failed > 0 ) {
+			return new \WP_Error(
+				'write_back_failed',
+				sprintf( '%d media write-back item(s) reached neither the target nor the manual queue.', $write_back_failed ),
+				array( 'write_back' => $write_back_summary )
+			);
+		}
+
 		return array(
 			'success'    => true,
+			'partial'    => $write_back_queued > 0,
 			'task_id'    => $sync_task_id,
 			'target_id'  => $sync_result['target_id'],
 			'write_back' => ! empty( $write_back_summary ) ? $write_back_summary : null,
@@ -689,6 +793,10 @@ class Sync_Executor {
 			'target_site_id'    => (string) $target_id,
 			'target_identifier' => (string) $target_id,
 		);
+		$started = self::begin_translation_callback_sync( $sync_task_id, $translation_result_id );
+		if ( is_wp_error( $started ) ) {
+			return $started;
+		}
 		$write_back = Write_Back_Dispatcher::dispatch_translation_media( $media_mappings, $context );
 		$target_attachment_id = 0;
 		foreach ( (array) ( $write_back['items'] ?? array() ) as $item_result ) {
@@ -699,12 +807,33 @@ class Sync_Executor {
 		}
 
 		if ( $target_attachment_id <= 0 ) {
+			if ( (int) ( $write_back['queued'] ?? 0 ) > 0 && 0 === (int) ( $write_back['failed'] ?? 0 ) ) {
+				// The binary waits in the operator's manual queue: an accepted
+				// partial, the same outcome as a post whose media were parked. A
+				// retry would only queue it a second time.
+				$receipt = self::finish_translation_callback_sync(
+					$sync_task_id, $translation_result_id, 'partial', 'partial',
+					array( 'error' => 'attachment_binary_parked', 'write_back' => $write_back, 'target_id' => 0 )
+				);
+				if ( is_wp_error( $receipt ) ) {
+					return $receipt;
+				}
+				return array(
+					'success'    => true,
+					'partial'    => true,
+					'task_id'    => $sync_task_id,
+					'target_id'  => 0,
+					'write_back' => $write_back,
+				);
+			}
 			self::update_task_status(
 				$sync_task_id,
 				'partial',
 				array( 'error' => 'attachment_binary_writeback_failed', 'write_back' => $write_back )
 			);
-			self::update_translation_result_status( $translation_result_id, 'partial' );
+			// The caller gets an error for this, so the result must not read as an
+			// accepted `partial` (a replay would close the outbox row as done).
+			self::update_translation_result_status( $translation_result_id, 'failed' );
 			return new \WP_Error( 'attachment_binary_writeback_failed', 'Attachment binary could not be applied to the target.', array( 'write_back' => $write_back ) );
 		}
 
@@ -763,12 +892,13 @@ class Sync_Executor {
 			restore_current_blog();
 		}
 
-		self::update_task_status(
-			$sync_task_id,
-			'completed',
+		$receipt = self::finish_translation_callback_sync(
+			$sync_task_id, $translation_result_id, 'completed', 'synced',
 			array( 'target_id' => $target_attachment_id, 'translations' => count( $translated_fields ) + count( $translated_meta ), 'write_back' => $write_back )
 		);
-		self::update_translation_result_status( $translation_result_id, 'synced' );
+		if ( is_wp_error( $receipt ) ) {
+			return $receipt;
+		}
 
 		return array(
 			'success'    => true,
@@ -793,6 +923,14 @@ class Sync_Executor {
 	 * @return array Merged data ready for sync_to_target().
 	 */
 	private static function merge_translation_result( $source_data, $translated_fields, $translated_meta, $object_type, $field_formats = array() ) {
+		$translated_fields = array_filter( $translated_fields, static function ( $key ) use ( $field_formats, $object_type ) {
+			return array_key_exists( $key, $field_formats )
+				&& \WPTSALL\Core\Field_Write_Policy::allows_translation( (string) $key, (string) $object_type );
+		}, ARRAY_FILTER_USE_KEY );
+		$translated_meta = array_filter( $translated_meta, static function ( $key ) use ( $field_formats, $object_type ) {
+			return array_key_exists( $key, $field_formats )
+				&& \WPTSALL\Core\Field_Write_Policy::allows_translation( (string) $key, (string) $object_type, true );
+		}, ARRAY_FILTER_USE_KEY );
 		$merged = array();
 
 		$content_fields = array( 'post_content', 'description' );
@@ -1088,6 +1226,16 @@ class Sync_Executor {
 			return null;
 		}
 
+		if ( in_array( $format, $structured_formats, true ) ) {
+			if ( 'serialized_php' === $format ) {
+				return is_string( $value ) && is_serialized( $value ) ? $value : null;
+			}
+			if ( ! is_string( $value ) ) {
+				return null;
+			}
+			json_decode( $value );
+			return JSON_ERROR_NONE === json_last_error() ? $value : null;
+		}
 		if ( in_array( $key, $content_fields, true ) ) {
 			return wp_kses_post( $value );
 		}
@@ -1099,12 +1247,6 @@ class Sync_Executor {
 		}
 		if ( in_array( $format, $html_formats, true ) ) {
 			return wp_kses_post( $value );
-		}
-		if ( in_array( $format, $structured_formats, true ) ) {
-			if ( 'serialized_php' === $format ) {
-				return is_serialized( $value ) ? $value : sanitize_text_field( $value );
-			}
-			return ( null !== json_decode( (string) $value ) ) ? $value : sanitize_text_field( $value );
 		}
 		if ( in_array( $format, $slug_formats, true ) ) {
 			return sanitize_title( (string) $value );
@@ -1355,9 +1497,11 @@ class Sync_Executor {
 	 * @param string $object_type Canonical object type ("post_type" or "taxonomy").
 	 * @return array Associative array: field_name => content_format string.
 	 */
-	private static function get_field_content_formats_for_sync( $relation_id, $subtype, $object_type = 'post_type' ) {
+	private static function get_field_content_formats_for_sync( $relation_id, $subtype, $object_type = 'post_type', $object_id = 0 ) {
 		$formats = array();
-		$expected_data_type = 'post_type' === $object_type ? 'post' : ( 'taxonomy' === $object_type ? 'term' : '' );
+		$known_caps = array();
+		$enabled_rule = false;
+		$expected_data_type = 'post_type' === $object_type ? 'post' : ( 'taxonomy' === $object_type ? 'term' : $object_type );
 
 		$models = Relation_Model_Service::get_models_by_relation( $relation_id );
 		foreach ( $models as $model ) {
@@ -1372,10 +1516,6 @@ class Sync_Executor {
 				$rule_enabled = is_array( $merged_config )
 					? (bool) ( $merged_config['enabled'] ?? ( $rule['is_active'] ?? true ) )
 					: (bool) ( $rule['is_active'] ?? true );
-				if ( ! $rule_enabled ) {
-					continue;
-				}
-
 				$rule_data_type = $rule['data_type'] ?? '';
 				$rule_object_name = $rule['object_name'] ?? '';
 				$field_caps = $rule['field_capabilities'] ?? array();
@@ -1402,10 +1542,16 @@ class Sync_Executor {
 				if ( $rule_object_name !== $subtype ) {
 					continue;
 				}
+				$known_caps = array_merge( $known_caps, (array) $field_caps );
+				if ( ! $rule_enabled || 'active' !== ( $model['status'] ?? 'active' ) ) {
+					continue;
+				}
+				$enabled_rule = true;
 
 				foreach ( $field_caps as $field_name => $config ) {
-					if ( is_array( $config ) && ! empty( $config['content_format'] ) ) {
-						$format = sanitize_key( (string) $config['content_format'] );
+					if ( is_array( $config ) && ( $config['enabled'] ?? true )
+						&& 'translate' === ( $config['type'] ?? '' ) ) {
+						$format = sanitize_key( (string) ( $config['content_format'] ?? 'plain_text' ) );
 						if ( class_exists( '\\WPTSALL\\Core\\Smart_Field_Classifier' ) ) {
 							$format = \WPTSALL\Core\Smart_Field_Classifier::normalize_content_format( $format, 'plain_text' );
 						}
@@ -1415,10 +1561,23 @@ class Sync_Executor {
 			}
 		}
 
+		// The existing default profile and explicitly selected discovery fields
+		// are server policy too. Never fall back when an attached rule is disabled.
+		if ( empty( $models ) && in_array( $object_type, array( 'post_type', 'taxonomy' ), true ) ) {
+			if ( 'taxonomy' === $object_type ) {
+				$formats = array( 'name' => 'plain_text', 'description' => 'rich_html', 'slug' => 'slug' );
+			} else {
+				$config = Translation_Rule_Service::get_merged_config_for_relation( (int) $relation_id, (string) $subtype, $expected_data_type );
+				foreach ( (array) ( $config['translate_fields'] ?? array() ) as $key ) {
+					$formats[ $key ] = $config['field_capabilities'][ $key ]['content_format'] ?? 'plain_text';
+				}
+			}
+		}
+
 		// FSE objects can be delivered by the synthetic Client rule when no
 		// relation model exists. Keep write-back sanitization aligned with that
 		// rule: block markup is rich HTML, while global styles are JSON.
-		if ( 'post_type' === $object_type ) {
+		if ( 'post_type' === $object_type && empty( $models ) ) {
 			$fse_types = apply_filters(
 				'wptsall_fse_managed_post_types',
 				array( 'wp_template', 'wp_template_part', 'wp_navigation', 'wp_global_styles' )
@@ -1429,6 +1588,26 @@ class Sync_Executor {
 			}
 		}
 
+		if ( 'post_type' === $object_type && ( empty( $models ) || $enabled_rule ) ) {
+			$config = Translation_Rule_Service::get_merged_config_for_relation( (int) $relation_id, (string) $subtype );
+			foreach ( (array) ( $config['translate_fields'] ?? array() ) as $key ) {
+				if ( ! array_key_exists( $key, $known_caps ) ) {
+					$formats[ $key ] = $formats[ $key ] ?? ( $config['field_capabilities'][ $key ]['content_format'] ?? 'plain_text' );
+				}
+			}
+			if ( $object_id > 0 ) {
+				$config = \WPTSALL\Sites\Services\Manual_Content_Service::apply_adapter_field_rules(
+					array( 'translate_fields' => array_keys( $formats ), 'field_capabilities' => $known_caps ),
+					(int) $object_id
+				);
+				foreach ( (array) ( $config['translate_fields'] ?? array() ) as $key ) {
+					$cap = (array) ( $config['field_capabilities'][ $key ] ?? array() );
+					if ( ( $cap['enabled'] ?? true ) && 'translate' === ( $cap['type'] ?? 'translate' ) ) {
+						$formats[ $key ] = $cap['content_format'] ?? ( $formats[ $key ] ?? 'plain_text' );
+					}
+				}
+			}
+		}
 		return $formats;
 	}
 
@@ -2676,6 +2855,10 @@ class Sync_Executor {
 			);
 		}
 
+		// F-TERM-1: back-fill the association onto target posts that were
+		// written while this mapping was still a claim placeholder.
+		self::reconcile_term_associations( (int) $task['object_id'], $taxonomy, (int) $result_id, $term_relation_id );
+
 		// Count translation markers
 		$translations = 0;
 		if ( isset( $data['_translation_meta'] ) ) {
@@ -2686,6 +2869,83 @@ class Sync_Executor {
 			'target_id'    => $result_id,
 			'translations' => $translations,
 		);
+	}
+
+	/**
+	 * F-TERM-1 reconciliation: after a term writeback registers or updates the
+	 * term mapping, back-fill the association onto target posts that were
+	 * already written while the mapping was still a claim placeholder
+	 * (target_term_id = 0) — their writeback could not resolve the term and
+	 * left them unassigned (e.g. "Uncategorized"). Idempotent; safe to run on
+	 * every term sync completion.
+	 *
+	 * @param int    $source_term_id Source term id.
+	 * @param string $taxonomy       Taxonomy slug.
+	 * @param int    $target_term_id Mapped target term id.
+	 * @param int    $relation_id    Site relation id.
+	 */
+	private static function reconcile_term_associations( int $source_term_id, string $taxonomy, int $target_term_id, int $relation_id ): void {
+		global $wpdb;
+
+		if ( $source_term_id <= 0 || $target_term_id <= 0 || $relation_id <= 0 ) {
+			return;
+		}
+
+		$term_taxonomy_id = (int) $wpdb->get_var(
+			$wpdb->prepare( "SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE term_id = %d AND taxonomy = %s", $source_term_id, $taxonomy )
+		);
+		if ( $term_taxonomy_id <= 0 ) {
+			return;
+		}
+
+		$source_post_ids = $wpdb->get_col(
+			$wpdb->prepare( "SELECT object_id FROM {$wpdb->term_relationships} WHERE term_taxonomy_id = %d", $term_taxonomy_id )
+		);
+		if ( empty( $source_post_ids ) ) {
+			return;
+		}
+		$source_post_ids = array_map( 'intval', $source_post_ids );
+		$placeholders    = implode( ',', array_fill( 0, count( $source_post_ids ), '%d' ) );
+
+		$pm_table = $wpdb->prefix . 'wptsall_post_mappings';
+		$pairs    = $wpdb->get_results(
+			$wpdb->prepare( "SELECT source_post_id, target_post_id FROM {$pm_table} WHERE relation_id = %d AND source_post_id IN ($placeholders)", $relation_id, ...$source_post_ids ),
+			ARRAY_A
+		);
+		if ( empty( $pairs ) ) {
+			return;
+		}
+
+		$assigned = 0;
+		foreach ( $pairs as $pair ) {
+			$target_post_id = (int) $pair['target_post_id'];
+			$target_post    = get_post( $target_post_id );
+			if ( ! $target_post ) {
+				continue;
+			}
+			// Only assign when the taxonomy applies to the target post type.
+			if ( ! in_array( $taxonomy, get_object_taxonomies( $target_post->post_type ), true ) ) {
+				continue;
+			}
+			$set = wp_set_object_terms( $target_post_id, array( $target_term_id ), $taxonomy, true );
+			if ( ! is_wp_error( $set ) ) {
+				$assigned++;
+			}
+		}
+
+		if ( $assigned > 0 ) {
+			wptsall_log_info(
+				'tasks-sync',
+				'Term associations reconciled onto existing target posts',
+				array(
+					'source_term_id' => $source_term_id,
+					'target_term_id' => $target_term_id,
+					'taxonomy'       => $taxonomy,
+					'relation_id'    => $relation_id,
+					'assigned'       => $assigned,
+				)
+			);
+		}
 	}
 
 	/**
@@ -3204,15 +3464,20 @@ class Sync_Executor {
 					'source_site_id'     => (int) $source_blog_id,
 					'relation_id'        => (int) $relation_id,
 					'source_lang'        => '',
+					'source_lang'        => (string) ( $relation['source_lang'] ?? '' ),
 					'target_term_id'     => $target_id,
 					'target_taxonomy'    => $taxonomy,
 					'target_site_id'     => $virtual_site_id,
-					'target_lang'        => '',
+					'target_lang'        => (string) ( $relation['target_lang'] ?? $relation['target_language'] ?? '' ),
 					'mapping_method'     => 'auto_create',
 					'translation_method' => 'sync_executor_virtual',
 				)
 			);
 		}
+
+		// F-TERM-1: back-fill the association onto virtual-site target posts
+		// written while this mapping was still a claim placeholder.
+		self::reconcile_term_associations( (int) $source_id, $taxonomy, (int) $target_id, (int) $relation_id );
 
 		wptsall_log_info(
 			'tasks-sync',
@@ -3397,6 +3662,7 @@ class Sync_Executor {
 				'db_error' => $wpdb->last_error,
 			) );
 		}
+		return false !== $update_result;
 	}
 
 	/**
@@ -3437,13 +3703,16 @@ class Sync_Executor {
 		 *
 		 * @since 1.5.0
 		 *
-		 * @param string $strategy    'log_and_overwrite' (default) or 'skip'.
+		 * @param string $strategy    Relation-driven default: the relation's canonical conflict_strategy (lww / source_wins / target_wins / manual_review / merge) mapped to 'log_and_overwrite' or 'skip'.
 		 * @param int    $target_id   Target post ID.
 		 * @param int    $relation_id Relation ID.
 		 * @param string $sync_path   Sync path ('sync_post', 'self_translation', 'virtual_site').
 		 * @param string $last_synced Last sync timestamp.
 		 */
-		$strategy = apply_filters( 'wptsall_sync_conflict_strategy', 'log_and_overwrite', $target_id, $relation_id, $sync_path, $last_synced );
+		// X-1 (tasks/5.3falsh2/12 批 B): relation-driven default instead of a
+		// hardcoded 'log_and_overwrite' — see get_relation_conflict_strategy().
+		$relation_strategy = self::get_relation_conflict_strategy( $relation_id );
+		$strategy          = apply_filters( 'wptsall_sync_conflict_strategy', $relation_strategy, $target_id, $relation_id, $sync_path, $last_synced );
 
 		wptsall_log_warning( 'tasks-sync', 'Sync conflict detected: target modified after last sync', array(
 			'target_id'     => $target_id,
@@ -3456,6 +3725,43 @@ class Sync_Executor {
 		) );
 
 		return 'skip' !== $strategy;
+	}
+
+	/**
+	 * Resolve the executor-level conflict strategy from the relation's
+	 * canonical conflict_strategy (X-1, tasks/5.3falsh2/12 批 B).
+	 *
+	 * Legacy values stored by older relation UIs resolve by their canonical
+	 * meaning; relations without a strategy (or a missing relation row)
+	 * keep the historical default: logged overwrite.
+	 *
+	 * @param int $relation_id Relation ID.
+	 * @return string 'log_and_overwrite' or 'skip'.
+	 */
+	private static function get_relation_conflict_strategy( $relation_id ) {
+		global $wpdb;
+
+		$raw = '';
+		if ( $relation_id ) {
+			$raw = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT conflict_strategy FROM %i WHERE id = %d',
+					wptsall_table( 'site_relations' ),
+					(int) $relation_id
+				)
+			);
+		}
+
+		switch ( strtolower( trim( (string) $raw ) ) ) {
+			case 'target_wins':
+			case 'target_dominant':
+			case 'manual_review':
+			case 'manual':
+				return 'skip';
+			default:
+				// lww / source_wins / merge / newest_wins / log_and_overwrite.
+				return 'log_and_overwrite';
+		}
 	}
 
 	/**
@@ -3491,16 +3797,19 @@ class Sync_Executor {
 		 *
 		 * @since 1.5.0
 		 *
-		 * @param string $strategy         'log_and_overwrite' (default) or 'skip'.
+		 * @param string $strategy         Relation-driven default: the relation's canonical conflict_strategy (lww / source_wins / target_wins / manual_review / merge) mapped to 'log_and_overwrite' or 'skip'.
 		 * @param int    $target_term_id   Target term ID.
 		 * @param int    $relation_id      Relation ID.
 		 * @param string $sync_path        Sync path identifier.
 		 * @param string $last_synced      Last sync timestamp.
 		 * @param string $last_manual_edit Last manual edit timestamp.
 		 */
-		$strategy = apply_filters(
+		// X-1 (tasks/5.3falsh2/12 批 B): relation-driven default, same as the
+		// post-path filter above (canonical strategy from site_relations).
+		$relation_strategy = self::get_relation_conflict_strategy( $relation_id );
+		$strategy          = apply_filters(
 			'wptsall_term_sync_conflict_strategy',
-			'log_and_overwrite',
+			$relation_strategy,
 			$target_term_id,
 			$relation_id,
 			$sync_path,

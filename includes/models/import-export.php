@@ -23,19 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param array $relation Raw relation row.
  * @return string
  */
-function wptsall_build_site_relation_import_key( $relation ) {
-	return implode(
-		'|',
-		array(
-			(int) ( $relation['source_site_id'] ?? 0 ),
-			(string) ( $relation['source_lang'] ?? '' ),
-			(string) ( $relation['template'] ?? '' ),
-			(string) ( $relation['target_site_type'] ?? 'wp' ),
-			(string) ( $relation['target_site_id'] ?? '' ),
-			(string) ( $relation['target_lang'] ?? '' ),
-		)
-	);
-}
 
 
 

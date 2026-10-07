@@ -2,7 +2,7 @@
 /**
  * Classified Listing field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/classified-listing.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/classified-listing.json
  * (fields_source: v4-scanner, fields_verified: 2026-01-27).
  *
  * Classified Listing stores listing commerce/contact data

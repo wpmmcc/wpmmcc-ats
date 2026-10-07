@@ -110,7 +110,7 @@ class Manual_Content_Service {
 		$written = 0;
 		foreach ( $meta as $meta_key => $meta_value ) {
 			$meta_key = (string) $meta_key;
-			if ( '' === $meta_key || 0 === strpos( $meta_key, '_wptsall_' ) ) {
+			if ( ! \WPTSALL\Core\Field_Write_Policy::allows_translation( $meta_key, 'post_type', true ) ) {
 				continue;
 			}
 			$format = '';
@@ -118,7 +118,10 @@ class Manual_Content_Service {
 				$format = (string) ( $field_capabilities[ $meta_key ]['content_format'] ?? '' );
 			}
 			$value = self::sanitize_translate_meta_value( $meta_key, $meta_value, $format );
-			update_post_meta( $target_id, $meta_key, $value );
+			if ( is_wp_error( $value ) ) {
+				continue;
+			}
+			update_post_meta( $target_id, $meta_key, wp_slash( $value ) );
 			if ( class_exists( '\\WPTSALL\\Sync\\Services\\Field_Ownership_Service' ) ) {
 				\WPTSALL\Sync\Services\Field_Ownership_Service::claim_manual(
 					'post',
@@ -211,26 +214,43 @@ class Manual_Content_Service {
 	}
 
 	public static function sanitize_translate_meta_value( $meta_key, $value, $format = '' ) {
-		unset( $meta_key );
-		if ( in_array( $format, array( 'json_structured', 'serialized_php' ), true ) ) {
-			return $value;
-		}
-		if ( is_array( $value ) || is_object( $value ) ) {
-			return $value;
-		}
-		if ( is_string( $value ) ) {
-			$trim = ltrim( $value );
-			if ( '' !== $trim && ( '{' === $trim[0] || '[' === $trim[0] ) ) {
-				$decoded = json_decode( $value, true );
+		if ( 'json_structured' === $format ) {
+			if ( is_array( $value ) ) {
+				return $value;
+			}
+			if ( is_string( $value ) ) {
+				json_decode( $value );
 				if ( JSON_ERROR_NONE === json_last_error() ) {
-					return $decoded;
+					return $value;
 				}
 			}
-			if ( 'rich_html' === $format ) {
-				return wp_kses_post( $value );
+			return new \WP_Error( 'rest_invalid_field', 'Invalid registered JSON field.', array( 'status' => 400 ) );
+		}
+		if ( 'serialized_php' === $format ) {
+			if ( is_array( $value ) || ( is_string( $value ) && is_serialized( $value ) ) ) {
+				return $value;
+			}
+			return new \WP_Error( 'rest_invalid_field', 'Invalid registered serialized field.', array( 'status' => 400 ) );
+		}
+		if ( ! is_scalar( $value ) && null !== $value ) {
+			return new \WP_Error( 'rest_invalid_field', 'Structured field requires a registered format.', array( 'status' => 400 ) );
+		}
+		if ( 'rich_html' === $format ) {
+			return wp_kses_post( (string) $value );
+		}
+		if ( is_string( $value ) && preg_match( '/^\s*[\[{]/', $value ) ) {
+			json_decode( $value );
+			if ( JSON_ERROR_NONE === json_last_error() ) {
+				return new \WP_Error( 'rest_invalid_field', 'JSON-shaped input requires a registered format.', array( 'status' => 400 ) );
 			}
 		}
-		return $value;
+		if ( 'slug' === $format ) {
+			return sanitize_title( (string) $value );
+		}
+		if ( null === $value ) {
+			return $value;
+		}
+		return sanitize_textarea_field( (string) $value );
 	}
 
 	/**
@@ -244,8 +264,14 @@ class Manual_Content_Service {
 	 * @param mixed  $value      Raw editor value.
 	 * @return mixed
 	 */
-	public static function sanitize_editor_payload_value( $field_name, $value ) {
+	public static function sanitize_editor_payload_value( $field_name, $value, $format = '' ) {
 		$field_name = (string) $field_name;
+		if ( in_array( $format, array( 'json_structured', 'serialized_php' ), true ) ) {
+			return self::sanitize_translate_meta_value( $field_name, $value, $format );
+		}
+		if ( self::is_standard_post_column( $field_name ) && ! is_string( $value ) ) {
+			return new \WP_Error( 'rest_invalid_field', 'Post column requires a string value.', array( 'status' => 400 ) );
+		}
 		if ( 'post_content' === $field_name ) {
 			return is_string( $value ) ? wp_kses_post( $value ) : $value;
 		}
@@ -259,33 +285,14 @@ class Manual_Content_Service {
 			return absint( $value );
 		}
 
-		$format = '';
-		if ( class_exists( '\\WPTSALL\\Models\\Adapters\\Plugin_Field_Rules_Registry' ) ) {
+		if ( '' === $format && class_exists( '\\WPTSALL\\Models\\Adapters\\Plugin_Field_Rules_Registry' ) ) {
 			$rule = \WPTSALL\Models\Adapters\Plugin_Field_Rules_Registry::match_meta_key( $field_name );
 			if ( is_array( $rule ) ) {
 				$format = (string) ( $rule['content_format'] ?? '' );
 			}
 		}
 
-		if ( in_array( $format, array( 'json_structured', 'serialized_php' ), true )
-			|| is_array( $value )
-			|| is_object( $value ) ) {
-			return self::sanitize_translate_meta_value( $field_name, $value, $format ? $format : 'json_structured' );
-		}
-		if ( 'rich_html' === $format && is_string( $value ) ) {
-			return wp_kses_post( $value );
-		}
-		if ( is_string( $value ) ) {
-			$trim = ltrim( $value );
-			if ( '' !== $trim && ( '{' === $trim[0] || '[' === $trim[0] ) ) {
-				return self::sanitize_translate_meta_value( $field_name, $value, 'json_structured' );
-			}
-			if ( false !== strpos( $value, "\n" ) ) {
-				return sanitize_textarea_field( $value );
-			}
-			return sanitize_text_field( $value );
-		}
-		return $value;
+		return self::sanitize_translate_meta_value( $field_name, $value, $format );
 	}
 
 	/**
@@ -302,7 +309,7 @@ class Manual_Content_Service {
 	 */
 	public static function apply_adapter_field_rules( array $field_config, $post_id ) {
 		$post_id = (int) $post_id;
-		if ( $post_id <= 0 || ! class_exists( '\\WPTSALL\\Models\\Adapters\\Plugin_Field_Rules_Registry' ) ) {
+		if ( ! ( $field_config['enabled'] ?? true ) || $post_id <= 0 || ! class_exists( '\\WPTSALL\\Models\\Adapters\\Plugin_Field_Rules_Registry' ) ) {
 			return $field_config;
 		}
 
@@ -688,6 +695,17 @@ class Manual_Content_Service {
 			);
 		}
 
+		// M-01 (opus5): the editor hides inactive relations, but the write
+		// endpoints must enforce the same rule — an inactive relation never
+		// accepts a manual translation save (mirrors get_editor_data).
+		if ( 'active' !== sanitize_key( (string) ( $relation['status'] ?? '' ) ) ) {
+			return new \WP_Error(
+				'relation_inactive',
+				__( 'Site relation is not active.', 'wpmmcc-ats' ),
+				array( 'status' => 409 )
+			);
+		}
+
 		// Get source post.
 		$source_post = get_post( $source_post_id );
 
@@ -706,20 +724,33 @@ class Manual_Content_Service {
 		);
 		$field_config = self::apply_adapter_field_rules( $field_config, $source_post_id );
 
+		if ( ! ( $field_config['enabled'] ?? true ) ) {
+			return new \WP_Error( 'rest_field_forbidden', 'Translation rule is disabled or missing.', array( 'status' => 403 ) );
+		}
 		$translate_fields = $field_config['translate_fields'] ?? array( 'post_title', 'post_content', 'post_excerpt', 'post_name' );
 		$compute_fields   = $field_config['compute_fields'] ?? array();
 		$field_capabilities = $field_config['field_capabilities'] ?? array();
+		foreach ( $translated_data as $key => $value ) {
+			$key = (string) $key;
+			$cap = is_array( $field_capabilities[ $key ] ?? null ) ? $field_capabilities[ $key ] : array();
+			$is_meta = ! self::is_standard_post_column( $key );
+			$translate = in_array( $key, $translate_fields, true )
+				&& ( $cap['enabled'] ?? true ) && 'translate' === ( $cap['type'] ?? 'translate' )
+				&& \WPTSALL\Core\Field_Write_Policy::allows_translation( $key, 'post_type', $is_meta );
+			$compute = 'post_name' === $key && in_array( $key, $compute_fields, true );
+			$media = in_array( $key, (array) ( $field_config['id_mapping_fields'] ?? array() ), true )
+				&& self::is_media_id_mapping( $key, (array) ( $field_config['id_mapping_details'] ?? array() ) );
+			if ( ! $translate && ! $compute && ! $media ) {
+				return new \WP_Error( 'rest_field_forbidden', 'Field is not authorized by the translation policy.', array( 'status' => 403 ) );
+			}
+			$sanitized = self::sanitize_editor_payload_value( $key, $value, (string) ( $cap['content_format'] ?? '' ) );
+			if ( is_wp_error( $sanitized ) ) {
+				return $sanitized;
+			}
+			$translated_data[ $key ] = $sanitized;
+		}
 		$partitioned      = self::partition_translated_fields( $translate_fields, $translated_data );
 		$translate_meta   = $partitioned['meta'];
-		// Keep extra plugin meta passed by the editor/client even when the
-		// current rule set has not listed the key yet (Woo attributes, Elementor JSON).
-		foreach ( $translated_data as $extra_key => $extra_value ) {
-			$extra_key = (string) $extra_key;
-			if ( self::is_standard_post_column( $extra_key ) || isset( $translate_meta[ $extra_key ] ) ) {
-				continue;
-			}
-			$translate_meta[ $extra_key ] = $extra_value;
-		}
 
 		// Build target post_data array (matching Sync_Executor structure).
 		// - translate columns: from user input
@@ -745,13 +776,8 @@ class Manual_Content_Service {
 				continue;
 			}
 			if ( array_key_exists( $field_name, $translated_data ) ) {
-				if ( 'post_content' === $field_name ) {
-					$post_data[ $field_name ] = wp_kses_post( $translated_data[ $field_name ] );
-				} elseif ( 'post_excerpt' === $field_name ) {
-					$post_data[ $field_name ] = sanitize_textarea_field( $translated_data[ $field_name ] );
-				} else {
-					$post_data[ $field_name ] = sanitize_text_field( $translated_data[ $field_name ] );
-				}
+				// Already sanitized against the registered format above.
+				$post_data[ $field_name ] = $translated_data[ $field_name ];
 			} elseif ( ! $existing_target && property_exists( $source_post, $field_name ) ) {
 				$post_data[ $field_name ] = $source_post->$field_name;
 			}
@@ -1000,6 +1026,32 @@ class Manual_Content_Service {
 				'is_update'        => (bool) ( $result['is_update'] ?? false ),
 			)
 		);
+
+		// opus5 M-04: a manual save is the highest-quality translation signal —
+		// record the field pairs into translation memory. Standard text columns
+		// only, capped at the suggest-side 1200-char limit inside
+		// record_translation_pairs(); the wptsall_tm_auto_record toggle gates it.
+		if ( class_exists( '\WPTSALL\TranslationMemory\Services\Translation_Memory_Service' ) ) {
+			$tm_translated = array();
+			foreach ( array( 'post_title', 'post_excerpt', 'post_content' ) as $tm_field ) {
+				if ( isset( $translated_data[ $tm_field ] ) && is_string( $translated_data[ $tm_field ] ) ) {
+					$tm_translated[ $tm_field ] = $translated_data[ $tm_field ];
+				}
+			}
+			if ( ! empty( $tm_translated ) ) {
+				\WPTSALL\TranslationMemory\Services\Translation_Memory_Service::record_translation_pairs(
+					array(
+						'post_title'   => (string) $source_post->post_title,
+						'post_excerpt' => (string) $source_post->post_excerpt,
+						'post_content' => (string) $source_post->post_content,
+					),
+					(string) ( $relation['source_lang'] ?? '' ),
+					(string) ( $relation['target_lang'] ?? '' ),
+					$tm_translated,
+					self::resolve_memory_text_domain( $relation_id, (string) $source_post->post_type )
+				);
+			}
+		}
 
 		return array(
 			'target_id'   => $result['target_id'],
@@ -1412,6 +1464,17 @@ class Manual_Content_Service {
 			);
 		}
 
+		// M-01 (opus5): an inactive relation must not accept field updates
+		// either — without this guard the editor's "relation paused" state
+		// could be bypassed by calling update directly.
+		if ( 'active' !== sanitize_key( (string) ( $relation['status'] ?? '' ) ) ) {
+			return new \WP_Error(
+				'relation_inactive',
+				__( 'Site relation is not active.', 'wpmmcc-ats' ),
+				array( 'status' => 409 )
+			);
+		}
+
 		$target_site_type = $relation['target_site_type'] ?? 'wp';
 
 		// Extract taxonomy data before processing fields.
@@ -1439,10 +1502,28 @@ class Manual_Content_Service {
 			$target_post_obj = get_post( $target_post_id );
 			$post_type = $target_post_obj ? $target_post_obj->post_type : 'post';
 		}
+		$switched_for_permission = false;
+		if ( 'wp' === $target_site_type && is_multisite() && (int) ( $relation['target_site_id'] ?? 0 ) > 0 ) {
+			switch_to_blog( (int) $relation['target_site_id'] );
+			$switched_for_permission = true;
+		}
+		try {
+			$post_type_object = get_post_type_object( $post_type );
+			if ( ! $target_post_obj || ! current_user_can( 'edit_post', $target_post_id )
+				|| ( array_key_exists( 'post_status', $all_fields ) && in_array( $all_fields['post_status'], array( 'publish', 'future', 'private' ), true )
+					&& ( ! $post_type_object || ! current_user_can( $post_type_object->cap->publish_posts ) ) ) ) {
+				return new \WP_Error( 'rest_forbidden', 'Full edit requires native object and publishing permissions.', array( 'status' => 403 ) );
+			}
+		} finally {
+			if ( $switched_for_permission ) {
+				restore_current_blog();
+			}
+		}
 		$field_config       = \WPTSALL\Models\Services\Translation_Rule_Service::get_merged_config_for_relation(
 			$relation_id,
 			$post_type
 		);
+		$field_config = self::apply_adapter_field_rules( $field_config, (int) $target_post_id );
 		$id_mapping_details = $field_config['id_mapping_details'] ?? array();
 
 		// Build post_data from all provided fields.
@@ -1470,10 +1551,19 @@ class Manual_Content_Service {
 				}
 			} else {
 				// Meta field.
+				if ( ! \WPTSALL\Core\Field_Write_Policy::allows_translation( (string) $field_name, 'post_type', true )
+					|| ! array_key_exists( $field_name, (array) ( $field_config['field_capabilities'] ?? array() ) ) ) {
+					return new \WP_Error( 'rest_field_forbidden', 'Metadata is not registered for this object.', array( 'status' => 403 ) );
+				}
 				if ( self::is_media_id_mapping( $field_name, $id_mapping_details ) ) {
 					$meta_fields[ $field_name ] = absint( $value );
 				} else {
-					$meta_fields[ $field_name ] = sanitize_text_field( $value );
+					$format = (string) ( $field_config['field_capabilities'][ $field_name ]['content_format'] ?? '' );
+					$sanitized = self::sanitize_editor_payload_value( $field_name, $value, $format );
+					if ( is_wp_error( $sanitized ) ) {
+						return $sanitized;
+					}
+					$meta_fields[ $field_name ] = $sanitized;
 				}
 			}
 		}
@@ -2133,7 +2223,7 @@ class Manual_Content_Service {
 	 * @param string $post_type Source post type.
 	 * @return string
 	 */
-	private static function resolve_memory_text_domain( int $relation_id, string $post_type ): string {
+	public static function resolve_memory_text_domain( int $relation_id, string $post_type ): string {
 		$post_type = sanitize_key( $post_type );
 		if ( class_exists( '\\WPTSALL\\Sites\\Services\\Relation_Model_Service' ) && class_exists( '\\WPTSALL\\Models\\Services\\Translation_Rule_Service' ) ) {
 			$models = \WPTSALL\Sites\Services\Relation_Model_Service::get_models_by_relation( $relation_id );
@@ -2375,6 +2465,22 @@ class Manual_Content_Service {
 	}
 
 	/**
+	 * Per-request memo for get_translation_status() (render-path hot aggregate).
+	 *
+	 * The admin list fires translation status TWICE per row (the
+	 * translation-status column hook and the row-actions hook), and each call
+	 * re-resolved every active relation's target via meta JOINs — measured
+	 * 2026-09-26 on the Lab product list: the same (source_post_id) chain ran
+	 * twice per row for 20 rows x 22 relations. The second call now reuses this
+	 * memo. Callers are read paths only (list hooks + REST GET); the REST
+	 * write endpoints never re-read status in the same request, so no
+	 * write-then-read staleness exists. PHP arrays are copy-on-write.
+	 *
+	 * @var array<string,array>
+	 */
+	private static $translation_status_memo = array();
+
+	/**
 	 * Get translation status for a source post across all active relations.
 	 *
 	 * @since 1.0.0
@@ -2392,6 +2498,11 @@ class Manual_Content_Service {
 			$post_type = $post->post_type;
 		}
 
+		$memo_key = $source_post_id . ':' . $post_type;
+		if ( array_key_exists( $memo_key, self::$translation_status_memo ) ) {
+			return self::$translation_status_memo[ $memo_key ];
+		}
+
 		// Get all active relations for the current source site.
 		$relations = Site_Relation_Service::get_all_relations(
 			array(
@@ -2406,9 +2517,18 @@ class Manual_Content_Service {
 
 		$statuses = array();
 
+		// Batch-resolve every relation's target in one mapping query + one
+		// virtual JOIN pair (render-path hot aggregate; per-pair fallback
+		// keeps the legacy meta paths when Translation_Identity is absent).
+		$targets = class_exists( Translation_Identity::class )
+			? Translation_Identity::find_targets_batch( $source_post_id, $relations, true )
+			: array();
+
 		foreach ( $relations as $relation ) {
 			$relation_id   = (int) $relation['id'];
-			$target_post_id = self::find_existing_translation( $source_post_id, $relation_id );
+			$target_post_id = array_key_exists( $relation_id, $targets )
+				? $targets[ $relation_id ]
+				: self::find_existing_translation( $source_post_id, $relation_id );
 
 			$status = 'missing';
 
@@ -2429,6 +2549,7 @@ class Manual_Content_Service {
 			);
 		}
 
+		self::$translation_status_memo[ $memo_key ] = $statuses;
 		return $statuses;
 	}
 

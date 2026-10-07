@@ -322,7 +322,7 @@ class Transport_Middleware {
 				$path .= '?' . implode( '&', $encoded_pairs );
 			}
 		}
-		$allowed_headers = array( 'idempotency-key', 'x-route-secret', 'x-wptsall-task-id', 'x-wptsall-relation-id', 'x-wptsall-source-id', 'x-wptsall-filename', 'x-wptsall-upload-id', 'x-wptsall-chunk-index' );
+		$allowed_headers = array( 'idempotency-key', 'x-route-secret', 'x-wptsall-task-id', 'x-wptsall-relation-id', 'x-wptsall-source-id', 'x-wptsall-filename', 'x-wptsall-upload-id', 'x-wptsall-chunk-index', 'x-wptsall-operation-id', 'x-wptsall-content-sha256' );
 		$signed = array();
 		foreach ( $allowed_headers as $name ) {
 			$value = trim( (string) $request->get_header( $name ) );

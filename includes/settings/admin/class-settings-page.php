@@ -51,7 +51,28 @@ class Settings_Page {
 			__( 'WPTSALL Settings', 'wpmmcc-ats' ),
 			__( 'General plugin behavior: URL form, default language, media, sync, debug, SEO emitter.', 'wpmmcc-ats' )
 		);
-		?>
+
+		// UI-28-03: visible feedback for the locale-override write paths.
+		$locale_error   = isset( $_GET['locale_error'] ) ? sanitize_text_field( wp_unslash( $_GET['locale_error'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$locale_saved   = isset( $_GET['locale_saved'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$locale_cleared = isset( $_GET['locale_cleared'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$updated        = isset( $_GET['updated'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $locale_error ) : ?>
+			<div class="notice notice-error is-dismissible"><p><?php echo esc_html( $locale_error ); ?></p></div>
+		<?php endif; ?>
+		<?php if ( $locale_saved || $locale_cleared || $updated ) : ?>
+			<div class="notice notice-success is-dismissible"><p>
+				<?php
+				if ( $locale_saved ) {
+					esc_html_e( 'Locale override saved.', 'wpmmcc-ats' );
+				} elseif ( $locale_cleared ) {
+					esc_html_e( 'Locale override removed.', 'wpmmcc-ats' );
+				} else {
+					esc_html_e( 'Settings saved.', 'wpmmcc-ats' );
+				}
+				?>
+			</p></div>
+		<?php endif; ?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<?php wp_nonce_field( 'wptsall_save_settings' ); ?>
 			<input type="hidden" name="action" value="wptsall_settings_save">
@@ -148,7 +169,7 @@ class Settings_Page {
 					<th scope="row"><?php esc_html_e( 'Debug mode', 'wpmmcc-ats' ); ?></th>
 					<td>
 						<label><input type="checkbox" name="debug_mode" value="1" <?php checked( $settings['debug_mode'] ); ?>>
-						<?php esc_html_e( 'Verbose logging to wptsall_log_info() — also enables wp_footer marker', 'wpmmcc-ats' ); ?></label>
+						<?php esc_html_e( 'Enable verbose ops file logging (wptsall_log_* → uploads/wptsall-logs-*) and the wp_footer debug marker. Equivalent to defining WPTSALL_LOG_ENABLED in wp-config.php.', 'wpmmcc-ats' ); ?></label>
 					</td>
 				</tr>
 				<tr>
@@ -226,9 +247,43 @@ class Settings_Page {
 		Admin_Page_Helper::render_footer();
 	}
 
-	// handle_locale_save / handle_locale_clear removed 2026-09-12: zero
-	// callers (never registered on any admin_post_ action and referenced
-	// nowhere else) — dead handlers since the settings page was rewritten.
+	// handle_locale_save / handle_locale_clear removed 2026-09-12 on the
+	// assumption of "zero callers" — wrong: the two Locale Override forms in
+	// render_page() above post to exactly these actions, so the removal left
+	// dead forms (UI-28-03: live blank-page submit, silent data loss).
+	// Restored 2026-09-20; the front-end service (Theme_Localization) kept
+	// its set/clear methods and consumes the stored overrides all along.
+
+	public static function handle_locale_save() {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
+		}
+		check_admin_referer( 'wptsall_locale_save' );
+		$lang   = sanitize_key( wp_unslash( $_POST['override_lang'] ?? '' ) );
+		$locale = sanitize_text_field( wp_unslash( $_POST['override_locale'] ?? '' ) );
+		if ( '' === $lang || '' === $locale ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&locale_error=' . rawurlencode( __( 'Language and WP locale are both required.', 'wpmmcc-ats' ) ) ) );
+			exit;
+		}
+		if ( class_exists( '\WPTSALL\ThemeLocalization\Theme_Localization' ) ) {
+			\WPTSALL\ThemeLocalization\Theme_Localization::set_override( $lang, $locale );
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&locale_saved=1' ) );
+		exit;
+	}
+
+	public static function handle_locale_clear() {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
+		}
+		check_admin_referer( 'wptsall_locale_clear' );
+		$lang = sanitize_key( wp_unslash( $_POST['lang'] ?? '' ) );
+		if ( '' !== $lang && class_exists( '\WPTSALL\ThemeLocalization\Theme_Localization' ) ) {
+			\WPTSALL\ThemeLocalization\Theme_Localization::clear_override( $lang );
+		}
+		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&locale_cleared=1' ) );
+		exit;
+	}
 
 	public static function handle_save() {
 		if ( ! current_user_can( self::CAP ) ) {

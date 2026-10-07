@@ -42,6 +42,26 @@ trait Translation_Rule_Service_Config_Trait {
 	 * @return array Merged field_capabilities format configuration.
 	 */
 	public static function get_merged_config_for_relation( int $relation_id, string $post_type, string $data_type = 'post' ): array {
+		$config = self::get_merged_config_for_relation_base( $relation_id, $post_type, $data_type );
+
+		// opus5 M-03 (decision D-2a): apply the Field Discovery option as a
+		// per-post-type overlay. Before 2.1.4 the wptsall_field_translations
+		// option had no consumer — the admin page promised that marking a
+		// discovered meta key "Translatable" feeds translation, but nothing
+		// read the decision. Every flow that reads this contract method
+		// (manual editor, client discovery, callback) now sees the overlay.
+		return self::apply_field_discovery_overlay( $config, $post_type, $data_type );
+	}
+
+	/**
+	 * Base merged-config resolution (model → rule → merged config).
+	 *
+	 * @param int    $relation_id Site relation ID.
+	 * @param string $post_type   Post type (or taxonomy for term data).
+	 * @param string $data_type   'post' or 'term'.
+	 * @return array Merged field_capabilities format configuration.
+	 */
+	private static function get_merged_config_for_relation_base( int $relation_id, string $post_type, string $data_type = 'post' ): array {
 		if ( ! class_exists( '\\WPTSALL\\Sites\\Services\\Relation_Model_Service' ) ) {
 			wptsall_log_error(
 				'models',
@@ -63,6 +83,9 @@ trait Translation_Rule_Service_Config_Trait {
 		}
 
 		foreach ( $models as $model ) {
+			if ( 'active' !== ( $model['status'] ?? 'active' ) ) {
+				continue;
+			}
 			$model_id = (int) $model['id'];
 
 			if ( 'term' === $data_type ) {
@@ -86,10 +109,65 @@ trait Translation_Rule_Service_Config_Trait {
 
 		wptsall_log_debug(
 			'models',
-			'No rule found, using default config',
+			'No matching rule found in attached models',
 			array( 'relation_id' => $relation_id, 'post_type' => $post_type, 'data_type' => $data_type )
 		);
-		return self::get_default_config( $post_type );
+		return self::convert_to_capabilities_format( array( 'enabled' => false, 'fields' => array() ) );
+	}
+
+	/**
+	 * Apply the Field Discovery option as a per-post-type overlay (opus5 M-03 / D-2a).
+	 *
+	 * Discovered meta keys marked "Translatable" for the post type are added
+	 * to translate_fields when no rule layer has already classified them —
+	 * fields already assigned to translate/sync/copy_once/skip/id_mapping/
+	 * compute keep their explicit classification, and code-like keys are
+	 * never admitted (same classifier the Field Discovery page enforces).
+	 *
+	 * @param array  $config    Merged capabilities-format configuration.
+	 * @param string $post_type Post type the overlay is scoped to.
+	 * @param string $data_type 'post' or 'term' (overlay is post-meta only).
+	 * @return array Configuration with the overlay applied.
+	 */
+	private static function apply_field_discovery_overlay( array $config, string $post_type, string $data_type ): array {
+		if ( 'post' !== $data_type || ! ( $config['enabled'] ?? true ) ) {
+			return $config;
+		}
+		if ( ! class_exists( '\\WPTSALL\\ManualTranslation\\Services\\Field_Translation_Service' ) ) {
+			return $config;
+		}
+
+		$discovered = \WPTSALL\ManualTranslation\Services\Field_Translation_Service::get_for_post_type( $post_type );
+		if ( empty( $discovered ) ) {
+			return $config;
+		}
+
+		$known = array_merge(
+			array_keys( (array) ( $config['field_capabilities'] ?? array() ) ),
+			(array) ( $config['translate_fields'] ?? array() ),
+			(array) ( $config['sync_fields'] ?? array() ),
+			(array) ( $config['copy_once_fields'] ?? array() ),
+			(array) ( $config['skip_fields'] ?? array() ),
+			(array) ( $config['id_mapping_fields'] ?? array() ),
+			(array) ( $config['compute_fields'] ?? array() )
+		);
+
+		foreach ( $discovered as $meta_key => $flags ) {
+			$meta_key = (string) $meta_key;
+			if ( '' === $meta_key || in_array( $meta_key, $known, true ) ) {
+				continue;
+			}
+			if ( ! is_array( $flags ) || empty( $flags['translatable'] ) ) {
+				continue;
+			}
+			if ( \WPTSALL\ManualTranslation\Services\Field_Translation_Service::is_code_like_key( $meta_key ) ) {
+				continue;
+			}
+			$config['translate_fields'][] = $meta_key;
+			$known[]                      = $meta_key;
+		}
+
+		return $config;
 	}
 
 	/**
@@ -124,6 +202,7 @@ trait Translation_Rule_Service_Config_Trait {
 	 */
 	private static function convert_to_capabilities_format( array $config ): array {
 		$result = array(
+			'enabled'            => (bool) ( $config['enabled'] ?? true ),
 			'translate_fields'   => array(),
 			'sync_fields'        => array(),
 			'copy_once_fields'   => array(),
@@ -136,7 +215,7 @@ trait Translation_Rule_Service_Config_Trait {
 		);
 
 		foreach ( $config['fields'] ?? array() as $field_name => $field_config ) {
-			if ( ! ( $field_config['enabled'] ?? true ) ) {
+			if ( ! $result['enabled'] || ! ( $field_config['enabled'] ?? true ) ) {
 				continue;
 			}
 

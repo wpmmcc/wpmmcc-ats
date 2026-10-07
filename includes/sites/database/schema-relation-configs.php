@@ -73,31 +73,3 @@ function wptsall_create_relation_post_type_configs_table() {
 		)
 	);
 }
-
-/**
- * Check if relation configs table exists
- *
- * @since 0.8.0
- * @return bool
- */
-function wptsall_relation_post_type_configs_table_exists() {
-	global $wpdb;
-	$table_name = wptsall_table( 'relation_post_type_configs' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$result = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-
-	return $result === $table_name;
-}
-
-/**
- * Delete relation configs table (used only during uninstall)
- *
- * @since 0.8.0
- */
-/**
- * Get relation configs table statistics
- *
- * @since 0.8.0
- * @return array
- */

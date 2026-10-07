@@ -41,6 +41,7 @@ class Setup_Wizard {
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu_page' ) );
 		add_action( 'admin_post_wptsall_wizard_step', array( __CLASS__, 'handle_step' ) );
 		add_action( 'admin_post_wptsall_wizard_skip', array( __CLASS__, 'handle_skip' ) );
+		add_action( 'wp_ajax_wptsall_wizard_scan_models', array( __CLASS__, 'ajax_scan_models' ) );
 		// Show a dashboard widget nudge if wizard not completed.
 		add_action( 'wp_dashboard_setup', array( __CLASS__, 'maybe_add_dashboard_widget' ) );
 	}
@@ -89,6 +90,51 @@ class Setup_Wizard {
 
 	private static function set_state( $state ) {
 		update_option( self::OPTION, $state );
+	}
+
+	/**
+	 * Execute model scan for Setup Wizard.
+	 *
+	 * @return array
+	 */
+	public static function execute_model_scan(): array {
+		$scanner_file = defined( 'WPTSALL_PATH' ) ? WPTSALL_PATH . 'includes/models/scanners/class-model-scanner-v2.php' : '';
+		$tracker_file = defined( 'WPTSALL_PATH' ) ? WPTSALL_PATH . 'includes/models/scanners/class-runtime-tracker.php' : '';
+		if ( $scanner_file && file_exists( $scanner_file ) && $tracker_file && file_exists( $tracker_file ) ) {
+			require_once $scanner_file;
+			require_once $tracker_file;
+			if ( class_exists( '\\WPTSALL\\Models\\Scanners\\Runtime_Tracker' ) ) {
+				\WPTSALL\Models\Scanners\Runtime_Tracker::init();
+			}
+			if ( class_exists( '\\WPTSALL\\Models\\Scanners\\Model_Scanner_V2' ) ) {
+				$scanner = new \WPTSALL\Models\Scanners\Model_Scanner_V2();
+				$scanner->set_mode( 'incremental' );
+				$scanner->scan_all_plugins();
+			}
+		}
+
+		global $wpdb;
+		$results = wptsall_db_get_results(
+			'SELECT id, plugin_slug, plugin_name, status FROM %i ORDER BY id ASC',
+			array( $wpdb->prefix . 'wptsall_models' ),
+			ARRAY_A
+		);
+		return is_array( $results ) ? $results : array();
+	}
+
+	/**
+	 * AJAX handler for scanning content models within Setup Wizard.
+	 *
+	 * @return void
+	 */
+	public static function ajax_scan_models(): void {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_send_json_error( array( 'message' => __( 'Forbidden', 'wpmmcc-ats' ) ), 403 );
+		}
+		check_ajax_referer( 'wptsall_wizard_scan', 'nonce' );
+
+		$models = self::execute_model_scan();
+		wp_send_json_success( array( 'models' => $models ) );
 	}
 
 	public static function maybe_add_dashboard_widget() {
@@ -172,16 +218,23 @@ class Setup_Wizard {
 				echo '<h2>' . esc_html__( 'Target languages', 'wpmmcc-ats' ) . '</h2>';
 				echo '<p>' . esc_html__( 'Pick the languages visitors should be able to switch to (excluding the default).', 'wpmmcc-ats' ) . '</p>';
 				echo '<div style="column-count:2;max-width:520px;">';
-				$current_targets = get_option( 'wptsall_wizard_target_languages', array() );
-				if ( ! is_array( $current_targets ) ) { $current_targets = array(); }
+				// 3.8flash 4.5-①: single source of truth — the REAL language
+				// records (status), not a wizard-private option. The private
+				// option made two truths: Languages-page edits never showed up
+				// here, and the wizard's picks never landed in the real store.
+				// The default language is checked + disabled: it is the
+				// fallback base, untargeting it is meaningless.
 				foreach ( $languages as $l ) {
-					$checked = in_array( $l['code'], $current_targets, true ) || $l['code'] === $settings['default_language'] ? 'checked' : '';
+					$is_default = $l['code'] === $settings['default_language'];
+					$checked    = $is_default || 'active' === $l['status'];
 					printf(
-						'<label style="display:block;"><input type="checkbox" name="target_languages[]" value="%s" %s> %s — %s</label>',
+						'<label style="display:block;"><input type="checkbox" name="target_languages[]" value="%s"%s%s> %s — %s%s</label>',
 						esc_attr( $l['code'] ),
-						esc_attr( $checked ),
+						$checked ? ' checked' : '',
+						$is_default ? ' disabled' : '',
 						esc_html( $l['code'] ),
-						esc_html( $l['name'] )
+						esc_html( $l['name'] ),
+						$is_default ? ' (' . esc_html__( 'default', 'wpmmcc-ats' ) . ')' : ''
 					);
 				}
 				echo '</div>';
@@ -195,22 +248,80 @@ class Setup_Wizard {
 					array( $wpdb->prefix . 'wptsall_models' ),
 					ARRAY_A
 				);
-				if ( empty( $models ) ) {
-					echo '<p>' . esc_html__( 'No models yet. Run a plugin scan on the Models page first.', 'wpmmcc-ats' ) . '</p>';
-				} else {
-					echo '<div style="column-count:2;max-width:520px;">';
-					foreach ( $models as $m ) {
-						printf(
-							'<label style="display:block;"><input type="checkbox" name="models[]" value="%d" %s> %s <small>(%s, %s)</small></label>',
-							(int) $m['id'],
-							checked( $m['status'] === 'active', true, false ),
-							esc_html( $m['plugin_name'] ),
-							esc_html( $m['plugin_slug'] ),
-							esc_html( $m['status'] )
-						);
-					}
-					echo '</div>';
-				}
+				$scan_nonce = wp_create_nonce( 'wptsall_wizard_scan' );
+				?>
+				<div id="wptsall-wizard-models-container">
+					<?php if ( empty( $models ) ) : ?>
+						<div class="notice notice-info inline" style="margin: 10px 0 15px 0;">
+							<p><?php esc_html_e( 'No content models detected yet. Click the button below to scan installed plugins for translatable content.', 'wpmmcc-ats' ); ?></p>
+						</div>
+					<?php else : ?>
+						<div id="wptsall-models-list" style="column-count:2;max-width:520px;margin-bottom:15px;">
+							<?php foreach ( $models as $m ) : ?>
+								<label style="display:block;">
+									<input type="checkbox" name="models[]" value="<?php echo (int) $m['id']; ?>" <?php checked( $m['status'] === 'active', true ); ?>>
+									<?php echo esc_html( $m['plugin_name'] ); ?> <small>(<?php echo esc_html( $m['plugin_slug'] ); ?>, <?php echo esc_html( $m['status'] ); ?>)</small>
+								</label>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+
+				<div style="margin: 15px 0;">
+					<button type="button" id="wptsall-wizard-ajax-scan-btn" class="button button-secondary">
+						<span class="dashicons dashicons-search" style="vertical-align:middle;"></span>
+						<?php esc_html_e( 'Scan Installed Plugins Now', 'wpmmcc-ats' ); ?>
+					</button>
+					<button type="submit" name="wizard_scan_now" value="1" class="button button-secondary" style="margin-left: 5px;">
+						<?php esc_html_e( 'Scan via Refresh', 'wpmmcc-ats' ); ?>
+					</button>
+					<span id="wptsall-wizard-scan-spinner" class="spinner" style="float:none;vertical-align:middle;margin-left:5px;"></span>
+					<span id="wptsall-wizard-scan-status" style="margin-left:8px;font-size:12px;color:#555;"></span>
+				</div>
+
+				<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					var btn = document.getElementById('wptsall-wizard-ajax-scan-btn');
+					var spinner = document.getElementById('wptsall-wizard-scan-spinner');
+					var statusSpan = document.getElementById('wptsall-wizard-scan-status');
+					var container = document.getElementById('wptsall-wizard-models-container');
+					if (!btn) return;
+					btn.addEventListener('click', function() {
+						btn.disabled = true;
+						spinner.classList.add('is-active');
+						statusSpan.textContent = '<?php echo esc_js( __( 'Scanning plugins...', 'wpmmcc-ats' ) ); ?>';
+						fetch(ajaxurl, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+							body: 'action=wptsall_wizard_scan_models&nonce=<?php echo esc_js( $scan_nonce ); ?>'
+						})
+						.then(function(res) { return res.json(); })
+						.then(function(data) {
+							btn.disabled = false;
+							spinner.classList.remove('is-active');
+							if (data.success && data.data && data.data.models && data.data.models.length > 0) {
+								var models = data.data.models;
+								statusSpan.textContent = models.length + ' <?php echo esc_js( __( 'models found.', 'wpmmcc-ats' ) ); ?>';
+								var html = '<div id="wptsall-models-list" style="column-count:2;max-width:520px;margin-bottom:15px;">';
+								models.forEach(function(m) {
+									var checked = m.status === 'active' ? 'checked' : '';
+									html += '<label style="display:block;"><input type="checkbox" name="models[]" value="' + m.id + '" ' + checked + '> ' + m.plugin_name + ' <small>(' + m.plugin_slug + ', ' + m.status + ')</small></label>';
+								});
+								html += '</div>';
+								container.innerHTML = html;
+							} else {
+								statusSpan.textContent = '<?php echo esc_js( __( 'Scan completed or no plugins found.', 'wpmmcc-ats' ) ); ?>';
+							}
+						})
+						.catch(function(err) {
+							btn.disabled = false;
+							spinner.classList.remove('is-active');
+							statusSpan.textContent = '<?php echo esc_js( __( 'Scan failed, try Scan via Refresh.', 'wpmmcc-ats' ) ); ?>';
+						});
+					});
+				});
+				</script>
+				<?php
 				break;
 			case 5:
 				echo '<h2>' . esc_html__( 'Done', 'wpmmcc-ats' ) . '</h2>';
@@ -219,10 +330,34 @@ class Setup_Wizard {
 				/* translators: %s: <value> */
 				echo '<li>' . esc_html( sprintf( __( 'Default language: %s', 'wpmmcc-ats' ), $settings['default_language'] ) ) . '</li>';
 				/* translators: comma-separated list of target language codes */
-				$tg = get_option( 'wptsall_wizard_target_languages', array() );
+				// 3.8flash 4.5-①: read the REAL store (active language records),
+				// same single source of truth the step-3 form writes.
+				$active_codes = array();
+				foreach ( Language_Service::get_all( array( 'status' => 'active' ) ) as $row ) {
+					$active_codes[] = (string) $row['code'];
+				}
 				/* translators: %s: <value> */
-				echo '<li>' . esc_html( sprintf( __( 'Target languages: %s', 'wpmmcc-ats' ), implode( ', ', (array) $tg ) ) ) . '</li>';
+				echo '<li>' . esc_html( sprintf( __( 'Target languages: %s', 'wpmmcc-ats' ), implode( ', ', $active_codes ) ) ) . '</li>';
 				echo '</ul>';
+
+				if ( function_exists( 'wptsall_create_site_connection_pack' ) ) {
+					$pack      = wptsall_create_site_connection_pack( '', __( 'Standalone Client', 'wpmmcc-ats' ) );
+					$pack_json = wp_json_encode( $pack, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+					?>
+					<div class="card" style="max-width: 600px; margin-top: 20px; padding: 15px; border: 1px solid #ccd0d4; background: #fff;">
+						<h3><?php esc_html_e( 'Connect Standalone Translation Client', 'wpmmcc-ats' ); ?></h3>
+						<p class="description">
+							<?php esc_html_e( 'Import this Connection Pack into your standalone client (WebUI or Desktop) on the Sites page to connect immediately.', 'wpmmcc-ats' ); ?>
+						</p>
+						<textarea id="wptsall-wizard-conn-pack" readonly rows="7" style="width: 100%; font-family: monospace; font-size: 11px;"><?php echo esc_textarea( $pack_json ); ?></textarea>
+						<div style="margin-top: 10px;">
+							<button type="button" class="button button-secondary" onclick="navigator.clipboard.writeText(document.getElementById('wptsall-wizard-conn-pack').value); alert('Connection Pack copied to clipboard!');">
+								<?php esc_html_e( 'Copy Connection Pack JSON', 'wpmmcc-ats' ); ?>
+							</button>
+						</div>
+					</div>
+					<?php
+				}
 				break;
 		}
 	}
@@ -233,9 +368,29 @@ class Setup_Wizard {
 		}
 		check_admin_referer( 'wptsall_wizard_step' );
 		$step = (int) ( isset( $_POST['step'] ) ? sanitize_text_field( wp_unslash( $_POST['step'] ) ) : 1 );
+
+		// Handle manual refresh scan on Step 4
+		if ( 4 === $step && ! empty( $_POST['wizard_scan_now'] ) ) {
+			self::execute_model_scan();
+			$base = add_query_arg( 'page', self::PAGE_SLUG, admin_url( 'admin.php' ) );
+			wp_safe_redirect( add_query_arg( 'step', 4, $base ) );
+			exit;
+		}
+
 		// Persist step-specific data.
 		if ( 2 === $step && ! empty( $_POST['default_language'] ) ) {
-			Settings_Service::update( array( 'default_language' => sanitize_text_field( wp_unslash( $_POST['default_language'] ) ) ) );
+			$picked = sanitize_text_field( wp_unslash( $_POST['default_language'] ) );
+			Settings_Service::update( array( 'default_language' => $picked ) );
+			// 3.8flash 4.5-① family: the wizard wrote ONLY the settings store,
+			// so the languages records' is_default marker (the Languages
+			// page's canonical default) went stale — two stores, one write.
+			// Sync the record marker from the wizard's pick.
+			foreach ( Language_Service::get_all( array( 'status' => 'all' ) ) as $row ) {
+				if ( (string) $row['code'] === $picked ) {
+					Language_Service::set_default( (int) $row['id'] );
+					break;
+				}
+			}
 		}
 		if ( 3 === $step ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- map_deep sanitizes each value.
@@ -243,18 +398,49 @@ class Setup_Wizard {
 			$tg     = is_array( $raw_tg )
 				? array_values( array_filter( map_deep( $raw_tg, 'sanitize_text_field' ) ) )
 				: array();
-			update_option( 'wptsall_wizard_target_languages', $tg );
+			// 3.8flash 4.5-①: write the REAL store (the Languages records'
+			// status), not a wizard-private option — the form carries the
+			// full desired target set (checkboxes pre-populated from the
+			// current records), so an unchecked box is an explicit untarget.
+			// The default language stays active regardless (disabled input).
+			$default_language = (string) ( Settings_Service::get_all()['default_language'] ?? '' );
+			foreach ( Language_Service::get_all( array( 'status' => 'all' ) ) as $row ) {
+				$is_target = in_array( (string) $row['code'], $tg, true ) || $row['code'] === $default_language;
+				$status    = $is_target ? 'active' : 'inactive';
+				if ( $status !== (string) $row['status'] ) {
+					Language_Service::set_status( (int) $row['id'], $status );
+				}
+			}
 		}
-		if ( 4 === $step && ! empty( $_POST['models'] ) ) {
-			$ids = array_map( 'intval', (array) wp_unslash( $_POST['models'] ) );
-			if ( ! empty( $ids ) ) {
-				global $wpdb;
+		if ( 4 === $step ) {
+			// 3.8flash 4.5-②: the form is the full desired state (checkboxes
+			// pre-populated from the current records), so unchecked is an
+			// explicit disable — the previous enable-only branch made
+			// deactivation unreachable from the wizard (asymmetric with the
+			// Models page). An untouched submit is identity by construction.
+			$checked = isset( $_POST['models'] )
+				? array_map( 'intval', (array) wp_unslash( $_POST['models'] ) )
+				: array();
+			global $wpdb;
+			$all_ids = wptsall_db_get_col( 'SELECT id FROM %i', array( $wpdb->prefix . 'wptsall_models' ) );
+			$all_ids = is_array( $all_ids ) ? array_map( 'intval', $all_ids ) : array();
+			if ( ! empty( $all_ids ) ) {
 				$table = $wpdb->prefix . 'wptsall_models';
-				list( $in_sql, $in_args ) = wptsall_db_prepare_int_in( $ids );
-				wptsall_db_query(
-					"UPDATE %i SET status = %s WHERE id IN ($in_sql)",
-					array_merge( array( $table, 'active' ), $in_args )
-				);
+				if ( ! empty( $checked ) ) {
+					list( $in_sql, $in_args ) = wptsall_db_prepare_int_in( $checked );
+					wptsall_db_query(
+						"UPDATE %i SET status = %s WHERE id IN ($in_sql)",
+						array_merge( array( $table, 'active' ), $in_args )
+					);
+				}
+				$to_deactivate = array_diff( array_map( 'intval', $all_ids ), $checked );
+				if ( ! empty( $to_deactivate ) ) {
+					list( $off_sql, $off_args ) = wptsall_db_prepare_int_in( $to_deactivate );
+					wptsall_db_query(
+						"UPDATE %i SET status = %s WHERE id IN ($off_sql)",
+						array_merge( array( $table, 'inactive' ), $off_args )
+					);
+				}
 			}
 		}
 		$next = $step + 1;

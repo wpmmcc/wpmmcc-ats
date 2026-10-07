@@ -26,6 +26,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Content_Change_Dispatcher {
 
 	/**
+	 * Leases an outbox row gets before it is retired to `dead` (ATS-01).
+	 * Filterable through `wptsall_outbox_max_attempts`.
+	 */
+	const DEFAULT_MAX_ATTEMPTS = 8;
+
+	/** First server-side retry delay and its ceiling, in seconds. */
+	const RETRY_BACKOFF_BASE_SECONDS = 30;
+	const RETRY_BACKOFF_CAP_SECONDS  = 1800;
+
+	/**
 	 * Nested internal-write depth.
 	 *
 	 * @var int
@@ -392,6 +402,15 @@ class Content_Change_Dispatcher {
 		$attachment = get_post( $attachment_id );
 		$is_shadow  = '' !== (string) \WPTSALL\Sites\Services\Translation_Identity::raw_meta( $attachment_id, \WPTSALL\Sites\Services\Translation_Identity::META_VIRTUAL_SITE_ID );
 		if ( ! $attachment || 'attachment' !== $attachment->post_type || $is_shadow ) {
+			return;
+		}
+		// Translation products (client /media-upload sideloads, write-back
+		// adapters) carry the source-attachment marker: they are mapping
+		// TARGETS, never translation sources. Without this guard every
+		// uploaded translation re-enters the media change pipeline as a new
+		// claimable source — the attachment copy self-feed chain (WP-side
+		// dedupe then stacks -1/-1-1 filename suffixes each round).
+		if ( (int) \WPTSALL\Sites\Services\Translation_Identity::raw_meta( $attachment_id, '_wptsall_source_attachment_id' ) > 0 ) {
 			return;
 		}
 		global $wpdb;
@@ -1008,7 +1027,44 @@ class Content_Change_Dispatcher {
 	}
 
 	/**
+	 * Lease attempts an outbox row gets before it is retired to `dead`.
+	 *
+	 * `attempts` counts leases (claim_outbox bumps it), so the cap covers both a
+	 * client that keeps reporting failure and one that crashes on the row and
+	 * never reports anything (the lease simply expires).
+	 *
+	 * @since 2.3.0
+	 * @return int At least 1.
+	 */
+	public static function max_attempts() {
+		/**
+		 * Filters how many leases an outbox row gets before it is retired to the
+		 * terminal `dead` state.
+		 *
+		 * @since 2.3.0
+		 * @param int $max_attempts Default 8.
+		 */
+		return max( 1, (int) apply_filters( 'wptsall_outbox_max_attempts', self::DEFAULT_MAX_ATTEMPTS ) );
+	}
+
+	/**
+	 * Server-side retry delay after a failed lease: 30s doubling per attempt,
+	 * capped at 30 minutes (the same ceiling as a client-supplied hint).
+	 *
+	 * @since 2.3.0
+	 * @param int $attempts Leases the row has used so far.
+	 * @return int Seconds.
+	 */
+	public static function retry_backoff_seconds( $attempts ) {
+		$doublings = min( 6, max( 0, (int) $attempts - 1 ) );
+		return min( self::RETRY_BACKOFF_CAP_SECONDS, self::RETRY_BACKOFF_BASE_SECONDS * ( 1 << $doublings ) );
+	}
+
+	/**
 	 * Claim pending outbox rows with a lease for one worker.
+	 *
+	 * Rows that used up their attempts are retired to `dead` here (see
+	 * retire_exhausted_outbox_rows) and are never leased again.
 	 *
 	 * @param int $limit Maximum rows.
 	 * @param int $lease_secs Lease duration.
@@ -1023,18 +1079,45 @@ class Content_Change_Dispatcher {
 		$claim_owner = sanitize_key( (string) $claim_owner );
 		$now         = current_time( 'mysql', true );
 		$cutoff     = gmdate( 'Y-m-d H:i:s', time() - max( 60, (int) $lease_secs ) );
-		// Scan a wider FIFO window than the return cap so a freshly-created
-		// event is not starved behind historical backlog during health checks.
+		$max_attempts = self::max_attempts();
+		self::retire_exhausted_outbox_rows( (int) $relation_id, $cutoff, $now );
+		// Recover dead leases first: rows still processing past the lease
+		// window (crashed or stopped client) are flipped back to pending so
+		// any worker can claim them and admin views do not show zombies. The
+		// candidate OR-clause below would still re-claim them, but the rows
+		// would otherwise linger as 'processing' forever.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- dead-lease recovery; compare-and-set write, caching not applicable.
+		$wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET status = %s, claimed_at = NULL, updated_at = %s WHERE status = %s AND claimed_at < %s',
+				$table,
+				'pending',
+				$now,
+				'processing',
+				$cutoff
+			)
+		);
+		// Scan a wider window than the return cap, oldest-first (FIFO), so
+		// the batch is the front of the queue: historical backlog drains in
+		// id order and is never starved outside the window. (批D X-12①:
+		// this used to be ORDER BY id DESC — newest-first meant a backlog
+		// larger than the window kept the oldest rows permanently
+		// unreachable while fresh events kept the CPU busy claiming newer
+		// ones; the ASC order also rides the claim_queue index's trailing
+		// id column.) The window is wider than the lease cap so a
+		// health-check claim (limit=1) still sees queue depth without
+		// leasing it.
 		$query_limit = max( $limit, 1000 );
 		if ( $relation_id > 0 ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$candidates = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT * FROM %i WHERE (status = %s OR (status = %s AND claimed_at < %s)) AND available_at <= %s AND relation_id = %d ORDER BY id DESC LIMIT %d',
+					'SELECT * FROM %i WHERE (status = %s OR (status = %s AND claimed_at < %s)) AND attempts < %d AND available_at <= %s AND relation_id = %d ORDER BY id ASC LIMIT %d',
 					$table,
 					'pending',
 					'processing',
 					$cutoff,
+					$max_attempts,
 					$now,
 					(int) $relation_id,
 					$query_limit
@@ -1045,11 +1128,12 @@ class Content_Change_Dispatcher {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$candidates = $wpdb->get_results(
 				$wpdb->prepare(
-					'SELECT * FROM %i WHERE (status = %s OR (status = %s AND claimed_at < %s)) AND available_at <= %s ORDER BY id DESC LIMIT %d',
+					'SELECT * FROM %i WHERE (status = %s OR (status = %s AND claimed_at < %s)) AND attempts < %d AND available_at <= %s ORDER BY id ASC LIMIT %d',
 					$table,
 					'pending',
 					'processing',
 					$cutoff,
+					$max_attempts,
 					$now,
 					$query_limit
 				),
@@ -1070,12 +1154,13 @@ class Content_Change_Dispatcher {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- queue claim CAS; caching is not applicable to a compare-and-set write.
 			$updated = $wpdb->query(
 				$wpdb->prepare(
-					'UPDATE %i SET status = %s, attempts = attempts + 1, claimed_at = %s, updated_at = %s WHERE id = %d AND (status = %s OR (status = %s AND claimed_at < %s))',
+					'UPDATE %i SET status = %s, attempts = attempts + 1, claimed_at = %s, updated_at = %s WHERE id = %d AND attempts < %d AND (status = %s OR (status = %s AND claimed_at < %s))',
 					$table,
 					'processing',
 					$now,
 					$now,
 					(int) $row['id'],
+					$max_attempts,
 					'pending',
 					'processing',
 					$cutoff
@@ -1115,6 +1200,64 @@ class Content_Change_Dispatcher {
 	}
 
 	/**
+	 * 批 Q (事件驱动): non-mutating claimability peek for the events/wait
+	 * long-poll endpoint. Mirrors claim_outbox()'s candidate predicate
+	 * (pending now-claimable, or a dead lease past the default 900s window)
+	 * WITHOUT any write — no lease, no dead-lease recovery, no attempts
+	 * bump. The claim itself stays in claim_outbox() so the CAS/lease/
+	 * backoff semantics are unchanged for every caller.
+	 *
+	 * Rows claim_outbox() would not lease do not count: `dead` rows and rows
+	 * that used up their attempts (ATS-01). Without a relation filter only rows
+	 * of an active relation of this site count - the content-changes endpoint
+	 * claims per active relation, so a row of a deleted relation (or a
+	 * relation_id=0 row written before any relation existed) can never be
+	 * leased and must not wake the long-poll on every tick.
+	 *
+	 * @param int $relation_id Relation filter (optional).
+	 * @return bool True when at least one row is claimable right now.
+	 */
+	public static function has_claimable_outbox( $relation_id = 0 ) {
+		global $wpdb;
+		$table        = wptsall_table( 'content_change_outbox' );
+		$now          = current_time( 'mysql', true );
+		$cutoff       = gmdate( 'Y-m-d H:i:s', time() - 900 );
+		$max_attempts = self::max_attempts();
+		if ( (int) $relation_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- read-only peek for the long-poll gate.
+			$found = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT id FROM %i WHERE (status = %s OR (status = %s AND claimed_at < %s)) AND attempts < %d AND available_at <= %s AND relation_id = %d LIMIT 1',
+					$table,
+					'pending',
+					'processing',
+					$cutoff,
+					$max_attempts,
+					$now,
+					(int) $relation_id
+				)
+			);
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- read-only peek for the long-poll gate.
+			$found = $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT o.id FROM %i o INNER JOIN %i r ON r.id = o.relation_id AND r.status = %s AND r.source_site_id = %d WHERE (o.status = %s OR (o.status = %s AND o.claimed_at < %s)) AND o.attempts < %d AND o.available_at <= %s LIMIT 1',
+					$table,
+					wptsall_table( 'site_relations' ),
+					'active',
+					(int) get_current_blog_id(),
+					'pending',
+					'processing',
+					$cutoff,
+					$max_attempts,
+					$now
+				)
+			);
+		}
+		return null !== $found;
+	}
+
+	/**
 	 * @param int $id Outbox row ID.
 	 * @return bool
 	 */
@@ -1123,71 +1266,125 @@ class Content_Change_Dispatcher {
 		$now = current_time( 'mysql', true );
 		$outbox_table = wptsall_table( 'content_change_outbox' );
 		$claim_owner_hash = strtolower( trim( (string) $claim_owner_hash ) );
-		if ( '' !== $claim_owner_hash && ! preg_match( '/^[a-f0-9]{64}$/', $claim_owner_hash ) ) {
+		if ( (int) $id <= 0 || ( '' !== $claim_owner_hash && ! preg_match( '/^[a-f0-9]{64}$/', $claim_owner_hash ) ) ) {
 			return false;
 		}
-		// Read the task association before closing the lease. A task is only a
-		// compatibility/audit projection of this outbox row, but it must reach a
-		// terminal state too or an older task-pull worker can run it again.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease-state read; caching is not applicable.
-		$row = $wpdb->get_row(
-			$wpdb->prepare( 'SELECT payload FROM %i WHERE id = %d AND status = %s', $outbox_table, (int) $id, 'processing' ),
-			ARRAY_A
-		);
-		if ( '' !== $claim_owner_hash ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease completion CAS; caching is not applicable.
-			$completed = 1 === (int) $wpdb->query(
-				$wpdb->prepare(
-					"UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s
-					 WHERE id = %d AND status = %s
-					 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s",
-					$outbox_table,
-					'completed',
-					$now,
-					$now,
-					(int) $id,
-					'processing',
-					$claim_owner_hash
-				)
-			);
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease completion CAS; caching is not applicable.
-			$completed = 1 === (int) $wpdb->query(
-				$wpdb->prepare(
-					'UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s WHERE id = %d AND status = %s',
-					$outbox_table,
-					'completed',
-					$now,
-					$now,
-					(int) $id,
-					'processing'
-				)
-			);
-		}
-		if ( ! $completed ) {
+		// Callers finish their application transaction before this boundary.
+		// Closing the lifecycle row and its task projection is one unit; a
+		// storage error must leave both replayable, never a runnable orphan task.
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
 			return false;
 		}
-		$payload = json_decode( (string) ( $row['payload'] ?? '' ), true );
-		$task_id = absint( is_array( $payload ) ? ( $payload['task_id'] ?? 0 ) : 0 );
-		if ( $task_id > 0 && function_exists( 'wptsall_table' ) ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			$wpdb->query(
-				$wpdb->prepare(
-					'UPDATE %i SET status = %s, status_note = %s, updated_at = %s WHERE id = %d AND status IN (%s, %s, %s, %s)',
-					wptsall_table( 'tasks' ), 'completed', 'Completed through durable content outbox', $now, $task_id,
-					'pending', 'retry', 'processing', 'active'
-				)
+		$committed = false;
+		try {
+			$row = $wpdb->get_row(
+				$wpdb->prepare( 'SELECT payload, status, relation_id FROM %i WHERE id = %d FOR UPDATE', $outbox_table, (int) $id ),
+				ARRAY_A
 			);
+			if ( ! is_array( $row ) || '' !== $wpdb->last_error || ! in_array( $row['status'], array( 'processing', 'completed' ), true ) ) {
+				return false;
+			}
+			$payload = json_decode( (string) $row['payload'], true );
+			if ( ! is_array( $payload ) || ( '' !== $claim_owner_hash && ! hash_equals( $claim_owner_hash, (string) ( $payload['_wptsall_claim_owner_hash'] ?? '' ) ) ) ) {
+				return false;
+			}
+			$task_id = absint( $payload['task_id'] ?? 0 );
+			if ( $task_id > 0 ) {
+				$task = $wpdb->get_row(
+					$wpdb->prepare( 'SELECT relation_id, status FROM %i WHERE id = %d FOR UPDATE', wptsall_table( 'tasks' ), $task_id ),
+					ARRAY_A
+				);
+				if ( ! is_array( $task ) || '' !== $wpdb->last_error || (int) $task['relation_id'] !== (int) $row['relation_id'] ) {
+					return false;
+				}
+				if ( in_array( $task['status'], array( 'pending', 'retry', 'processing', 'active' ), true ) ) {
+					$written = $wpdb->query(
+						$wpdb->prepare(
+							'UPDATE %i SET status = %s, status_note = %s, updated_at = %s WHERE id = %d AND relation_id = %d AND status IN (%s, %s, %s, %s)',
+							wptsall_table( 'tasks' ), 'completed', 'Completed through durable content outbox', $now, $task_id, (int) $row['relation_id'],
+							'pending', 'retry', 'processing', 'active'
+						)
+					);
+					if ( 1 !== $written ) {
+						return false;
+					}
+				} elseif ( ! in_array( $task['status'], array( 'completed', 'partial', 'cancelled', 'failed' ), true ) ) {
+					return false;
+				}
+			}
+			if ( 'processing' === $row['status'] ) {
+				$written = $wpdb->query(
+					$wpdb->prepare(
+						'UPDATE %i SET status = %s, completed_at = %s, claimed_at = NULL, updated_at = %s WHERE id = %d AND status = %s',
+						$outbox_table, 'completed', $now, $now, (int) $id, 'processing'
+					)
+				);
+				if ( 1 !== $written ) {
+					return false;
+				}
+			}
+			if ( false === $wpdb->query( 'COMMIT' ) ) {
+				return false;
+			}
+			$committed = true;
+			return true;
+		} finally {
+			if ( ! $committed ) {
+				$wpdb->query( 'ROLLBACK' );
+			}
 		}
-		return true;
 	}
 
 	/**
-	 * @param int    $id Outbox row ID.
-	 * @param string $error Error detail.
+	 * Return a leased row to the queue after a failed attempt.
+	 *
+	 * Below the attempt cap the row goes back to `pending` behind a backoff:
+	 * the caller's explicit hint when it gives one (the ack endpoint always
+	 * does, `0` meaning retry now), otherwise the server schedule
+	 * (retry_backoff_seconds) so an internal failure cannot be re-leased in a
+	 * tight loop. At the cap the row is retired to the terminal `dead` state
+	 * (ATS-01) and its task projection is failed.
+	 *
+	 * @param int      $id               Outbox row ID.
+	 * @param string   $error            Error detail.
+	 * @param string   $claim_owner_hash Lease owner digest (optional).
+	 * @param int|null $backoff_secs     Explicit backoff hint; null = server schedule.
+	 * @return bool True when this call closed the caller's lease.
+	 */
+	public static function fail_outbox( $id, $error = '', $claim_owner_hash = '', $backoff_secs = null ) {
+		return self::release_outbox_lease( $id, $error, $claim_owner_hash, false, $backoff_secs );
+	}
+
+	/**
+	 * Give up on a leased row for a permanent reason (a source that does not
+	 * exist, an event type no client can process): terminal `dead` at once
+	 * instead of burning the remaining attempts. Owner-bound like fail_outbox.
+	 *
+	 * @since 2.3.0
+	 * @param int    $id               Outbox row ID.
+	 * @param string $error            Why the row can never succeed.
+	 * @param string $claim_owner_hash Lease owner digest (optional).
+	 * @return bool True when this call closed the caller's lease.
+	 */
+	public static function abandon_outbox( $id, $error = '', $claim_owner_hash = '' ) {
+		return self::release_outbox_lease( $id, $error, $claim_owner_hash, true, null );
+	}
+
+	/**
+	 * Shared close of a failed lease (fail_outbox / abandon_outbox).
+	 *
+	 * The attempts value read here rides in the compare-and-set: if the lease
+	 * expired and another worker re-leased the row in between, this call no
+	 * longer owns it and changes nothing.
+	 *
+	 * @param int      $id               Outbox row ID.
+	 * @param string   $error            Error detail.
+	 * @param string   $claim_owner_hash Lease owner digest (optional).
+	 * @param bool     $permanent        Retire at once regardless of attempts.
+	 * @param int|null $backoff_secs     Explicit backoff hint; null = server schedule.
 	 * @return bool
 	 */
-	public static function fail_outbox( $id, $error = '', $claim_owner_hash = '' ) {
+	private static function release_outbox_lease( $id, $error, $claim_owner_hash, $permanent, $backoff_secs ) {
 		global $wpdb;
 		$now = current_time( 'mysql', true );
 		$claim_owner_hash = strtolower( trim( (string) $claim_owner_hash ) );
@@ -1197,46 +1394,51 @@ class Content_Change_Dispatcher {
 		$outbox_table = wptsall_table( 'content_change_outbox' );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease-state read; caching is not applicable.
 		$row = $wpdb->get_row(
-			$wpdb->prepare( 'SELECT payload FROM %i WHERE id = %d AND status = %s', $outbox_table, (int) $id, 'processing' ),
+			$wpdb->prepare( 'SELECT payload, attempts FROM %i WHERE id = %d AND status = %s', $outbox_table, (int) $id, 'processing' ),
 			ARRAY_A
 		);
-		if ( '' !== $claim_owner_hash ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease failure CAS; caching is not applicable.
-			$failed = 1 === (int) $wpdb->query(
-				$wpdb->prepare(
-					"UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s
-					 WHERE id = %d AND status = %s
-					 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s",
-					$outbox_table,
-					'pending',
-					$now,
-					sanitize_text_field( $error ),
-					$now,
-					(int) $id,
-					'processing',
-					$claim_owner_hash
-				)
-			);
-		} else {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- lease failure CAS; caching is not applicable.
-			$failed = 1 === (int) $wpdb->query(
-				$wpdb->prepare(
-					'UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s WHERE id = %d AND status = %s',
-					$outbox_table,
-					'pending',
-					$now,
-					sanitize_text_field( $error ),
-					$now,
-					(int) $id,
-					'processing'
-				)
-			);
-		}
-		if ( ! $failed ) {
+		if ( ! is_array( $row ) ) {
 			return false;
 		}
-		$payload = json_decode( (string) ( $row['payload'] ?? '' ), true );
-		$task_id = absint( is_array( $payload ) ? ( $payload['task_id'] ?? 0 ) : 0 );
+		$attempts = (int) $row['attempts'];
+		$error    = sanitize_text_field( (string) $error );
+		$dead     = $permanent || $attempts >= self::max_attempts();
+
+		$where = 'id = %d AND status = %s AND attempts = %d';
+		$args  = array( (int) $id, 'processing', $attempts );
+		if ( '' !== $claim_owner_hash ) {
+			$where .= " AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s";
+			$args[] = $claim_owner_hash;
+		}
+		if ( $dead ) {
+			$sql  = "UPDATE %i SET status = %s, claimed_at = NULL, last_error = %s, updated_at = %s WHERE {$where}";
+			$args = array_merge( array( $outbox_table, 'dead', $error, $now ), $args );
+		} else {
+			// Client backoff hint (P8): pushing available_at into the future makes
+			// the cooldown durable for every worker, not only the process that
+			// reported the failure. Capped at 30 minutes either way.
+			$delay        = null === $backoff_secs
+				? self::retry_backoff_seconds( $attempts )
+				: min( self::RETRY_BACKOFF_CAP_SECONDS, max( 0, (int) $backoff_secs ) );
+			$available_at = $delay > 0 ? gmdate( 'Y-m-d H:i:s', time() + $delay ) : $now;
+			$sql          = "UPDATE %i SET status = %s, claimed_at = NULL, available_at = %s, last_error = %s, updated_at = %s WHERE {$where}";
+			$args         = array_merge( array( $outbox_table, 'pending', $available_at, $error, $now ), $args );
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared -- lease failure CAS; the fragments are fixed literals and every value is a prepared argument.
+		$changed = 1 === (int) $wpdb->query( $wpdb->prepare( $sql, $args ) );
+		if ( ! $changed ) {
+			return false;
+		}
+		if ( $dead ) {
+			self::project_task_failed(
+				$row['payload'] ?? '',
+				( $permanent ? 'Content outbox abandoned: ' : "Content outbox retired after {$attempts} attempts: " ) . $error,
+				$now
+			);
+			self::log_outbox_dead( (int) $id, $error, $attempts, $permanent ? 'permanent_error' : 'attempts_exhausted' );
+			return true;
+		}
+		$task_id = self::outbox_payload_task_id( $row['payload'] ?? '' );
 		if ( $task_id > 0 ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- task projection write; caching is not applicable.
 			$wpdb->query(
@@ -1244,8 +1446,8 @@ class Content_Change_Dispatcher {
 					'UPDATE %i SET status = %s, status_note = %s, retry_at = %s, updated_at = %s WHERE id = %d AND status IN (%s, %s, %s, %s)',
 					wptsall_table( 'tasks' ),
 					'retry',
-					'Content outbox callback failed: ' . sanitize_text_field( $error ),
-					$now,
+					'Content outbox callback failed: ' . $error,
+					$available_at,
 					$now,
 					$task_id,
 					'pending',
@@ -1256,5 +1458,125 @@ class Content_Change_Dispatcher {
 			);
 		}
 		return true;
+	}
+
+	/**
+	 * Retire rows that used up their attempts: `pending` rows over the cap (the
+	 * cap was lowered, or the row predates it) and rows whose lease expired at
+	 * the cap - a client that crashes on the row never calls fail_outbox, so
+	 * lease expiry is the only signal a poison pill ever gives.
+	 *
+	 * Runs at the start of every claim, scoped like the claim itself.
+	 *
+	 * @param int    $relation_id Relation scope (0 = every relation).
+	 * @param string $cutoff      Lease-expiry cutoff (GMT mysql datetime).
+	 * @param string $now         Current time (GMT mysql datetime).
+	 * @return void
+	 */
+	private static function retire_exhausted_outbox_rows( $relation_id, $cutoff, $now ) {
+		global $wpdb;
+		$table        = wptsall_table( 'content_change_outbox' );
+		$max_attempts = self::max_attempts();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- exhausted-row scan; caching is not applicable.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, attempts, payload FROM %i WHERE attempts >= %d AND (status = %s OR (status = %s AND claimed_at < %s)) AND (%d = 0 OR relation_id = %d) ORDER BY id ASC LIMIT 200',
+				$table,
+				$max_attempts,
+				'pending',
+				'processing',
+				$cutoff,
+				(int) $relation_id,
+				(int) $relation_id
+			),
+			ARRAY_A
+		);
+		foreach ( (array) $rows as $row ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- retirement CAS; caching is not applicable.
+			$retired = 1 === (int) $wpdb->query(
+				$wpdb->prepare(
+					'UPDATE %i SET status = %s, claimed_at = NULL, last_error = IF(last_error IS NULL OR last_error = %s, %s, last_error), updated_at = %s WHERE id = %d AND attempts >= %d AND (status = %s OR (status = %s AND claimed_at < %s))',
+					$table,
+					'dead',
+					'',
+					'max_attempts_exceeded',
+					$now,
+					(int) $row['id'],
+					$max_attempts,
+					'pending',
+					'processing',
+					$cutoff
+				)
+			);
+			if ( $retired ) {
+				self::project_task_failed( $row['payload'] ?? '', 'Content outbox retired: max_attempts_exceeded', $now );
+				self::log_outbox_dead( (int) $row['id'], 'max_attempts_exceeded', (int) $row['attempts'], 'attempts_exhausted' );
+			}
+		}
+	}
+
+	/**
+	 * @param string $payload_json Outbox payload JSON.
+	 * @return int Task id recorded by the content-changes endpoint, 0 when none.
+	 */
+	private static function outbox_payload_task_id( $payload_json ) {
+		$payload = json_decode( (string) $payload_json, true );
+		return absint( is_array( $payload ) ? ( $payload['task_id'] ?? 0 ) : 0 );
+	}
+
+	/**
+	 * Fail the task that projects a dead outbox row, so an older task-pull
+	 * worker cannot run it again and both views end in the same state.
+	 *
+	 * @param string $payload_json Outbox payload JSON.
+	 * @param string $note         Task status note.
+	 * @param string $now          Current time (GMT mysql datetime).
+	 * @return void
+	 */
+	private static function project_task_failed( $payload_json, $note, $now ) {
+		global $wpdb;
+		$task_id = self::outbox_payload_task_id( $payload_json );
+		if ( $task_id <= 0 ) {
+			return;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- task projection write; caching is not applicable.
+		$wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET status = %s, status_note = %s, updated_at = %s WHERE id = %d AND status IN (%s, %s, %s, %s)',
+				wptsall_table( 'tasks' ),
+				'failed',
+				$note,
+				$now,
+				$task_id,
+				'pending',
+				'retry',
+				'processing',
+				'active'
+			)
+		);
+	}
+
+	/**
+	 * A dead row is the one place the queue drops work, so say so in the log.
+	 *
+	 * @param int    $id       Outbox row id.
+	 * @param string $error    Last error.
+	 * @param int    $attempts Leases used.
+	 * @param string $reason   permanent_error | attempts_exhausted.
+	 * @return void
+	 */
+	private static function log_outbox_dead( $id, $error, $attempts, $reason ) {
+		if ( function_exists( 'wptsall_log_warning' ) ) {
+			wptsall_log_warning(
+				'hooks',
+				'Content outbox row retired to dead letter',
+				array(
+					'outbox_id' => $id,
+					'reason'    => $reason,
+					'attempts'  => $attempts,
+					'error'     => $error,
+				)
+			);
+		}
 	}
 }

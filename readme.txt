@@ -86,6 +86,10 @@ No. The slug was assigned for this product. The "wp" segment is part of the vend
 
 This plugin can coexist with Polylang and WPML. However, it provides its own independent multilingual system. You do not need Polylang or WPML to use this plugin.
 
+= Can I use this together with the WPMMCC sync plugin? =
+
+Yes, both plugins can be installed on the same site, and they are intentionally zero-coupled. WPMMCC ATS works over its own REST channel (wptsall/v2) and stores its own translations, mappings, translation memory, and progress; the WPMMCC sync plugin works over a separate channel (wpmmcc/v1) with its own data. The two systems never read or count each other's content: the ATS Translation Dashboard and progress panels count only the ATS channel, and translations synced by WPMMCC are tracked by that plugin instead. The optional translation client also keeps the two lanes separate and rejects mixed credentials.
+
 = Where do plugin interface translations come from? =
 
 English is built in. This plugin's strings are registered with the WordPress.org translation system (translate.wordpress.org): once the plugin is listed, language packs (starting with Simplified Chinese) install automatically from there when your site language is set under Settings → General. The GitHub source distribution additionally bundles a complete zh_CN translation in its languages/ directory. The plugin never downloads language packs from a third-party server.

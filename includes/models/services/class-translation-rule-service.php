@@ -281,6 +281,11 @@ class Translation_Rule_Service {
 	 * @return array
 	 */
 	public static function get_model_rules( $model_id, $url_type = '' ) {
+		$memo_key = (int) $model_id . ':' . (string) $url_type;
+		if ( array_key_exists( $memo_key, self::$model_rules_memo ) ) {
+			return self::$model_rules_memo[ $memo_key ];
+		}
+
 		global $wpdb;
 
 		$rules_table = wptsall_table( 'translation_rules' );
@@ -308,6 +313,7 @@ class Translation_Rule_Service {
 			$rule['related_taxonomies'] = json_decode( $rule['related_taxonomies'] ?? '[]', true ) ?: array();
 		}
 
+		self::$model_rules_memo[ $memo_key ] = $rules;
 		return $rules;
 	}
 
@@ -318,6 +324,11 @@ class Translation_Rule_Service {
 	 * @return array|null
 	 */
 	public static function get_rule( $rule_id ) {
+		$memo_key = (int) $rule_id;
+		if ( array_key_exists( $memo_key, self::$rule_by_id_memo ) ) {
+			return self::$rule_by_id_memo[ $memo_key ];
+		}
+
 		global $wpdb;
 
 		$rules_table = wptsall_table( 'translation_rules' );
@@ -329,6 +340,7 @@ class Translation_Rule_Service {
 		);
 
 		if ( ! $rule ) {
+			self::$rule_by_id_memo[ $memo_key ] = null;
 			return null;
 		}
 		// Parse JSON fields (v0.8.0: only field_capabilities, v1.5.0: normalize to v3)
@@ -338,11 +350,60 @@ class Translation_Rule_Service {
 		);
 		$rule['related_taxonomies'] = json_decode( $rule['related_taxonomies'] ?? '[]', true ) ?: array();
 
+		self::$rule_by_id_memo[ $memo_key ] = $rule;
 		return $rule;
 	}
 
 	// ========================================
 	// v0.8.0 configuration merge methods
+	/**
+	 * Per-request memo for get_rule_by_post_type() (render-path hot getter).
+	 *
+	 * The admin translation-status hooks resolve per row x per relation and
+	 * each relation's model rule for the row's post type is re-fetched every
+	 * time — measured 2026-09-26 on the Lab product list: 648 raw re-fetches
+	 * in ONE render. PHP arrays are copy-on-write, so returning the
+	 * memoized array stays safe. Cleared by flush_runtime_memo(), which the
+	 * rule/model writers here call.
+	 *
+	 * @var array<string,array|null>
+	 */
+	private static $rule_by_post_type_memo = array();
+
+	/**
+	 * Per-request memo for get_model_rules() (bootstrap/admin-bar/CDC hot getter).
+	 *
+	 * Beyond the row render, three non-render walkers re-iterate the same
+	 * model's rule list inside ONE request — measured 2026-09-27 on the Lab
+	 * product list: the admin-bar task-stats transient (get + set legs),
+	 * a third-party rewrite flush at wp_loaded, and the option-change
+	 * dispatcher's syncable-option walk together re-fetched the same rule
+	 * lists ~4,900 times (get_model_rules 2,730 + get_rule 2,229 shape
+	 * queries). Memoizing collapses every repeat to the first unique
+	 * (model_id, url_type) fetch. Cleared by flush_runtime_memo().
+	 *
+	 * @var array<string,array|null>
+	 */
+	private static $model_rules_memo = array();
+
+	/**
+	 * Per-request memo for get_rule() (same walkers as $model_rules_memo).
+	 *
+	 * @var array<int,array|null>
+	 */
+	private static $rule_by_id_memo = array();
+
+	/**
+	 * Flush the per-request read memos (call on every rule/model write).
+	 *
+	 * @return void
+	 */
+	private static function flush_runtime_memo() {
+		self::$rule_by_post_type_memo = array();
+		self::$model_rules_memo       = array();
+		self::$rule_by_id_memo        = array();
+	}
+
 	/**
 	 * Get rule for a specific post_type
 	 *
@@ -353,6 +414,11 @@ class Translation_Rule_Service {
 	 * @return array|null Rule data or null.
 	 */
 	public static function get_rule_by_post_type( $model_id, $post_type ) {
+		$memo_key = (int) $model_id . ':' . (string) $post_type;
+		if ( array_key_exists( $memo_key, self::$rule_by_post_type_memo ) ) {
+			return self::$rule_by_post_type_memo[ $memo_key ];
+		}
+
 		global $wpdb;
 
 		$rules_table = wptsall_table( 'translation_rules' );
@@ -369,6 +435,7 @@ class Translation_Rule_Service {
 		);
 
 		if ( ! $rule ) {
+			self::$rule_by_post_type_memo[ $memo_key ] = null;
 			return null;
 		}
 
@@ -378,6 +445,7 @@ class Translation_Rule_Service {
 		);
 		$rule['related_taxonomies'] = json_decode( $rule['related_taxonomies'] ?? '[]', true ) ?: array();
 
+		self::$rule_by_post_type_memo[ $memo_key ] = $rule;
 		return $rule;
 	}
 
@@ -771,6 +839,8 @@ class Translation_Rule_Service {
 		 */
 		do_action( 'wptsall_rule_updated', $rule_id, $model_id );
 
+		self::flush_runtime_memo();
+
 		// Keep models.post_types / models.taxonomies in sync with actual rules.
 		self::sync_model_post_types( $model_id );
 
@@ -1010,6 +1080,8 @@ class Translation_Rule_Service {
 		 */
 		do_action( 'wptsall_rule_updated', $rule_id, (int) $existing['model_id'] );
 
+		self::flush_runtime_memo();
+
 		// Keep models.post_types / models.taxonomies in sync with actual rules.
 		self::sync_model_post_types( (int) $existing['model_id'] );
 
@@ -1065,6 +1137,8 @@ class Translation_Rule_Service {
 		 * @param int $model_id The model ID.
 		 */
 		do_action( 'wptsall_rule_updated', $rule_id, $model_id );
+
+		self::flush_runtime_memo();
 
 		// Keep models.post_types / models.taxonomies in sync with actual rules.
 		self::sync_model_post_types( $model_id );
@@ -1182,6 +1256,13 @@ class Translation_Rule_Service {
 
 		if ( false === $result ) {
 			return new \WP_Error( 'db_error', __( 'Database error: ', 'wpmmcc-ats' ) . $wpdb->last_error );
+		}
+
+		// Writer discipline: get_models_by_relation() selects m.* (status
+		// included), so flush its per-request memo too.
+		self::flush_runtime_memo();
+		if ( class_exists( '\WPTSALL\Sites\Services\Relation_Model_Service' ) ) {
+			\WPTSALL\Sites\Services\Relation_Model_Service::flush_runtime_memo();
 		}
 
 		wptsall_log_info(
@@ -1331,6 +1412,8 @@ class Translation_Rule_Service {
 		 */
 		do_action( 'wptsall_model_deleted', $model_id, $model['plugin_slug'] );
 
+		self::flush_runtime_memo();
+
 		return true;
 	}
 
@@ -1368,15 +1451,16 @@ class Translation_Rule_Service {
 
 		// Get current status
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$current = $wpdb->get_var(
-			$wpdb->prepare( 'SELECT is_active FROM %i WHERE id = %d', $rules_table, $rule_id )
+		$current = $wpdb->get_row(
+			$wpdb->prepare( 'SELECT is_active, model_id FROM %i WHERE id = %d', $rules_table, $rule_id ),
+			ARRAY_A
 		);
 
 		if ( null === $current ) {
 			return new \WP_Error( 'not_found', __( 'Rule not found', 'wpmmcc-ats' ) );
 		}
 
-		$new_status = $current ? 0 : 1;
+		$new_status = $current['is_active'] ? 0 : 1;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$result = $wpdb->update(
@@ -1393,6 +1477,13 @@ class Translation_Rule_Service {
 		if ( false === $result ) {
 			return new \WP_Error( 'db_error', __( 'Database error', 'wpmmcc-ats' ) );
 		}
+
+		// Writer discipline: flush the read memos (get_rule/get_model_rules
+		// cache is_active) and fire the same update action the other rule
+		// writers use so per-request derived caches (the option-names walk
+		// memo) invalidate too.
+		self::flush_runtime_memo();
+		do_action( 'wptsall_rule_updated', (int) $rule_id, (int) $current['model_id'] );
 
 		return true;
 	}
@@ -1456,6 +1547,13 @@ class Translation_Rule_Service {
 
 		if ( false === $result ) {
 			return new \WP_Error( 'db_error', __( 'Database error: ', 'wpmmcc-ats' ) . $wpdb->last_error );
+		}
+
+		// Writer discipline: get_models_by_relation() selects m.* (usage
+		// included), so flush its per-request memo regardless of whether the
+		// hook below fires (unchanged-status writes still bump updated_at).
+		if ( class_exists( '\WPTSALL\Sites\Services\Relation_Model_Service' ) ) {
+			\WPTSALL\Sites\Services\Relation_Model_Service::flush_runtime_memo();
 		}
 
 		// Fire hook only if status actually changed
@@ -1620,6 +1718,8 @@ class Translation_Rule_Service {
 		 */
 		do_action( 'wptsall_model_saved', $model_id, $data );
 
+		self::flush_runtime_memo();
+
 		return $model_id;
 	}
 
@@ -1725,6 +1825,8 @@ class Translation_Rule_Service {
 		 * @param array $model_data The updated model data.
 		 */
 		do_action( 'wptsall_model_saved', $model_id, $data );
+
+		self::flush_runtime_memo();
 
 		return true;
 	}

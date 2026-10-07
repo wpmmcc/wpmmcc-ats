@@ -49,10 +49,21 @@ class Media_Translation_Page {
 		$counts    = Media_Translation_Service::counts();
 		$src_id    = isset( $_GET['src'] )  ? (int) $_GET['src']  : 0; // phpcs:ignore
 		$tgt_lang  = isset( $_GET['tgt'] )  ? sanitize_text_field( wp_unslash( $_GET['tgt'] ) ) : ''; // phpcs:ignore
-		$rows      = Media_Translation_Service::list_mappings( array(
+		// ATS-P2-05 (3.8flash B4): wire the service's own limit/offset to the
+		// shared pagination bar (the old fixed 200-row window had no pager).
+		$per_page = isset( $_GET['per_page'] ) ? max( 1, min( 500, (int) wp_unslash( $_GET['per_page'] ) ) ) : 50; // phpcs:ignore
+		$paged    = isset( $_GET['paged'] ) ? max( 1, (int) wp_unslash( $_GET['paged'] ) ) : 1; // phpcs:ignore
+		$filter_args = array(
 			'source_id'   => $src_id,
 			'target_lang' => $tgt_lang,
-			'limit'       => 200,
+		);
+		$total = Media_Translation_Service::count_mappings( $filter_args );
+		$rows  = Media_Translation_Service::list_mappings( array_merge(
+			$filter_args,
+			array(
+				'limit'  => $per_page,
+				'offset' => ( $paged - 1 ) * $per_page,
+			)
 		) );
 
 		Admin_Page_Helper::render_header(
@@ -107,6 +118,18 @@ class Media_Translation_Page {
 
 		<hr>
 		<h2><?php esc_html_e( 'Existing mappings', 'wpmmcc-ats' ); ?></h2>
+		<?php
+		Admin_Page_Helper::render_pagination(
+			$total,
+			$per_page,
+			$paged,
+			self::PAGE_SLUG,
+			array(
+				'src' => (string) $src_id,
+				'tgt' => $tgt_lang,
+			)
+		);
+		?>
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 				<tr>

@@ -2,7 +2,7 @@
 /**
  * Tutor LMS field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/tutor.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/tutor.json
  * (fields_source: v4-scanner, fields_verified: 2026-01-27).
  *
  * Tutor stores course options in private (underscore-prefixed) post meta.

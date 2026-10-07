@@ -49,6 +49,17 @@ class Module {
 		// Load function files (tasks.php, tasks-single.php, automation-cron.php, admin list).
 		self::load_functions();
 
+		// Manual queue admin surface (opus5 A-01, decision D-1(a)): the queue
+		// previously had three write points and zero readers. The page class
+		// is required under is_admin() only; admin_menu and admin_post both
+		// fire in that same context.
+		if ( is_admin() ) {
+			add_action( 'admin_menu', array( '\\WPTSALL\\Tasks\\Admin\\Manual_Queue_Admin_Page', 'add_menu_page' ), 18 );
+			add_action( 'admin_post_wptsall_manual_queue_apply', array( '\\WPTSALL\\Tasks\\Admin\\Manual_Queue_Admin_Page', 'handle_apply' ) );
+			add_action( 'admin_post_wptsall_manual_queue_reject', array( '\\WPTSALL\\Tasks\\Admin\\Manual_Queue_Admin_Page', 'handle_reject' ) );
+			add_action( 'admin_post_wptsall_manual_queue_expire', array( '\\WPTSALL\\Tasks\\Admin\\Manual_Queue_Admin_Page', 'handle_expire' ) );
+		}
+
 		// Register REST API routes.
 		add_action( 'rest_api_init', array( __CLASS__, 'register_rest_routes' ) );
 
@@ -99,6 +110,12 @@ class Module {
 		require_once $module_path . '/api/class-site-rest-controller.php';
 		$site_controller = new API\Site_Rest_Controller();
 		$site_controller->register_routes();
+
+		// Manual Queue REST Controller (opus5 A-01: list/apply/reject/expire
+		// for the non-text manual review queue).
+		require_once $module_path . '/api/class-manual-queue-rest-controller.php';
+		$manual_queue_controller = new API\Manual_Queue_REST_Controller();
+		$manual_queue_controller->register_routes();
 
 		// Client controllers (external translation client; always enabled, token-auth).
 		$client_api_enabled = function_exists( 'wptsall_is_client_api_enabled' ) && wptsall_is_client_api_enabled();
@@ -171,6 +188,8 @@ class Module {
 		if ( is_admin() ) {
 			require_once $module_path . '/admin/class-wptsall-tasks-list-table.php';
 			require_once $module_path . '/admin/admin-tasks-list.php';
+			// Manual queue review page (opus5 A-01).
+			require_once $module_path . '/admin/class-manual-queue-admin-page.php';
 		}
 	}
 

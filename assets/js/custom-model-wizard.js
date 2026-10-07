@@ -110,6 +110,32 @@
 			this.$wizard.on('change', '.wptsall-field-checkbox', (e) => {
 				this.onFieldChange($(e.target));
 			});
+
+			// Step 4: rescan plugin data (guidance panel action)
+			this.$wizard.on('click', '.wptsall-rescan-btn', () => {
+				this.rescanPluginData();
+			});
+		}
+
+		/**
+		 * Rescan plugin data from the step-4 guidance panel: re-runs the
+		 * plugin data check, reloads fields and re-renders the step.
+		 */
+		async rescanPluginData() {
+			if (!this.state.selectedPlugin) {
+				this.showError(wptsallWizard.i18n.selectPlugin || 'Please select a plugin');
+				return;
+			}
+
+			await this.checkPluginData(this.state.selectedPlugin);
+			await this.loadAvailableFields();
+			this.renderFieldSelection();
+
+			if (this.state.dataType && this.state.objectName) {
+				this.showSuccess(wptsallWizard.i18n.fieldsReloaded || 'Plugin data found — fields loaded. Select at least one field to continue.');
+			} else {
+				this.showError(wptsallWizard.i18n.rescanNoDataYet || 'Still no data for this plugin — create or visit content from it first, then rescan.');
+			}
 		}
 
 		/**
@@ -762,17 +788,34 @@
 
 		/**
 		 * Render field selection UI
+		 *
+		 * When the selected plugin has no discovered data yet (objectName
+		 * empty) every group renders "No fields available" — historically a
+		 * dead end. Now an actionable guidance panel with a Rescan button is
+		 * rendered first so the user knows how to proceed.
 		 */
 		renderFieldSelection() {
 			const $container = $('.wptsall-field-selection');
 			const fields = this.availableFields || [];
+			const hasSourceObject = !!(this.state.dataType && this.state.objectName);
+
+			let html = '<div class="wptsall-field-groups">';
+
+			if (!hasSourceObject) {
+				html += `
+					<div class="wptsall-no-data-guidance notice notice-warning inline" data-testid="wizard-no-data-guidance">
+						<p>${wptsallWizard.i18n.noDataGuidance || 'No plugin data found yet — fields are discovered from existing content. Open or create a page produced by this plugin, then rescan.'}</p>
+						<button type="button" class="button button-secondary wptsall-rescan-btn" data-testid="wizard-rescan-btn">
+							${wptsallWizard.i18n.rescanPluginData || 'Rescan plugin data'}
+						</button>
+					</div>
+				`;
+			}
 
 			// Group fields by source
 			const coreFields = fields.filter(f => f.source === 'post' || f.source === 'term');
 			const metaFields = fields.filter(f => f.source === 'meta');
 			const taxonomyFields = fields.filter(f => f.source === 'taxonomy');
-
-			let html = '<div class="wptsall-field-groups">';
 
 			// Translate fields
 			html += this.renderFieldGroup(
@@ -1104,9 +1147,12 @@
 
 		/**
 		 * Show error message
+		 *
+		 * Errors are persistent (no auto-dismiss): the notice is the only
+		 * feedback a blocked Next button gives, so it must stay visible while
+		 * the user fixes the input.
 		 */
 		showError(message) {
-			// Use WordPress notices if available
 			const $notice = $(`
 				<div class="notice notice-error is-dismissible">
 					<p>${message}</p>
@@ -1114,14 +1160,15 @@
 				</div>
 			`);
 
-			$('.wptsall-wizard-notices').html($notice);
+			this.noticesTarget().html($notice);
 
 			$notice.find('.notice-dismiss').on('click', function() {
 				$notice.fadeOut(function() { $(this).remove(); });
 			});
 
-			// Auto-dismiss after 5 seconds
-			setTimeout(() => $notice.fadeOut(function() { $(this).remove(); }), 5000);
+			// Make sure the user actually sees the feedback (the notices area
+			// sits above the step content; scroll it into view if needed).
+			$notice[0]?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
 		}
 
 		/**
@@ -1135,11 +1182,26 @@
 				</div>
 			`);
 
-			$('.wptsall-wizard-notices').html($notice);
+			this.noticesTarget().html($notice);
 
 			$notice.find('.notice-dismiss').on('click', function() {
 				$notice.fadeOut(function() { $(this).remove(); });
 			});
+		}
+
+		/**
+		 * Resolve the notices container. The wizard template ships
+		 * .wptsall-wizard-notices, but never write into an empty jQuery set:
+		 * before that container existed every showError() call was a silent
+		 * no-op and blocked steps looked like dead buttons.
+		 */
+		noticesTarget() {
+			let $target = $('.wptsall-wizard-notices');
+			if ($target.length === 0) {
+				$target = $('<div class="wptsall-wizard-notices" aria-live="polite"></div>');
+				this.$wizard.find('.wptsall-wizard-footer').before($target);
+			}
+			return $target;
 		}
 	}
 

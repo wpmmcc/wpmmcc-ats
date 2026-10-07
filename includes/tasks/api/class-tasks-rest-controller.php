@@ -12,6 +12,7 @@ namespace WPTSALL\Tasks\API;
 use WPTSALL\Tasks\Services\Monitoring_Task_Service;
 use WPTSALL\Tasks\Services\Translation_Simulation_Service;
 use WPTSALL\Tasks\Services\Task_Orchestrator;
+use WPTSALL\Tasks\Services\Task_Status;
 use WPTSALL\Tasks\Services\Task_Job_Planner;
 use WPTSALL\Tasks\Sync\Sync_Executor;
 use WPTSALL\Templates\Scanners\Language_Pack_Scanner;
@@ -57,7 +58,7 @@ class Tasks_REST_Controller {
 						),
 						'status'      => array(
 							'type'              => 'string',
-							'enum'              => array( 'pending', 'active', 'paused', 'completed', 'error', 'retry' ),
+							'enum'              => Task_Status::all(),
 							'sanitize_callback' => 'sanitize_key',
 						),
 						'relation_id' => array(
@@ -707,7 +708,7 @@ class Tasks_REST_Controller {
 					),
 					'status'     => array(
 						'type'              => 'string',
-						'enum'              => array( 'pending', 'active', 'paused', 'completed', 'error', 'retry' ),
+						'enum'              => Task_Status::all(),
 						'sanitize_callback' => 'sanitize_key',
 					),
 					'start_date' => array(
@@ -747,6 +748,14 @@ class Tasks_REST_Controller {
 	 */
 	public function check_permission( $request = null ) {
 		if ( ! is_user_logged_in() ) {
+			wptsall_log_warning(
+				'tasks-api',
+				'REST permission denied: authentication required',
+				array(
+					'route'  => $request instanceof \WP_REST_Request ? (string) $request->get_route() : '',
+					'reason' => 'not_logged_in',
+				)
+			);
 			return new \WP_Error(
 				'rest_not_logged_in',
 				__( 'Authentication required.', 'wpmmcc-ats' ),
@@ -754,6 +763,15 @@ class Tasks_REST_Controller {
 			);
 		}
 		if ( ! wptsall_user_can_manage_translations() ) {
+			wptsall_log_warning(
+				'tasks-api',
+				'REST permission denied: insufficient permissions',
+				array(
+					'route'    => $request instanceof \WP_REST_Request ? (string) $request->get_route() : '',
+					'reason'   => 'missing_manage_wptsall_translations_capability',
+					'user_id'  => get_current_user_id(),
+				)
+			);
 			return new \WP_Error(
 				'rest_forbidden',
 				__( 'Insufficient permissions.', 'wpmmcc-ats' ),
@@ -766,6 +784,14 @@ class Tasks_REST_Controller {
 		}
 
 		$route = (string) $request->get_route();
+		if ( preg_match( '#/tasks/(?:discover|scan-language-pack|monitor/(?:start|stop))$#', $route )
+			&& ! wptsall_user_can_manage_settings() ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'Managing discovery and monitoring requires settings permission.', 'wpmmcc-ats' ),
+				array( 'status' => 403 )
+			);
+		}
 
 		// Task IDs occur in /tasks/{id} and all its nested manual/log routes.
 		// Do not use a generic `id` request parameter here: other route families
@@ -1140,6 +1166,15 @@ class Tasks_REST_Controller {
 			'Task deleted via API',
 			array( 'task_id' => $id )
 		);
+
+		/**
+		 * Fires after a task row is deleted via the REST API.
+		 *
+		 * Listeners: wptsall_cache_invalidate_tasks (task_stats cache).
+		 *
+		 * @param int $id Deleted task id.
+		 */
+		do_action( 'wptsall_task_deleted', $id );
 
 		return rest_ensure_response( array( 'success' => true ) );
 	}

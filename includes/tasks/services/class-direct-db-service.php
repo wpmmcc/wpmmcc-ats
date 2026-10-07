@@ -236,8 +236,18 @@ class Direct_DB_Service {
 			'ping_status'       => 'closed',
 			'post_password'     => '',
 			'post_name'         => '',
+			// DB-01 (12号 audit, batch H): to_ping / pinged /
+			// post_content_filtered are NOT NULL WITHOUT default values in
+			// the WordPress posts schema. MySQL 5.7+/8.0 hosts default to
+			// STRICT_TRANS_TABLES, which rejects an INSERT that omits them
+			// ("Field 'to_ping' doesn't have a default value"). Sending
+			// explicit empty strings keeps direct inserts portable to
+			// strict-mode hosts.
+			'to_ping'           => '',
+			'pinged'            => '',
 			'post_modified'     => current_time( 'mysql' ),
 			'post_modified_gmt' => current_time( 'mysql', true ),
+			'post_content_filtered' => '',
 			'post_parent'       => 0,
 			'menu_order'        => 0,
 			'post_type'         => 'post',

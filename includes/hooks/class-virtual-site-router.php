@@ -105,6 +105,18 @@ class Virtual_Site_Router {
 		add_action( 'init', array( __CLASS__, 'add_rewrite_rules' ), 999 );
 		add_action( 'init', array( __CLASS__, 'detect_virtual_site' ), 1000 );
 
+		// Block-theme safeguard: classic theme-compat plugins (bbPress, BuddyPress,
+		// some LMS loaders) may set template_include to false/'' when page.php is
+		// missing. Downstream filters then leave an empty path and WP renders a
+		// 200 with Content-Length 0. Restore the block canvas (or the original
+		// template captured at the start of the chain) so CPT journeys stay usable.
+		// Registered unconditionally (not gated on virtual sites): native subsite
+		// blogs where this plugin is active get the same protection — an empty
+		// 200 shell on a subsite CPT single is the same defect as on the main
+		// blog. Both filters are cheap no-ops when a valid template is returned.
+		add_filter( 'template_include', array( __CLASS__, 'capture_template_include_original' ), 0 );
+		add_filter( 'template_include', array( __CLASS__, 'ensure_usable_template_include' ), 100000 );
+
 		// Conditionally register frontend hooks only if virtual sites exist
 		add_action( 'init', array( __CLASS__, 'maybe_register_frontend_hooks' ), 1001 );
 	}
@@ -129,14 +141,6 @@ class Virtual_Site_Router {
 		add_filter( 'get_terms_args', array( Virtual_Site_Query_Switch::class, 'filter_get_terms_args' ), 10, 2 );
 		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
-
-		// Block-theme safeguard: classic theme-compat plugins (bbPress, BuddyPress,
-		// some LMS loaders) may set template_include to false/'' when page.php is
-		// missing. Downstream filters then leave an empty path and WP renders a
-		// 200 with Content-Length 0. Restore the block canvas (or the original
-		// template captured at the start of the chain) so CPT journeys stay usable.
-		add_filter( 'template_include', array( __CLASS__, 'capture_template_include_original' ), 0 );
-		add_filter( 'template_include', array( __CLASS__, 'ensure_usable_template_include' ), 100000 );
 
 		// P0-3 fallback: 404 with a target post slug -> 301 redirect to its virtual-site URL (e.g. /en_us/{slug}/).
 		add_action( 'template_redirect', array( __CLASS__, 'maybe_redirect_source_post_to_virtual' ), 99 );
@@ -627,18 +631,24 @@ class Virtual_Site_Router {
 		$virtual_path = isset( $wp->query_vars['wptsall_virtual_path'] ) ? $wp->query_vars['wptsall_virtual_path'] : '';
 
 		if ( ! $virtual_path ) {
-			// Fallback: parse from REQUEST_URI
+			// Fallback: parse from REQUEST_URI. The helper may return the URI
+			// with its query string attached; strip it BEFORE the prefix
+			// subtraction so a query-form request (e.g. /en-us/?topic=slug)
+			// yields an empty virtual path (virtual home + single-object
+			// upgrade) instead of leaking the query string into the path
+			// resolution (which 404s). strtok() alone is not enough: it skips
+			// a LEADING delimiter, so '?topic=slug' would become 'topic=slug'.
 			$request_uri = function_exists( 'wptsall_get_request_uri' ) ? wptsall_get_request_uri() : '';
+			$uri_path    = (string) strtok( (string) $request_uri, '?' );
 			if ( self::is_param_mode() ) {
-				$virtual_path = (string) strtok( (string) $request_uri, '?' );
+				$virtual_path = $uri_path;
 			} else {
 				$path_prefix = '/' . trim( $virtual_site['path_prefix'], '/' ) . '/';
-				if ( 0 === strpos( (string) $request_uri, $path_prefix ) ) {
-					$virtual_path = substr( (string) $request_uri, strlen( $path_prefix ) );
+				if ( 0 === strpos( $uri_path, $path_prefix ) ) {
+					$virtual_path = substr( $uri_path, strlen( $path_prefix ) );
 				} else {
-					$virtual_path = (string) $request_uri;
+					$virtual_path = $uri_path;
 				}
-				$virtual_path = (string) strtok( $virtual_path, '?' );
 			}
 		}
 
@@ -689,8 +699,19 @@ class Virtual_Site_Router {
 					}
 				}
 			} elseif ( in_array( ( $resolved['type'] ?? '' ), array( 'home', 'paged' ), true ) ) {
-				// No object to switch: 'paged' source_id is a page number.
-				$resolved['queried_id'] = 0;
+				// Query-form single-object URLs (e.g. /en-us/?foogallery=slug):
+				// Url_Converter::virtualize() emits this shape for CPTs whose
+				// permalink is query-form, so the product's own permalinks must
+				// resolve here. Without this the request degrades to the
+				// virtual home and 404s — template_redirect's shadow fallback
+				// only reads query_vars['p'].
+				$upgraded = self::resolve_query_form_single_object( $wp );
+				if ( null !== $upgraded ) {
+					$resolved = Virtual_Site_Query_Switch::resolve_queried_object( $upgraded, $virtual_site );
+				} else {
+					// No object to switch: 'paged' source_id is a page number.
+					$resolved['queried_id'] = 0;
+				}
 			} else {
 				$resolved = Virtual_Site_Query_Switch::resolve_queried_object( $resolved, $virtual_site );
 			}
@@ -733,6 +754,55 @@ class Virtual_Site_Router {
 				array( 'virtual_path' => $virtual_path )
 			);
 		}
+	}
+
+	/**
+	 * Resolve a query-form single-object request on a virtual site.
+	 *
+	 * A matched virtual prefix with an empty path plus a registered CPT
+	 * single-object query var (e.g. ?foogallery=slug) addresses one post of
+	 * that CPT — the same object core would resolve for ?p=ID. Returns a
+	 * post_type resolution payload, or null when no query var resolves to a
+	 * published post (the caller then keeps the home/paged resolution).
+	 *
+	 * @param object $wp WP environment (query_vars from parse_request).
+	 * @return array|null Resolution payload or null.
+	 */
+	private static function resolve_query_form_single_object( $wp ) {
+		if ( ! is_object( $wp ) || empty( $wp->query_vars ) || ! is_array( $wp->query_vars ) ) {
+			return null;
+		}
+		foreach ( $wp->query_vars as $key => $value ) {
+			if ( ! is_string( $key ) || '' === trim( (string) $value ) ) {
+				continue;
+			}
+			if ( ! post_type_exists( $key ) ) {
+				continue;
+			}
+			$pto = get_post_type_object( $key );
+			if ( ! $pto || empty( $pto->query_var ) || $pto->query_var !== $key ) {
+				// Not this CPT's registered single-object query var.
+				continue;
+			}
+			$posts = get_posts(
+				array(
+					'post_type'      => $key,
+					'name'           => sanitize_title( (string) $value ),
+					'post_status'    => 'publish',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				)
+			);
+			if ( ! empty( $posts ) ) {
+				return array(
+					'type'      => 'post_type',
+					'subtype'   => $key,
+					'source_id' => (int) $posts[0],
+				);
+			}
+		}
+		return null;
 	}
 
 	/**

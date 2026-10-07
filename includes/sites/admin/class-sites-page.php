@@ -725,8 +725,17 @@ class Sites_Page {
 				echo '<td>' . esc_html( $site['created_at'] ?? '-' ) . '</td>';
 				echo '<td class="wptsall-actions">';
 				echo '<button class="button button-small wptsall-edit-virtual-site" data-site-id="' . esc_attr( $site['id'] ) . '">' . esc_html__( 'Edit', 'wpmmcc-ats' ) . '</button> ';
-				echo '<button class="button button-small wptsall-toggle-virtual-site" data-site-id="' . esc_attr( $site['id'] ) . '" data-status="' . esc_attr( $status ) . '">';
-				echo ( 'active' === $status ) ? esc_html__( 'Disabled', 'wpmmcc-ats' ) : esc_html__( 'Enabled', 'wpmmcc-ats' );
+				// ATS-P1-01 (3.8flash): action verbs, not state adjectives — the
+				// old 'Disabled'/'Enabled' labels read as the site's current
+				// state, so an admin seeing "Disabled" on an Active row would
+				// click it expecting to enable, which actually disables a
+				// live site. Active rows get the destructive red styling
+				// (disabling breaks the public route); inactive rows the
+				// primary styling (enabling is safe).
+				$is_active    = ( 'active' === $status );
+				$toggle_class = $is_active ? 'button-link-delete' : 'button-primary';
+				echo '<button class="button button-small ' . esc_attr( $toggle_class ) . ' wptsall-toggle-virtual-site" data-site-id="' . esc_attr( $site['id'] ) . '" data-status="' . esc_attr( $status ) . '">';
+				echo $is_active ? esc_html__( 'Disable', 'wpmmcc-ats' ) : esc_html__( 'Enable', 'wpmmcc-ats' );
 				echo '</button> ';
 				echo '<button class="button button-small button-link-delete wptsall-delete-virtual-site" data-site-id="' . esc_attr( $site['id'] ) . '">' . esc_html__( 'Delete', 'wpmmcc-ats' ) . '</button>';
 				echo '</td>';

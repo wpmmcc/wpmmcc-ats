@@ -27,6 +27,16 @@ class Client_Token_Service {
 	const OPTION_CLIENT_TOKEN_SECRET = 'wptsall_client_api_token_secret';
 	const OPTION_CLIENT_DEVICES      = 'wptsall_client_devices';
 	const DEFAULT_DEVICE_TOKEN_TTL   = 3600;
+	/**
+	 * Rotation overlap window (批 D ③): after a device token is re-issued,
+	 * the immediately previous token stays valid for this many seconds so a
+	 * live worker holding it finishes its run instead of hard-401 mid-flight.
+	 * Bounded by the replaced token's own expiry (never resurrects an expired
+	 * credential). `wptsall_device_token_overlap_seconds` filters it; 0
+	 * disables (back to hard cutover). Revocation is NOT softened: a revoked
+	 * device row fails both generations immediately.
+	 */
+	const DEVICE_TOKEN_ROTATION_OVERLAP_SECONDS = 300;
 
 	private static $instance = null;
 
@@ -69,6 +79,7 @@ class Client_Token_Service {
 		$token     = (string) $token;
 		$device_id = sanitize_key( (string) $device_id );
 		if ( '' === $token || '' === $device_id ) {
+			$this->log_verify_failure( $device_id, 'empty_token_or_device' );
 			return false;
 		}
 
@@ -89,9 +100,87 @@ class Client_Token_Service {
 			if ( ! empty( $device['token_hash'] ) && hash_equals( (string) $device['token_hash'], $hash ) ) {
 				return true;
 			}
+			// 批 D ③: rotation overlap window — the immediately previous
+			// token stays valid for a bounded window after re-issue. The
+			// row-level revoked/expiry guards above already ran, so a revoked
+			// or fully expired device never reaches this fallback.
+			if ( ! empty( $device['previous_token_hash'] )
+				&& isset( $device['previous_valid_until'] )
+				&& is_numeric( $device['previous_valid_until'] )
+				&& (int) $device['previous_valid_until'] > time()
+				&& hash_equals( (string) $device['previous_token_hash'], $hash ) ) {
+				$this->log_overlap_acceptance( $device_id );
+				return true;
+			}
 		}
 
+		$this->log_verify_failure( $device_id, 'no_active_device_token_match' );
 		return false;
+	}
+
+	/**
+	 * Warn-log a device-token verification failure (G-09).
+	 *
+	 * Verification used to fail silently, hiding brute-force / replay
+	 * attempts against the client API. Only the device id and a stable
+	 * reason slug are logged — never token material.
+	 *
+	 * @param string $device_id Device id from the request header.
+	 * @param string $reason   Failure reason slug.
+	 * @return void
+	 */
+	private function log_verify_failure( $device_id, $reason ) {
+		if ( ! function_exists( 'wptsall_log_warning' ) ) {
+			return;
+		}
+		wptsall_log_warning(
+			'client-pairing',
+			'Client device token verification failed',
+			array(
+				'device_id' => sanitize_key( (string) $device_id ),
+				'reason'    => sanitize_key( (string) $reason ),
+			)
+		);
+	}
+
+	/**
+	 * Info-log an acceptance through the rotation overlap window (批 D ③).
+	 *
+	 * A verify via the previous generation is a legitimate transition signal
+	 * (worker still holding the pre-rotation token), useful for operators
+	 * watching a rotation land. Only the device id is logged — never token
+	 * material.
+	 *
+	 * @param string $device_id Device id from the request header.
+	 * @return void
+	 */
+	private function log_overlap_acceptance( $device_id ) {
+		if ( ! function_exists( 'wptsall_log_info' ) ) {
+			return;
+		}
+		wptsall_log_info(
+			'client-pairing',
+			'Client device token accepted via rotation overlap window',
+			array(
+				'device_id' => sanitize_key( (string) $device_id ),
+			)
+		);
+	}
+
+	/**
+	 * Resolve the rotation overlap window in seconds (批 D ③).
+	 *
+	 * Filterable via `wptsall_device_token_overlap_seconds`; values are
+	 * clamped to >= 0 (0 = hard cutover, the pre-batch-D-③ behavior).
+	 *
+	 * @return int
+	 */
+	private function resolve_rotation_overlap_seconds() {
+		$seconds = self::DEVICE_TOKEN_ROTATION_OVERLAP_SECONDS;
+		if ( function_exists( 'apply_filters' ) ) {
+			$seconds = apply_filters( 'wptsall_device_token_overlap_seconds', $seconds );
+		}
+		return max( 0, is_numeric( $seconds ) ? (int) $seconds : 0 );
 	}
 
 	/**
@@ -114,8 +203,27 @@ class Client_Token_Service {
 		$devices = $this->get_devices();
 		$now     = current_time( 'mysql' );
 		$found   = false;
+		$overlap = $this->resolve_rotation_overlap_seconds();
 		foreach ( $devices as &$device ) {
 			if ( (string) ( $device['device_id'] ?? '' ) === $device_id ) {
+				// 批 D ③: keep the replaced token valid for the bounded
+				// rotation overlap window — but only if it was live at
+				// rotation time. An expired or revoked credential is never
+				// resurrected, and a second rotation replaces the chain
+				// (newest + immediate predecessor only, no三代链).
+				$replaced_expires = (string) ( $device['expires_at'] ?? '' );
+				$replaced_was_live = empty( $device['revoked_at'] )
+					&& '' !== $replaced_expires
+					&& is_numeric( $replaced_expires )
+					&& (int) $replaced_expires > time()
+					&& ! empty( $device['token_hash'] );
+				if ( $overlap > 0 && $replaced_was_live ) {
+					$device['previous_token_hash']  = (string) $device['token_hash'];
+					$device['previous_valid_until'] = min( (int) $replaced_expires, time() + $overlap );
+				} else {
+					$device['previous_token_hash']  = null;
+					$device['previous_valid_until'] = null;
+				}
 				$device['token_hash'] = $this->hash_token( $token );
 				$device['label']      = sanitize_text_field( $label );
 				$device['created_at'] = $now;
@@ -178,6 +286,17 @@ class Client_Token_Service {
 		foreach ( $this->get_devices() as $device ) {
 			$expired = isset( $device['expires_at'] ) && '' !== (string) $device['expires_at']
 				&& ( ! is_numeric( $device['expires_at'] ) || (int) $device['expires_at'] <= time() );
+			// 批 D ③: surface the live rotation overlap window (if any) so
+			// `wp wptsall security list-devices` shows which devices are
+			// mid-transition and until when.
+			$overlap_until = null;
+			if ( empty( $device['revoked_at'] ) && ! $expired
+				&& ! empty( $device['previous_token_hash'] )
+				&& isset( $device['previous_valid_until'] )
+				&& is_numeric( $device['previous_valid_until'] )
+				&& (int) $device['previous_valid_until'] > time() ) {
+				$overlap_until = (int) $device['previous_valid_until'];
+			}
 			$out[] = array(
 				'device_id'   => (string) ( $device['device_id'] ?? '' ),
 				'label'      => (string) ( $device['label'] ?? '' ),
@@ -185,6 +304,7 @@ class Client_Token_Service {
 				'expires_at' => isset( $device['expires_at'] ) ? (int) $device['expires_at'] : null,
 				'revoked_at' => $device['revoked_at'] ?? null,
 				'active'     => empty( $device['revoked_at'] ) && ! $expired,
+				'rotation_overlap_until' => $overlap_until,
 			);
 		}
 		return $out;

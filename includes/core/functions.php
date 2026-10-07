@@ -172,13 +172,6 @@ function wptsall_is_self_plugin_slug( $plugin_slug ) {
 
 
 /**
- * Core functions for WPTSALL plugin.
- *
- * Note: Log functions have been moved to includes/log/logger.php
- * Use wptsall_log(), wptsall_log_info(), wptsall_log_debug(), etc.
- */
-
-/**
  * Client REST route secret (URL path segment).
  *
  * ≥256-bit base64url; stored with autoload=no. Any legacy, malformed, or
@@ -457,12 +450,56 @@ function wptsall_is_denied_option( $name ) {
  * @return string[]
  */
 function wptsall_get_relation_option_names( $relation_id ) {
+	// Per-request memo. The option-sync guards call this for EVERY changed
+	// option x every relation, and third-party mu-plugins (measured 2026-09-27
+	// on the Lab product list: EDD's update_option on admin init) re-fired
+	// the walk ~1,600 times per request, each walking models x rules and
+	// re-merging every config (~3,300 rule re-reads + ~1,400 config
+	// re-reads). The walk is deterministic between writes, so the first
+	// result per relation is memoized. The writer actions below invalidate
+	// it, registered once via a by-reference closure on the memo.
+	static $memo = array();
+	static $invalidator_registered = false;
+
+	if ( ! $invalidator_registered ) {
+		$invalidator_registered = true;
+		$flush = function () use ( & $memo ) {
+			$memo = array();
+		};
+		foreach ( array(
+			'wptsall_rule_updated',
+			'wptsall_model_saved',
+			'wptsall_model_deleted',
+			'wptsall_model_usage_changed',
+			'wptsall_model_auto_created',
+			'wptsall_relation_models_updated',
+			'wptsall_relation_updated',
+			'wptsall_site_relations_created',
+			'wptsall_site_relation_deleted',
+			'wptsall_site_relation_status_updated',
+		) as $invalidation_hook ) {
+			add_action( $invalidation_hook, $flush );
+		}
+	}
+
 	$relation_id = (int) $relation_id;
 	if ( $relation_id <= 0 || ! class_exists( '\WPTSALL\Sites\Services\Relation_Model_Service' ) || ! class_exists( '\WPTSALL\Models\Services\Translation_Rule_Service' ) ) {
 		return array();
 	}
 
+	if ( array_key_exists( $relation_id, $memo ) ) {
+		return $memo[ $relation_id ];
+	}
+
 	$option_names = array();
+
+	// One bulk query answers every per-rule config resolution in the walk
+	// below (measured 2026-09-27: 720 single-row fetches per render on the
+	// Lab product list before the preload).
+	if ( class_exists( '\WPTSALL\Sites\Services\Relation_Config_Service' ) ) {
+		\WPTSALL\Sites\Services\Relation_Config_Service::preload_for_relation( $relation_id );
+	}
+
 	$models       = \WPTSALL\Sites\Services\Relation_Model_Service::get_models_by_relation( $relation_id );
 	foreach ( $models as $model ) {
 		$rules = \WPTSALL\Models\Services\Translation_Rule_Service::get_model_rules( (int) $model['id'] );
@@ -495,7 +532,10 @@ function wptsall_get_relation_option_names( $relation_id ) {
 		}
 	}
 
-	return array_values( array_unique( array_filter( $option_names ) ) );
+	$option_names = array_values( array_unique( array_filter( $option_names ) ) );
+
+	$memo[ $relation_id ] = $option_names;
+	return $option_names;
 }
 
 /**
@@ -789,44 +829,6 @@ function wptsall_saved_templates() {
 
 
 
-/**
- * Get the source/target URL from a site relation (WP site uses home_url, virtual site uses configured URL).
- */
-function wptsall_get_site_url_from_relation( $site_rel, $role = 'source' ) {
-    $role = ( 'target' === $role ) ? 'targets' : 'source';
-    $entry = ( 'targets' === $role ) ? ( $site_rel['targets'][0] ?? null ) : ( $site_rel['source'] ?? null );
-    if ( ! $entry ) {
-        return '';
-    }
-    if ( ( $entry['type'] ?? '' ) === 'virtual' ) {
-        $v = wptsall_get_virtual_site( $entry['id'] ?? '' );
-        return $v['url'] ?? '';
-    }
-    // WP site.
-    $blog_id = intval( $entry['id'] ?? get_current_blog_id() );
-    if ( function_exists( 'is_multisite' ) && is_multisite() && function_exists( 'get_blog_details' ) ) {
-        $details = get_blog_details( $blog_id );
-        if ( $details && isset( $details->siteurl ) ) {
-            return $details->siteurl;
-        }
-    }
-    if ( function_exists( 'home_url' ) ) {
-        if ( function_exists( 'switch_to_blog' ) && function_exists( 'restore_current_blog' ) && $blog_id !== get_current_blog_id() ) {
-            switch_to_blog( $blog_id );
-            $url = home_url();
-            restore_current_blog();
-            return $url;
-        }
-        return home_url();
-    }
-    return '';
-}
-
-/**
- * Get plugin custom table name (with prefix).
- * Uses whitelist to ensure table name safety.
- * The mappings table uses base_prefix for cross-site sharing.
- */
 	function wptsall_table( $key ) {
 		global $wpdb;
 		$tables = array(
@@ -1260,76 +1262,6 @@ function wptsall_get_complete_object_data( $object_type, $subtype, $object_id ) 
  * =============================================================================
  */
 
-/**
- * Check if marker mode is enabled.
- *
- * Marker mode adds language markers to synced content for validation.
- * Default is disabled for production environments.
- *
- * @since 0.5.1
- *
- * @return bool True if marker mode is enabled.
- */
-function wptsall_is_marker_mode_enabled() {
-    // Constant takes priority (for development/testing).
-    if ( defined( 'WPTSALL_MARKER_MODE' ) ) {
-        return (bool) WPTSALL_MARKER_MODE;
-    }
-
-    // Check settings option.
-    $settings = get_option( 'wptsall_settings', array() );
-    return ! empty( $settings['marker_mode'] );
-}
-
-
-/**
- * Wrap content with language marker for testing/validation.
- *
- * Format: 【{lang}】{content}【/{lang}】
- *
- * Only applies when marker mode is enabled.
- * Empty content is not marked.
- * Already marked content is not double-marked.
- *
- * @since 0.5.1
- *
- * @param string $content     The content to wrap.
- * @param string $target_lang Target language code (e.g., 'en_US', 'zh_CN').
- * @return string Wrapped content or original content if marker mode disabled.
- */
-function wptsall_wrap_with_marker( $content, $target_lang ) {
-    // Only wrap if marker mode is enabled.
-    if ( ! wptsall_is_marker_mode_enabled() ) {
-        return $content;
-    }
-
-    // Don't wrap empty content.
-    if ( empty( $content ) || ! is_string( $content ) ) {
-        return $content;
-    }
-
-    $content = trim( $content );
-    if ( '' === $content ) {
-        return '';
-    }
-
-    // Normalize language code.
-    $lang = sanitize_text_field( $target_lang );
-    if ( empty( $lang ) ) {
-        return $content;
-    }
-
-    // Check if already marked with this language.
-    $open_tag  = '【' . $lang . '】';
-    $close_tag = '【/' . $lang . '】';
-
-    if ( strpos( $content, $open_tag ) === 0 && substr( $content, -strlen( $close_tag ) ) === $close_tag ) {
-        // Already marked, don't double-mark.
-        return $content;
-    }
-
-    return $open_tag . $content . $close_tag;
-}
 
 /**
  * Remove language marker from content.
@@ -1860,6 +1792,21 @@ function wptsall_get_supported_contract_capabilities(): array {
 }
 
 /**
+ * Supported numeric payload schema for the translation content callback.
+ *
+ * opus5 A-04 (decision D-3i): pairs with the versions.json `callback` axis
+ * `payload_schema` and the client's TASK_CALLBACK_SCHEMA_VERSION. The
+ * callback entry gate rejects unknown payload versions fail-closed instead
+ * of writing payloads back with undefined semantics.
+ *
+ * @since 2.1.4
+ * @return int
+ */
+function wptsall_supported_callback_payload_schema_version() {
+	return 2;
+}
+
+/**
  * Validate client contract capabilities header when present.
  *
  * @since 2.1.0
@@ -1882,8 +1829,25 @@ function wptsall_check_client_contract_capabilities( $request ) {
 	}
 	$supported = wptsall_get_supported_contract_capabilities();
 	foreach ( $client_caps as $axis => $value ) {
-		if ( ! array_key_exists( $axis, $supported ) ) {
-			continue;
+		// opus5 A-05 (decision D-4): versions.json compatibility_rule says
+		// unknown axis versions MUST fail-closed; unknown axis NAMES get the
+		// same treatment — silently ignoring them would let a renamed/drifted
+		// capability pass as "supported".
+		if ( ! array_key_exists( (string) $axis, $supported ) ) {
+			return new \WP_Error(
+				'unknown_contract_capability',
+				sprintf(
+					/* translators: 1: axis name */
+					__( 'Unknown contract capability axis "%1$s" is rejected (fail-closed).', 'wpmmcc-ats' ),
+					(string) $axis
+				),
+				array(
+					'status'              => 400,
+					'axis'                => (string) $axis,
+					'supported'           => $supported,
+					'client_capabilities' => $client_caps,
+				)
+			);
 		}
 		$expected = $supported[ $axis ];
 		if ( is_int( $expected ) ) {

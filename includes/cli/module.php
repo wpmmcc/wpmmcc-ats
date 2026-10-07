@@ -32,12 +32,13 @@ class Module {
 	);
 
 	public static function init() {
-		if ( ! defined( 'WP_CLI' ) || ! class_exists( '\\WP_CLI' ) ) {
-			return;
-		}
-		// Initialize audit log hooks.
+		// Audit hooks must run on normal web/REST requests, not only under WP-CLI.
 		if ( class_exists( '\\WPTSALL\\CLI\\Audit_Log' ) ) {
 			\WPTSALL\CLI\Audit_Log::init();
+		}
+
+		if ( ! defined( 'WP_CLI' ) || ! class_exists( '\\WP_CLI' ) ) {
+			return;
 		}
 
 		foreach ( self::COMMANDS as $name => $class ) {

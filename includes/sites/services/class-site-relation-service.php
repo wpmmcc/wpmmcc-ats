@@ -62,6 +62,27 @@ class Site_Relation_Service {
 	}
 
 	/**
+	 * Per-request memo for get_relation() (render-path hot getter).
+	 *
+	 * The admin list hooks (translation-status column + row actions) resolve
+	 * translation status per row, and per row every relation re-fetches its
+	 * row here — measured 2026-09-26 on the Lab product list: the same
+	 * relation ids were re-queried 3,155 times in ONE render. PHP arrays are
+	 * copy-on-write, so returning the memoized array stays safe for callers.
+	 * Cleared by clear_cache(), which every writer in this service calls
+	 * (plus Relation_Model_Service::update_models_count(), which direct-writes
+	 * models_count and therefore also calls clear_cache()).
+	 *
+	 * Prefix invariant: every live caller reads plugin tables on the main
+	 * blog (switch_to_blog only happens deeper, inside postmeta lookups).
+	 * Do NOT call get_relation() while switched to another blog — the table
+	 * prefix would silently change while this memo keeps main-blog rows.
+	 *
+	 * @var array<string,array|null>
+	 */
+	private static $relation_memo = array();
+
+	/**
 	 * Clear all site relations cache
 	 *
 	 * @since 0.9.0
@@ -70,6 +91,9 @@ class Site_Relation_Service {
 	public static function clear_cache() {
 		wp_cache_delete( 'all_relations', self::CACHE_GROUP );
 		wp_cache_delete( 'grouped_relations', self::CACHE_GROUP );
+
+		// Per-request relation memo goes with it (writers call clear_cache()).
+		self::$relation_memo = array();
 
 		// Clear individual relation caches by incrementing version
 		$version = (int) wp_cache_get( 'cache_version', self::CACHE_GROUP );
@@ -534,10 +558,9 @@ class Site_Relation_Service {
 			$wpdb->delete( $configs_table, array( 'relation_id' => $relation_id ), array( '%d' ) );
 		}
 
-		// v1.2.0: Cascade delete monitoring tasks for this relation.
-		if ( class_exists( '\WPTSALL\Tasks\Services\Monitoring_Task_Service' ) ) {
-			\WPTSALL\Tasks\Services\Monitoring_Task_Service::delete_by_relation( $relation_id );
-		}
+		// Includes monitoring tasks. Delete their children before their parents,
+		// rather than deleting monitoring tasks before the child-table JOINs.
+		$purged = self::purge_relation_data( (int) $relation_id, $relation );
 
 		// Delete site relation
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -554,6 +577,7 @@ class Site_Relation_Service {
 				'relation_id' => $relation_id,
 				'template'    => $relation['template'],
 				'target_id'   => $relation['target_site_id'],
+				'purged'      => $purged,
 			)
 		);
 
@@ -563,6 +587,118 @@ class Site_Relation_Service {
 		do_action( 'wptsall_site_relation_deleted', $relation_id, $relation );
 
 		return array( 'success' => true );
+	}
+
+	/**
+	 * Remove what the sync pipeline derived from one relation: its mappings,
+	 * outbox events, translation results, tasks (with their logs and items),
+	 * conflicts, option state and manual-queue items.
+	 *
+	 * Left behind, these are not inert. Relation ids are only unique per blog
+	 * (and a database that forgets its AUTO_INCREMENT high-water mark hands a
+	 * deleted id out again), so the next relation inherits them: objects that
+	 * read as already translated, events nobody can apply. Content translated
+	 * onto the target belongs to the target and stays.
+	 *
+	 * The mapping tables live under the network base prefix and are shared by
+	 * all blogs, so their rows are also matched on the relation's source site
+	 * (menu mappings, which have no such column, on the target virtual site):
+	 * another blog's relation with the same number keeps its rows. Tables a
+	 * given install does not have yet are skipped.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param int   $relation_id Relation id.
+	 * @param array $relation    The relation row.
+	 * @return array<string,int> Rows removed per table key, tables with none left out.
+	 */
+	private static function purge_relation_data( $relation_id, array $relation ) {
+		global $wpdb;
+		$source_site = (int) ( $relation['source_site_id'] ?? 0 );
+		$target_site = (string) ( $relation['target_site_id'] ?? '' );
+		$removed     = array();
+
+		$tasks_table = wptsall_table( 'tasks' );
+		foreach ( array( 'task_logs', 'task_items' ) as $child ) {
+			$child_table = wptsall_table( $child );
+			if ( self::table_exists( $child_table ) && self::table_exists( $tasks_table ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$removed[ $child ] = (int) $wpdb->query(
+					$wpdb->prepare( 'DELETE c FROM %i c INNER JOIN %i t ON t.id = c.task_id WHERE t.relation_id = %d', $child_table, $tasks_table, $relation_id )
+				);
+			}
+		}
+
+		$by_relation = array( 'relation_id' => $relation_id );
+		$by_source   = array( 'relation_id' => $relation_id, 'source_site_id' => $source_site );
+		$scopes      = array(
+			'tasks'                 => $by_relation,
+			'translation_results'   => $by_relation,
+			'content_change_outbox' => $by_relation,
+			'manual_queue'          => $by_relation,
+			'conflicts'             => $by_relation,
+			'option_sync_state'     => $by_relation,
+			'post_mappings'         => $by_source,
+			'term_mappings'         => $by_source,
+			'media_mappings'        => $by_source,
+			'menu_mappings'         => array( 'relation_id' => $relation_id, 'virtual_site_id' => $target_site ),
+		);
+		$legacy_table = wptsall_table( 'mappings' );
+		if ( self::table_has_column( $legacy_table, 'relation_id' ) ) {
+			$scopes['mappings'] = array( 'relation_id' => $relation_id, 'source_blog_id' => $source_site );
+		}
+
+		foreach ( $scopes as $key => $where ) {
+			$table = wptsall_table( $key );
+			if ( ! self::table_exists( $table ) ) {
+				continue;
+			}
+			$formats = array();
+			foreach ( $where as $value ) {
+				$formats[] = is_int( $value ) ? '%d' : '%s';
+			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count = $wpdb->delete( $table, $where, $formats );
+			if ( false === $count ) {
+				wptsall_log_warning(
+					'sites-relations',
+					'Relation data could not be removed from a table',
+					array(
+						'relation_id' => $relation_id,
+						'table'       => $key,
+						'error'       => $wpdb->last_error,
+					)
+				);
+				continue;
+			}
+			$removed[ $key ] = (int) $count;
+		}
+
+		return array_filter( $removed );
+	}
+
+	/**
+	 * @param string $table Full table name.
+	 * @return bool
+	 */
+	private static function table_exists( $table ) {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $table === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) );
+	}
+
+	/**
+	 * @param string $table  Full table name.
+	 * @param string $column Column name.
+	 * @return bool False when the table or the column is missing.
+	 */
+	private static function table_has_column( $table, $column ) {
+		global $wpdb;
+		if ( ! self::table_exists( $table ) ) {
+			return false;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		return (bool) $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM %i LIKE %s', $table, $column ) );
 	}
 
 	/**
@@ -627,6 +763,10 @@ class Site_Relation_Service {
 				'status'      => $status,
 			)
 		);
+
+		// Direct write bypasses the CRUD writers, so the relation caches
+		// (object cache + per-request memo) must be invalidated here too.
+		self::clear_cache();
 
 		do_action( 'wptsall_site_relation_status_updated', $relation_id, $status );
 
@@ -770,6 +910,12 @@ class Site_Relation_Service {
 	 * @return array|null Relation data
 	 */
 	public static function get_relation( $relation_id, $include_models = false ) {
+		// Render-path hot getter: see $relation_memo above.
+		$memo_key = (int) $relation_id . ':' . ( $include_models ? 'm' : 'r' );
+		if ( array_key_exists( $memo_key, self::$relation_memo ) ) {
+			return self::$relation_memo[ $memo_key ];
+		}
+
 		global $wpdb;
 		$table = wptsall_table( 'site_relations' );
 
@@ -780,6 +926,7 @@ class Site_Relation_Service {
 		);
 
 		if ( ! $relation ) {
+			self::$relation_memo[ $memo_key ] = null;
 			return null;
 		}
 
@@ -791,6 +938,7 @@ class Site_Relation_Service {
 			$relation['models'] = Relation_Model_Service::get_models_by_relation( $relation_id );
 		}
 
+		self::$relation_memo[ $memo_key ] = $relation;
 		return $relation;
 	}
 
@@ -1152,6 +1300,42 @@ class Site_Relation_Service {
 	}
 
 	/**
+	 * Normalize a relation conflict strategy to the canonical five-value
+	 * vocabulary (X-1, tasks/5.3falsh2/12 批 B): lww / source_wins /
+	 * target_wins / manual_review / merge. Historical values (newest_wins,
+	 * manual, source_dominant, …) map onto their canonical twin; unknown
+	 * values fall back to the schema default 'source_wins'.
+	 *
+	 * @param string $raw Raw strategy from the API or an older DB row.
+	 * @return string Canonical strategy.
+	 */
+	public static function normalize_conflict_strategy( $raw ) {
+		$raw = strtolower( trim( (string) $raw ) );
+		switch ( $raw ) {
+			case 'lww':
+			case 'newest_wins':
+				return 'lww';
+
+			case 'target_wins':
+			case 'target_dominant':
+				return 'target_wins';
+
+			case 'manual_review':
+			case 'manual':
+				return 'manual_review';
+
+			case 'merge':
+				return 'merge';
+
+			case 'source_wins':
+			case 'origin_wins':
+			case 'source_dominant':
+			default:
+				return 'source_wins';
+		}
+	}
+
+	/**
 	 * Update relation information
 	 *
 	 * @param int   $relation_id Relation ID
@@ -1228,12 +1412,11 @@ class Site_Relation_Service {
 			);
 		}
 
-		// Validate conflict_strategy value.
-		if ( isset( $data['conflict_strategy'] ) && ! in_array( $data['conflict_strategy'], array( 'source_wins', 'target_wins', 'newest_wins', 'manual', 'merge' ), true ) ) {
-			return array(
-				'success' => false,
-				'errors'  => array( __( 'Invalid conflict strategy', 'wpmmcc-ats' ) ),
-			);
+		// X-1 (tasks/5.3falsh2/12 批 B): normalize to the canonical five-value
+		// vocabulary (lww / source_wins / target_wins / manual_review / merge)
+		// instead of rejecting legacy values.
+		if ( isset( $data['conflict_strategy'] ) ) {
+			$data['conflict_strategy'] = self::normalize_conflict_strategy( $data['conflict_strategy'] );
 		}
 
 		foreach ( $allowed_fields as $field => $format ) {

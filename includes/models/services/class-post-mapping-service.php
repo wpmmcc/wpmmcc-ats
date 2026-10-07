@@ -607,6 +607,102 @@ class Post_Mapping_Service {
 	}
 
 	/**
+	 * Batched mapped-target lookup for one source post across many relations.
+	 *
+	 * Render-path hot aggregate (admin translation-status hooks): the per-pair
+	 * get_mapped_id() chain re-resolved every relation for every list row —
+	 * measured 2026-09-27 on the Lab product list, the mapping leg alone ran
+	 * once per (row x relation) pair. This resolves ALL pairs in ONE query
+	 * per distinct source site (usually one), with the exact per-pair filter
+	 * semantics: relation_id + source_post_id + source_post_type +
+	 * source_site_id + target_site_id (the target_site_id cross-check is
+	 * applied in PHP per row), and only target_post_id > 0 counts as a hit
+	 * (per-pair callers treat 0 as a miss and fall through to the meta leg).
+	 * First row seen per relation_id wins (per-pair LIMIT 1 is likewise
+	 * unordered-first-match).
+	 *
+	 * @since 2.1.5
+	 *
+	 * @param int    $source_post_id   Source post ID.
+	 * @param string $source_post_type Source post type.
+	 * @param array  $relations_by_id  relation_id => relation row (or null to
+	 *                                 lazy-load via Site_Relation_Service).
+	 * @return array<int,int> relation_id => target post ID (>0 only; relations
+	 *                       without a mapping are absent from the result).
+	 */
+	public static function get_mapped_targets_for_relations( int $source_post_id, string $source_post_type, array $relations_by_id ): array {
+		$out = array();
+		if ( $source_post_id <= 0 || '' === $source_post_type || empty( $relations_by_id ) ) {
+			return $out;
+		}
+
+		global $wpdb;
+		$table = wptsall_table( 'post_mappings' );
+
+		// Resolve every relation row (memoized getter; nulls are misses).
+		$rows_by_source_site = array();
+		$relation_target_site = array();
+		foreach ( array_keys( $relations_by_id ) as $relation_id ) {
+			$relation_id = (int) $relation_id;
+			if ( $relation_id <= 0 || isset( $out[ $relation_id ] ) ) {
+				continue;
+			}
+			$relation = isset( $relations_by_id[ $relation_id ] ) && is_array( $relations_by_id[ $relation_id ] )
+				? $relations_by_id[ $relation_id ]
+				: \WPTSALL\Sites\Services\Site_Relation_Service::get_relation( $relation_id );
+			if ( ! $relation ) {
+				continue;
+			}
+			$source_site_id = (int) ( $relation['source_site_id'] ?? get_current_blog_id() );
+			$rows_by_source_site[ $source_site_id ][ $relation_id ] = (string) ( $relation['target_site_id'] ?? '' );
+		}
+
+		foreach ( $rows_by_source_site as $source_site_id => $targets_by_relation ) {
+			list( $in_sql, $in_ids ) = wptsall_db_prepare_int_in( array_keys( $targets_by_relation ) );
+			if ( empty( $in_ids ) ) {
+				continue;
+			}
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT relation_id, target_post_id, target_site_id FROM %i
+					WHERE source_post_id = %d
+					AND source_post_type = %s
+					AND source_site_id = %d
+					AND relation_id IN ($in_sql)",
+					$table,
+					$source_post_id,
+					$source_post_type,
+					$source_site_id,
+					...$in_ids
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $rows as $row ) {
+				$relation_id = (int) $row['relation_id'];
+				if ( isset( $out[ $relation_id ] ) ) {
+					continue;
+				}
+				if ( ! isset( $targets_by_relation[ $relation_id ] ) ) {
+					continue;
+				}
+				// Exact per-pair filter: the mapping row's target must be the
+				// relation's target site, and only positive IDs are hits.
+				if ( (string) $row['target_site_id'] !== $targets_by_relation[ $relation_id ] ) {
+					continue;
+				}
+				$target_post_id = (int) $row['target_post_id'];
+				if ( $target_post_id <= 0 ) {
+					continue;
+				}
+				$out[ $relation_id ] = $target_post_id;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Get relationship statistics
 	 *
 	 * @return array Statistics about post mappings.

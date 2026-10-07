@@ -2,7 +2,7 @@
 /**
  * WooCommerce field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/woocommerce-extra.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/woocommerce-extra.json
  * (fields_source: v4-scanner, fields_verified: 2026-01-27).
  *
  * WooCommerce stores product commerce data (price/SKU/stock/weight) in

@@ -54,7 +54,20 @@ class Pending_Translations_Page {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$post_type   = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
 
-		$pending = $target_lang ? Translation_Progress_Service::pending_for_language( $target_lang, $post_type, 500 ) : array();
+		// ATS-P2-05 (3.8flash B4): wire the service's own limit/offset to the
+		// shared pagination bar (the old fixed 500-row window had no pager).
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$per_page = isset( $_GET['per_page'] ) ? max( 1, min( 500, (int) wp_unslash( $_GET['per_page'] ) ) ) : 50;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$paged = isset( $_GET['paged'] ) ? max( 1, (int) wp_unslash( $_GET['paged'] ) ) : 1;
+
+		$total  = $target_lang ? Translation_Progress_Service::count_pending_for_language( $target_lang, $post_type ) : 0;
+		$pending = $target_lang ? Translation_Progress_Service::pending_for_language(
+			$target_lang,
+			$post_type,
+			$per_page,
+			( $paged - 1 ) * $per_page
+		) : array();
 
 		Admin_Page_Helper::render_header(
 			__( 'Pending Translations', 'wpmmcc-ats' ),
@@ -82,8 +95,22 @@ class Pending_Translations_Page {
 			</label>
 		</form>
 
+		<?php
+		// B4: the true FILTERED total + range indicator replaces the old
+		// count($pending) figure, which silently capped at the fetch window.
+		Admin_Page_Helper::render_pagination(
+			$total,
+			$per_page,
+			$paged,
+			self::PAGE_SLUG,
+			array(
+				'target_lang' => $target_lang,
+				'post_type'   => $post_type,
+			)
+		);
+		?>
 		<p>
-			<strong><?php echo count( $pending ); ?></strong> <?php esc_html_e( 'posts pending translation', 'wpmmcc-ats' ); ?>
+			<strong><?php echo (int) $total; ?></strong> <?php esc_html_e( 'posts pending translation', 'wpmmcc-ats' ); ?>
 			<?php if ( $target_lang ) : ?>
 				<?php esc_html_e( 'into', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $target_lang ); ?></code>
 			<?php endif; ?>

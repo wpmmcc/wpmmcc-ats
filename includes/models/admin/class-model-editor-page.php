@@ -117,6 +117,10 @@ class Model_Editor_Page {
 					'fieldMappings'     => __( 'ID Mapping', 'wpmmcc-ats' ),
 					'computeFields'     => __( 'Compute fields', 'wpmmcc-ats' ),
 					'noFields'          => __( 'No fields available', 'wpmmcc-ats' ),
+					'noDataGuidance'    => __( 'No plugin data found yet — fields are discovered from existing content. Open or create a page produced by this plugin, then rescan.', 'wpmmcc-ats' ),
+					'rescanPluginData'  => __( 'Rescan plugin data', 'wpmmcc-ats' ),
+					'rescanNoDataYet'   => __( 'Still no data for this plugin — create or visit content from it first, then rescan.', 'wpmmcc-ats' ),
+					'fieldsReloaded'    => __( 'Plugin data found — fields loaded below. Select at least one field to continue.', 'wpmmcc-ats' ),
 					'pluginInfo'        => __( 'Plugin Info', 'wpmmcc-ats' ),
 					'plugin'            => __( 'Plugin', 'wpmmcc-ats' ),
 					'urlPattern'        => __( 'URL Pattern', 'wpmmcc-ats' ),
@@ -675,12 +679,12 @@ class Model_Editor_Page {
 				'id'    => 'wptsall-import-model-v3-btn',
 				'class' => 'button',
 			),
-			array(
-				'label' => __( 'Import', 'wpmmcc-ats' ),
-				'url'   => '#',
-				'id'    => 'wptsall-import-btn',
-				'class' => 'button',
-			),
+			// ATS-P2-02 (3.8flash C2): the legacy 'Import' topbar entry (old
+			// wptsall-import-btn + paste/file modal hitting v2/models/import
+			// with a plain overwrite flag) is removed — 'Import Model' (v3,
+			// conflict-aware) is the single-model entry, whole-table restore
+			// lives on Models Backup. Two same-purpose entries with different
+			// formats was the trap: users could not tell which import to use.
 			array(
 				'label' => __( 'Export', 'wpmmcc-ats' ),
 				'url'   => '#',
@@ -699,6 +703,14 @@ class Model_Editor_Page {
 		Admin_Page_Helper::render_tabs( $tabs, $current_tab, admin_url( 'admin.php?page=wpmmcc-ats' ), 'wp' );
 		?>
 			<div class="wptsall-page-content">
+
+			<?php
+			// ATS-P2-02 (3.8flash C2): cross-reference the two import surfaces so
+			// the entry-point overlap cannot trap a user on the wrong screen.
+			?>
+			<p class="description" style="margin: 0 0 8px;">
+				<?php esc_html_e( 'Single-model import: use the "Import Model" button in the top bar (conflict-aware v3 JSON file). Whole-table backup / restore lives on the Models Backup page.', 'wpmmcc-ats' ); ?>
+			</p>
 
 			<!-- H3: Hidden file input for V3 model import -->
 			<input type="file" id="wptsall-import-model-v3-file" class="wptsall-import-file-input" accept=".json">
@@ -770,40 +782,6 @@ class Model_Editor_Page {
 						<p class="submit">
 							<button type="button" id="scan-preview-btn" class="button"><?php esc_html_e( 'Preview Scan Results', 'wpmmcc-ats' ); ?></button>
 							<button type="submit" id="scan-save-btn" class="button button-primary" disabled><?php esc_html_e( 'Save Model', 'wpmmcc-ats' ); ?></button>
-						</p>
-					</form>
-				</div>
-			</div>
-
-			<!-- Import Modal -->
-			<div id="wptsall-import-modal" class="wptsall-modal" style="display:none;">
-				<div class="wptsall-modal-content">
-					<span class="wptsall-modal-close">&times;</span>
-					<h2><?php esc_html_e( 'Import Model', 'wpmmcc-ats' ); ?></h2>
-					<p><?php esc_html_e( 'Select a JSON file to import model configuration.', 'wpmmcc-ats' ); ?></p>
-
-					<form id="wptsall-import-form" enctype="multipart/form-data">
-						<div class="wptsall-form-row">
-							<label for="import-file"><?php esc_html_e( 'Select File', 'wpmmcc-ats' ); ?></label>
-							<input type="file" id="import-file" name="import_file" accept=".json" required>
-							<p class="description"><?php esc_html_e( 'Supports .json format model configuration files', 'wpmmcc-ats' ); ?></p>
-						</div>
-
-						<div class="wptsall-form-row">
-							<label>
-								<input type="checkbox" id="import-overwrite" name="overwrite" value="1">
-								<?php esc_html_e( 'Overwrite existing models', 'wpmmcc-ats' ); ?>
-							</label>
-						</div>
-
-						<div id="import-preview" style="display:none;">
-							<h3><?php esc_html_e( 'Preview', 'wpmmcc-ats' ); ?></h3>
-							<div id="import-preview-content"></div>
-						</div>
-
-						<p class="submit">
-							<button type="submit" class="button button-primary"><?php esc_html_e( 'Import', 'wpmmcc-ats' ); ?></button>
-							<button type="button" class="button wptsall-modal-close"><?php esc_html_e( 'Cancel', 'wpmmcc-ats' ); ?></button>
 						</p>
 					</form>
 				</div>
@@ -1707,6 +1685,12 @@ class Model_Editor_Page {
 					<p><?php esc_html_e( 'Use this wizard to create custom model configurations for any plugin, including extensions (SEO, ACF, etc.).', 'wpmmcc-ats' ); ?></p>
 				</div>
 
+				<!-- Validation notices. Required target for the wizard JS
+				     showError()/showSuccess(): without this container validation
+				     failures used to be written into an empty jQuery set and the
+				     Next button appeared to silently do nothing. -->
+				<div class="wptsall-wizard-notices" aria-live="polite"></div>
+
 				<!-- Step Indicators -->
 				<div class="wptsall-wizard-steps">
 					<div class="wptsall-wizard-step active" data-step="1">
@@ -2314,6 +2298,21 @@ class Model_Editor_Page {
 			admin_url( 'admin.php' )
 		);
 
+		// UI-28-06: the fallback handler redirected here with this flag when
+		// the rule form was submitted natively (field-configurator.js absent).
+		if ( isset( $_GET['rule_js_fallback'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+			<div class="notice notice-error"><p>
+				<?php
+				echo esc_html(
+					__(
+						'The rule was NOT saved: this editor saves via its JavaScript field configurator, which did not load in your browser. Re-enable JavaScript / check for script errors, then try again.',
+						'wpmmcc-ats'
+					)
+				);
+				?>
+			</p></div>
+		<?php endif;
+
 		// Data types for dropdown
 		$data_types = array(
 			'post'    => __( 'Post', 'wpmmcc-ats' ),
@@ -2647,6 +2646,41 @@ class Model_Editor_Page {
 				</div><!-- .wptsall-page-content -->
 		<?php
 		Admin_Page_Helper::render_footer();
+	}
+
+	/**
+	 * UI-28-06: fallback for a native (non-JS) submit of
+	 * #wptsall-rule-edit-form. The real save path is field-configurator.js
+	 * intercepting submit and POSTing via REST; before this handler existed,
+	 * a native submit hit an unregistered admin_post action and was silently
+	 * discarded. We cannot reconstruct the rule payload from the raw POST
+	 * (the JS assembles it), so the honest fallback is: validate, then bounce
+	 * back to the editor with an explicit notice.
+	 *
+	 * @return void
+	 */
+	public static function handle_save_rule_fallback() {
+		if ( ! wptsall_user_can_manage_translations() ) {
+			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
+		}
+		check_admin_referer( 'wptsall_save_rule', 'wptsall_rule_nonce' );
+
+		$model_id = isset( $_POST['model_id'] ) ? absint( wp_unslash( $_POST['model_id'] ) ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$rule_id  = isset( $_POST['rule_id'] ) ? sanitize_text_field( wp_unslash( $_POST['rule_id'] ) ) : 'new'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'             => 'wpmmcc-ats',
+					'action'           => 'edit_rule',
+					'model_id'         => $model_id,
+					'rule_id'          => $rule_id,
+					'rule_js_fallback' => '1',
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 }

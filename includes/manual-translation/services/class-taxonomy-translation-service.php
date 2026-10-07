@@ -32,17 +32,46 @@ class Taxonomy_Translation_Service {
 	 * @param string $target_lang Target language code.
 	 * @param int    $limit       Max rows.
 	 * @param int    $relation_id Optional site relation ID for relation-scoped pending state.
+	 * @param int    $offset      Row offset for pagination (default 0; ATS-P2-05 / 3.8flash B4).
 	 * @return array<int, array{term_id:int, name:string, slug:string, count:int}>
 	 */
-	public static function pending_terms( string $taxonomy, string $target_lang, int $limit = 200, int $relation_id = 0 ): array {
-		$all_terms = get_terms( array(
-			'taxonomy'   => $taxonomy,
-			'hide_empty' => false,
-			'number'     => $limit,
-		) );
-		if ( is_wp_error( $all_terms ) ) {
-			return array();
-		}
+	public static function pending_terms( string $taxonomy, string $target_lang, int $limit = 200, int $relation_id = 0, int $offset = 0 ): array {
+		return self::pending_scan( $taxonomy, $target_lang, $relation_id, max( 1, (int) $limit ), max( 0, (int) $offset ) )['rows'];
+	}
+
+	/**
+	 * Count pending terms with the same filters as pending_terms()
+	 * (ATS-P2-05 / 3.8flash B4: the pagination bar needs the FILTERED total).
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $taxonomy    Taxonomy slug.
+	 * @param string $target_lang Target language code.
+	 * @param int    $relation_id Optional site relation ID.
+	 * @return int
+	 */
+	public static function count_pending_terms( string $taxonomy, string $target_lang, int $relation_id = 0 ): int {
+		return self::pending_scan( $taxonomy, $target_lang, $relation_id, 0, 0 )['total'];
+	}
+
+	/**
+	 * Windowed pending scan (ATS-P2-05 / 3.8flash B4).
+	 *
+	 * The pre-B4 code fetched ONE get_terms(number=$limit) batch and filtered it,
+	 * so the "pending" list was capped by TERMS FETCHED — deep pending rows were
+	 * silently unreachable. This pages get_terms() in batches (WP-native term
+	 * filters preserved — no raw SQL rewrite), removes already-mapped terms, and
+	 * honors $limit/$offset over the FILTERED pending set. $limit = 0 means
+	 * count-only mode (full scan, no slice).
+	 *
+	 * @param string $taxonomy    Taxonomy slug.
+	 * @param string $target_lang Target language code.
+	 * @param int    $relation_id Relation scope (0 = language-wide).
+	 * @param int    $limit       Page size (0 = count-only).
+	 * @param int    $offset      Row offset.
+	 * @return array{total:int, rows:array}
+	 */
+	private static function pending_scan( string $taxonomy, string $target_lang, int $relation_id, int $limit, int $offset ): array {
 		global $wpdb;
 		$table = $wpdb->prefix . 'wptsall_term_mappings';
 		if ( $relation_id > 0 ) {
@@ -62,19 +91,46 @@ class Taxonomy_Translation_Service {
 			) );
 		}
 		$mapped = array_map( 'intval', (array) $mapped );
-		$out = array();
-		foreach ( (array) $all_terms as $t ) {
-			if ( in_array( (int) $t->term_id, $mapped, true ) ) {
-				continue;
+
+		$pending      = array();
+		$batch        = 500;
+		$fetch_offset = 0;
+		while ( true ) {
+			$terms = get_terms( array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+				'number'     => $batch,
+				'offset'     => $fetch_offset,
+			) );
+			if ( is_wp_error( $terms ) || empty( $terms ) ) {
+				break;
 			}
-			$out[] = array(
-				'term_id' => (int) $t->term_id,
-				'name'    => (string) $t->name,
-				'slug'    => (string) $t->slug,
-				'count'   => (int) $t->count,
-			);
+			foreach ( (array) $terms as $t ) {
+				if ( in_array( (int) $t->term_id, $mapped, true ) ) {
+					continue;
+				}
+				$pending[] = array(
+					'term_id' => (int) $t->term_id,
+					'name'    => (string) $t->name,
+					'slug'    => (string) $t->slug,
+					'count'   => (int) $t->count,
+				);
+			}
+			if ( count( (array) $terms ) < $batch ) {
+				break; // taxonomy exhausted
+			}
+			if ( $limit > 0 && count( $pending ) >= $offset + $limit ) {
+				break; // the requested page window is complete
+			}
+			$fetch_offset += $batch;
 		}
-		return $out;
+
+		$total = count( $pending );
+		$rows  = ( $limit > 0 ) ? array_slice( $pending, $offset, $limit ) : array();
+		return array(
+			'total' => $total,
+			'rows'  => $rows,
+		);
 	}
 
 	/**

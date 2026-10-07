@@ -207,7 +207,7 @@ class Security_Command extends \WP_CLI_Command {
 		\WP_CLI\Utils\format_items(
 			$assoc_args['format'] ?? 'table',
 			$rows,
-			array( 'device_id', 'label', 'created_at', 'expires_at', 'revoked_at', 'active' )
+			array( 'device_id', 'label', 'created_at', 'expires_at', 'revoked_at', 'active', 'rotation_overlap_until' )
 		);
 	}
 }

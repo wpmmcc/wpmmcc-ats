@@ -2,7 +2,7 @@
 /**
  * PropertyHive field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/propertyhive.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/propertyhive.json
  * (fields_source: manual-definition, fields_verified: 2026-01-27).
  *
  * PropertyHive is a UK-focused real estate plugin. It stores property

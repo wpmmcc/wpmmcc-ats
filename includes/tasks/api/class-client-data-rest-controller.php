@@ -24,6 +24,7 @@ use WPTSALL\Models\Services\Post_Mapping_Service;
 require_once __DIR__ . '/trait-client-data-rest-controller-discovery.php';
 require_once __DIR__ . '/trait-client-data-rest-controller-content.php';
 require_once __DIR__ . '/trait-client-data-rest-controller-claim.php';
+require_once __DIR__ . '/trait-client-data-rest-controller-callbacks.php';
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -35,6 +36,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Client data REST controller.
  */
 class Client_Data_REST_Controller {
+	private $media_recovery_context = null;
+	use Client_Data_REST_Controller_Callbacks_Trait;
 	use Client_Data_REST_Controller_Discovery_Trait {
 		validate_token as public;
 		get_site_relations as private discovery_get_site_relations;
@@ -50,6 +53,24 @@ class Client_Data_REST_Controller {
 	use Client_Data_REST_Controller_Claim_Trait {
 		claim_site_string_entries as private trait_claim_site_string_entries;
 	}
+
+	/**
+	 * translation_results.status values a replayed callback may answer with 200
+	 * and use to close the outbox row (D3 transition table):
+	 *  - synced / completed: every field was written;
+	 *  - partial: written, with the media remainder parked in the operator's
+	 *    manual queue (nothing lost - Sync_Executor fails the result instead when
+	 *    even the queue insert failed);
+	 *  - cancelled: delivery skipped on purpose (origin backflow guard).
+	 * Everything else (failed, pending, superseded) is not a success.
+	 */
+	const ACCEPTED_RESULT_STATUSES = array( 'synced', 'completed', 'partial', 'cancelled' );
+
+	/**
+	 * A stale pending result is retryable only with explicit prepared-stage
+	 * evidence. Age alone cannot prove that target effects never happened.
+	 */
+	const PENDING_RESULT_STALE_SECONDS = 3600;
 
 	/**
 	 * Namespace.
@@ -103,6 +124,50 @@ class Client_Data_REST_Controller {
 				'permission_callback' => array( $this, 'check_client_permission' ),
 			)
 		);
+
+		// Chunked media upload protocol (Client non_text.rs):
+		// POST init | POST chunk | GET status | POST complete
+		register_rest_route(
+			$this->namespace,
+			'/' . $base . '/media-upload/init',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'media_upload_init' ),
+				'permission_callback' => array( $this, 'check_client_permission' ),
+			)
+		);
+		register_rest_route(
+			$this->namespace,
+			'/' . $base . '/media-upload/chunk',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'media_upload_chunk' ),
+				'permission_callback' => array( $this, 'check_client_permission' ),
+			)
+		);
+		register_rest_route(
+			$this->namespace,
+			'/' . $base . '/media-upload/status',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'media_upload_status' ),
+				'permission_callback' => array( $this, 'check_client_permission' ),
+			)
+		);
+		register_rest_route(
+			$this->namespace,
+			'/' . $base . '/media-upload/complete',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'media_upload_complete' ),
+				'permission_callback' => array( $this, 'check_client_permission' ),
+			)
+		);
+		register_rest_route( $this->namespace, '/' . $base . '/media-upload/reconcile', array(
+			'methods' => \WP_REST_Server::CREATABLE,
+			'callback' => array( $this, 'media_upload_reconcile' ),
+			'permission_callback' => array( $this, 'check_client_permission' ),
+		) );
 
 		// GET /{secret}/client/validate-token — connectivity check and site metadata.
 		register_rest_route(
@@ -239,6 +304,33 @@ class Client_Data_REST_Controller {
 				'permission_callback' => array( $this, 'check_client_permission' ),
 			)
 		);
+
+		// 批 Q (事件驱动): GET /{secret}/client/events/wait — long-poll gate.
+		// Holds the request up to wait_seconds (server-side 0.5s peek ticks)
+		// and returns as soon as an outbox row is claimable, so the client
+		// can wake its worker immediately instead of waiting for the next
+		// poll tick. The peek never claims: leasing/backoff semantics stay
+		// in content-changes (claim_outbox).
+		register_rest_route(
+			$this->namespace,
+			'/' . $base . '/events/wait',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'wait_for_events' ),
+				'permission_callback' => array( $this, 'check_client_permission' ),
+				'args'                => array(
+					'wait_seconds' => array(
+						'type'              => 'integer',
+						'default'           => 25,
+						'sanitize_callback' => 'absint',
+					),
+					'relation_id'  => array(
+						'type'              => 'integer',
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 		} // end foreach secrets
 	}
 
@@ -259,12 +351,14 @@ class Client_Data_REST_Controller {
 		if ( function_exists( 'wptsall_check_client_protocol_version' ) ) {
 			$proto = wptsall_check_client_protocol_version( $request );
 			if ( is_wp_error( $proto ) ) {
+				$this->log_client_permission_denied( $request, 'protocol_version_rejected', (string) $proto->get_error_code() );
 				return $proto;
 			}
 		}
 		if ( function_exists( 'wptsall_check_client_contract_capabilities' ) ) {
 			$caps = wptsall_check_client_contract_capabilities( $request );
 			if ( is_wp_error( $caps ) ) {
+				$this->log_client_permission_denied( $request, 'contract_capabilities_rejected', (string) $caps->get_error_code() );
 				return $caps;
 			}
 		}
@@ -272,6 +366,7 @@ class Client_Data_REST_Controller {
 		$token = (string) $request->get_header( 'X-WPTSALL-Client-Token' );
 		$device = sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) );
 		if ( empty( $token ) || ! function_exists( 'wptsall_client_token_service' ) ) {
+			$this->log_client_permission_denied( $request, 'missing_client_token', '' );
 			return new \WP_Error(
 				'client_unauthorized',
 				__( 'Client authentication failed', 'wpmmcc-ats' ),
@@ -279,6 +374,7 @@ class Client_Data_REST_Controller {
 			);
 		}
 		if ( '' === $device ) {
+			$this->log_client_permission_denied( $request, 'missing_device_id', '' );
 			return new \WP_Error(
 				'client_device_required',
 				__( 'Protocol v2 requests must declare a device id.', 'wpmmcc-ats' ),
@@ -287,6 +383,7 @@ class Client_Data_REST_Controller {
 		}
 		$ok = wptsall_client_token_service()->verify_client_token( $token, $device, true );
 		if ( ! $ok ) {
+			$this->log_client_permission_denied( $request, 'token_verification_failed', '' );
 			return new \WP_Error(
 				'client_unauthorized',
 				__( 'Client authentication failed', 'wpmmcc-ats' ),
@@ -295,6 +392,37 @@ class Client_Data_REST_Controller {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Warn-log a client REST permission denial (G-09).
+	 *
+	 * Security-relevant client-auth failures used to return silently. Log
+	 * the route, device id and failure reason — never token material (the
+	 * logger's central redaction is a second line of defense only).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @param string          $reason  Stable failure reason slug.
+	 * @param string          $detail  Optional error-code detail.
+	 * @return void
+	 */
+	private function log_client_permission_denied( $request, $reason, $detail = '' ) {
+		if ( ! function_exists( 'wptsall_log_warning' ) ) {
+			return;
+		}
+		$context = array(
+			'route'     => $request instanceof \WP_REST_Request ? (string) $request->get_route() : '',
+			'device_id' => $request instanceof \WP_REST_Request ? sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) ) : '',
+			'reason'    => sanitize_key( (string) $reason ),
+		);
+		if ( '' !== (string) $detail ) {
+			$context['detail'] = (string) $detail;
+		}
+		wptsall_log_warning(
+			'client-api',
+			'Client REST permission denied',
+			$context
+		);
 	}
 
 	/**
@@ -801,21 +929,41 @@ class Client_Data_REST_Controller {
 			$source_id   = absint( $row['source_id'] ?? 0 );
 			$payload     = json_decode( (string) ( $row['payload'] ?? '' ), true );
 			if ( ! is_array( $payload ) ) { $payload = array(); }
+			// Errors that no retry can fix end the row at once (abandon_outbox);
+			// only conditions that can clear by themselves (a mapping lease held
+			// by another device, a database hiccup) go back to the queue, and
+			// those are bounded by the attempt cap (ATS-01).
 			if ( $outbox_id <= 0 || $source_id <= 0 || ! in_array( $source_type, array( 'post', 'term', 'media' ), true ) ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, 'unsupported_outbox_source', $outbox_owner_hash );
+				\WPTSALL\Hooks\Content_Change_Dispatcher::abandon_outbox( $outbox_id, 'unsupported_outbox_source', $outbox_owner_hash );
 				continue;
 			}
 			$relation = $relation_id > 0 && class_exists( '\\WPTSALL\\Sites\\Services\\Site_Relation_Service' )
 				? \WPTSALL\Sites\Services\Site_Relation_Service::get_relation( $relation_id ) : null;
 			if ( ! is_array( $relation ) ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, 'relation_not_found', $outbox_owner_hash );
+				\WPTSALL\Hooks\Content_Change_Dispatcher::abandon_outbox( $outbox_id, 'relation_not_found', $outbox_owner_hash );
 				continue;
 			}
 			$object_type = 'term' === $source_type ? 'taxonomy' : 'post_type';
 			$subtype     = 'term' === $source_type
 				? sanitize_key( (string) ( $payload['taxonomy'] ?? '' ) )
 				: sanitize_key( (string) ( $payload['post_type'] ?? ( 'media' === $source_type ? 'attachment' : '' ) ) );
+			if ( '' === $subtype ) {
+				// Post trash/untrash/delete events carry no post type, so there is
+				// nothing the claim/translate pipeline could ever process.
+				\WPTSALL\Hooks\Content_Change_Dispatcher::abandon_outbox( $outbox_id, 'unsupported_lifecycle_event', $outbox_owner_hash );
+				continue;
+			}
 			$content_claim_owner = $this->get_claim_owner_hash( $request, $relation, $subtype );
+			$unresolved = $this->unresolved_content_callback( $relation_id, $object_type, $source_id );
+			if ( is_wp_error( $unresolved ) ) {
+				if ( 'callback_effects_unresolved' !== $unresolved->get_error_code() ) {
+					return $this->callback_failure( $unresolved->get_error_code() );
+				}
+				if ( ! \WPTSALL\Hooks\Content_Change_Dispatcher::abandon_outbox( $outbox_id, 'callback_effects_unresolved', $outbox_owner_hash ) ) {
+					return $this->callback_failure( 'outbox_review_persistence_failed' );
+				}
+				continue;
+			}
 			if ( ! $this->claim_outbox_source_mapping( $relation, $object_type, $subtype, $source_id, $content_claim_owner ) ) {
 				\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, 'content_claim_unavailable', $outbox_owner_hash );
 				continue;
@@ -823,7 +971,7 @@ class Client_Data_REST_Controller {
 			$complete    = function_exists( 'wptsall_get_complete_object_data' )
 				? wptsall_get_complete_object_data( $object_type, $subtype, $source_id ) : null;
 			if ( ! is_array( $complete ) ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, 'source_object_not_found', $outbox_owner_hash );
+				\WPTSALL\Hooks\Content_Change_Dispatcher::abandon_outbox( $outbox_id, 'source_object_not_found', $outbox_owner_hash );
 				continue;
 			}
 			$complete = $this->attach_current_job_snapshot( $complete, $object_type, $source_id );
@@ -981,6 +1129,52 @@ class Client_Data_REST_Controller {
 	}
 
 	/**
+	 * 批 Q (事件驱动): long-poll gate for outbox claimability.
+	 *
+	 * GET /{secret}/client/events/wait?wait_seconds=25[&relation_id=N]
+	 *
+	 * Ticks a read-only peek (Content_Change_Dispatcher::has_claimable_outbox)
+	 * every 0.5s up to wait_seconds (clamped 1..30 so one PHP worker is held
+	 * only briefly) and returns early with events_ready=true the moment a row
+	 * is claimable. Timeout returns events_ready=false — the client falls
+	 * back to its normal poll cadence. The peek never claims or mutates:
+	 * leasing, dead-lease recovery, and available_at backoff remain solely
+	 * in claim_outbox() via the content-changes route.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function wait_for_events( $request ) {
+		$wait_seconds = max( 1, min( 30, absint( $request->get_param( 'wait_seconds' ) ) ? absint( $request->get_param( 'wait_seconds' ) ) : 25 ) );
+		$relation_id  = absint( $request->get_param( 'relation_id' ) );
+		$empty        = array( 'success' => true, 'data' => array( 'events_ready' => false, 'waited_ms' => 0 ) );
+		if ( ! class_exists( '\WPTSALL\Hooks\Content_Change_Dispatcher' )
+			|| ! function_exists( 'wptsall_table' ) ) {
+			return rest_ensure_response( $empty );
+		}
+		$started = microtime( true );
+		while ( true ) {
+			if ( \WPTSALL\Hooks\Content_Change_Dispatcher::has_claimable_outbox( $relation_id ) ) {
+				return rest_ensure_response(
+					array(
+						'success' => true,
+						'data'    => array(
+							'events_ready' => true,
+							'waited_ms'    => (int) round( ( microtime( true ) - $started ) * 1000 ),
+						),
+					)
+				);
+			}
+			if ( ( microtime( true ) - $started ) >= $wait_seconds ) {
+				break;
+			}
+			usleep( 500000 );
+		}
+		$empty['data']['waited_ms'] = (int) round( ( microtime( true ) - $started ) * 1000 );
+		return rest_ensure_response( $empty );
+	}
+
+	/**
 	 * Acknowledge a terminal no-op or release a leased outbox record for retry.
 	 * Successful translation callbacks acknowledge automatically; this endpoint
 	 * covers valid no-translation outcomes such as attachment lifecycle events.
@@ -1008,10 +1202,8 @@ class Client_Data_REST_Controller {
 		if ( ! is_array( $outbox_row ) ) {
 			return new \WP_REST_Response( array( 'success' => false, 'error' => 'outbox_not_found' ), 404 );
 		}
-		if ( 'completed' === sanitize_key( (string) ( $outbox_row['status'] ?? '' ) ) ) {
-			return new \WP_REST_Response( array( 'success' => true, 'idempotent' => true, 'outbox_id' => $outbox_id, 'outcome' => 'completed' ), 200 );
-		}
-		if ( 'processing' !== sanitize_key( (string) ( $outbox_row['status'] ?? '' ) ) ) {
+		$outbox_status = sanitize_key( (string) ( $outbox_row['status'] ?? '' ) );
+		if ( ! in_array( $outbox_status, array( 'processing', 'completed' ), true ) ) {
 			return new \WP_REST_Response( array( 'success' => false, 'error' => 'outbox_not_claimed', 'message' => 'Outbox row is not currently claimed by a client.' ), 409 );
 		}
 		$payload = json_decode( (string) ( $outbox_row['payload'] ?? '' ), true );
@@ -1024,6 +1216,15 @@ class Client_Data_REST_Controller {
 		if ( '' === $request_device || ! preg_match( '/^[a-f0-9]{64}$/', $claimed_owner ) || ! hash_equals( $claimed_owner, $expected_owner ) ) {
 			return new \WP_REST_Response( array( 'success' => false, 'error' => 'outbox_claim_owner_mismatch', 'message' => 'Only the device that claimed this outbox row may acknowledge it.' ), 403 );
 		}
+		if ( 'completed' === $outbox_status ) {
+			// Also repair an old pre-atomic task projection, but only for its
+			// original owner. A cached terminal status must not skip this step.
+			$ok = \WPTSALL\Hooks\Content_Change_Dispatcher::complete_outbox( $outbox_id, $expected_owner );
+			return new \WP_REST_Response(
+				array( 'success' => $ok, 'idempotent' => $ok, 'outbox_id' => $outbox_id, 'outcome' => 'completed' ),
+				$ok ? 200 : 500
+			);
+		}
 		if ( $ack_relation_id > 0 ) {
 			$ack_relation = Site_Relation_Service::get_relation( $ack_relation_id );
 			if ( ! is_array( $ack_relation ) || 'active' !== sanitize_key( (string) ( $ack_relation['status'] ?? '' ) ) ) {
@@ -1031,7 +1232,12 @@ class Client_Data_REST_Controller {
 			}
 		}
 		if ( 'retry' === $outcome ) {
-			$ok = \WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, sanitize_text_field( (string) ( $body['error'] ?? 'client_retry' ) ), $expected_owner );
+			// The client may hint how long it will back off (P8); the DB then
+			// holds the durable cooldown via available_at so any other worker
+			// instance also waits instead of instantly re-claiming (GAP-02
+			// DB-level backoff, enabled early since the column already exists).
+			$backoff_secs = min( 1800, max( 0, absint( $body['backoff_seconds'] ?? 0 ) ) );
+			$ok           = \WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, sanitize_text_field( (string) ( $body['error'] ?? 'client_retry' ) ), $expected_owner, $backoff_secs );
 		} else {
 			$ok = \WPTSALL\Hooks\Content_Change_Dispatcher::complete_outbox( $outbox_id, $expected_owner );
 		}
@@ -1812,6 +2018,15 @@ class Client_Data_REST_Controller {
 			switch_to_blog( $claim_source_site_id );
 		}
 		try {
+		if ( in_array( $data_type, array( 'post', 'term', 'option' ), true ) ) {
+			$callback_object_type = 'post' === $data_type ? 'post_type' : ( 'term' === $data_type ? 'taxonomy' : 'option' );
+			foreach ( $items as $item ) {
+				$unresolved = $this->unresolved_content_callback( $relation_id, $callback_object_type, absint( $item['object_id'] ?? 0 ) );
+				if ( is_wp_error( $unresolved ) ) {
+					return $this->callback_failure( $unresolved->get_error_code(), (int) ( $unresolved->get_error_data()['status'] ?? 500 ) );
+				}
+			}
+		}
 		if ( 'language_pack' === $data_type ) {
 			return $this->claim_language_pack_entries( $relation, $items, $claim_subtype, $request );
 		}
@@ -2307,6 +2522,10 @@ class Client_Data_REST_Controller {
 	 * @return \WP_REST_Response
 	 */
 	public function media_upload( $request ) {
+		$operation = (string) $request->get_header( 'X-WPTSALL-Operation-ID' );
+		if ( '' !== $operation ) {
+			return $this->media_upload_recoverable( $request, $operation );
+		}
 		// 1. Read headers.
 		$content_type_info = $request->get_content_type();
 		$content_type      = isset( $content_type_info['value'] ) ? (string) $content_type_info['value'] : '';
@@ -2379,13 +2598,6 @@ class Client_Data_REST_Controller {
 				'message' => 'X-WPTSALL-Relation-ID header is required.',
 			), 400 );
 		}
-		if ( $task_id <= 0 ) {
-			return new \WP_REST_Response( array(
-				'success' => false,
-				'error'   => 'missing_task_id',
-				'message' => 'X-WPTSALL-Task-ID header is required.',
-			), 400 );
-		}
 		if ( $source_id <= 0 ) {
 			return new \WP_REST_Response( array(
 				'success' => false,
@@ -2417,29 +2629,44 @@ class Client_Data_REST_Controller {
 				(int) ( $source_check->get_error_data()['status'] ?? 403 )
 			);
 		}
-		global $wpdb;
-		$task_table = wptsall_table( 'tasks' );
-		$task_row = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT id, relation_id, site_id, object_type, subtype, object_id, status FROM %i WHERE id = %d AND (relation_id = %d OR (relation_id = 0 AND site_id = %d)) LIMIT 1',
-				$task_table,
-				$task_id,
-				$relation_id_header,
-				$relation_id_header
-			),
-			ARRAY_A
-		);
-		if ( ! is_array( $task_row ) ) {
-			return new \WP_REST_Response( array( 'success' => false, 'error' => 'task_relation_mismatch', 'message' => 'Task is not owned by the requested relation.' ), 403 );
-		}
-		$task_object_type = sanitize_key( (string) ( $task_row['object_type'] ?? '' ) );
-		$task_subtype     = sanitize_key( (string) ( $task_row['subtype'] ?? '' ) );
-		$task_status      = sanitize_key( (string) ( $task_row['status'] ?? '' ) );
-		if ( (int) ( $task_row['object_id'] ?? 0 ) !== $source_id
-			|| ! in_array( $task_object_type, array( 'media', 'post_type', 'post' ), true )
-			|| ( '' !== $task_subtype && 'attachment' !== $task_subtype )
-			|| ! in_array( $task_status, array( 'pending', 'retry', 'processing', 'active' ), true ) ) {
-			return new \WP_REST_Response( array( 'success' => false, 'error' => 'task_source_mismatch', 'message' => 'Task does not address the requested source attachment or is not claimable.' ), 409 );
+		if ( $task_id <= 0 ) {
+			// Discovery/media_mappings uploads may not carry a WP lifecycle task id.
+			// Relation + source attachment binding above is still enforced.
+			$task_row = null;
+		} else {
+			global $wpdb;
+			$task_table = wptsall_table( 'tasks' );
+			$task_row = $wpdb->get_row(
+				$wpdb->prepare(
+					'SELECT id, relation_id, site_id, object_type, subtype, object_id, status FROM %i WHERE id = %d AND (relation_id = %d OR (relation_id = 0 AND site_id = %d)) LIMIT 1',
+					$task_table,
+					$task_id,
+					$relation_id_header,
+					$relation_id_header
+				),
+				ARRAY_A
+			);
+			if ( ! is_array( $task_row ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'task_relation_mismatch', 'message' => 'Task is not owned by the requested relation.' ), 403 );
+			}
+			$task_object_type = sanitize_key( (string) ( $task_row['object_type'] ?? '' ) );
+			$task_subtype     = sanitize_key( (string) ( $task_row['subtype'] ?? '' ) );
+			$task_status      = sanitize_key( (string) ( $task_row['status'] ?? '' ) );
+			$task_object_id   = (int) ( $task_row['object_id'] ?? 0 );
+			// Direct attachment task: object_id must equal the source attachment.
+			$addresses_source = ( $task_object_id === $source_id )
+				&& in_array( $task_object_type, array( 'media', 'post_type', 'post' ), true )
+				&& ( '' === $task_subtype || 'attachment' === $task_subtype );
+			// Parent post/page task: client uploads referenced media under the same
+			// claim (media_mappings on translation-callback). Allow that path.
+			$addresses_parent = in_array( $task_object_type, array( 'post_type', 'post' ), true )
+				&& 'attachment' !== $task_subtype
+				&& $source_id > 0
+				&& $task_object_id > 0;
+			if ( ( ! $addresses_source && ! $addresses_parent )
+				|| ! in_array( $task_status, array( 'pending', 'retry', 'processing', 'active' ), true ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'task_source_mismatch', 'message' => 'Task does not address the requested source attachment or is not claimable.' ), 409 );
+			}
 		}
 
 		// 7. Get binary body.
@@ -2452,13 +2679,13 @@ class Client_Data_REST_Controller {
 			), 400 );
 		}
 
-		// 8. Max file size check (50MB).
-		$max_size = 50 * 1024 * 1024;
+		// 8. Max file size check (512MB — single path typically ≤50MiB; chunked complete reuses this).
+		$max_size = 512 * 1024 * 1024;
 		if ( strlen( $body ) > $max_size ) {
 			return new \WP_REST_Response( array(
 				'success' => false,
 				'error'   => 'file_too_large',
-				'message' => 'File exceeds maximum allowed size (50MB).',
+				'message' => 'File exceeds maximum allowed size (512MB).',
 			), 400 );
 		}
 
@@ -2521,7 +2748,17 @@ class Client_Data_REST_Controller {
 			require_once ABSPATH . 'wp-admin/includes/media.php';
 		}
 
-		$attachment_id = media_handle_sideload( $file_array, 0 );
+		// Suppress the content-change dispatcher for this product-side write.
+		// The created attachment is a translation TARGET; without suppression
+		// its add_attachment dispatch re-enters the media change pipeline as a
+		// NEW claimable source, so every client round re-translates and
+		// re-uploads the previous round's translation (attachment self-feed
+		// chain: rt-…-zh_CN.png → rt-…-zh_CN-1.png → …-1-1.png).
+		$attachment_id = \WPTSALL\Hooks\Content_Change_Dispatcher::with_internal_write(
+			static function () use ( $file_array ) {
+				return media_handle_sideload( $file_array, 0 );
+			}
+		);
 		if ( is_wp_error( $attachment_id ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			@unlink( $tmp_file );
@@ -2538,6 +2775,13 @@ class Client_Data_REST_Controller {
 		}
 		if ( $task_id > 0 ) {
 			update_post_meta( $attachment_id, '_wptsall_task_id', $task_id );
+		}
+		if ( is_array( $this->media_recovery_context ) ) {
+			$proof = $this->media_recovery_context;
+			if ( ! update_post_meta( $attachment_id, '_wptsall_media_recovery_operation', $proof['operation_id'] )
+				|| ! update_post_meta( $attachment_id, '_wptsall_media_recovery_proof', $proof ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'attachment_proof_failed' ), 500 );
+			}
 		}
 
 		// 13. Write media_mappings so Sync_Executor can resolve URLs later.
@@ -2580,6 +2824,682 @@ class Client_Data_REST_Controller {
 		), 200 );
 	}
 
+	private function media_upload_recoverable( $request, $operation ) {
+		$sha = (string) $request->get_header( 'X-WPTSALL-Content-SHA256' );
+		$owner = $this->media_chunk_owner_hash( $request );
+		if ( '' === $owner || ! preg_match( '/^[a-f0-9]{64}$/D', $sha )
+			|| ! preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $operation ) ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'invalid_media_operation' ), 400 );
+		}
+		$binding = array(
+			'filename' => (string) $request->get_header( 'X-WPTSALL-Filename' ),
+			'total_size' => strlen( $request->get_body() ),
+			'content_type' => (string) ( $request->get_content_type()['value'] ?? '' ),
+			'source_id' => absint( $request->get_header( 'X-WPTSALL-Source-ID' ) ),
+			'task_id' => absint( $request->get_header( 'X-WPTSALL-Task-ID' ) ),
+			'relation_id' => absint( $request->get_header( 'X-WPTSALL-Relation-ID' ) ),
+			'content_sha256' => $sha,
+		);
+		if ( ! hash_equals( $sha, hash( 'sha256', $request->get_body() ) ) ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'media_digest_mismatch' ), 400 );
+		}
+		$meta = $this->media_chunk_load_meta( $operation );
+		if ( ! $meta ) {
+			if ( $this->media_chunk_session_dir( $operation ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'damaged_media_operation' ), 409 );
+			}
+			$this->media_chunk_session_dir( $operation, true );
+		}
+		$lock = $this->media_chunk_lock( $operation );
+		if ( ! $lock ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_busy' ), 409 );
+		}
+		try {
+			$meta = $this->media_chunk_load_meta( $operation );
+			if ( $meta ) {
+				if ( ! $this->media_chunk_owned( $request, $operation, $meta ) || ( $meta['binding'] ?? null ) !== $binding ) {
+					return $this->media_chunk_denied();
+				}
+				if ( 'result_ready' === ( $meta['state'] ?? '' ) ) {
+					return new \WP_REST_Response( $meta['completion_response'], 200 );
+				}
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_completion_unknown' ), 409 );
+			}
+			$meta = array_merge( $binding, array(
+				'upload_id' => $operation, 'operation_id' => $operation,
+				'owner_hash' => $owner, 'state' => 'completion_unknown',
+				'binding' => $binding, 'received' => array(), 'chunk_count' => 0,
+			) );
+			if ( ! $this->media_chunk_save_meta( $operation, $meta ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'session_meta_failed' ), 500 );
+			}
+			$inner = clone $request;
+			$inner->set_header( 'X-WPTSALL-Operation-ID', '' );
+			$this->media_recovery_context = array_merge( $binding, array(
+				'operation_id' => $operation, 'owner_hash' => $owner,
+			) );
+			$response = $this->media_upload( $inner );
+			$result = $response instanceof \WP_REST_Response ? $response->get_data() : null;
+			if ( is_array( $result ) && true === ( $result['success'] ?? false ) && (int) ( $result['attachment_id'] ?? 0 ) > 0 ) {
+				$result = array_merge( $result, $this->media_operation_result_scope( $meta ) );
+				$response->set_data( $result );
+				$meta['state'] = 'result_ready';
+				$meta['completion_response'] = $result;
+				if ( ! $this->media_chunk_save_meta( $operation, $meta ) ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'completion_receipt_failed' ), 500 );
+				}
+			}
+			return $response;
+		} finally {
+			$this->media_recovery_context = null;
+			flock( $lock, LOCK_UN );
+			fclose( $lock );
+		}
+	}
+
+	/**
+	 * Resolve a session directory, creating it only for a new init.
+	 *
+	 * @param string $upload_id Session id.
+	 * @param bool   $create    Whether a new init may create the directory.
+	 * @return string|null Absolute path or null on failure.
+	 */
+	private function media_chunk_session_dir( $upload_id, $create = false ) {
+		if ( ! is_string( $upload_id ) || ! preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $upload_id ) ) {
+			return null;
+		}
+		$uploads = wp_upload_dir();
+		if ( ! empty( $uploads['error'] ) ) {
+			return null;
+		}
+		$base = trailingslashit( $uploads['basedir'] ) . 'wptsall-chunked/' . $upload_id;
+		if ( ! is_dir( $base ) && ( ! $create || ! wp_mkdir_p( $base ) ) ) {
+			return null;
+		}
+		return $base;
+	}
+
+	/**
+	 * Load chunked upload session meta.json.
+	 *
+	 * @param string $upload_id Session id.
+	 * @return array|null
+	 */
+	private function media_chunk_load_meta( $upload_id ) {
+		$dir = $this->media_chunk_session_dir( $upload_id );
+		if ( ! $dir ) {
+			return null;
+		}
+		$meta_path = $dir . '/meta.json';
+		if ( ! is_readable( $meta_path ) ) {
+			return null;
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$raw = file_get_contents( $meta_path );
+		$meta = json_decode( (string) $raw, true );
+		return is_array( $meta ) ? $meta : null;
+	}
+
+	/**
+	 * Persist chunked upload session meta.json.
+	 *
+	 * @param string $upload_id Session id.
+	 * @param array  $meta      Meta payload.
+	 * @return bool
+	 */
+	private function media_chunk_save_meta( $upload_id, array $meta ) {
+		$dir = $this->media_chunk_session_dir( $upload_id );
+		if ( ! $dir ) {
+			return false;
+		}
+		$meta_path = $dir . '/meta.json';
+		$json      = wp_json_encode( $meta );
+		if ( false === $json ) {
+			return false;
+		}
+		$temp = $meta_path . '.' . wp_generate_uuid4() . '.tmp';
+		$fp = @fopen( $temp, 'xb' );
+		if ( ! $fp ) {
+			return false;
+		}
+		if ( ! @chmod( $temp, 0600 ) ) {
+			fclose( $fp );
+			@unlink( $temp );
+			return false;
+		}
+		$offset = 0;
+		while ( $offset < strlen( $json ) ) {
+			$written = fwrite( $fp, substr( $json, $offset ) );
+			if ( false === $written || 0 === $written ) {
+				break;
+			}
+			$offset += $written;
+		}
+		$ok = $offset === strlen( $json ) && fflush( $fp );
+		if ( $ok && function_exists( 'fsync' ) ) {
+			$ok = fsync( $fp );
+		}
+		fclose( $fp );
+		$ok = $ok && @rename( $temp, $meta_path );
+		if ( ! $ok ) {
+			@unlink( $temp );
+		}
+		return $ok;
+	}
+
+	private function media_chunk_owner_hash( $request ) {
+		$device = sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) );
+		return '' === $device ? '' : hash( 'sha256', 'wptsall-chunk-owner-v1|' . get_current_blog_id() . '|' . $device );
+	}
+
+	private function media_chunk_owned( $request, $upload_id, array $meta ) {
+		$owner = $this->media_chunk_owner_hash( $request );
+		return '' !== $owner && ( $meta['upload_id'] ?? '' ) === $upload_id
+			&& is_string( $meta['owner_hash'] ?? null )
+			&& hash_equals( $meta['owner_hash'], $owner );
+	}
+
+	private function media_chunk_denied() {
+		return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_owner_mismatch' ), 403 );
+	}
+
+	private function media_operation_result_scope( array $meta ) {
+		return array(
+			'operation_id' => (string) ( $meta['operation_id'] ?? '' ),
+			'content_sha256' => (string) ( $meta['content_sha256'] ?? '' ),
+			'source_id' => (int) ( $meta['source_id'] ?? 0 ),
+			'task_id' => (int) ( $meta['task_id'] ?? 0 ),
+			'relation_id' => (int) ( $meta['relation_id'] ?? 0 ),
+		);
+	}
+
+	private function media_chunk_lock( $upload_id ) {
+		$dir = $this->media_chunk_session_dir( $upload_id );
+		$lock = $dir ? @fopen( $dir . '/session.lock', 'c' ) : false;
+		if ( ! $lock ) {
+			return false;
+		}
+		if ( ! flock( $lock, LOCK_EX | LOCK_NB ) ) {
+			fclose( $lock );
+			return false;
+		}
+		return $lock;
+	}
+
+	/**
+	 * POST /client/media-upload/init — start a chunked upload session.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function media_upload_init( $request ) {
+		$body = $request->get_json_params();
+		if ( ! is_array( $body ) ) {
+			$body = array();
+		}
+		$filename     = sanitize_file_name( (string) ( $body['filename'] ?? '' ) );
+		$total_size   = absint( $body['total_size'] ?? 0 );
+		$chunk_count  = absint( $body['chunk_count'] ?? 0 );
+		$content_type = sanitize_text_field( (string) ( $body['content_type'] ?? '' ) );
+		$source_id    = absint( $body['source_id'] ?? 0 );
+		$task_id      = absint( $body['task_id'] ?? 0 );
+		$relation_id  = absint( $body['relation_id'] ?? 0 );
+		$operation    = (string) ( $body['operation_id'] ?? '' );
+		$content_sha  = (string) ( $body['content_sha256'] ?? '' );
+
+		if ( '' === $filename || $total_size <= 0 || $chunk_count <= 0 ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'invalid_init',
+				'message' => 'filename, total_size, and chunk_count are required.',
+			), 400 );
+		}
+
+		$max_size = 512 * 1024 * 1024; // 512 MiB hard ceiling for chunked sessions.
+		if ( $total_size > $max_size || $chunk_count > 10000 ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'file_too_large',
+				'message' => 'Chunked upload exceeds allowed size or chunk count.',
+			), 400 );
+		}
+
+		$owner = $this->media_chunk_owner_hash( $request );
+		if ( '' === $owner ) {
+			return $this->media_chunk_denied();
+		}
+		if ( '' !== $operation && ( ! preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $operation ) || ! preg_match( '/^[a-f0-9]{64}$/D', $content_sha ) ) ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'invalid_media_operation' ), 400 );
+		}
+		$upload_id = '' !== $operation ? $operation : wp_generate_uuid4();
+		$existing = $this->media_chunk_load_meta( $upload_id );
+		if ( $existing ) {
+			$checks = array( 'filename' => $filename, 'total_size' => $total_size,
+				'chunk_count' => $chunk_count, 'content_type' => $content_type,
+				'source_id' => $source_id, 'task_id' => $task_id, 'relation_id' => $relation_id,
+				'content_sha256' => $content_sha );
+			if ( ! $this->media_chunk_owned( $request, $upload_id, $existing ) ) { return $this->media_chunk_denied(); }
+			foreach ( $checks as $key => $value ) {
+				if ( ( $existing[ $key ] ?? null ) !== $value ) { return new \WP_REST_Response( array( 'success' => false, 'error' => 'operation_binding_conflict' ), 409 ); }
+			}
+			return new \WP_REST_Response( array( 'success' => true, 'upload_id' => $upload_id ), 200 );
+		}
+		if ( '' !== $operation && $this->media_chunk_session_dir( $upload_id ) ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'damaged_media_operation' ), 409 );
+		}
+		$dir       = $this->media_chunk_session_dir( $upload_id, true );
+		if ( ! $dir ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'session_dir_failed',
+				'message' => 'Failed to create upload session directory.',
+			), 500 );
+		}
+
+		$lock = $this->media_chunk_lock( $upload_id );
+		if ( ! $lock ) { return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_busy' ), 409 ); }
+		try {
+		$existing = $this->media_chunk_load_meta( $upload_id );
+		if ( $existing ) {
+			if ( ! $this->media_chunk_owned( $request, $upload_id, $existing ) ) { return $this->media_chunk_denied(); }
+			foreach ( array( 'filename' => $filename, 'total_size' => $total_size, 'chunk_count' => $chunk_count,
+				'content_type' => $content_type, 'source_id' => $source_id, 'task_id' => $task_id,
+				'relation_id' => $relation_id, 'content_sha256' => $content_sha ) as $key => $value ) {
+				if ( ( $existing[ $key ] ?? null ) !== $value ) { return new \WP_REST_Response( array( 'success' => false, 'error' => 'operation_binding_conflict' ), 409 ); }
+			}
+			return new \WP_REST_Response( array( 'success' => true, 'upload_id' => $upload_id ), 200 );
+		}
+		$meta = array(
+			'upload_id'    => $upload_id,
+			'owner_hash'   => $owner,
+			'state'        => 'uploading',
+			'operation_id' => $operation,
+			'content_sha256' => $content_sha,
+			'filename'     => $filename,
+			'total_size'   => $total_size,
+			'chunk_count'  => $chunk_count,
+			'content_type' => $content_type,
+			'source_id'    => $source_id,
+			'task_id'      => $task_id,
+			'relation_id'  => $relation_id,
+			'received'     => array(),
+			'created_at'   => time(),
+		);
+		if ( ! $this->media_chunk_save_meta( $upload_id, $meta ) ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'session_meta_failed',
+				'message' => 'Failed to persist upload session.',
+			), 500 );
+		}
+
+		return new \WP_REST_Response( array(
+			'success' => true,
+			'data'    => array(
+				'upload_id'  => $upload_id,
+				'chunk_size' => 5 * 1024 * 1024,
+			),
+			'upload_id'  => $upload_id,
+			'chunk_size' => 5 * 1024 * 1024,
+		), 200 );
+		} finally { flock( $lock, LOCK_UN ); fclose( $lock ); }
+	}
+
+	/**
+	 * POST /client/media-upload/chunk — accept one binary chunk.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function media_upload_chunk( $request ) {
+		$upload_id   = (string) $request->get_header( 'X-WPTSALL-Upload-ID' );
+		$index_raw   = (string) $request->get_header( 'X-WPTSALL-Chunk-Index' );
+		if ( ! preg_match( '/^(0|[1-9][0-9]*)$/D', $index_raw ) ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'invalid_chunk_index' ), 400 );
+		}
+		$chunk_index = (int) $index_raw;
+		$meta        = $this->media_chunk_load_meta( $upload_id );
+		if ( ! $meta ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'unknown_upload_id',
+				'message' => 'Upload session not found.',
+			), 404 );
+		}
+		if ( ! $this->media_chunk_owned( $request, $upload_id, $meta ) ) {
+			return $this->media_chunk_denied();
+		}
+		$lock = $this->media_chunk_lock( $upload_id );
+		if ( ! $lock ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_busy' ), 409 );
+		}
+		try {
+			$meta = $this->media_chunk_load_meta( $upload_id );
+			if ( ! $meta || ! $this->media_chunk_owned( $request, $upload_id, $meta ) ) {
+				return $this->media_chunk_denied();
+			}
+			if ( 'uploading' !== ( $meta['state'] ?? '' ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_not_mutable' ), 409 );
+			}
+			$chunk_count = absint( $meta['chunk_count'] ?? 0 );
+			if ( $chunk_index >= $chunk_count ) {
+				return new \WP_REST_Response( array(
+					'success' => false,
+					'error'   => 'chunk_index_oob',
+					'message' => 'Chunk index out of range.',
+				), 400 );
+			}
+
+			$body = $request->get_body();
+			if ( '' === $body || null === $body ) {
+				return new \WP_REST_Response( array(
+					'success' => false,
+					'error'   => 'empty_chunk',
+					'message' => 'Chunk body is empty.',
+				), 400 );
+			}
+
+			$dir = $this->media_chunk_session_dir( $upload_id );
+			if ( ! $dir ) {
+				return new \WP_REST_Response( array(
+					'success' => false,
+					'error'   => 'session_dir_failed',
+					'message' => 'Upload session directory missing.',
+				), 500 );
+			}
+			$chunk_path = $dir . '/chunk-' . $chunk_index . '.bin';
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			$written = file_put_contents( $chunk_path, $body );
+			if ( false === $written || $written !== strlen( $body ) ) {
+				return new \WP_REST_Response( array(
+					'success' => false,
+					'error'   => 'chunk_write_failed',
+					'message' => 'Failed to write chunk.',
+				), 500 );
+			}
+
+			$received = array_map( 'absint', (array) ( $meta['received'] ?? array() ) );
+			if ( ! in_array( $chunk_index, $received, true ) ) {
+				$received[] = $chunk_index;
+				sort( $received );
+				$meta['received'] = $received;
+				if ( ! $this->media_chunk_save_meta( $upload_id, $meta ) ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'session_meta_failed' ), 500 );
+				}
+			}
+
+			return new \WP_REST_Response( array(
+				'success'     => true,
+				'chunk_index' => $chunk_index,
+				'received'    => count( $received ),
+			), 200 );
+		} finally {
+			flock( $lock, LOCK_UN );
+			fclose( $lock );
+		}
+	}
+
+	/**
+	 * GET /client/media-upload/status — report received / missing chunks.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function media_upload_status( $request ) {
+		$upload_id = (string) ( $request->get_param( 'upload_id' ) ?: $request->get_param( 'operation_id' ) );
+		$meta      = $this->media_chunk_load_meta( $upload_id );
+		if ( ! $meta ) {
+			if ( $request->get_param( 'operation_id' ) && ! $this->media_chunk_session_dir( $upload_id )
+				&& preg_match( '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/D', $upload_id ) ) {
+				global $wpdb;
+				$existing = $wpdb->get_var( $wpdb->prepare(
+					'SELECT pm.post_id FROM %i AS pm INNER JOIN %i AS p ON p.ID=pm.post_id
+					WHERE pm.meta_key=%s AND pm.meta_value=%s AND p.post_type=%s LIMIT 1',
+					$wpdb->postmeta, $wpdb->posts, '_wptsall_media_recovery_operation', $upload_id, 'attachment'
+				) );
+				if ( $existing || ! empty( $wpdb->last_error ) ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'operation_evidence_requires_review' ), 409 );
+				}
+				return new \WP_REST_Response( array( 'success' => true, 'data' => array(
+					'state' => 'not_started', 'operation_id' => $upload_id,
+				) ), 200 );
+			}
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'unknown_upload_id',
+				'message' => 'Upload session not found.',
+			), 404 );
+		}
+		if ( ! $this->media_chunk_owned( $request, $upload_id, $meta ) ) {
+			return $this->media_chunk_denied();
+		}
+		$chunk_count = absint( $meta['chunk_count'] ?? 0 );
+		$received    = array_map( 'absint', (array) ( $meta['received'] ?? array() ) );
+		$missing     = array();
+		for ( $i = 0; $i < $chunk_count; $i++ ) {
+			if ( ! in_array( $i, $received, true ) ) {
+				$missing[] = $i;
+			}
+		}
+		$data = array(
+			'upload_id'       => $upload_id,
+			'operation_id'    => (string) ( $meta['operation_id'] ?? '' ),
+			'content_sha256'  => (string) ( $meta['content_sha256'] ?? '' ),
+			'source_id'       => (int) ( $meta['source_id'] ?? 0 ),
+			'task_id'         => (int) ( $meta['task_id'] ?? 0 ),
+			'relation_id'     => (int) ( $meta['relation_id'] ?? 0 ),
+			'state'           => (string) ( $meta['state'] ?? 'completion_unknown' ),
+			'attachment_id'   => (int) ( $meta['completion_response']['attachment_id'] ?? 0 ),
+			'received_chunks' => $received,
+			'total_chunks'    => $chunk_count,
+			'missing_chunks'  => $missing,
+		);
+		return new \WP_REST_Response( array(
+			'success'         => true,
+			'data'            => $data,
+			'received_chunks' => $received,
+			'total_chunks'    => $chunk_count,
+			'missing_chunks'  => $missing,
+		), 200 );
+	}
+
+	/**
+	 * POST /client/media-upload/complete — assemble chunks and create attachment.
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return \WP_REST_Response
+	 */
+	public function media_upload_complete( $request ) {
+		$body = $request->get_json_params();
+		if ( ! is_array( $body ) ) {
+			$body = array();
+		}
+		$upload_id = (string) ( $body['upload_id'] ?? '' );
+		$meta      = $this->media_chunk_load_meta( $upload_id );
+		if ( ! $meta ) {
+			return new \WP_REST_Response( array(
+				'success' => false,
+				'error'   => 'unknown_upload_id',
+				'message' => 'Upload session not found.',
+			), 404 );
+		}
+
+		if ( ! $this->media_chunk_owned( $request, $upload_id, $meta ) ) {
+			return $this->media_chunk_denied();
+		}
+		$lock = $this->media_chunk_lock( $upload_id );
+		if ( ! $lock ) {
+			return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_busy' ), 409 );
+		}
+		try {
+			$meta = $this->media_chunk_load_meta( $upload_id );
+			if ( ! $meta || ! $this->media_chunk_owned( $request, $upload_id, $meta ) ) {
+				return $this->media_chunk_denied();
+			}
+			if ( 'result_ready' === ( $meta['state'] ?? '' ) && is_array( $meta['completion_response'] ?? null )
+				&& true === ( $meta['completion_response']['success'] ?? false )
+				&& (int) ( $meta['completion_response']['attachment_id'] ?? 0 ) > 0 ) {
+				return new \WP_REST_Response( $meta['completion_response'], 200 );
+			}
+			if ( 'uploading' !== ( $meta['state'] ?? '' ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_completion_unknown' ), 409 );
+			}
+			$chunk_count = absint( $meta['chunk_count'] ?? 0 );
+			$received    = array_map( 'absint', (array) ( $meta['received'] ?? array() ) );
+			$missing     = array();
+			for ( $i = 0; $i < $chunk_count; $i++ ) {
+				if ( ! in_array( $i, $received, true ) ) {
+					$missing[] = $i;
+				}
+			}
+			if ( ! empty( $missing ) ) {
+				return new \WP_REST_Response( array(
+					'success'        => false,
+					'error'          => 'chunks_incomplete',
+					'message'        => 'Not all chunks have been received.',
+					'missing_chunks' => $missing,
+				), 409 );
+			}
+
+			$dir = $this->media_chunk_session_dir( $upload_id );
+			if ( ! $dir ) {
+				return new \WP_REST_Response( array(
+					'success' => false,
+					'error'   => 'session_dir_failed',
+					'message' => 'Upload session directory missing.',
+				), 500 );
+			}
+
+			$assembled = '';
+			for ( $i = 0; $i < $chunk_count; $i++ ) {
+				$chunk_path = $dir . '/chunk-' . $i . '.bin';
+				if ( ! is_readable( $chunk_path ) ) {
+					return new \WP_REST_Response( array(
+						'success' => false,
+						'error'   => 'chunk_missing_on_disk',
+						'message' => 'Chunk file missing on disk: ' . $i,
+					), 500 );
+				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+				$assembled .= (string) file_get_contents( $chunk_path );
+			}
+
+			$expected = absint( $meta['total_size'] ?? 0 );
+			if ( $expected > 0 && strlen( $assembled ) !== $expected ) {
+				return new \WP_REST_Response( array(
+					'success'  => false,
+					'error'    => 'size_mismatch',
+					'message'  => 'Assembled size does not match total_size.',
+					'expected' => $expected,
+					'actual'   => strlen( $assembled ),
+				), 400 );
+			}
+			if ( ! empty( $meta['content_sha256'] ) && ! hash_equals( $meta['content_sha256'], hash( 'sha256', $assembled ) ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'media_digest_mismatch' ), 400 );
+			}
+
+			$inner = new \WP_REST_Request( 'POST', $request->get_route() );
+			$inner->set_header( 'Content-Type', (string) ( $meta['content_type'] ?? 'application/octet-stream' ) );
+			$inner->set_header( 'X-WPTSALL-Filename', (string) ( $meta['filename'] ?? 'upload.bin' ) );
+			$inner->set_header( 'X-WPTSALL-Task-ID', (string) absint( $meta['task_id'] ?? 0 ) );
+			$inner->set_header( 'X-WPTSALL-Source-ID', (string) absint( $meta['source_id'] ?? 0 ) );
+			$inner->set_header( 'X-WPTSALL-Relation-ID', (string) absint( $meta['relation_id'] ?? 0 ) );
+			$inner->set_body( $assembled );
+
+			$meta['state'] = 'completion_unknown';
+			if ( ! $this->media_chunk_save_meta( $upload_id, $meta ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'session_meta_failed' ), 500 );
+			}
+			if ( ! empty( $meta['operation_id'] ) ) {
+				$this->media_recovery_context = $meta;
+			}
+			$response = $this->media_upload( $inner );
+			if ( $response instanceof \WP_REST_Response && 200 === (int) $response->get_status() ) {
+				$result = $response->get_data();
+				if ( ! is_array( $result ) || true !== ( $result['success'] ?? false ) || (int) ( $result['attachment_id'] ?? 0 ) <= 0 ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'invalid_completion_result' ), 500 );
+				}
+				$meta['state'] = 'result_ready';
+				$result = array_merge( $result, $this->media_operation_result_scope( $meta ) );
+				$response->set_data( $result );
+				$meta['completion_response'] = $result;
+				if ( ! $this->media_chunk_save_meta( $upload_id, $meta ) ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'completion_receipt_failed' ), 500 );
+				}
+			}
+			return $response;
+		} finally {
+			$this->media_recovery_context = null;
+			flock( $lock, LOCK_UN );
+			fclose( $lock );
+		}
+	}
+
+	public function media_upload_reconcile( $request ) {
+		$body = $request->get_json_params();
+		$id = is_array( $body ) ? (string) ( $body['operation_id'] ?? '' ) : '';
+		$meta = $this->media_chunk_load_meta( $id );
+		if ( ! $meta || ! $this->media_chunk_owned( $request, $id, $meta ) ) {
+			return $this->media_chunk_denied();
+		}
+		$lock = $this->media_chunk_lock( $id );
+		if ( ! $lock ) { return new \WP_REST_Response( array( 'success' => false, 'error' => 'upload_busy' ), 409 ); }
+		try {
+			$meta = $this->media_chunk_load_meta( $id );
+			if ( ! $meta || ! $this->media_chunk_owned( $request, $id, $meta ) ) { return $this->media_chunk_denied(); }
+			if ( 'result_ready' === ( $meta['state'] ?? '' ) ) {
+				return new \WP_REST_Response( array( 'success' => true, 'attachment_id' => $meta['completion_response']['attachment_id'] ), 200 );
+			}
+			if ( 'completion_unknown' !== ( $meta['state'] ?? '' ) || empty( $meta['content_sha256'] ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'not_reconcilable' ), 409 );
+			}
+			$candidate = (int) ( $body['attachment_id'] ?? 0 );
+			$manual = $candidate > 0;
+			if ( ! $manual ) {
+				$ids = get_posts( array( 'post_type' => 'attachment', 'post_status' => 'any', 'fields' => 'ids',
+					'posts_per_page' => 2, 'meta_key' => '_wptsall_media_recovery_operation', 'meta_value' => $id ) );
+				if ( 1 !== count( $ids ) ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'attachment_review_required' ), 409 );
+				}
+				$candidate = (int) $ids[0];
+			}
+			$file = get_attached_file( $candidate );
+			$proof = get_post_meta( $candidate, '_wptsall_media_recovery_proof', true );
+			$proof_matches = is_array( $proof )
+				&& ( $proof['owner_hash'] ?? '' ) === $meta['owner_hash']
+				&& ( $proof['operation_id'] ?? '' ) === $id
+				&& (int) ( $proof['source_id'] ?? 0 ) === (int) $meta['source_id']
+				&& (int) ( $proof['relation_id'] ?? 0 ) === (int) $meta['relation_id']
+				&& (int) ( $proof['task_id'] ?? 0 ) === (int) $meta['task_id'];
+			if ( 'attachment' !== get_post_type( $candidate ) || ! $file || ! is_readable( $file )
+				|| ! hash_equals( $meta['content_sha256'], (string) hash_file( 'sha256', $file ) )
+				|| (int) get_post_meta( $candidate, '_wptsall_source_attachment_id', true ) !== (int) $meta['source_id']
+				|| ( ! $proof_matches && ! $manual ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'attachment_proof_mismatch' ), 409 );
+			}
+			if ( $manual && ! $proof_matches ) {
+				global $wpdb;
+				$table = wptsall_table( 'media_mappings' );
+				$matched = $wpdb->get_var( $wpdb->prepare(
+					'SELECT id FROM %i WHERE relation_id=%d AND source_media_id=%d AND target_media_id=%d LIMIT 1',
+					$table, (int) $meta['relation_id'], (int) $meta['source_id'], $candidate ) );
+				if ( ! $matched || (int) get_post_meta( $candidate, '_wptsall_task_id', true ) !== (int) $meta['task_id'] ) {
+					return new \WP_REST_Response( array( 'success' => false, 'error' => 'attachment_scope_mismatch' ), 409 );
+				}
+			}
+			$meta['state'] = 'result_ready';
+			$meta['completion_response'] = array_merge(
+				array( 'success' => true, 'attachment_id' => $candidate,
+					'url' => wp_get_attachment_url( $candidate ), 'attachment_url' => wp_get_attachment_url( $candidate ) ),
+				$this->media_operation_result_scope( $meta )
+			);
+			if ( ! $this->media_chunk_save_meta( $id, $meta ) ) {
+				return new \WP_REST_Response( array( 'success' => false, 'error' => 'completion_receipt_failed' ), 500 );
+			}
+			return new \WP_REST_Response( $meta['completion_response'], 200 );
+		} finally { flock( $lock, LOCK_UN ); fclose( $lock ); }
+	}
+
 	/**
 	 * POST /client/translation-callback
 	 *
@@ -2604,40 +3524,7 @@ class Client_Data_REST_Controller {
 			? \WPTSALL\Core\Job_Snapshot::request_body_hash( $body )
 			: hash( 'sha256', (string) wp_json_encode( $body ) );
 
-		// Idempotency-Key header (client-wpplugin sends this for safe retries).
-		// If present and previously processed, return the cached response without
-		// re-running business logic. This is in addition to the per-task
-		// client_task_id dedup below.
 		$idempotency_key = (string) $request->get_header( 'Idempotency-Key' );
-		if ( '' !== $idempotency_key && function_exists( 'wptsall_idempotency_get' ) ) {
-			$cached = wptsall_idempotency_get( $idempotency_key, $request_hash );
-			if ( null !== $cached ) {
-				if ( ! empty( $cached['conflict'] ) ) {
-					wptsall_log_warning(
-						'client-api',
-						'Translation callback Idempotency-Key reused with different body',
-						array( 'idempotency_key' => substr( $idempotency_key, 0, 16 ) . '...' )
-					);
-					return new \WP_REST_Response(
-						array(
-							'success' => false,
-							'error'   => 'idempotency_conflict',
-							'message' => 'Same Idempotency-Key with different body.',
-						),
-						409
-					);
-				}
-				wptsall_log_info(
-					'client-api',
-					'Translation callback idempotent replay',
-					array(
-						'idempotency_key' => substr( $idempotency_key, 0, 16 ) . '...',
-						'cached_status'   => $cached['status'],
-					)
-				);
-				return new \WP_REST_Response( $cached['body'], $cached['status'] );
-			}
-		}
 
 		$business_line  = sanitize_key( $body['business_line'] ?? '' );
 		$client_task_id = sanitize_text_field( $body['client_task_id'] ?? '' );
@@ -2665,6 +3552,32 @@ class Client_Data_REST_Controller {
 			);
 		}
 
+		// opus5 A-04 (decision D-3i): the content-callback payload carries a
+		// numeric schema_version (client TASK_CALLBACK_SCHEMA_VERSION=2,
+		// paired with the versions.json callback axis payload_schema). Unknown
+		// versions fail closed here instead of being written back with
+		// undefined semantics. Absent stays accepted for back-compat with
+		// older fixtures; the Rust client always serializes the field.
+		if ( 'post_content' === $business_line ) {
+			$payload_schema_version = $body['schema_version'] ?? null;
+			if ( null !== $payload_schema_version
+				&& function_exists( 'wptsall_supported_callback_payload_schema_version' )
+				&& (int) $payload_schema_version !== wptsall_supported_callback_payload_schema_version() ) {
+				return new \WP_REST_Response(
+					array(
+						'success' => false,
+						'error'   => 'unsupported_callback_schema_version',
+						'message' => sprintf(
+							'Callback payload schema_version %1$s is not supported (need %2$s).',
+							(string) $payload_schema_version,
+							(string) wptsall_supported_callback_payload_schema_version()
+						),
+					),
+					400
+				);
+			}
+		}
+
 		global $wpdb;
 		$request_device = sanitize_key( (string) $request->get_header( 'X-WPTSALL-Device-Id' ) );
 		$callback_outbox_owner_hash = '' !== $request_device && function_exists( 'wptsall_client_claim_owner_hash' )
@@ -2678,10 +3591,13 @@ class Client_Data_REST_Controller {
 			$callback_parts = explode( '-', $client_task_id );
 			$callback_outbox_id = absint( $callback_parts[1] ?? 0 );
 		}
+		// True while the verified owner still holds the lease on the callback's
+		// outbox row (a failed callback releases it again).
+		$callback_lease_held = false;
 		if ( $callback_outbox_id > 0 && class_exists( '\\WPTSALL\\Hooks\\Content_Change_Dispatcher' ) ) {
 			$callback_outbox = $wpdb->get_row(
 				$wpdb->prepare(
-					'SELECT relation_id, status, payload FROM %i WHERE id = %d LIMIT 1',
+					'SELECT relation_id, status, payload, source_type, source_id, source_site_id FROM %i WHERE id = %d LIMIT 1',
 					wptsall_table( 'content_change_outbox' ),
 					$callback_outbox_id
 				),
@@ -2699,6 +3615,22 @@ class Client_Data_REST_Controller {
 			if ( '' === $request_device || ! preg_match( '/^[a-f0-9]{64}$/', $callback_owner ) || ! hash_equals( $callback_owner, $expected_owner ) ) {
 				return new \WP_REST_Response( array( 'success' => false, 'error' => 'outbox_claim_owner_mismatch', 'message' => 'Only the device that claimed this outbox row may submit its callback.' ), 403 );
 			}
+			$source_type = in_array( (string) ( $body['object_type'] ?? '' ), array( 'taxonomy', 'term' ), true ) ? 'term' : 'post';
+			if ( (int) $callback_outbox['source_id'] !== absint( $body['object_id'] ?? 0 )
+				|| $callback_outbox['source_type'] !== $source_type
+				|| (int) $callback_outbox['source_site_id'] !== (int) get_current_blog_id() ) {
+				return $this->callback_failure( 'outbox_source_mismatch', 409 );
+			}
+			$callback_lease_held = 'processing' === sanitize_key( (string) ( $callback_outbox['status'] ?? '' ) );
+		}
+
+		// A transient only detects header reuse. It cannot bypass device/outbox
+		// authorization, prove delivery, or skip unfinished durable transitions.
+		if ( '' !== $idempotency_key && function_exists( 'wptsall_idempotency_get' ) ) {
+			$cached = wptsall_idempotency_get( $idempotency_key, $request_hash );
+			if ( is_array( $cached ) && ! empty( $cached['conflict'] ) ) {
+				return $this->callback_failure( 'idempotency_conflict', 409 );
+			}
 		}
 
 		// Idempotency check with request-hash conflict (ISS S3).
@@ -2707,16 +3639,42 @@ class Client_Data_REST_Controller {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$existing = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT id, status, request_hash FROM %i WHERE client_task_id = %s',
+				'SELECT * FROM %i WHERE client_task_id = %s',
 				$results_table,
 				$client_task_id
 			),
 			ARRAY_A
 		);
+		if ( '' !== $wpdb->last_error ) {
+			return $this->callback_failure( 'callback_receipt_lookup_failed' );
+		}
+
+		// A retained row can only be superseded before the checked target-effect
+		// boundary. Legacy pending/failed rows have unknown effects, not proof of
+		// non-delivery; keep their original identity for explicit review.
+		if ( $existing ) {
+			$existing_status = sanitize_key( (string) ( $existing['status'] ?? '' ) );
+			$stale_pending   = 'pending' === $existing_status && $this->translation_result_is_stale( $existing );
+			$retry_of_failed = 'failed' === $existing_status && $callback_lease_held;
+			$existing_meta = json_decode( (string) ( $existing['translated_meta'] ?? '' ), true );
+			$prepared = is_array( $existing_meta ) ? ( $existing_meta['_wptsall_callback_receipt'] ?? null ) : null;
+			$safe_to_retry = is_array( $prepared ) && 1 === ( $prepared['version'] ?? null )
+				&& 'prepared' === ( $prepared['stage'] ?? '' )
+				&& isset( $prepared['device_hash'] )
+				&& hash_equals( (string) $prepared['device_hash'], $this->callback_device_hash( $request ) )
+				&& '' !== (string) ( $existing['request_hash'] ?? '' )
+				&& hash_equals( (string) $existing['request_hash'], $request_hash );
+			if ( $safe_to_retry && ( $stale_pending || $retry_of_failed ) && $this->supersede_translation_result( $existing, $client_task_id ) ) {
+				$existing = null;
+			}
+		}
 
 		if ( $existing ) {
 			$existing_status = sanitize_key( (string) ( $existing['status'] ?? '' ) );
 			$prev_hash = (string) ( $existing['request_hash'] ?? '' );
+			if ( '' === $prev_hash ) {
+				return $this->callback_failure( 'callback_receipt_unavailable', 409, $existing['id'] );
+			}
 			if ( '' !== $prev_hash && '' !== $request_hash && ! hash_equals( $prev_hash, $request_hash ) ) {
 				return new \WP_REST_Response(
 					array(
@@ -2728,18 +3686,16 @@ class Client_Data_REST_Controller {
 					409
 				);
 			}
-			if ( ! in_array( $existing_status, array( 'synced', 'completed', 'partial' ), true ) ) {
-				if ( in_array( $existing_status, array( 'failed', 'cancelled' ), true ) ) {
-					$replay_outbox_id = absint( $body['outbox_id'] ?? 0 );
-					if ( $replay_outbox_id > 0 && class_exists( '\\WPTSALL\\Hooks\\Content_Change_Dispatcher' ) ) {
-						\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $replay_outbox_id, 'translation_callback_retryable', $callback_outbox_owner_hash );
-					}
+			if ( ! in_array( $existing_status, self::ACCEPTED_RESULT_STATUSES, true ) ) {
+				if ( 'failed' === $existing_status && $callback_lease_held && class_exists( '\\WPTSALL\\Hooks\\Content_Change_Dispatcher' ) ) {
+					// Lost the race to take the row over: give the lease back.
+					\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $callback_outbox_id, 'translation_callback_retryable', $callback_outbox_owner_hash );
 				}
 				return new \WP_REST_Response(
 					array(
 						'success' => false,
 						'error'   => 'callback_not_replayable',
-						'message' => 'The previous callback is not in a successful terminal state; fetch and claim the item again.',
+						'message' => 'The previous callback has no complete receipt; retain the original result for review.',
 						'result_id' => (int) $existing['id'],
 					),
 					409
@@ -2753,25 +3709,8 @@ class Client_Data_REST_Controller {
 					'existing_id'    => $existing['id'],
 				)
 			);
-			// A worker may have crashed after the result row committed but before
-			// closing the outbox lease. Duplicate callbacks must finish that
-			// durable transition as well.
-			$replay_outbox_id = absint( $body['outbox_id'] ?? 0 );
-			if ( $replay_outbox_id <= 0 && 0 === strpos( $client_task_id, 'outbox-' ) ) {
-				$replay_parts = explode( '-', $client_task_id );
-				$replay_outbox_id = absint( $replay_parts[1] ?? 0 );
-			}
-			if ( $replay_outbox_id > 0 && class_exists( '\\WPTSALL\\Hooks\\Content_Change_Dispatcher' ) ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::complete_outbox( $replay_outbox_id, $callback_outbox_owner_hash );
-			}
-			return new \WP_REST_Response(
-				array(
-					'success'    => true,
-					'idempotent' => true,
-					'result_id'  => (int) $existing['id'],
-				),
-				200
-			);
+			$response = $this->callback_result_receipt( $existing, $request, true );
+			return $this->finish_callback_outbox( $callback_outbox_id, $callback_outbox_owner_hash, $response );
 		}
 
 		// Stash for content handlers.
@@ -2803,47 +3742,147 @@ class Client_Data_REST_Controller {
 			);
 		}
 
-		// Cache successful responses for Idempotency-Key replays.
-		// Do not cache 4xx/5xx — otherwise a transient validation failure (e.g.
-		// misrouted config_i18n) permanently poisons retries with the same key.
+		// Close the durable lifecycle event only after write-back accepted the
+		// callback. Transient/validation failures release the lease for retry.
+		$outbox_id = $callback_outbox_id;
+		if ( $outbox_id <= 0 ) {
+			$outbox_id = $this->resolve_single_owned_outbox_lease(
+				$relation_id,
+				'taxonomy_content' === $business_line ? 'term' : 'post',
+				absint( $body['object_id'] ?? 0 ),
+				$callback_outbox_owner_hash
+			);
+		}
+		$response = $this->finish_callback_outbox( $outbox_id, $callback_outbox_owner_hash, $response );
 		if ( '' !== $idempotency_key && $response instanceof \WP_REST_Response && function_exists( 'wptsall_idempotency_set' ) ) {
 			$status = (int) $response->get_status();
-			$data   = $response->get_data();
-			if ( is_array( $data ) && $status >= 200 && $status < 300 ) {
+			$data = $response->get_data();
+			if ( is_array( $data ) && true === ( $data['success'] ?? false ) && $status >= 200 && $status < 300 ) {
 				wptsall_idempotency_set( $idempotency_key, $status, $data, DAY_IN_SECONDS, $request_hash );
 			}
 		}
 
-		// Close the durable lifecycle event only after write-back accepted the
-		// callback. Transient/validation failures release the lease for retry.
-		$outbox_id = absint( $body['outbox_id'] ?? 0 );
-		if ( $outbox_id <= 0 && 0 === strpos( $client_task_id, 'outbox-' ) ) {
-			$parts = explode( '-', $client_task_id );
-			$outbox_id = absint( $parts[1] ?? 0 );
-		}
-		if ( $outbox_id <= 0 ) {
-			$source_type = 'taxonomy_content' === $business_line ? 'term' : 'post';
-			$source_id   = absint( $body['object_id'] ?? 0 );
-			if ( $source_id > 0 ) {
-				$wpdb = $GLOBALS['wpdb'];
-				$outbox_id = (int) $wpdb->get_var(
-					$wpdb->prepare(
-						'SELECT id FROM %i WHERE relation_id = %d AND source_type = %s AND source_id = %d AND status = %s ORDER BY id DESC LIMIT 1',
-						wptsall_table( 'content_change_outbox' ), $relation_id, $source_type, $source_id, 'processing'
-					)
-				);
-			}
-		}
-		if ( $outbox_id > 0 && class_exists( '\\WPTSALL\\Hooks\\Content_Change_Dispatcher' ) ) {
-			$status = $response instanceof \WP_REST_Response ? (int) $response->get_status() : 500;
-			if ( $status >= 200 && $status < 300 ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::complete_outbox( $outbox_id, $callback_outbox_owner_hash );
-			} elseif ( $status >= 400 ) {
-				\WPTSALL\Hooks\Content_Change_Dispatcher::fail_outbox( $outbox_id, 'translation_callback_' . $status, $callback_outbox_owner_hash );
-			}
-		}
-
 		return $response;
+	}
+
+	/**
+	 * Whether a result row has been `pending` longer than a live request can run.
+	 *
+	 * @param array $result Result row with created_at (GMT mysql datetime).
+	 * @return bool
+	 */
+	private function translation_result_is_stale( array $result ) {
+		$created = strtotime( (string) ( $result['created_at'] ?? '' ) . ' UTC' );
+		return false !== $created && ( time() - $created ) >= self::PENDING_RESULT_STALE_SECONDS;
+	}
+
+	/**
+	 * Free a client_task_id for a new attempt.
+	 *
+	 * The old row stays as audit evidence: it is marked `failed` and renamed
+	 * (client_task_id is UNIQUE and capped at 100 characters), and any sync task
+	 * still open on it is failed so the new attempt materializes its own and the
+	 * task reuse logic cannot point it back at the abandoned result.
+	 *
+	 * @param array  $result         Result row (id, status).
+	 * @param string $client_task_id Its client_task_id.
+	 * @return bool False when the row changed under us (another request got there first).
+	 */
+	private function supersede_translation_result( array $result, $client_task_id ) {
+		global $wpdb;
+		$result_id = (int) ( $result['id'] ?? 0 );
+		$suffix    = '~s' . $result_id;
+		// Do not free the callback identity unless its old open tasks are closed
+		// too. Otherwise task reuse can point a new callback at the old result.
+		if ( false === $wpdb->query( 'START TRANSACTION' ) ) {
+			return false;
+		}
+		$changed   = $wpdb->query(
+			$wpdb->prepare(
+				'UPDATE %i SET client_task_id = %s, status = %s WHERE id = %d AND status = %s',
+				wptsall_table( 'translation_results' ),
+				substr( (string) $client_task_id, 0, 100 - strlen( $suffix ) ) . $suffix,
+				'failed',
+				$result_id,
+				sanitize_key( (string) ( $result['status'] ?? '' ) )
+			)
+		);
+		if ( 1 !== (int) $changed ) {
+			$wpdb->query( 'ROLLBACK' );
+			return false;
+		}
+		// payload is LONGTEXT, and legacy/monitoring rows can contain empty or
+		// malformed JSON. A bare JSON_EXTRACT scan aborts the entire update on
+		// one such row, even when that row has nothing to do with this result.
+		$tasks_changed = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE %i SET status = %s, status_note = %s, updated_at = %s
+				 WHERE CASE WHEN JSON_VALID(payload) THEN JSON_EXTRACT(payload, '$.translation_result_id') END = %d
+				 AND status IN (%s, %s, %s, %s)",
+				wptsall_table( 'tasks' ),
+				'failed',
+				'Superseded by a newer callback attempt',
+				current_time( 'mysql', true ),
+				$result_id,
+				'pending',
+				'retry',
+				'processing',
+				'active'
+			)
+		);
+		if ( false === $tasks_changed || false === $wpdb->query( 'COMMIT' ) ) {
+			$wpdb->query( 'ROLLBACK' );
+			return false;
+		}
+		wptsall_log_warning(
+			'client-api',
+			'Translation result superseded by a newer callback attempt',
+			array(
+				'result_id'      => $result_id,
+				'previous'       => (string) ( $result['status'] ?? '' ),
+				'client_task_id' => (string) $client_task_id,
+			)
+		);
+		return true;
+	}
+
+	/**
+	 * Find the outbox row a callback without outbox_id belongs to - only when
+	 * it is unambiguous: exactly one row of this relation and source object is
+	 * leased, and it is leased to the calling device (ATS-03).
+	 *
+	 * The callback used to take "the newest processing row of that object",
+	 * whoever held it: with two events in flight for one object that closed the
+	 * wrong row, and a failing callback released another device's lease. A row
+	 * this declines to name is simply closed by its own explicit callback, or
+	 * returns to the queue when its lease expires.
+	 *
+	 * @param int    $relation_id Relation id.
+	 * @param string $source_type Outbox source type (post|term).
+	 * @param int    $source_id   Source object id.
+	 * @param string $owner_hash  Calling device's outbox claim-owner digest ('' = no device).
+	 * @return int Outbox id, 0 when there is none or it is ambiguous.
+	 */
+	private function resolve_single_owned_outbox_lease( $relation_id, $source_type, $source_id, $owner_hash ) {
+		global $wpdb;
+		if ( $source_id <= 0 || ! preg_match( '/^[a-f0-9]{64}$/', (string) $owner_hash ) ) {
+			return 0;
+		}
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT id FROM %i
+				 WHERE relation_id = %d AND source_type = %s AND source_id = %d AND status = %s
+				 AND JSON_UNQUOTE(JSON_EXTRACT(payload, '$._wptsall_claim_owner_hash')) = %s
+				 ORDER BY id ASC LIMIT 2",
+				wptsall_table( 'content_change_outbox' ),
+				(int) $relation_id,
+				(string) $source_type,
+				(int) $source_id,
+				'processing',
+				(string) $owner_hash
+			)
+		);
+		return 1 === count( (array) $ids ) ? (int) $ids[0] : 0;
 	}
 
 	/**
@@ -3091,6 +4130,10 @@ class Client_Data_REST_Controller {
 		$callback_transaction_started = true;
 
 		// Insert into translation_results.
+		$translated_meta = is_array( $translated_meta ) ? $translated_meta : array();
+		$translated_meta['_wptsall_callback_receipt'] = array(
+			'version' => 1, 'stage' => 'prepared', 'device_hash' => $this->callback_device_hash( $request ),
+		);
 		$result_id = wptsall_insert_translation_result( array(
 			'relation_id'       => $relation_id,
 			'object_type'       => $object_type,
@@ -3124,6 +4167,21 @@ class Client_Data_REST_Controller {
 				),
 				500
 			);
+		}
+		$result_row = $wpdb->get_row(
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d FOR UPDATE', wptsall_table( 'translation_results' ), $result_id ),
+			ARRAY_A
+		);
+		if ( ! is_array( $result_row ) || '' !== $wpdb->last_error
+			|| ! hash_equals( (string) ( $result_row['request_hash'] ?? '' ), $request_hash ) ) {
+			$wpdb->query( 'ROLLBACK' );
+			$callback_transaction_started = false;
+			return $this->callback_failure( 'idempotency_conflict', 409, $result_id );
+		}
+		if ( 'pending' !== $result_row['status'] ) {
+			$wpdb->query( 'ROLLBACK' );
+			$callback_transaction_started = false;
+			return $this->callback_result_receipt( $result_row, $request, true );
 		}
 
 		// Create sync task to write the translation to the target site.
@@ -3223,6 +4281,23 @@ class Client_Data_REST_Controller {
 					);
 				}
 				$callback_transaction_started = false;
+			}
+
+			// opus5 M-04: record translation memory pairs now that the callback
+			// persistence unit is committed. The callback runs on the relation
+			// source site (validated above), so the source post text is local.
+			// The wptsall_tm_auto_record toggle gates recording.
+			if ( 'post_type' === $object_type
+				&& class_exists( '\WPTSALL\TranslationMemory\Services\Translation_Memory_Service' ) ) {
+				\WPTSALL\TranslationMemory\Services\Translation_Memory_Service::record_translation_pairs(
+					\WPTSALL\TranslationMemory\Services\Translation_Memory_Service::get_source_values_for_post( $object_id ),
+					$source_lang,
+					$target_lang,
+					is_array( $translated_fields ) ? $translated_fields : array(),
+					class_exists( '\WPTSALL\Sites\Services\Manual_Content_Service' )
+						? \WPTSALL\Sites\Services\Manual_Content_Service::resolve_memory_text_domain( $relation_id, (string) $callback_subtype )
+						: ''
+				);
 			}
 
 			// Immediately execute the sync (client-driven: no cron delay).
@@ -3343,6 +4418,11 @@ class Client_Data_REST_Controller {
 				'target_id' => $sync_result['target_id'] ?? null,
 				'skipped'   => ! empty( $sync_result['skipped'] ),
 			);
+			if ( ! empty( $sync_result['partial'] ) ) {
+				// Accepted, but part of the media is waiting in the manual queue.
+				$response['partial']                = true;
+				$response['sync_result']['partial'] = true;
+			}
 		} elseif ( $sync_error ) {
 			$response['sync_result'] = array(
 				'success' => false,
@@ -3355,6 +4435,18 @@ class Client_Data_REST_Controller {
 			$response['error']   = 'target_write_failed';
 			$response['message'] = $sync_error ?: 'Translation was saved but target write-back did not complete.';
 			$response_status     = 500;
+		} else {
+			$result_row = $wpdb->get_row(
+				$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', wptsall_table( 'translation_results' ), $result_id ),
+				ARRAY_A
+			);
+			if ( ! is_array( $result_row ) || '' !== $wpdb->last_error
+				|| ! in_array( $result_row['status'] ?? '', self::ACCEPTED_RESULT_STATUSES, true ) ) {
+				// Target-side effects may already exist. Do not invent a receipt or
+				// start a new translation when the terminal evidence failed to save.
+				return $this->callback_failure( 'callback_receipt_unavailable', 500, $result_id );
+			}
+			$response['result_status'] = $result_row['status'];
 		}
 
 		return new \WP_REST_Response( $response, $response_status );
@@ -3912,14 +5004,6 @@ class Client_Data_REST_Controller {
 			switch_to_blog( $i18n_source_site_id );
 		}
 		try {
-		$updated_count = 0;
-		$rejected_count = 0;
-
-		global $wpdb;
-		$entries_table = wptsall_table( 'template_entries' );
-		$templates_table = wptsall_table( 'templates' );
-		$now           = current_time( 'mysql', true );
-		$template_ids  = array();
 		$expected_source_type = array(
 			'theme_i18n'   => 'theme',
 			'plugin_i18n'  => 'plugin',
@@ -3932,192 +5016,14 @@ class Client_Data_REST_Controller {
 		$claim_owner_hash = $request instanceof \WP_REST_Request
 			? $this->get_claim_owner_hash( $request, $relation, $expected_source_type, $target_language )
 			: '';
-		$claim_cutoff = gmdate( 'Y-m-d H:i:s', time() - self::get_claim_timeout_seconds() );
 		if ( ! preg_match( '/^[a-f0-9]{64}$/', strtolower( trim( $claim_owner_hash ) ) ) ) {
 			return new \WP_REST_Response( array( 'success' => false, 'error' => 'claim_required', 'message' => 'A valid device-owned language-pack claim is required before callback.' ), 409 );
 		}
-
-		foreach ( $entries as $entry ) {
-			$entry_id = absint( $entry['entry_id'] ?? 0 );
-			$msgstr   = $entry['msgstr'] ?? '';
-
-			if ( empty( $entry_id ) || ( is_array( $msgstr ) || is_object( $msgstr ) ) || '' === (string) $msgstr ) {
-				++$rejected_count;
-				continue;
+		return $this->commit_entry_callback(
+			$body, $client_task_id, $relation_id, 'i18n', $request,
+			function () use ( $body, $relation_id, $expected_source_type, $target_language, $claim_owner_hash ) {
+				return $this->apply_i18n_callback_entries( $body, $relation_id, $expected_source_type, $target_language, $claim_owner_hash );
 			}
-			$msgstr = (string) $msgstr;
-
-			// Resolve the entry through its template before writing. The entry
-			// id is user supplied; updating by entry id alone would let a valid client
-			// token write strings belonging to another relation or source family.
-			$template_info = $wpdb->get_row(
-				$wpdb->prepare(
-					'SELECT e.template_id, e.claimed_at, e.claim_owner_hash, t.relation_id, t.source_type, t.target_language, t.text_domain FROM %i e INNER JOIN %i t ON t.id = e.template_id WHERE e.id = %d LIMIT 1',
-					$entries_table,
-					$templates_table,
-					$entry_id
-				),
-				ARRAY_A
-			);
-			$claimed_at = is_array( $template_info ) ? (string) ( $template_info['claimed_at'] ?? '' ) : '';
-			$claim_is_current = '' !== $claimed_at
-				&& false !== strtotime( $claimed_at . ' UTC' )
-				&& strtotime( $claimed_at . ' UTC' ) >= time() - self::get_claim_timeout_seconds()
-				&& hash_equals( strtolower( trim( $claim_owner_hash ) ), strtolower( trim( (string) ( $template_info['claim_owner_hash'] ?? '' ) ) ) );
-			if ( ! is_array( $template_info )
-				|| (int) ( $template_info['relation_id'] ?? 0 ) !== $relation_id
-				|| ( '' !== $expected_source_type && sanitize_key( (string) ( $template_info['source_type'] ?? '' ) ) !== $expected_source_type )
-				|| ( '' !== $target_language && '' !== (string) ( $template_info['target_language'] ?? '' ) && $target_language !== (string) $template_info['target_language'] )
-				|| ! $claim_is_current ) {
-				++$rejected_count;
-				continue;
-			}
-
-			// Scope the UPDATE itself as well as the preflight SELECT. This closes
-			// the race where an entry is reassigned between the two queries.
-			if ( '' !== $expected_source_type ) {
-				$result = $wpdb->query(
-					$wpdb->prepare(
-						'UPDATE %i e INNER JOIN %i t ON t.id = e.template_id SET e.msgstr = %s, e.status = %s, e.claimed_at = NULL, e.claim_owner_hash = NULL, e.updated_at = %s WHERE e.id = %d AND t.relation_id = %d AND t.source_type = %s AND (t.target_language = %s OR t.target_language = %s OR t.target_language IS NULL) AND e.claimed_at >= %s AND e.claim_owner_hash = %s',
-						$entries_table,
-						$templates_table,
-						$msgstr,
-						'translated',
-						$now,
-						$entry_id,
-						$relation_id,
-						$expected_source_type,
-						$target_language,
-						'',
-						$claim_cutoff,
-						$claim_owner_hash
-					)
-				);
-			} else {
-				$result = $wpdb->query(
-					$wpdb->prepare(
-						'UPDATE %i e INNER JOIN %i t ON t.id = e.template_id SET e.msgstr = %s, e.status = %s, e.claimed_at = NULL, e.claim_owner_hash = NULL, e.updated_at = %s WHERE e.id = %d AND t.relation_id = %d AND (t.target_language = %s OR t.target_language = %s OR t.target_language IS NULL) AND e.claimed_at >= %s AND e.claim_owner_hash = %s',
-						$entries_table,
-						$templates_table,
-						$msgstr,
-						'translated',
-						$now,
-						$entry_id,
-						$relation_id,
-						$target_language,
-						'',
-						$claim_cutoff,
-						$claim_owner_hash
-					)
-				);
-			}
-
-			if ( false !== $result && $result > 0 ) {
-				++$updated_count;
-				$template_id = (int) ( $template_info['template_id'] ?? 0 );
-				if ( $template_id > 0 ) {
-					$template_ids[] = $template_id;
-				}
-				do_action(
-					'wptsall_entry_updated',
-					$entry_id,
-					array(
-						'text_domain' => (string) ( $template_info['text_domain'] ?? '' ),
-					)
-				);
-			} elseif ( false !== $result ) {
-				++$rejected_count;
-			}
-		}
-
-		$template_ids = array_values( array_unique( array_map( 'intval', $template_ids ) ) );
-		if ( ! empty( $template_ids ) ) {
-			$task_subtype = preg_replace( '/_i18n$/', '', $business_line );
-			$tasks_table  = wptsall_table( 'tasks' );
-			foreach ( $template_ids as $template_id ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-				$wpdb->query(
-					$wpdb->prepare(
-						"UPDATE %i
-						 SET status = 'completed', updated_at = %s
-						 WHERE relation_id = %d
-						   AND object_type = 'language_pack'
-						   AND subtype = %s
-						   AND meta LIKE %s
-						   AND status IN ('pending', 'active', 'processing')",
-						$tasks_table,
-						$now,
-						$relation_id,
-						$task_subtype,
-						'%"template_id":' . $template_id . '%'
-					)
-				);
-			}
-
-			if ( function_exists( 'wptsall_log_info' ) ) {
-				wptsall_log_info(
-					'client-api',
-					'Translation i18n callback completed matching language_pack tasks',
-					array(
-						'client_task_id' => $client_task_id,
-						'relation_id'    => $relation_id,
-						'business_line'  => $business_line,
-						'template_ids'   => $template_ids,
-					)
-				);
-			}
-		}
-
-		// Also record in translation_results for audit trail.
-		$result_id = wptsall_insert_translation_result( array(
-			'relation_id'       => $relation_id,
-			'object_type'       => 'i18n',
-			'object_id'         => 0,
-			'translated_fields' => array( 'entries_count' => count( $entries ) ),
-			'translated_meta'   => array(),
-			'media_mappings'    => array(),
-			'client_task_id'    => $client_task_id,
-			'request_hash'      => sanitize_text_field( (string) ( $body['_wptsall_request_hash'] ?? '' ) ),
-			'source_lang'       => sanitize_text_field( $body['source_lang'] ?? '' ),
-			'target_lang'       => sanitize_text_field( $body['target_lang'] ?? '' ),
-		) );
-		if ( $result_id > 0 ) {
-			$wpdb->update(
-				wptsall_table( 'translation_results' ),
-				array(
-					'status'    => 0 === $rejected_count ? 'synced' : 'failed',
-					'synced_at' => 0 === $rejected_count ? $now : null,
-				),
-				array( 'id' => (int) $result_id ),
-				array( '%s', '%s' ),
-				array( '%d' )
-			);
-		}
-
-		wptsall_log_info(
-			'client-api',
-			'Translation i18n callback processed',
-			array(
-				'client_task_id'  => $client_task_id,
-				'entries_updated' => $updated_count,
-				'entries_total'   => count( $entries ),
-				'relation_id'     => $relation_id,
-			)
-		);
-
-		$i18n_status = $rejected_count > 0 ? 409 : 200;
-		return new \WP_REST_Response(
-			array(
-				'success'         => 0 === $rejected_count,
-				'result_id'       => (int) $result_id,
-				'sync_task_id'    => 0,
-				'queued'          => false,
-				'protocol'        => 'v2',
-				'entries_updated' => $updated_count,
-				'entries_rejected' => $rejected_count,
-				'error'           => $rejected_count > 0 ? 'claim_lost_or_entry_rejected' : null,
-			),
-			$i18n_status
 		);
 		} finally {
 			if ( $i18n_switched ) {
@@ -4227,32 +5133,22 @@ class Client_Data_REST_Controller {
 			switch_to_blog( $source_site_id );
 		}
 		try {
-			$updated = 0;
-			if ( class_exists( '\\WPTSALL\\Strings\\Services\\String_Translation_Service' ) ) {
-				$updated = \WPTSALL\Strings\Services\String_Translation_Service::apply_client_translations(
-					$target_lang,
-					$entries,
-					$contexts,
-					true,
-					$claim_owner_hash
-				);
-			}
+			return $this->commit_entry_callback(
+				$body, $client_task_id, $relation_id, 'site_string', $request,
+				static function () use ( $target_lang, $entries, $contexts, $claim_owner_hash ) {
+					if ( ! class_exists( '\\WPTSALL\\Strings\\Services\\String_Translation_Service' ) ) {
+						return new \WP_Error( 'callback_entry_store_unavailable', '', array( 'status' => 503 ) );
+					}
+					return \WPTSALL\Strings\Services\String_Translation_Service::apply_client_translation_batch(
+						$target_lang, $entries, $contexts, $claim_owner_hash
+					);
+				}
+			);
 		} finally {
 			if ( $switched ) {
 				restore_current_blog();
 			}
 		}
-		$entries_rejected = max( 0, count( $entries ) - $updated );
-		$site_string_status = $entries_rejected > 0 ? 409 : 200;
-		return new \WP_REST_Response(
-			array(
-				'success'          => 0 === $entries_rejected,
-				'updated_count'    => $updated,
-				'entries_rejected' => $entries_rejected,
-				'error'            => $entries_rejected > 0 ? 'claim_lost_or_entry_rejected' : null,
-			),
-			$site_string_status
-		);
 	}
 
 	/**

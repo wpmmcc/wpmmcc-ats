@@ -803,7 +803,9 @@ class Translation_Rule_REST_Controller {
 	 * @return bool|\WP_Error
 	 */
 	public function check_permission( $request = null ) {
-		if ( ! wptsall_user_can_manage_translations() ) {
+		$mutation = $request instanceof \WP_REST_Request
+			&& ! in_array( $request->get_method(), array( 'GET', 'HEAD' ), true );
+		if ( $mutation ? ! wptsall_user_can_manage_settings() : ! wptsall_user_can_manage_translations() ) {
 			return false;
 		}
 

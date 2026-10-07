@@ -2,7 +2,7 @@
 /**
  * Site Reviews field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/site-reviews.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/site-reviews.json
  * (fields_source: database query, fields_verified: 2026-01-27).
  *
  * Site Reviews stores user-submitted review metadata. The reviewer's

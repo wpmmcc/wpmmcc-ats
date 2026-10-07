@@ -78,6 +78,10 @@ function wptsall_log_channels() {
 		'tasks-api'          => 'Tasks: REST API operations',
 		'conflicts-api'      => 'Tasks: Conflict REST API',
 
+		// ========== Client pairing sub-module channels ==========
+		'client-api'          => 'Client data REST API (external translation client)',
+		'client-pairing'      => 'Client pairing: device tokens and pairing codes',
+
 		// ========== Templates sub-module channels ==========
 		'templates-scanner'  => 'Templates: Language pack scanning',
 		'templates-parser'   => 'Templates: POT parsing',
@@ -124,10 +128,24 @@ function wptsall_log_channels() {
 /**
  * Check if logging is enabled.
  *
+ * True when:
+ * - `WPTSALL_LOG_ENABLED` is defined and true in wp-config.php, or
+ * - Settings → Debug mode is checked (admin-facing enable for ops file logs).
+ *
  * @return bool
  */
 function wptsall_log_enabled() {
-	return defined( 'WPTSALL_LOG_ENABLED' ) && WPTSALL_LOG_ENABLED;
+	if ( defined( 'WPTSALL_LOG_ENABLED' ) && WPTSALL_LOG_ENABLED ) {
+		return true;
+	}
+	// Settings debug_mode is the admin UI switch for the same file logger.
+	if ( class_exists( '\\WPTSALL\\Settings\\Services\\Settings_Service' ) ) {
+		$settings = \WPTSALL\Settings\Services\Settings_Service::get_all();
+		if ( ! empty( $settings['debug_mode'] ) ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**

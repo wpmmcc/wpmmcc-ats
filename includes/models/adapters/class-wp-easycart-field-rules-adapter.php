@@ -2,7 +2,7 @@
 /**
  * WP EasyCart field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/wp-easycart.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/wp-easycart.json
  * (fields_source: database query, fields_verified: 2026-01-27).
  *
  * WP EasyCart stores product metadata. All five keys are commerce

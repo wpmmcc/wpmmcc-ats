@@ -32,16 +32,10 @@ class Languages_Page {
 		add_action( 'admin_post_wptsall_language_set_default', array( __CLASS__, 'handle_set_default' ) );
 	}
 
-	public static function add_menu_page() {
-		add_submenu_page(
-			'wpmmcc-ats',
-			__( 'Languages', 'wpmmcc-ats' ),
-			__( 'Languages', 'wpmmcc-ats' ),
-			self::CAP,
-			self::PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
-		);
-	}
+	// ATS-P2-01 (3.8flash): the page-local add_menu_page() was removed —
+	// registration is centralized in includes/admin/menu.php ('wptsall-languages'
+	// slug). The old duplicate hook here rendered two identical "Languages"
+	// sidebar entries.
 
 	public static function render_page() {
 		if ( ! current_user_can( self::CAP ) ) {

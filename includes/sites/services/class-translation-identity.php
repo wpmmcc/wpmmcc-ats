@@ -30,6 +30,195 @@ class Translation_Identity {
 	public const META_RELATION_ID     = '_wptsall_relation_id';
 
 	/**
+	 * Per-request warm cache of pre-resolved wp/self meta-leg answers,
+	 * "source_post_id:relation_id" => target post ID (or null = resolved miss).
+	 *
+	 * Render-level prefetch (prefetch_wp_meta_targets(), hooked by
+	 * Admin_Virtual_Site_Manager::prefetch_translation_targets() on admin
+	 * post-list screens) resolves every list row x every wp/self bucket in
+	 * ONE switch + two batched queries per target blog, so the per-row
+	 * find_wp_meta_batch() consults this map instead of re-switching per
+	 * row — measured 2026-09-27 on the Lab product list: 50 row switches +
+	 * 50 restores (100 wp_user_roles reloads) collapse to one switch pair
+	 * per target blog. find_wp_meta_batch() itself back-fills this map, so
+	 * repeated pairs (unprefetched callers, second render hooks) hit it too.
+	 *
+	 * @var array<string,int|null>
+	 */
+	private static $wp_meta_warm = array();
+
+	/**
+	 * Prefetch the wp/self meta-leg answers for many source posts at once.
+	 *
+	 * One switch_to_blog + one primary batch (source IN x relation IN, first
+	 * row per pair wins — the per-pair LIMIT 1 semantics) + at most one soft
+	 * fallback batch per DISTINCT target blog, exactly the find_wp_meta_batch()
+	 * resolution per pair. Warms {@see self::$wp_meta_warm}.
+	 *
+	 * @param int[] $source_post_ids Source post IDs (the admin list's rows).
+	 * @param array $relations       Site-relation rows (same list the
+	 *                               per-row path passes to find_targets_batch()).
+	 * @return void
+	 */
+	public static function prefetch_wp_meta_targets( array $source_post_ids, array $relations ): void {
+		global $wpdb;
+
+		if ( empty( $source_post_ids ) || empty( $relations ) ) {
+			return;
+		}
+
+		// Dedupe relations by id, mirroring find_targets_batch().
+		$relations_by_id = array();
+		foreach ( $relations as $relation ) {
+			if ( ! is_array( $relation ) || empty( $relation['id'] ) ) {
+				continue;
+			}
+			$relation_id = (int) $relation['id'];
+			if ( $relation_id <= 0 || isset( $relations_by_id[ $relation_id ] ) ) {
+				continue;
+			}
+			$relations_by_id[ $relation_id ] = $relation;
+		}
+		if ( empty( $relations_by_id ) ) {
+			return;
+		}
+
+		// Bucket the wp/self (non-virtual) relations by target blog — the
+		// find_wp_meta_batch() grouping.
+		$groups = array();
+		foreach ( $relations_by_id as $relation_id => $relation ) {
+			if ( 'virtual' === (string) ( $relation['target_site_type'] ?? 'wp' ) ) {
+				continue;
+			}
+			$target_blog = (int) ( $relation['target_site_id'] ?? 0 );
+			$groups[ $target_blog ][ $relation_id ] = $relation;
+		}
+		if ( empty( $groups ) ) {
+			return;
+		}
+
+		$sources = array();
+		foreach ( $source_post_ids as $source_post_id ) {
+			$source_post_id = (int) $source_post_id;
+			if ( $source_post_id > 0 && ! in_array( $source_post_id, $sources, true ) ) {
+				$sources[] = $source_post_id;
+			}
+		}
+		if ( empty( $sources ) ) {
+			return;
+		}
+		list( $src_in_sql, $src_in_ids ) = wptsall_db_prepare_int_in( $sources );
+		if ( empty( $src_in_ids ) ) {
+			return;
+		}
+
+		$source_blog_id = get_current_blog_id();
+
+		foreach ( $groups as $target_blog => $group ) {
+			$group_relation_ids = array_map( 'intval', array_keys( $group ) );
+			list( $rel_in_sql, $rel_in_ids ) = wptsall_db_prepare_int_in( $group_relation_ids );
+			if ( empty( $rel_in_ids ) ) {
+				continue;
+			}
+
+			$switched = false;
+			if ( is_multisite() && $target_blog > 0 && $target_blog !== $source_blog_id ) {
+				switch_to_blog( $target_blog );
+				$switched = true;
+			}
+
+			try {
+				$warm = array();
+
+				// Primary batch: first row per (source, relation) wins.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$rows = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT p.ID AS target_id, pm1.meta_value AS src, pm2.meta_value AS rel
+						FROM %i p
+						INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_source_post_id'
+						INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_relation_id'
+						WHERE pm1.meta_value IN ($src_in_sql) AND pm2.meta_value IN ($rel_in_sql)",
+						$wpdb->posts,
+						$wpdb->postmeta,
+						$wpdb->postmeta,
+						...$src_in_ids,
+						...$rel_in_ids
+					),
+					ARRAY_A
+				);
+				foreach ( (array) $rows as $row ) {
+					$key = (int) $row['src'] . ':' . (int) $row['rel'];
+					if ( ! array_key_exists( $key, $warm ) ) {
+						$warm[ $key ] = (int) $row['target_id'];
+					}
+				}
+
+				// Soft fallback batch: first row per source wins; the per-pair
+				// soft query carries no relation condition, so the same row
+				// answers every pending relation of that source in this bucket.
+				$pending_sources = array();
+				foreach ( $sources as $source ) {
+					foreach ( $group as $relation_id => $relation ) {
+						if ( ! array_key_exists( $source . ':' . $relation_id, $warm ) ) {
+							$pending_sources[ $source ] = true;
+							break;
+						}
+					}
+				}
+				if ( ! empty( $pending_sources ) ) {
+					$pending_ids = array_keys( $pending_sources );
+					list( $psrc_in_sql, $psrc_in_ids ) = wptsall_db_prepare_int_in( $pending_ids );
+					if ( ! empty( $psrc_in_ids ) ) {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+						$soft_rows = $wpdb->get_results(
+							$wpdb->prepare(
+								"SELECT p.ID AS target_id, pm1.meta_value AS src
+								FROM %i p
+								INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_source_post_id'
+								INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_source_blog_id'
+								WHERE pm2.meta_value = %d AND pm1.meta_value IN ($psrc_in_sql)",
+								$wpdb->posts,
+								$wpdb->postmeta,
+								$wpdb->postmeta,
+								$source_blog_id,
+								...$psrc_in_ids
+							),
+							ARRAY_A
+						);
+						$soft_by_source = array();
+						foreach ( (array) $soft_rows as $row ) {
+							$src = (int) $row['src'];
+							if ( ! array_key_exists( $src, $soft_by_source ) ) {
+								$soft_by_source[ $src ] = (int) $row['target_id'];
+							}
+						}
+						foreach ( $pending_sources as $source => $_ ) {
+							$soft_target = array_key_exists( $source, $soft_by_source ) ? $soft_by_source[ $source ] : null;
+							foreach ( $group as $relation_id => $relation ) {
+								$key = $source . ':' . $relation_id;
+								if ( ! array_key_exists( $key, $warm ) ) {
+									$warm[ $key ] = $soft_target;
+								}
+							}
+						}
+					}
+				}
+			} finally {
+				if ( $switched ) {
+					restore_current_blog();
+				}
+			}
+
+			foreach ( $warm as $key => $target_id ) {
+				if ( ! array_key_exists( $key, self::$wp_meta_warm ) ) {
+					self::$wp_meta_warm[ $key ] = $target_id;
+				}
+			}
+		}
+	}
+
+	/**
 	 * Read an identity meta value bypassing get_post_meta filters.
 	 *
 	 * GiveWP and similar content plugins can hide or virtualize `_wptsall_*`
@@ -185,6 +374,400 @@ class Translation_Identity {
 		}
 
 		return $meta_id;
+	}
+
+	/**
+	 * Batched find_target() for one source post across many relations.
+	 *
+	 * Render-path hot aggregate (admin translation-status hooks): the
+	 * per-relation loop resolved each pair with its own mapping lookup plus
+	 * one or two postmeta JOINs — measured 2026-09-27 on the Lab product
+	 * list, ~3 queries x 440 pairs per render. This resolves the same pairs
+	 * with the exact find_target() semantics — mapping-table leg first
+	 * (one batched query, see Post_Mapping_Service::get_mapped_targets_for_relations()),
+	 * then the meta leg for misses (one batched virtual JOIN pair; wp/self
+	 * relations keep the per-pair meta leg) — plus the same heal-on-meta-hit
+	 * upsert when $heal is true.
+	 *
+	 * @since 2.1.5
+	 *
+	 * @param int   $source_post_id Source post ID.
+	 * @param array $relations     List of site-relation rows (as returned by
+	 *                              Site_Relation_Service::get_all_relations()).
+	 * @param bool  $heal           When meta hits but mapping misses, upsert both.
+	 * @return array<int,int|null> relation_id => target post ID or null.
+	 */
+	public static function find_targets_batch( int $source_post_id, array $relations, bool $heal = true ): array {
+		$out = array();
+		if ( $source_post_id <= 0 || empty( $relations ) ) {
+			return $out;
+		}
+
+		$relations_by_id = array();
+		$virtual_by_id   = array();
+		$meta_by_id      = array();
+		foreach ( $relations as $relation ) {
+			if ( ! is_array( $relation ) || empty( $relation['id'] ) ) {
+				continue;
+			}
+			$relation_id = (int) $relation['id'];
+			if ( $relation_id <= 0 || isset( $relations_by_id[ $relation_id ] ) ) {
+				continue;
+			}
+			$relations_by_id[ $relation_id ] = $relation;
+			$meta_by_id[ $relation_id ]      = null;
+		}
+		if ( empty( $relations_by_id ) ) {
+			return $out;
+		}
+
+		// 1. Mapping-table leg, one batched query for every pair. Like
+		//    get_mapped_id(), the mapping leg needs the source post (its
+		//    type); without it every pair is a mapping miss and falls to
+		//    the meta leg, exactly as the per-pair path does.
+		$source = get_post( $source_post_id );
+		$source_post_type = $source ? (string) $source->post_type : '';
+		if ( $source && '' !== $source_post_type && class_exists( Post_Mapping_Service::class ) ) {
+			$mapped = Post_Mapping_Service::get_mapped_targets_for_relations( $source_post_id, $source_post_type, $relations_by_id );
+			foreach ( $mapped as $relation_id => $target_post_id ) {
+				if ( (int) $target_post_id > 0 ) {
+					$out[ (int) $relation_id ] = (int) $target_post_id;
+				}
+			}
+		}
+
+		// Partition the still-missing relations for the meta leg.
+		foreach ( $relations_by_id as $relation_id => $relation ) {
+			if ( array_key_exists( $relation_id, $out ) ) {
+				continue;
+			}
+			if ( 'virtual' === (string) ( $relation['target_site_type'] ?? 'wp' ) ) {
+				$virtual_by_id[ $relation_id ] = $relation;
+			}
+		}
+
+		// 2. Virtual meta leg: one batched JOIN pair (primary + soft
+		//    fallback) on the current blog, exact per-pair semantics.
+		$virtual_meta = array();
+		if ( ! empty( $virtual_by_id ) ) {
+			$virtual_meta = self::find_virtual_meta_batch( $source_post_id, $virtual_by_id );
+		}
+
+		// 3. Batched wp/self meta leg, grouped by target blog: one switch +
+		//    one primary JOIN batch (relation IN) + at most one soft
+		//    fallback query per DISTINCT target blog. The per-pair path ran
+		//    a switch/restore pair plus two queries per relation — measured
+		//    2026-09-27 on the Lab product list, its switch_to_blog()
+		//    reloads drove the wp_user_roles storm (365 role re-reads per
+		//    render: 190 source-blog restores + 175 target-blog reloads).
+		$meta_groups = array();
+		foreach ( $relations_by_id as $relation_id => $relation ) {
+			if ( array_key_exists( $relation_id, $out ) || isset( $virtual_by_id[ $relation_id ] ) ) {
+				continue;
+			}
+			$target_site_type = (string) ( $relation['target_site_type'] ?? 'wp' );
+			if ( 'virtual' === $target_site_type ) {
+				// Defensive: virtual relations were partitioned to the
+				// virtual leg above; never resolve them against a blog.
+				continue;
+			}
+			$target_blog = (int) ( $relation['target_site_id'] ?? 0 );
+			$meta_groups[ $target_blog ][ $relation_id ] = $relation;
+		}
+		foreach ( $meta_groups as $target_blog => $group ) {
+			$found = self::find_wp_meta_batch( $source_post_id, $target_blog, $group );
+			foreach ( $group as $relation_id => $relation ) {
+				$meta_by_id[ $relation_id ] = $found[ $relation_id ] ?? null;
+			}
+		}
+
+		foreach ( $virtual_meta as $relation_id => $target_id ) {
+			$meta_by_id[ $relation_id ] = $target_id;
+		}
+
+		// 4. Heal on meta hits (mapping miss + meta hit), exactly like
+		//    find_target()'s tail, with the relation row already in hand.
+		//    Mapping-leg hits already sit in $out and stay untouched
+		//    (find_target() returns early on a mapping hit — no heal, no
+		//    meta leg — so they must not be stomped by this loop).
+		foreach ( $meta_by_id as $relation_id => $meta_id ) {
+			if ( array_key_exists( $relation_id, $out ) ) {
+				continue;
+			}
+			if ( empty( $meta_id ) ) {
+				$out[ $relation_id ] = null;
+				continue;
+			}
+			if ( $heal ) {
+				self::ensure_markers(
+					(int) $meta_id,
+					$source_post_id,
+					$relation_id,
+					array(
+						'relation'       => $relations_by_id[ $relation_id ],
+						'post_type'      => $source_post_type,
+					)
+				);
+			}
+			$out[ $relation_id ] = (int) $meta_id;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Batched virtual meta lookup: primary + soft fallback in two queries.
+	 *
+	 * Primary: source + relation markers (relation IN batch), vsid marker
+	 * JOINed then cross-checked in PHP against the relation's virtual site
+	 * (per-pair primary requires the exact vsid value; a divergent marker
+	 * row is rejected there and here).
+	 * Soft fallback: legacy writers omitted the relation marker, so pairs
+	 * whose primary missed resolve by (virtual site, source) with no
+	 * relation marker — first hit wins, like the per-pair LIMIT 1.
+	 *
+	 * @param int   $source_post_id Source post ID.
+	 * @param array $virtual_by_id  relation_id => relation row (virtual targets).
+	 * @return array<int,int> relation_id => target post ID (hits only).
+	 */
+	private static function find_virtual_meta_batch( int $source_post_id, array $virtual_by_id ): array {
+		global $wpdb;
+
+		$out = array();
+		if ( empty( $virtual_by_id ) ) {
+			return $out;
+		}
+
+		$relation_ids = array_map( 'intval', array_keys( $virtual_by_id ) );
+		list( $rel_in_sql, $rel_in_ids ) = wptsall_db_prepare_int_in( $relation_ids );
+		if ( empty( $rel_in_ids ) ) {
+			return $out;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID AS target_id, pm1.meta_value AS vsid, pm3.meta_value AS rel
+				FROM %i p
+				INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_virtual_site_id'
+				INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_source_post_id'
+				INNER JOIN %i pm3 ON p.ID = pm3.post_id AND pm3.meta_key = '_wptsall_relation_id'
+				WHERE pm2.meta_value = %d AND pm3.meta_value IN ($rel_in_sql)",
+				$wpdb->posts,
+				$wpdb->postmeta,
+				$wpdb->postmeta,
+				$wpdb->postmeta,
+				$source_post_id,
+				...$rel_in_ids
+			),
+			ARRAY_A
+		);
+		foreach ( (array) $rows as $row ) {
+			$relation_id = (int) $row['rel'];
+			if ( isset( $out[ $relation_id ] ) || ! isset( $virtual_by_id[ $relation_id ] ) ) {
+				continue;
+			}
+			// Exact per-pair primary semantics: the shadow's vsid marker must
+			// be this relation's virtual site.
+			if ( (string) $row['vsid'] !== (string) ( $virtual_by_id[ $relation_id ]['target_site_id'] ?? '' ) ) {
+				continue;
+			}
+			$out[ $relation_id ] = (int) $row['target_id'];
+		}
+
+		// Soft fallback for the pairs whose primary missed.
+		$pending = array();
+		foreach ( $virtual_by_id as $relation_id => $relation ) {
+			if ( ! array_key_exists( $relation_id, $out ) ) {
+				$pending[ $relation_id ] = $relation;
+			}
+		}
+		if ( empty( $pending ) ) {
+			return $out;
+		}
+
+		$vsids = array();
+		foreach ( $pending as $relation ) {
+			$vsid = (string) ( $relation['target_site_id'] ?? '' );
+			if ( '' !== $vsid ) {
+				$vsids[] = $vsid;
+			}
+		}
+		if ( empty( $vsids ) ) {
+			return $out;
+		}
+		$vsids = array_values( array_unique( $vsids ) );
+
+		$vsid_placeholders = implode( ',', array_fill( 0, count( $vsids ), '%s' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$soft_rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID AS target_id, pm1.meta_value AS vsid
+				FROM %i p
+				INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_virtual_site_id'
+				INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_source_post_id'
+				WHERE pm2.meta_value = %d AND pm1.meta_value IN ($vsid_placeholders)",
+				$wpdb->posts,
+				$wpdb->postmeta,
+				$wpdb->postmeta,
+				$source_post_id,
+				...$vsids
+			),
+			ARRAY_A
+		);
+		$soft_by_vsid = array();
+		foreach ( (array) $soft_rows as $row ) {
+			$vsid = (string) $row['vsid'];
+			if ( ! isset( $soft_by_vsid[ $vsid ] ) ) {
+				$soft_by_vsid[ $vsid ] = (int) $row['target_id'];
+			}
+		}
+		foreach ( $pending as $relation_id => $relation ) {
+			$vsid = (string) ( $relation['target_site_id'] ?? '' );
+			if ( '' !== $vsid && isset( $soft_by_vsid[ $vsid ] ) ) {
+				$out[ $relation_id ] = $soft_by_vsid[ $vsid ];
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Batched wp/self meta lookup for one target blog: primary batch + soft fallback.
+	 *
+	 * Primary: source + relation markers, one batched query (relation IN);
+	 * first row per relation wins, mirroring the per-pair LIMIT 1.
+	 * Soft fallback: legacy Sync WP rows omitted the relation marker — the
+	 * per-pair query matches source + source_blog markers with NO relation
+	 * condition, so every relation whose primary missed resolves to the same
+	 * first row; the batch runs it once and assigns it to all pending
+	 * relations. Semantics match find_wp_meta() pair-for-pair.
+	 *
+	 * @param int   $source_post_id Source post ID.
+	 * @param int   $target_blog_id Target blog ID (0/current = no switch).
+	 * @param array $group          relation_id => relation row (wp/self targets).
+	 * @return array<int,int> relation_id => target post ID (hits only).
+	 */
+	private static function find_wp_meta_batch( int $source_post_id, int $target_blog_id, array $group ): array {
+		global $wpdb;
+
+		$out = array();
+		if ( empty( $group ) ) {
+			return $out;
+		}
+
+		// Warm consult: a render-level prefetch (prefetch_wp_meta_targets())
+		// may have already resolved this whole group for this source — or an
+		// earlier call in this request back-filled it below. Resolve every
+		// pair from the warm map with no switch and no queries.
+		$warm_hit = true;
+		$warm_out = array();
+		foreach ( $group as $relation_id => $relation ) {
+			$warm_key = $source_post_id . ':' . $relation_id;
+			if ( ! array_key_exists( $warm_key, self::$wp_meta_warm ) ) {
+				$warm_hit = false;
+				break;
+			}
+			$warm_out[ $relation_id ] = self::$wp_meta_warm[ $warm_key ];
+		}
+		if ( $warm_hit ) {
+			foreach ( $warm_out as $relation_id => $target_id ) {
+				if ( null !== $target_id ) {
+					$out[ $relation_id ] = $target_id;
+				}
+			}
+			return $out;
+		}
+
+		$source_blog_id = get_current_blog_id();
+		$switched       = false;
+		if ( is_multisite() && $target_blog_id > 0 && $target_blog_id !== $source_blog_id ) {
+			switch_to_blog( $target_blog_id );
+			$switched = true;
+		}
+
+		try {
+			$relation_ids = array_map( 'intval', array_keys( $group ) );
+			list( $rel_in_sql, $rel_in_ids ) = wptsall_db_prepare_int_in( $relation_ids );
+			if ( empty( $rel_in_ids ) ) {
+				return $out;
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT p.ID AS target_id, pm2.meta_value AS rel
+					FROM %i p
+					INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_source_post_id'
+					INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_relation_id'
+					WHERE pm1.meta_value = %d AND pm2.meta_value IN ($rel_in_sql)",
+					$wpdb->posts,
+					$wpdb->postmeta,
+					$wpdb->postmeta,
+					$source_post_id,
+					...$rel_in_ids
+				),
+				ARRAY_A
+			);
+			foreach ( (array) $rows as $row ) {
+				$relation_id = (int) $row['rel'];
+				if ( isset( $out[ $relation_id ] ) || ! isset( $group[ $relation_id ] ) ) {
+					continue;
+				}
+				$out[ $relation_id ] = (int) $row['target_id'];
+			}
+
+			$pending = array();
+			foreach ( $group as $relation_id => $relation ) {
+				if ( ! array_key_exists( $relation_id, $out ) ) {
+					$pending[ $relation_id ] = $relation;
+				}
+			}
+			if ( ! empty( $pending ) ) {
+				// Soft fallback (legacy Sync WP path): no relation condition, so
+				// one query answers every pending relation of this blog.
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$existing_id = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT p.ID FROM %i p
+						INNER JOIN %i pm1 ON p.ID = pm1.post_id AND pm1.meta_key = '_wptsall_source_post_id'
+						INNER JOIN %i pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_wptsall_source_blog_id'
+						WHERE pm1.meta_value = %d AND pm2.meta_value = %d
+						LIMIT 1",
+						$wpdb->posts,
+						$wpdb->postmeta,
+						$wpdb->postmeta,
+						$source_post_id,
+						$source_blog_id
+					)
+				);
+				if ( $existing_id ) {
+					$target_id = (int) $existing_id;
+					foreach ( $pending as $relation_id => $relation ) {
+						$out[ $relation_id ] = $target_id;
+					}
+				}
+			}
+
+			// Back-fill the warm map so repeat calls for this source x this
+			// bucket (within the request) resolve with no switch, no queries.
+			// Resolved misses warm as null — the per-pair re-query would
+			// return the same empty answer.
+			foreach ( $group as $relation_id => $relation ) {
+				$warm_key = $source_post_id . ':' . $relation_id;
+				if ( ! array_key_exists( $warm_key, self::$wp_meta_warm ) ) {
+					self::$wp_meta_warm[ $warm_key ] = array_key_exists( $relation_id, $out )
+						? (int) $out[ $relation_id ]
+						: null;
+				}
+			}
+		} finally {
+			if ( $switched ) {
+				restore_current_blog();
+			}
+		}
+
+		return $out;
 	}
 
 	/**

@@ -24,12 +24,43 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Relation_Model_Service {
 
 	/**
+	 * Per-request memo for get_models_by_relation() (render-path hot getter).
+	 *
+	 * The admin translation-status hooks resolve per row x per relation and
+	 * re-fetch the same relation's models every time — measured 2026-09-26 on
+	 * the Lab product list: 1,452 raw re-fetches in ONE render. PHP arrays are
+	 * copy-on-write, so returning the memoized array stays safe. Cleared by
+	 * flush_runtime_memo(), which every association writer here calls.
+	 *
+	 * @var array<int,array>
+	 */
+	private static $models_by_relation_memo = array();
+
+	/**
+	 * Flush the per-request read memo. Public so the model-status/usage
+	 * writers in Translation_Rule_Service can flush it too —
+	 * get_models_by_relation() selects m.* (status + usage columns included),
+	 * so a status/usage write makes the memoized rows stale. Every
+	 * association writer here calls it as well.
+	 *
+	 * @return void
+	 */
+	public static function flush_runtime_memo() {
+		self::$models_by_relation_memo = array();
+	}
+
+	/**
 	 * Get all models associated with a site relation
 	 *
 	 * @param int $relation_id site relation ID.
 	 * @return array List of associated models.
 	 */
 	public static function get_models_by_relation( $relation_id ) {
+		$memo_key = (int) $relation_id;
+		if ( array_key_exists( $memo_key, self::$models_by_relation_memo ) ) {
+			return self::$models_by_relation_memo[ $memo_key ];
+		}
+
 		global $wpdb;
 		$rm_table     = wptsall_table( 'relation_models' );
 		$models_table = wptsall_table( 'models' );
@@ -49,7 +80,9 @@ class Relation_Model_Service {
 			ARRAY_A
 		);
 
-		return $models ? $models : array();
+		$models = $models ? $models : array();
+		self::$models_by_relation_memo[ $memo_key ] = $models;
+		return $models;
 	}
 
 	/**
@@ -320,6 +353,13 @@ class Relation_Model_Service {
 			array( '%d' ),
 			array( '%d' )
 		);
+
+		// This direct write bypasses Site_Relation_Service's writers, so its
+		// per-request memo (and object cache) must be invalidated here too.
+		Site_Relation_Service::clear_cache();
+
+		// Every association writer funnels through here after its write.
+		self::flush_runtime_memo();
 	}
 
 	/**
@@ -390,6 +430,8 @@ class Relation_Model_Service {
 		if ( false === $result ) {
 			return false;
 		}
+
+		self::flush_runtime_memo();
 
 		wptsall_log_info(
 			'sites-relations',

@@ -92,18 +92,13 @@ function wptsall_register_admin_page() {
         59
     );
 
-    // Submenu 1: Languages (1.2.0 — top-level concept for language CRUD)
-    add_submenu_page(
-        'wpmmcc-ats',
-        __( 'Languages', 'wpmmcc-ats' ),
-        __( 'Languages', 'wpmmcc-ats' ),
-        'manage_wptsall_settings',
-        'wptsall-languages',
-        array( 'WPTSALL\\Languages\\Admin\\Languages_Page', 'render_page' )
-    );
-
-    // Submenu 2: Models (Model Editor)
-    // Note: First submenu with same slug as parent replaces main menu callback
+    // Submenu 1: Models (Model Editor)
+    // Note: must be registered FIRST: WordPress core only replaces the
+    // auto-added parent entry ("WPTSALL" → admin.php?page=wpmmcc-ats) when
+    // the FIRST submenu reuses the parent slug. Registered after Languages,
+    // both the auto parent entry and this one rendered (same-URL duplicate
+    // sidebar entries — the ATS-P2-01 (3.8flash) defect class caught by
+    // comprehensive/30-admin-menu-integrity.spec.ts).
     add_submenu_page(
         'wpmmcc-ats',
         __( 'Model Management', 'wpmmcc-ats' ),
@@ -111,6 +106,16 @@ function wptsall_register_admin_page() {
         'manage_wptsall_settings',
         'wpmmcc-ats',
         array( 'WPTSALL\Models\Admin\Model_Editor_Page', 'render_page' )
+    );
+
+    // Submenu 2: Languages (1.2.0 — top-level concept for language CRUD)
+    add_submenu_page(
+        'wpmmcc-ats',
+        __( 'Languages', 'wpmmcc-ats' ),
+        __( 'Languages', 'wpmmcc-ats' ),
+        'manage_wptsall_settings',
+        'wptsall-languages',
+        array( 'WPTSALL\\Languages\\Admin\\Languages_Page', 'render_page' )
     );
 
     // Submenu: Models Backup (1.2.0 — server-side JSON export/import)

@@ -1214,7 +1214,7 @@
 			var $contentEditor = $('#wptsall-tinymce-content');
 
 			if ($contentSlot.length && $contentEditor.length) {
-				$contentEditor.detach().appendTo($contentSlot).show();
+				this.moveTinyMCEEditor('wptsall_tinymce_content', $contentEditor, $contentSlot);
 				this.tinymceEditors['post_content'] = 'wptsall_tinymce_content';
 			}
 
@@ -1223,7 +1223,7 @@
 			var $excerptEditor = $('#wptsall-tinymce-excerpt');
 
 			if ($excerptSlot.length && $excerptEditor.length) {
-				$excerptEditor.detach().appendTo($excerptSlot).show();
+				this.moveTinyMCEEditor('wptsall_tinymce_excerpt', $excerptEditor, $excerptSlot);
 				this.tinymceEditors['post_excerpt'] = 'wptsall_tinymce_excerpt';
 			}
 
@@ -1233,6 +1233,40 @@
 				self.reinitTinyMCE('wptsall_tinymce_content');
 				self.reinitTinyMCE('wptsall_tinymce_excerpt');
 			}, 100);
+		},
+
+		/**
+		 * Recreate a live native instance before moving its iframe container.
+		 * Detaching a live iframe resets its document while TinyMCE keeps the
+		 * stale document reference. Text mode must retain the textarea value.
+		 */
+		moveTinyMCEEditor: function(editorId, $container, $slot) {
+			var editor = typeof tinymce !== 'undefined' ? tinymce.get(editorId) : null;
+			var $textarea = $('#' + editorId);
+			var settings, value, textMode, originalInit;
+			if (editor) {
+				textMode = editor.isHidden();
+				value = editor.initialized && !textMode ? editor.getContent() : $textarea.val();
+				settings = $.extend({}, editor.settings);
+				originalInit = settings.init_instance_callback;
+				editor.remove();
+				// Pending native setup may have hidden the textarea already.
+				// The new instance captures these as its Text-mode defaults.
+				$textarea.val(value).css('visibility', '').show();
+			}
+			$container.detach().appendTo($slot).show();
+			if (editor) {
+				settings.init_instance_callback = function(instance) {
+					if (typeof originalInit === 'function') {
+						originalInit.call(this, instance);
+					}
+					instance.setContent(value);
+					if (textMode) {
+						instance.hide();
+					}
+				};
+				tinymce.init(settings);
+			}
 		},
 
 		/**
@@ -1247,6 +1281,13 @@
 
 			var $textarea = $('#' + editorId);
 			if (!$textarea.length) {
+				return;
+			}
+
+			// PHP wp_editor already prepared the wrapper and both tabs. In Text
+			// mode there may be no TinyMCE instance; initializing again duplicates
+			// the toolbar instead of restoring the existing editor.
+			if ($textarea.closest('.wp-editor-wrap').length) {
 				return;
 			}
 

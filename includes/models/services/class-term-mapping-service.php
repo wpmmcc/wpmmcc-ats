@@ -85,6 +85,49 @@ class Term_Mapping_Service {
 	}
 
 	/**
+	 * Get a resolved (target_term_id > 0) mapping within one site relation,
+	 * ignoring target_lang.
+	 *
+	 * Legacy term writebacks registered mappings with an empty target_lang,
+	 * which makes exact-lang lookups (e.g. the claim placeholder row) miss the
+	 * resolved row and return 0. This relation-scoped, lang-agnostic lookup
+	 * recovers the resolved target for those rows.
+	 *
+	 * @param int    $source_term_id   Source term ID.
+	 * @param string $source_taxonomy  Source taxonomy.
+	 * @param int    $source_site_id   Source site ID.
+	 * @param string $target_site_id   Target site ID.
+	 * @param int    $relation_id      Site relation ID.
+	 * @return array|null Resolved mapping row or null.
+	 */
+	private static function get_resolved_mapping( $source_term_id, $source_taxonomy, $source_site_id, $target_site_id, $relation_id ) {
+		global $wpdb;
+		$table = wptsall_table( 'term_mappings' );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM %i
+				WHERE relation_id = %d
+				AND source_term_id = %d
+				AND source_taxonomy = %s
+				AND source_site_id = %d
+				AND target_site_id = %s
+				AND target_term_id > 0
+				ORDER BY updated_at DESC, id DESC
+				LIMIT 1",
+				$table,
+				$relation_id,
+				$source_term_id,
+				$source_taxonomy,
+				$source_site_id,
+				$target_site_id
+			),
+			ARRAY_A
+		);
+	}
+
+	/**
 	 * Get reverse mapping (target to source)
 	 *
 	 * @param int    $target_term_id   Target term ID.
@@ -261,7 +304,26 @@ class Term_Mapping_Service {
 		$mapping = self::get_mapping( $source_term_id, $taxonomy, $source_site_id, $target_site_id, $target_lang, absint( $config['relation_id'] ?? 0 ) );
 
 		if ( $mapping ) {
-			return (int) $mapping['target_term_id'];
+			$mapping_target_id = (int) $mapping['target_term_id'];
+			if ( $mapping_target_id > 0 ) {
+				return $mapping_target_id;
+			}
+
+			// Claim placeholder (target_term_id = 0): the translation is claimed
+			// but unresolved here. A resolved row may still exist for this
+			// relation under a different target_lang (legacy writebacks
+			// registered empty target_lang). Fall back to a relation-scoped,
+			// lang-agnostic lookup before giving up.
+			if ( $relation_id > 0 ) {
+				$resolved = self::get_resolved_mapping( $source_term_id, $taxonomy, $source_site_id, $target_site_id, $relation_id );
+				if ( $resolved && (int) $resolved['target_term_id'] > 0 ) {
+					return (int) $resolved['target_term_id'];
+				}
+			}
+
+			// Still unresolved: the claim is in flight; do not create a
+			// duplicate target term while another writer owns the claim.
+			return $mapping_target_id;
 		}
 
 		// Get configuration

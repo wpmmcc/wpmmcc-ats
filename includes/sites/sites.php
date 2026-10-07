@@ -73,100 +73,10 @@ function wptsall_get_virtual_site( $id ) {
     return null;
 }
 
-function wptsall_save_virtual_sites( $sites ) {
-    update_option( 'wptsall_virtual_sites', array_values( $sites ) );
-}
-
 
 // ============================================================================
 // Site Relations API Functions
 // ============================================================================
-
-/**
- * Get all site relations
- *
- * Read from database table, fallback to option if table is empty
- *
- * @param array $args Query parameters:
- *   - template    (string) Filter by template
- *   - status      (string) Filter by status (active/inactive)
- *   - source_type (string) Filter by source site type (wp/virtual)
- *   - limit       (int)    Limit
- *   - offset      (int)    Offset
- * @return array Site relations array.
- */
-function wptsall_get_site_relations( $args = array() ) {
-    global $wpdb;
-    $table = wptsall_table( 'site_relations' );
-
-    // Check if database table has data
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    $db_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table ) );
-
-    if ( $db_count > 0 ) {
-        // Read from database table
-        return wptsall_get_site_relations_from_db( $args );
-    }
-
-    return array();
-}
-
-/**
- * Get site relations from database table
- *
- * @param array $args Query parameters.
- * @return array
- */
-function wptsall_get_site_relations_from_db( $args = array() ) {
-    global $wpdb;
-    $table = wptsall_table( 'site_relations' );
-
-    $defaults = array(
-        'template'    => '',
-        'status'      => '',
-        'source_type' => '',
-        'limit'       => 100,
-        'offset'      => 0,
-    );
-    $args = wp_parse_args( $args, $defaults );
-
-    $limit  = absint( $args['limit'] );
-    $offset = absint( $args['offset'] );
-
-    // Build SQL from fixed placeholder fragments only.
-    $where  = array( '1=1' );
-    $params = array( $table );
-    if ( $args['template'] ) {
-        $where[]  = 'template = %s';
-        $params[] = sanitize_key( $args['template'] );
-    }
-    if ( $args['status'] ) {
-        $where[]  = 'status = %s';
-        $params[] = sanitize_key( $args['status'] );
-    }
-    if ( $args['source_type'] ) {
-        $where[]  = 'source_site_type = %s';
-        $params[] = sanitize_key( $args['source_type'] );
-    }
-    $where_sql = implode( ' AND ', $where );
-    $params[]  = $limit;
-    $params[]  = $offset;
-
-    $rows = wptsall_db_get_results(
-        'SELECT * FROM %i WHERE ' . $where_sql . ' ORDER BY id DESC LIMIT %d OFFSET %d',
-        $params,
-        ARRAY_A
-    );
-    $rows = is_array( $rows ) ? $rows : array();
-
-    // Convert to unified format
-    $relations = array();
-    foreach ( $rows as $row ) {
-        $relations[] = wptsall_db_row_to_relation( $row );
-    }
-
-    return $relations;
-}
 
 /**
  * Convert database row to unified relation format

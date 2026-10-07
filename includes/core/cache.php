@@ -180,51 +180,6 @@ function wptsall_idempotency_clear_all(): int {
 }
 
 /**
- * Get cached saved templates.
- *
- * @return array Saved templates.
- */
-function wptsall_get_cached_templates() {
-	return wptsall_cache_get_or_set(
-		'saved_templates',
-		function () {
-			return wptsall_saved_templates();
-		},
-		wptsall_get_cache_ttl( 'templates' )
-	);
-}
-
-/**
- * Get cached site relations.
- *
- * @return array Site relations.
- */
-function wptsall_get_cached_site_relations() {
-	return wptsall_cache_get_or_set(
-		'site_relations',
-		function () {
-			return get_option( 'wptsall_sites', array() );
-		},
-		wptsall_get_cache_ttl( 'sites' )
-	);
-}
-
-/**
- * Get cached virtual sites.
- *
- * @return array Virtual sites.
- */
-function wptsall_get_cached_virtual_sites() {
-	return wptsall_cache_get_or_set(
-		'virtual_sites',
-		function () {
-			return wptsall_get_virtual_sites();
-		},
-		wptsall_get_cache_ttl( 'sites' )
-	);
-}
-
-/**
  * Get cached task statistics.
  *
  * Returns empty stats when tasks table is not available.
@@ -360,47 +315,6 @@ function wptsall_cache_invalidate_all() {
 	return $count;
 }
 
-/**
- * Invalidate template-related caches.
- *
- * Call this when templates are modified.
- */
-function wptsall_cache_invalidate_templates() {
-	wptsall_log_debug( 'core-cache', 'Invalidating template caches' );
-	wptsall_cache_invalidate( 'saved_templates' );
-}
-
-/**
- * Invalidate site-related caches.
- *
- * Call this when site relations or virtual sites are modified.
- */
-function wptsall_cache_invalidate_sites() {
-	wptsall_log_debug( 'core-cache', 'Invalidating site caches' );
-	wptsall_cache_invalidate( 'site_relations' );
-	wptsall_cache_invalidate( 'virtual_sites' );
-}
-
-/**
- * Invalidate task-related caches.
- *
- * Call this when tasks are created, updated, or deleted.
- */
-function wptsall_cache_invalidate_tasks() {
-	wptsall_log_debug( 'core-cache', 'Invalidating task caches' );
-	wptsall_cache_invalidate( 'task_stats' );
-}
-
-/**
- * Invalidate hook-related caches.
- *
- * Call this when hooks are created, updated, or deleted.
- */
-function wptsall_cache_invalidate_hooks() {
-	wptsall_log_debug( 'core-cache', 'Invalidating hook caches' );
-	wptsall_cache_invalidate( 'hook_stats' );
-}
-
 
 /**
  * Get cache statistics.
@@ -437,14 +351,23 @@ function wptsall_cache_get_stats() {
 	);
 }
 
-// Auto-invalidate caches on relevant actions.
-add_action( 'wptsall_template_saved', 'wptsall_cache_invalidate_templates' );
-add_action( 'wptsall_template_deleted', 'wptsall_cache_invalidate_templates' );
-add_action( 'wptsall_site_saved', 'wptsall_cache_invalidate_sites' );
-add_action( 'wptsall_site_deleted', 'wptsall_cache_invalidate_sites' );
+/**
+ * Invalidate task-related caches.
+ *
+ * Wired to the task lifecycle events fired at the task CRUD write paths
+ * (wptsall_insert_tasks, wptsall_update_task_status, the Tasks REST delete
+ * endpoint, and the automation-cron cleanup which also calls this directly).
+ * The admin dashboard reads task_stats via wptsall_get_cached_task_stats(),
+ * so without invalidation the widget serves stale counts until the stats
+ * TTL expires.
+ */
+function wptsall_cache_invalidate_tasks() {
+	wptsall_log_debug( 'core-cache', 'Invalidating task caches' );
+	wptsall_cache_invalidate( 'task_stats' );
+}
+
+// Task lifecycle events (fired at the task CRUD write paths) invalidate the
+// task_stats cache consumed by the admin dashboard widget.
 add_action( 'wptsall_task_created', 'wptsall_cache_invalidate_tasks' );
 add_action( 'wptsall_task_updated', 'wptsall_cache_invalidate_tasks' );
 add_action( 'wptsall_task_deleted', 'wptsall_cache_invalidate_tasks' );
-add_action( 'wptsall_hook_created', 'wptsall_cache_invalidate_hooks' );
-add_action( 'wptsall_hook_updated', 'wptsall_cache_invalidate_hooks' );
-add_action( 'wptsall_hook_deleted', 'wptsall_cache_invalidate_hooks' );

@@ -184,6 +184,47 @@ class Media_Translation_Service {
 		return is_array( $rows ) ? $rows : array();
 	}
 
+	/**
+	 * Count media translations with the same filters as list_mappings()
+	 * (ATS-P2-05 / 3.8flash B4: the pagination bar needs the FILTERED total).
+	 *
+	 * @param array $args Filter args (source_id/target_lang; limit/offset ignored).
+	 * @return int
+	 */
+	public static function count_mappings( $args = array() ) {
+		if ( ! self::table_exists() ) {
+			return 0;
+		}
+		global $wpdb;
+		$defaults = array( 'source_id' => 0, 'target_lang' => '' );
+		$args = array_merge( $defaults, $args );
+		$where = array( '1=1' );
+		$params = array();
+		if ( (int) $args['source_id'] > 0 ) {
+			$where[] = 'source_media_id = %d';
+			$params[] = (int) $args['source_id'];
+		}
+		if ( '' !== $args['target_lang'] ) {
+			// Mirror the list_mappings() legacy-language condition exactly so
+			// the count always matches the filtered listing.
+			$where[] = '(m.target_site_id = %s OR r.target_lang = %s)';
+			$params[] = (string) $args['target_lang'];
+			$params[] = (string) $args['target_lang'];
+		}
+		$where_sql = implode( ' AND ', $where );
+		$relations_table = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
+		$sql = 'SELECT COUNT(*)
+			FROM %i m
+			LEFT JOIN %i r
+			  ON r.target_site_id = m.target_site_id
+			 AND r.source_site_id = m.source_site_id
+			 AND r.status = %s
+			WHERE ' . $where_sql;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot filtered count for the pagination bar.
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $where_sql only carries %d/%s fragments built above; every value goes through this prepare().
+		return (int) $wpdb->get_var( $wpdb->prepare( $sql, array_merge( array( self::table(), $relations_table, 'active' ), $params ) ) );
+	}
+
 	public static function delete( $id ) {
 		if ( ! self::table_exists() ) {
 			return false;

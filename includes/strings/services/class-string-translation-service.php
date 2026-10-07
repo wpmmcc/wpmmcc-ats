@@ -248,8 +248,17 @@ class String_Translation_Service {
 		$best_empty = null;
 		foreach ( (array) $rows as $row ) {
 			$translations = json_decode( (string) ( $row['translations'] ?? '' ), true );
-			if ( is_array( $translations ) && ! empty( $translations[ $lang_code ] ) ) {
-				return (string) $translations[ $lang_code ];
+			if ( is_array( $translations ) ) {
+				// UI-28-08: keys written by the admin save path before the
+				// case-preserving fix are lowercase; try the canonical code
+				// first, then its lowercase form.
+				if ( ! empty( $translations[ $lang_code ] ) ) {
+					return (string) $translations[ $lang_code ];
+				}
+				$lc = strtolower( $lang_code );
+				if ( ! empty( $translations[ $lc ] ) ) {
+					return (string) $translations[ $lc ];
+				}
 			}
 			if ( null === $best_empty ) {
 				$best_empty = $row;
@@ -490,10 +499,26 @@ class String_Translation_Service {
 	 * @return int Updated count.
 	 */
 	public static function apply_client_translations( $target_lang, $entries, $contexts = array(), $require_claim = false, $claim_owner_hash = '' ) {
+		return self::apply_client_translations_impl( $target_lang, $entries, $contexts, $require_claim, $claim_owner_hash, false );
+	}
+
+	/**
+	 * Strict callback batch. The caller owns the transaction and emits the
+	 * returned notifications only after its durable receipt has committed.
+	 *
+	 * @return array|\WP_Error Updated count and deferred notifications, or refusal.
+	 */
+	public static function apply_client_translation_batch( $target_lang, $entries, $contexts, $claim_owner_hash ) {
+		return self::apply_client_translations_impl( $target_lang, $entries, $contexts, true, $claim_owner_hash, true );
+	}
+
+	private static function apply_client_translations_impl( $target_lang, $entries, $contexts, $require_claim, $claim_owner_hash, $strict ) {
 		if ( ! self::table_exists() || '' === $target_lang || ! is_array( $entries ) ) {
-			return 0;
+			return $strict ? new \WP_Error( 'callback_entry_store_unavailable', '', array( 'status' => 503 ) ) : 0;
 		}
 		$updated      = 0;
+		$seen         = array();
+		$notifications = array();
 		$contexts     = array_values( array_unique( array_filter( array_map( 'sanitize_key', (array) $contexts ) ) ) );
 		$claim_timeout = function_exists( 'wptsall_get_client_claim_timeout_seconds' )
 			? wptsall_get_client_claim_timeout_seconds()
@@ -501,19 +526,34 @@ class String_Translation_Service {
 		$claim_cutoff = gmdate( 'Y-m-d H:i:s', time() - $claim_timeout );
 		$claim_owner_hash = strtolower( trim( (string) $claim_owner_hash ) );
 		if ( $require_claim && ! preg_match( '/^[a-f0-9]{64}$/', $claim_owner_hash ) ) {
-			return 0;
+			return $strict ? new \WP_Error( 'claim_lost_or_entry_rejected', '', array( 'status' => 409 ) ) : 0;
 		}
 		global $wpdb;
 		foreach ( $entries as $entry ) {
 			if ( ! is_array( $entry ) ) {
+				if ( $strict ) {
+					return new \WP_Error( 'claim_lost_or_entry_rejected', '', array( 'status' => 409 ) );
+				}
 				continue;
 			}
 			$id     = (int) ( $entry['string_id'] ?? $entry['entry_id'] ?? 0 );
+			if ( $strict && ( isset( $seen[ $id ] ) || ! is_string( $entry['msgstr'] ?? null ) ) ) {
+				return new \WP_Error( 'claim_lost_or_entry_rejected', '', array( 'status' => 409 ) );
+			}
+			$seen[ $id ] = true;
 			$msgstr = sanitize_text_field( (string) ( $entry['msgstr'] ?? '' ) );
 			if ( $id <= 0 || '' === $msgstr ) {
+				if ( $strict ) {
+					return new \WP_Error( 'claim_lost_or_entry_rejected', '', array( 'status' => 409 ) );
+				}
 				continue;
 			}
-			$row = self::get( $id );
+			$row = $strict
+				? $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d FOR UPDATE', self::table(), $id ), ARRAY_A )
+				: self::get( $id );
+			if ( $strict && '' !== $wpdb->last_error ) {
+				return new \WP_Error( 'callback_entry_read_failed', '', array( 'status' => 500 ) );
+			}
 			$claim_is_valid = ! $require_claim
 				|| ( is_array( $row )
 					&& '' !== (string) ( $row['claimed_at'] ?? '' )
@@ -522,6 +562,9 @@ class String_Translation_Service {
 			if ( ! is_array( $row )
 				|| ( ! empty( $contexts ) && ! in_array( sanitize_key( (string) ( $row['context'] ?? '' ) ), $contexts, true ) )
 				|| ! $claim_is_valid ) {
+				if ( $strict ) {
+					return new \WP_Error( 'claim_lost_or_entry_rejected', '', array( 'status' => 409 ) );
+				}
 				continue;
 			}
 			$translations = json_decode( (string) ( $row['translations'] ?? '' ), true );
@@ -555,11 +598,20 @@ class String_Translation_Service {
 			);
 			// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			if ( false !== $written && $written > 0 ) {
-				do_action( 'wptsall_string_translated', $id, $target_lang, $msgstr );
+				if ( $strict ) {
+					$notifications[] = array( 'hook' => 'wptsall_string_translated', 'args' => array( $id, $target_lang, $msgstr ) );
+				} else {
+					do_action( 'wptsall_string_translated', $id, $target_lang, $msgstr );
+				}
 				++$updated;
+			} elseif ( $strict ) {
+				return new \WP_Error(
+					false === $written ? 'callback_entry_write_failed' : 'claim_lost_or_entry_rejected',
+					'', array( 'status' => false === $written ? 500 : 409 )
+				);
 			}
 		}
-		return $updated;
+		return $strict ? array( 'updated' => $updated, 'notifications' => $notifications ) : $updated;
 	}
 
 	/**

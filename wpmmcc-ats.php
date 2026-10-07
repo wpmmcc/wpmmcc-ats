@@ -29,7 +29,7 @@ if ( ! defined( 'WPTSALL_FILE' ) ) {
 /**
  * WPMMCC ATS / WPTSALL plugin bootstrap.
  *
- * Canonical entry: this file only. Lab mounts wp-plugin/source as plugins/wpmmcc-ats.
+ * Canonical entry: this file only. Lab mounts wpmmcc-ats/source as plugins/wpmmcc-ats.
  * See docs/architecture/current/PRE-RELEASE-SINGLE-TRUTH.md.
  */
 

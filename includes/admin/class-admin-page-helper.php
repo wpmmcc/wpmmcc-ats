@@ -178,6 +178,107 @@ class Admin_Page_Helper {
 	}
 
 	/**
+	 * Render a shared pagination bar: range indicator + per-page selector + page links.
+	 *
+	 * ATS-P2-05 (3.8flash B4, reclassified "silent unreachable data"): the
+	 * list_* service layer has always taken limit/offset, but the pages hardcoded
+	 * a single window (200/500) with no pager and no range indicator — rows
+	 * past the cap were silently unreachable. This shared bar closes that
+	 * gap uniformly for every list screen:
+	 *   - "Displaying X–Y of N" counter (ALWAYS rendered, even on one page —
+	 *     the visibility of N is the core affordance)
+	 *   - per-page selector (50/100/200, GET form; changing it resets to page 1
+	 *     because the form deliberately omits `paged`)
+	 *   - prev/«numbers»/next links (only when more than one page exists)
+	 *
+	 * The caller is responsible for applying $per_page/$current to its service
+	 * call (limit=$per_page, offset=($current-1)*$per_page) and for passing the
+	 * FILTERED total (not a global count) so the counter matches the filtered
+	 * table below it.
+	 *
+	 * @param int    $total      Filtered total row count.
+	 * @param int    $per_page   Rows per page (already applied by the caller).
+	 * @param int    $current    1-based current page (already applied by the caller).
+	 * @param string $page_slug  Admin screen slug (admin.php?page=…).
+	 * @param array  $query_args Current GET filters to preserve across pager links.
+	 * @return void
+	 */
+	public static function render_pagination( $total, $per_page, $current, $page_slug, $query_args = array() ) {
+		$total    = max( 0, (int) $total );
+		$per_page = max( 1, (int) $per_page );
+		$current  = max( 1, (int) $current );
+		$pages    = (int) ceil( $total / $per_page );
+		$from     = ( 0 === $total ) ? 0 : ( $current - 1 ) * $per_page + 1;
+		$to       = min( $current * $per_page, $total );
+		$base     = admin_url( 'admin.php' );
+		?>
+		<div class="wptsall-pagination" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0;">
+			<span class="displaying-num">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer args via number_format_i18n(), literal %1$s-%3$s format.
+				printf( /* translators: 1: first row number, 2: last row number, 3: total rows. */ esc_html__( 'Displaying %1$s–%2$s of %3$s', 'wpmmcc-ats' ), number_format_i18n( $from ), number_format_i18n( $to ), number_format_i18n( $total ) );
+				?>
+			</span>
+			<form method="get" style="display:inline-flex;align-items:center;gap:4px;">
+				<input type="hidden" name="page" value="<?php echo esc_attr( $page_slug ); ?>">
+				<?php foreach ( (array) $query_args as $qk => $qv ) : ?>
+					<?php if ( '' === $qv || null === $qv || 'paged' === $qk ) { continue; } ?>
+					<input type="hidden" name="<?php echo esc_attr( (string) $qk ); ?>" value="<?php echo esc_attr( (string) $qv ); ?>">
+				<?php endforeach; ?>
+				<label><?php esc_html_e( 'Per page', 'wpmmcc-ats' ); ?>
+					<select name="per_page" onchange="this.form.submit()">
+						<?php foreach ( array( 50, 100, 200 ) as $pp ) : ?>
+							<option value="<?php echo (int) $pp; ?>" <?php selected( $per_page, $pp ); ?>><?php echo (int) $pp; ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+			</form>
+			<?php if ( $pages > 1 ) : ?>
+				<?php
+				$pagenum_link = function ( $p ) use ( $base, $page_slug, $query_args ) {
+					$args = array_merge( $query_args, array( 'page' => $page_slug, 'paged' => (int) $p ) );
+					return add_query_arg( $args, $base );
+				};
+				?>
+				<span class="pagination-links" style="display:inline-flex;gap:4px;align-items:center;">
+					<?php if ( $current > 1 ) : ?>
+						<a class="button button-small" href="<?php echo esc_url( $pagenum_link( $current - 1 ) ); ?>">‹ <?php esc_attr_e( 'Prev', 'wpmmcc-ats' ); ?></a>
+					<?php else : ?>
+						<span class="button button-small disabled" aria-hidden="true">‹ <?php esc_attr_e( 'Prev', 'wpmmcc-ats' ); ?></span>
+					<?php endif; ?>
+					<?php
+					$page_items = array();
+					for ( $i = 1; $i <= $pages; $i++ ) {
+						$is_edge = ( $i === 1 ) || ( $i === $pages );
+						if ( $pages <= 7 || $is_edge || abs( $i - $current ) <= 1 ) {
+							$page_items[ $i ] = true;
+						}
+					}
+					$prev_i = 0;
+					foreach ( $page_items as $i => $_unused ) {
+						if ( $prev_i > 0 && $i - $prev_i > 1 ) {
+							echo '<span class="tablenav-pages-nav-span" style="padding:0 2px;">…</span>';
+						}
+						$prev_i = $i;
+						if ( (int) $i === $current ) {
+							echo '<strong style="padding:0 6px;">' . (int) $i . '</strong>';
+						} else {
+							echo '<a class="button button-small" style="text-decoration:none;" href="' . esc_url( $pagenum_link( $i ) ) . '">' . (int) $i . '</a>';
+						}
+					}
+					?>
+					<?php if ( $current < $pages ) : ?>
+						<a class="button button-small" href="<?php echo esc_url( $pagenum_link( $current + 1 ) ); ?>"><?php esc_attr_e( 'Next', 'wpmmcc-ats' ); ?> ›</a>
+					<?php else : ?>
+						<span class="button button-small disabled" aria-hidden="true"><?php esc_attr_e( 'Next', 'wpmmcc-ats' ); ?> ›</span>
+					<?php endif; ?>
+				</span>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Render tab navigation
 	 *
 	 * Outputs WordPress-style nav-tab-wrapper.

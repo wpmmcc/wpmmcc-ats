@@ -83,15 +83,30 @@ class Taxonomy_Translation_Page {
 			$taxonomy = 'category';
 		}
 
+		// ATS-P2-05 (3.8flash B4): wire both views to the shared pagination bar.
+		// The pending windowed scan honors limit/offset over the FILTERED
+		// pending set; the all-terms view uses get_terms' own offset + a
+		// wp_count_terms total.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$per_page = isset( $_GET['per_page'] ) ? max( 1, min( 500, (int) wp_unslash( $_GET['per_page'] ) ) ) : 50;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$paged = isset( $_GET['paged'] ) ? max( 1, (int) wp_unslash( $_GET['paged'] ) ) : 1;
+		$offset = ( $paged - 1 ) * $per_page;
+
+		$pending_total = ( $filter === 'pending' )
+			? Taxonomy_Translation_Service::count_pending_terms( $taxonomy, $target_lang, $relation_id )
+			: 0;
 		$pending = ( $filter === 'pending' )
-			? Taxonomy_Translation_Service::pending_terms( $taxonomy, $target_lang, 500, $relation_id )
+			? Taxonomy_Translation_Service::pending_terms( $taxonomy, $target_lang, $per_page, $relation_id, $offset )
 			: array();
 
-		// For "all" view, list every term in the taxonomy.
+		// For "all" view, page through every term in the taxonomy.
+		$all_total = ( $filter === 'all' ) ? (int) wp_count_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) ) : 0;
 		$all_terms = ( $filter === 'all' ) ? get_terms( array(
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => false,
-			'number'     => 500,
+			'number'     => $per_page,
+			'offset'     => $offset,
 		) ) : array();
 		if ( is_wp_error( $all_terms ) ) {
 			$all_terms = array();
@@ -146,7 +161,23 @@ class Taxonomy_Translation_Page {
 		</form>
 
 		<?php if ( 'pending' === $filter ) : ?>
-			<p><strong><?php echo count( $pending ); ?></strong> <?php esc_html_e( 'pending term(s)', 'wpmmcc-ats' ); ?> <?php esc_html_e( 'for', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $taxonomy ); ?></code> → <code><?php echo esc_html( $target_lang ); ?></code><?php if ( $relation_id > 0 ) : ?> · <?php esc_html_e( 'relation', 'wpmmcc-ats' ); ?> <code>#<?php echo (int) $relation_id; ?></code><?php endif; ?></p>
+			<?php
+			// B4: true pending total + range indicator (the old count($pending)
+			// figure silently capped at the fetch window).
+			Admin_Page_Helper::render_pagination(
+				$pending_total,
+				$per_page,
+				$paged,
+				self::PAGE_SLUG,
+				array(
+					'taxonomy'     => $taxonomy,
+					'target_lang'  => $target_lang,
+					'relation_id'  => (string) $relation_id,
+					'filter'       => $filter,
+				)
+			);
+			?>
+			<p><strong><?php echo (int) $pending_total; ?></strong> <?php esc_html_e( 'pending term(s)', 'wpmmcc-ats' ); ?> <?php esc_html_e( 'for', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $taxonomy ); ?></code> → <code><?php echo esc_html( $target_lang ); ?></code><?php if ( $relation_id > 0 ) : ?> · <?php esc_html_e( 'relation', 'wpmmcc-ats' ); ?> <code>#<?php echo (int) $relation_id; ?></code><?php endif; ?></p>
 			<?php if ( empty( $pending ) ) : ?>
 				<p><?php esc_html_e( 'All terms are already linked. Switch to "All terms" to manage existing links.', 'wpmmcc-ats' ); ?></p>
 			<?php else : ?>
@@ -185,6 +216,22 @@ class Taxonomy_Translation_Page {
 				</table>
 			<?php endif; ?>
 		<?php else : ?>
+			<?php
+			// B4: the all-terms view gets the same pagination bar (the old
+			// fixed 500-fetch had no pager and no total).
+			Admin_Page_Helper::render_pagination(
+				$all_total,
+				$per_page,
+				$paged,
+				self::PAGE_SLUG,
+				array(
+					'taxonomy'     => $taxonomy,
+					'target_lang'  => $target_lang,
+					'relation_id'  => (string) $relation_id,
+					'filter'       => $filter,
+				)
+			);
+			?>
 			<table class="wp-list-table widefat striped">
 				<thead>
 					<tr>

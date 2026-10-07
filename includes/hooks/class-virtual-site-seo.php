@@ -728,6 +728,43 @@ class Virtual_Site_SEO {
 				$hreflangs[ $lang ] = $href;
 			}
 		}
+
+		// ATS-B-01 (doc 16 / ADR-7): single consumption point for the dual-
+		// plugin hreflang contract. `wpmmcc_cross_site_alternates` supplies
+		// remote permalinks for cross-site synchronized copies; the filter
+		// returns an empty array when wpmmcc is absent, so single-plugin
+		// behavior is unchanged. Single-emitter rule: only language groups
+		// ATS has not already mapped get a row (one hreflang line per
+		// language, compared case-insensitively because wpmmcc emits
+		// lower-case codes); x-default stays ATS-owned.
+		$cross_alternates = apply_filters( 'wpmmcc_cross_site_alternates', array(), $lookup_id );
+		if ( is_array( $cross_alternates ) && ! empty( $cross_alternates ) ) {
+			$seen_lower = array();
+			foreach ( $hreflangs as $existing_lang => $_url ) {
+				$seen_lower[ strtolower( (string) $existing_lang ) ] = true;
+			}
+			foreach ( $cross_alternates as $cross_lang => $cross_url ) {
+				$cross_lang = self::normalize_lang( (string) $cross_lang );
+				$lower      = strtolower( $cross_lang );
+				if ( '' === $cross_lang || 'x-default' === $lower || isset( $seen_lower[ $lower ] ) ) {
+					continue;
+				}
+				$cross_url = (string) $cross_url;
+				if ( '' === $cross_url ) {
+					continue;
+				}
+				// BCP47 casing (ll-RR) to match ATS's own hreflang rows.
+				$parts   = explode( '-', $cross_lang );
+				$parts[0] = strtolower( $parts[0] );
+				if ( count( $parts ) > 1 ) {
+					$parts[1] = strtoupper( $parts[1] );
+				}
+				$cross_lang               = implode( '-', $parts );
+				$seen_lower[ $lower ]     = true;
+				$hreflangs[ $cross_lang ] = $cross_url;
+			}
+		}
+
 		return $hreflangs;
 	}
 
@@ -1594,8 +1631,10 @@ class Virtual_Site_SEO {
 	 * Output a small HTML comment marker at the end of the page so that
 	 * operators can confirm the virtual-site context is active.
 	 *
-	 * Themes that want a real switcher can use the
-	 * `[wptsall_language_switcher]` shortcode.
+	 * NOTE (D-12, 2026-09-22 裁定): this plugin does NOT register a
+	 * `[wptsall_language_switcher]` shortcode — the earlier comment
+	 * claimed one existed (nothing in the codebase calls add_shortcode
+	 * for it). Themes wanting a real switcher must register their own.
 	 *
 	 * @since 1.5.0
 	 *

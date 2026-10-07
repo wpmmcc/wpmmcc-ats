@@ -2,7 +2,7 @@
 /**
  * Events Manager field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/events-manager.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/events-manager.json
  * (fields_source: manual-definition, fields_verified: 2026-01-27).
  *
  * Events Manager stores event date/time, ticket price, and a reference

@@ -16,6 +16,13 @@ if ( ! defined( 'WPTSALL_VERSION' ) ) {
 	define( 'WPTSALL_VERSION', '2.1.4' );
 }
 
+// WP-ID-0 (contract/identity-v1): canonical plugin identity for cross-plugin
+// disambiguation. Surfaced additively in client/ping and /site/verify data
+// blocks; do not change without a contract version bump.
+if ( ! defined( 'WPMMCC_ATS_IDENTITY' ) ) {
+	define( 'WPMMCC_ATS_IDENTITY', 'wpmmcc_ats' );
+}
+
 if ( ! defined( 'WPTSALL_PATH' ) ) {
 	define( 'WPTSALL_PATH', plugin_dir_path( dirname( __FILE__ ) ) );
 }

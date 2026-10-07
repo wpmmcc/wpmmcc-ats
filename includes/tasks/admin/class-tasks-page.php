@@ -32,39 +32,7 @@ class Tasks_Page {
 
 	public static function init() {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
-		// Legacy admin-post hook: clear stale license options from older builds.
-		add_action( 'admin_post_wptsall_delete_license', array( __CLASS__, 'handle_delete_license' ) );
 		add_action( 'admin_post_wptsall_issue_connection_pack', array( __CLASS__, 'handle_issue_connection_pack' ) );
-	}
-
-	/**
-	 * Clear legacy license options (all features are free; no license is required).
-	 *
-	 * @since 1.9.0 Implemented to avoid fatal from missing admin_post handler.
-	 * @return void
-	 */
-	public static function handle_delete_license() {
-		if ( ! wptsall_user_can_manage_translations() ) {
-			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
-		}
-		check_admin_referer( 'wptsall_delete_license' );
-
-		delete_option( 'wptsall_license_key' );
-		delete_option( 'wptsall_license_status' );
-		delete_option( 'wptsall_license_data' );
-		delete_option( 'wptsall_pro_active' );
-
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'page'            => self::PAGE_SLUG,
-					'tab'             => 'authorization',
-					'license_cleared' => '1',
-				),
-				admin_url( 'admin.php' )
-			)
-		);
-		exit;
 	}
 
 	public static function enqueue_scripts( $hook ) {
@@ -356,7 +324,10 @@ JS;
 			echo '<td>' . esc_html( $row['object_type'] ) . ' #' . esc_html( $row['object_id'] ) . '</td>';
 			echo '<td>' . esc_html( $row['source_lang'] ) . ' → ' . esc_html( $row['target_lang'] ) . '</td>';
 			echo '<td><span style="color:' . esc_attr( $status_color ) . ';font-weight:600;">' . esc_html( $row['status'] ) . '</span></td>';
-			echo '<td><code style="font-size:11px;">' . esc_html( mb_substr( $row['client_task_id'], 0, 16 ) ) . '</code></td>';
+			// 3.8flash C4: 16-char truncation without title/ellipsis made the full
+			// client_task_id unreachable (same affordance gap as the journal
+			// canonical_uuid fix — full value via title + explicit ellipsis).
+			echo '<td><code style="font-size:11px;" title="' . esc_attr( (string) $row['client_task_id'] ) . '">' . esc_html( mb_substr( (string) $row['client_task_id'], 0, 16 ) ) . '…</code></td>';
 			echo '<td>' . esc_html( $row['created_at'] ) . '</td>';
 			echo '<td>' . esc_html( $row['synced_at'] ?: '-' ) . '</td>';
 			echo '</tr>';
