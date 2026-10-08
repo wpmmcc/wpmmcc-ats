@@ -40,7 +40,7 @@ jobs:
         with:
           build-dir: '.'
           # The workflow directory is repo infrastructure, not plugin payload.
-          exclude-directories: '.github'
+          exclude-directories: '.github,tests'
           # ERROR-level findings fail CI. Warnings are tracked against the
           # private-monorepo live baseline (2026-09-09 rework: 0 errors / 3
           # warnings, all trademarked_term — the only remaining category, a
