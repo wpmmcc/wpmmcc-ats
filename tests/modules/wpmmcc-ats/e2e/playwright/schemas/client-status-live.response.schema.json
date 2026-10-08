@@ -1,0 +1,39 @@
+{
+  "$id": "client-status-live.response.schema.json",
+  "description": "Live /api/status for local-complete Client (no官网 login fields). Broader catalog sample remains client-webui-status.response.schema.json.",
+  "type": "object",
+  "required": ["success", "data"],
+  "properties": {
+    "success": { "type": "boolean" },
+    "data": {
+      "type": "object",
+      "required": [
+        "device_id",
+        "domains",
+        "worker_loop_running",
+        "worker_status",
+        "worker_loop_poll_seconds",
+        "updated_at",
+        "runtime_mode"
+      ],
+      "properties": {
+        "device_id": { "type": "string", "minLength": 1 },
+        "runtime_mode": { "type": "string" },
+        "domains": { "type": "array" },
+        "domain_token_bindings": { "type": "array" },
+        "component_bindings": { "type": ["object", "array"] },
+        "rule_component_bindings": { "type": "array" },
+        "worker_loop_running": { "type": "boolean" },
+        "worker_status": { "type": "string" },
+        "worker_loop_poll_seconds": { "type": ["integer", "number"] },
+        "worker_last_summary": { "type": "object" },
+        "worker_recent_runs": { "type": "array" },
+        "last_error": { "type": "string" },
+        "last_event": { "type": "string" },
+        "updated_at": { "type": ["integer", "number"] }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

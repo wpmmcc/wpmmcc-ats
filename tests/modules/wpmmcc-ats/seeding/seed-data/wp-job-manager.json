@@ -1,0 +1,108 @@
+{
+    "_meta": {
+        "plugin_slug": "wp-job-manager",
+        "plugin_name": "WP Job Manager",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "WP Job Manager seed data for job listings",
+        "fields_source": "database query (job_listing meta_keys)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "job_listing_category": [
+            {"name": "Engineering", "slug": "engineering"},
+            {"name": "Design", "slug": "design"},
+            {"name": "Marketing", "slug": "marketing"},
+            {"name": "Sales", "slug": "sales"}
+        ],
+        "job_listing_type": [
+            {"name": "Full Time", "slug": "full-time"},
+            {"name": "Part Time", "slug": "part-time"},
+            {"name": "Contract", "slug": "contract"},
+            {"name": "Remote", "slug": "remote"}
+        ]
+    },
+    "posts": {
+        "job_listing": [
+            {
+                "post_title": "Senior Software Engineer",
+                "post_content": "<p>We're looking for an experienced software engineer to join our growing team.</p><h3>Responsibilities</h3><ul><li>Design and implement scalable software solutions</li><li>Lead technical discussions and code reviews</li><li>Mentor junior developers</li></ul><h3>Requirements</h3><ul><li>5+ years of experience</li><li>Strong Python or Java skills</li><li>Experience with cloud platforms</li></ul>",
+                "post_excerpt": "Join our engineering team and build innovative solutions.",
+                "post_status": "publish",
+                "meta": {
+                    "_job_location": "San Francisco, CA",
+                    "_application": "careers@techco.example.com",
+                    "_company_name": "TechCo Solutions",
+                    "_company_website": "https://techco.example.com",
+                    "_company_tagline": "Building the future of technology",
+                    "_job_salary": "$150,000 - $180,000"
+                },
+                "taxonomy": {
+                    "job_listing_category": ["engineering"],
+                    "job_listing_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "UX Designer",
+                "post_content": "<p>Create exceptional user experiences for our product suite.</p><h3>What we're looking for</h3><ul><li>Strong portfolio demonstrating UX process</li><li>Proficiency in Figma and prototyping tools</li><li>User research experience</li></ul>",
+                "post_excerpt": "Design intuitive user experiences for millions of users.",
+                "post_status": "publish",
+                "meta": {
+                    "_job_location": "Remote",
+                    "_application": "https://apply.example.com/ux-designer",
+                    "_company_name": "DesignFirst Agency",
+                    "_job_salary": "$90,000 - $120,000"
+                },
+                "taxonomy": {
+                    "job_listing_category": ["design"],
+                    "job_listing_type": ["full-time", "remote"]
+                }
+            },
+            {
+                "post_title": "Digital Marketing Manager",
+                "post_content": "<p>Lead our digital marketing initiatives and grow our online presence.</p>",
+                "post_excerpt": "Drive growth through digital marketing strategies.",
+                "post_status": "publish",
+                "meta": {
+                    "_job_location": "New York, NY",
+                    "_company_name": "Growth Marketing Inc",
+                    "_job_salary": "$80,000 - $100,000"
+                },
+                "taxonomy": {
+                    "job_listing_category": ["marketing"],
+                    "job_listing_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "Junior Frontend Developer",
+                "post_content": "<p>Great opportunity for developers starting their career.</p>",
+                "post_excerpt": "Entry-level frontend developer position.",
+                "post_status": "publish",
+                "meta": {
+                    "_job_location": "Austin, TX",
+                    "_company_name": "StartupXYZ",
+                    "_job_salary": "$60,000 - $75,000"
+                },
+                "taxonomy": {
+                    "job_listing_category": ["engineering"],
+                    "job_listing_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "Sales Development Representative",
+                "post_content": "<p>Help us grow our customer base through outbound sales efforts.</p>",
+                "post_excerpt": "SDR role with growth opportunities.",
+                "post_status": "publish",
+                "meta": {
+                    "_job_location": "Chicago, IL",
+                    "_company_name": "SalesForce Pro",
+                    "_job_salary": "$50,000 + commission"
+                },
+                "taxonomy": {
+                    "job_listing_category": ["sales"],
+                    "job_listing_type": ["full-time"]
+                }
+            }
+        ]
+    }
+}

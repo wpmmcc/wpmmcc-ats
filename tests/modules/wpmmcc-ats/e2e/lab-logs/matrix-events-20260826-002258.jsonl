@@ -1,0 +1,315 @@
+2026-08-26T00:23:03+08:00 STAGE_START project=core-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:23:04+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:23:04+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:23:04+08:00 STAGE_START project=bbpress-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:23:21+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:23:21+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:23:21+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:23:21+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=3 name=data-seed skipped=1
+2026-08-26T00:23:21+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:23:25+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:23:25+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:23:25+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:23:25+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=3 name=data-seed skipped=1
+2026-08-26T00:23:25+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:23:31+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:23:31+08:00 STAGE_START project=bbpress-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:23:31+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:23:31+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=3 name=data-seed skipped=1
+2026-08-26T00:23:31+08:00 STAGE_START project=bbpress-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:23:41+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:23:41+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:23:47+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:23:47+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:23:54+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:23:54+08:00 STAGE_START project=bbpress-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:23:57+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:23:57+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:24:03+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:24:03+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:24:10+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:24:10+08:00 STAGE_START project=bbpress-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:24:18+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:24:18+08:00 STAGE_START project=easy-digital-downloads-content slot=slot-c stage=7 name=verify
+2026-08-26T00:24:25+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:24:25+08:00 STAGE_START project=woocommerce-content slot=slot-b stage=7 name=verify
+2026-08-26T00:24:31+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:24:31+08:00 STAGE_START project=bbpress-content slot=slot-d stage=7 name=verify
+2026-08-26T00:24:40+08:00 STAGE_PASSED project=core-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:24:40+08:00 STAGE_START project=core-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:24:40+08:00 STAGE_PASSED project=core-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:24:40+08:00 STAGE_PASSED project=core-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:24:40+08:00 STAGE_START project=core-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:25:02+08:00 STAGE_PASSED project=easy-digital-downloads-content slot=slot-c stage=7 name=verify
+2026-08-26T00:25:02+08:00 RUN_PASSED project=easy-digital-downloads-content slot=slot-c ok=1
+2026-08-26T00:25:02+08:00 MATRIX_LANE_PASSED project=easy-digital-downloads-content slot=slot-c exit=0 secs=119 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-easy-digital-downloads-content.log
+2026-08-26T00:25:02+08:00 STAGE_START project=tutor-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:25:07+08:00 STAGE_PASSED project=woocommerce-content slot=slot-b stage=7 name=verify
+2026-08-26T00:25:07+08:00 RUN_PASSED project=woocommerce-content slot=slot-b ok=1
+2026-08-26T00:25:07+08:00 MATRIX_LANE_PASSED project=woocommerce-content slot=slot-b exit=0 secs=124 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-woocommerce-content.log
+2026-08-26T00:25:08+08:00 STAGE_START project=learnpress-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:25:11+08:00 STAGE_PASSED project=core-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:25:11+08:00 STAGE_START project=core-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:25:14+08:00 STAGE_PASSED project=bbpress-content slot=slot-d stage=7 name=verify
+2026-08-26T00:25:14+08:00 RUN_PASSED project=bbpress-content slot=slot-d ok=1
+2026-08-26T00:25:14+08:00 MATRIX_LANE_PASSED project=bbpress-content slot=slot-d exit=0 secs=131 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-bbpress-content.log
+2026-08-26T00:25:14+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:25:29+08:00 STAGE_PASSED project=core-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:25:29+08:00 STAGE_START project=core-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:25:30+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:25:30+08:00 STAGE_START project=tutor-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:25:31+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:25:31+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:25:31+08:00 STAGE_START project=tutor-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:25:42+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:25:42+08:00 STAGE_START project=learnpress-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:25:43+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:25:43+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=3 name=data-seed skipped=1
+2026-08-26T00:25:43+08:00 STAGE_START project=learnpress-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:25:44+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:25:44+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:25:45+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:25:45+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=3 name=data-seed skipped=1
+2026-08-26T00:25:45+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:25:53+08:00 STAGE_PASSED project=core-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:25:53+08:00 STAGE_START project=core-content slot=slot-a stage=7 name=verify
+2026-08-26T00:25:56+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:25:56+08:00 STAGE_START project=tutor-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:26:11+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:26:11+08:00 STAGE_START project=learnpress-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:26:12+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:26:12+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:26:16+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:26:16+08:00 STAGE_START project=tutor-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:26:31+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:26:31+08:00 STAGE_START project=learnpress-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:26:33+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:26:33+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:26:44+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:26:44+08:00 STAGE_START project=tutor-content slot=slot-a stage=7 name=verify
+2026-08-26T00:26:48+08:00 STAGE_PASSED project=core-content slot=slot-a stage=7 name=verify
+2026-08-26T00:26:48+08:00 RUN_PASSED project=core-content slot=slot-a ok=1
+2026-08-26T00:26:48+08:00 MATRIX_LANE_PASSED project=core-content slot=slot-a exit=0 secs=225 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-core-content.log
+2026-08-26T00:26:48+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:26:58+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:26:58+08:00 STAGE_START project=learnpress-content slot=slot-b stage=7 name=verify
+2026-08-26T00:27:01+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:27:01+08:00 STAGE_START project=the-events-calendar-content slot=slot-c stage=7 name=verify
+2026-08-26T00:27:23+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:27:23+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:27:23+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:27:23+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=3 name=data-seed skipped=1
+2026-08-26T00:27:23+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:27:36+08:00 STAGE_PASSED project=tutor-content slot=slot-a stage=7 name=verify
+2026-08-26T00:27:36+08:00 RUN_PASSED project=tutor-content slot=slot-a ok=1
+2026-08-26T00:27:36+08:00 MATRIX_LANE_PASSED project=tutor-content slot=slot-a exit=0 secs=154 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-tutor-content.log
+2026-08-26T00:27:36+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:27:51+08:00 STAGE_PASSED project=learnpress-content slot=slot-b stage=7 name=verify
+2026-08-26T00:27:51+08:00 RUN_PASSED project=learnpress-content slot=slot-b ok=1
+2026-08-26T00:27:51+08:00 MATRIX_LANE_PASSED project=learnpress-content slot=slot-b exit=0 secs=163 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-learnpress-content.log
+2026-08-26T00:27:51+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:27:51+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:27:52+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:27:53+08:00 STAGE_PASSED project=the-events-calendar-content slot=slot-c stage=7 name=verify
+2026-08-26T00:27:53+08:00 RUN_PASSED project=the-events-calendar-content slot=slot-c ok=1
+2026-08-26T00:27:53+08:00 MATRIX_LANE_PASSED project=the-events-calendar-content slot=slot-c exit=0 secs=159 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-the-events-calendar-content.log
+2026-08-26T00:27:54+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:28:05+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:28:05+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:28:05+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:28:05+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:28:05+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:28:09+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:28:09+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:28:21+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:28:21+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:28:21+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:28:21+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=3 name=data-seed skipped=1
+2026-08-26T00:28:21+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:28:22+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:28:22+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:28:23+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:28:23+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=3 name=data-seed skipped=1
+2026-08-26T00:28:23+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:28:31+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:28:31+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:28:34+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:28:34+08:00 STAGE_START project=wp-job-manager-content slot=slot-d stage=7 name=verify
+2026-08-26T00:28:48+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:28:48+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:28:51+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:28:51+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:28:52+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:28:52+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:29:09+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:29:09+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:29:11+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:29:11+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:29:19+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:29:19+08:00 STAGE_START project=envira-gallery-lite-content slot=slot-a stage=7 name=verify
+2026-08-26T00:29:29+08:00 STAGE_PASSED project=wp-job-manager-content slot=slot-d stage=7 name=verify
+2026-08-26T00:29:29+08:00 RUN_PASSED project=wp-job-manager-content slot=slot-d ok=1
+2026-08-26T00:29:30+08:00 MATRIX_LANE_PASSED project=wp-job-manager-content slot=slot-d exit=0 secs=162 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-wp-job-manager-content.log
+2026-08-26T00:29:30+08:00 STAGE_START project=elementor-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:29:36+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:29:36+08:00 STAGE_START project=seriously-simple-podcasting-content slot=slot-b stage=7 name=verify
+2026-08-26T00:29:39+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:29:39+08:00 STAGE_START project=wp-recipe-maker-content slot=slot-c stage=7 name=verify
+2026-08-26T00:30:03+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:30:03+08:00 STAGE_START project=elementor-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:30:03+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:30:07+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=3 name=data-seed skipped=1
+2026-08-26T00:30:07+08:00 STAGE_START project=elementor-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:30:14+08:00 STAGE_PASSED project=envira-gallery-lite-content slot=slot-a stage=7 name=verify
+2026-08-26T00:30:14+08:00 RUN_PASSED project=envira-gallery-lite-content slot=slot-a ok=1
+2026-08-26T00:30:14+08:00 MATRIX_LANE_PASSED project=envira-gallery-lite-content slot=slot-a exit=0 secs=158 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-envira-gallery-lite-content.log
+2026-08-26T00:30:14+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:30:29+08:00 STAGE_PASSED project=seriously-simple-podcasting-content slot=slot-b stage=7 name=verify
+2026-08-26T00:30:29+08:00 RUN_PASSED project=seriously-simple-podcasting-content slot=slot-b ok=1
+2026-08-26T00:30:29+08:00 MATRIX_LANE_PASSED project=seriously-simple-podcasting-content slot=slot-b exit=0 secs=157 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-seriously-simple-podcasting-content.log
+2026-08-26T00:30:30+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:30:31+08:00 STAGE_PASSED project=wp-recipe-maker-content slot=slot-c stage=7 name=verify
+2026-08-26T00:30:31+08:00 RUN_PASSED project=wp-recipe-maker-content slot=slot-c ok=1
+2026-08-26T00:30:31+08:00 MATRIX_LANE_PASSED project=wp-recipe-maker-content slot=slot-c exit=0 secs=157 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-wp-recipe-maker-content.log
+2026-08-26T00:30:32+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:30:34+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:30:34+08:00 STAGE_START project=elementor-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:30:49+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:30:49+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:30:49+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:30:49+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:30:49+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:30:49+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:30:49+08:00 STAGE_START project=elementor-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:31:12+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:31:12+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:31:13+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:31:13+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=3 name=data-seed skipped=1
+2026-08-26T00:31:13+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:31:13+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:31:13+08:00 STAGE_START project=elementor-content slot=slot-d stage=7 name=verify
+2026-08-26T00:31:13+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:31:13+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:31:20+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:31:20+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:31:20+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:31:20+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=3 name=data-seed skipped=1
+2026-08-26T00:31:20+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:31:33+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:31:33+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:31:40+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:31:40+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:31:48+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:31:48+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:32:01+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:32:01+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:32:01+08:00 STAGE_PASSED project=wordpress-seo-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:32:01+08:00 STAGE_START project=wordpress-seo-content slot=slot-a stage=7 name=verify
+2026-08-26T00:32:07+08:00 STAGE_PASSED project=elementor-content slot=slot-d stage=7 name=verify
+2026-08-26T00:32:07+08:00 RUN_PASSED project=elementor-content slot=slot-d ok=1
+2026-08-26T00:32:07+08:00 MATRIX_LANE_PASSED project=elementor-content slot=slot-d exit=0 secs=157 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-elementor-content.log
+2026-08-26T00:32:09+08:00 STAGE_START project=give-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:32:10+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:32:10+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:32:26+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:32:26+08:00 STAGE_START project=advanced-custom-fields-content slot=slot-b stage=7 name=verify
+2026-08-26T00:32:35+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:32:35+08:00 STAGE_START project=site-reviews-content slot=slot-c stage=7 name=verify
+2026-08-26T00:32:52+08:00 STAGE_FAILED project=wordpress-seo-content slot=slot-a stage=7 name=verify rc=1
+2026-08-26T00:32:53+08:00 RUN_FAILED project=wordpress-seo-content slot=slot-a exit=1 category=repo_regression surface=e2e_pipeline msg=Lane failed after environment probes passed
+2026-08-26T00:32:54+08:00 MATRIX_LANE_FAILED project=wordpress-seo-content slot=slot-a exit=1 secs=159 category=repo_regression log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-wordpress-seo-content.log
+2026-08-26T00:32:55+08:00 STAGE_START project=directorist-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:33:00+08:00 STAGE_PASSED project=give-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:33:00+08:00 STAGE_START project=give-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:33:01+08:00 STAGE_PASSED project=give-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:33:01+08:00 STAGE_PASSED project=give-content slot=slot-d stage=3 name=data-seed skipped=1
+2026-08-26T00:33:01+08:00 STAGE_START project=give-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:33:17+08:00 STAGE_PASSED project=advanced-custom-fields-content slot=slot-b stage=7 name=verify
+2026-08-26T00:33:17+08:00 RUN_PASSED project=advanced-custom-fields-content slot=slot-b ok=1
+2026-08-26T00:33:17+08:00 MATRIX_LANE_PASSED project=advanced-custom-fields-content slot=slot-b exit=0 secs=167 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-advanced-custom-fields-content.log
+2026-08-26T00:33:19+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:33:26+08:00 STAGE_PASSED project=site-reviews-content slot=slot-c stage=7 name=verify
+2026-08-26T00:33:26+08:00 RUN_PASSED project=site-reviews-content slot=slot-c ok=1
+2026-08-26T00:33:26+08:00 MATRIX_LANE_PASSED project=site-reviews-content slot=slot-c exit=0 secs=174 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-site-reviews-content.log
+2026-08-26T00:33:27+08:00 STAGE_START project=events-manager-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:33:27+08:00 STAGE_PASSED project=give-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:33:27+08:00 STAGE_START project=give-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:33:28+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:33:28+08:00 STAGE_START project=directorist-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:33:29+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:33:29+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:33:29+08:00 STAGE_START project=directorist-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:33:45+08:00 STAGE_PASSED project=give-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:33:45+08:00 STAGE_START project=give-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:33:54+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=1 name=env-check
+2026-08-26T00:33:54+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:33:54+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=2 name=env-clean
+2026-08-26T00:33:54+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=3 name=data-seed skipped=1
+2026-08-26T00:33:54+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:33:54+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:33:54+08:00 STAGE_START project=directorist-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:33:55+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=1 name=env-check
+2026-08-26T00:33:55+08:00 STAGE_START project=events-manager-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:33:55+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=2 name=env-clean
+2026-08-26T00:33:55+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=3 name=data-seed skipped=1
+2026-08-26T00:33:55+08:00 STAGE_START project=events-manager-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:34:12+08:00 STAGE_PASSED project=give-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:34:12+08:00 STAGE_START project=give-content slot=slot-d stage=7 name=verify
+2026-08-26T00:34:16+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:34:16+08:00 STAGE_START project=directorist-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:34:24+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=4 name=model-scan
+2026-08-26T00:34:24+08:00 STAGE_START project=events-manager-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:34:24+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=4 name=model-scan
+2026-08-26T00:34:24+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:34:44+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:34:44+08:00 STAGE_START project=directorist-content slot=slot-a stage=7 name=verify
+2026-08-26T00:34:45+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=5 name=relation-setup
+2026-08-26T00:34:45+08:00 STAGE_START project=events-manager-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:34:46+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=5 name=relation-setup
+2026-08-26T00:34:46+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:35:08+08:00 STAGE_PASSED project=give-content slot=slot-d stage=7 name=verify
+2026-08-26T00:35:08+08:00 RUN_PASSED project=give-content slot=slot-d ok=1
+2026-08-26T00:35:08+08:00 MATRIX_LANE_PASSED project=give-content slot=slot-d exit=0 secs=179 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-give-content.log
+2026-08-26T00:35:09+08:00 STAGE_START project=hivepress-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:35:13+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=6 name=client-translate
+2026-08-26T00:35:13+08:00 STAGE_START project=events-manager-content slot=slot-c stage=7 name=verify
+2026-08-26T00:35:13+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=6 name=client-translate
+2026-08-26T00:35:13+08:00 STAGE_START project=lifterlms-content slot=slot-b stage=7 name=verify
+2026-08-26T00:35:40+08:00 STAGE_PASSED project=directorist-content slot=slot-a stage=7 name=verify
+2026-08-26T00:35:40+08:00 RUN_PASSED project=directorist-content slot=slot-a ok=1
+2026-08-26T00:35:40+08:00 MATRIX_LANE_PASSED project=directorist-content slot=slot-a exit=0 secs=165 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-directorist-content.log
+2026-08-26T00:35:41+08:00 STAGE_START project=wptsall-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:35:44+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=1 name=env-check
+2026-08-26T00:35:44+08:00 STAGE_START project=hivepress-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:35:44+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=2 name=env-clean
+2026-08-26T00:35:44+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=3 name=data-seed skipped=1
+2026-08-26T00:35:44+08:00 STAGE_START project=hivepress-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:36:05+08:00 STAGE_PASSED project=lifterlms-content slot=slot-b stage=7 name=verify
+2026-08-26T00:36:05+08:00 RUN_PASSED project=lifterlms-content slot=slot-b ok=1
+2026-08-26T00:36:05+08:00 MATRIX_LANE_PASSED project=lifterlms-content slot=slot-b exit=0 secs=166 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-lifterlms-content.log
+2026-08-26T00:36:06+08:00 STAGE_PASSED project=events-manager-content slot=slot-c stage=7 name=verify
+2026-08-26T00:36:06+08:00 RUN_PASSED project=events-manager-content slot=slot-c ok=1
+2026-08-26T00:36:06+08:00 MATRIX_LANE_PASSED project=events-manager-content slot=slot-c exit=0 secs=159 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-events-manager-content.log
+2026-08-26T00:36:10+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=4 name=model-scan
+2026-08-26T00:36:10+08:00 STAGE_START project=hivepress-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:36:18+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=1 name=env-check
+2026-08-26T00:36:18+08:00 STAGE_START project=wptsall-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:36:19+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=2 name=env-clean
+2026-08-26T00:36:19+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=3 name=data-seed skipped=1
+2026-08-26T00:36:19+08:00 STAGE_START project=wptsall-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:36:23+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=5 name=relation-setup
+2026-08-26T00:36:23+08:00 STAGE_START project=hivepress-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:36:41+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=4 name=model-scan
+2026-08-26T00:36:41+08:00 STAGE_START project=wptsall-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:36:43+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=6 name=client-translate
+2026-08-26T00:36:43+08:00 STAGE_START project=hivepress-content slot=slot-d stage=7 name=verify
+2026-08-26T00:36:56+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=5 name=relation-setup
+2026-08-26T00:36:56+08:00 STAGE_START project=wptsall-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:37:17+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=6 name=client-translate
+2026-08-26T00:37:17+08:00 STAGE_START project=wptsall-content slot=slot-a stage=7 name=verify
+2026-08-26T00:37:24+08:00 STAGE_PASSED project=hivepress-content slot=slot-d stage=7 name=verify
+2026-08-26T00:37:24+08:00 RUN_PASSED project=hivepress-content slot=slot-d ok=1
+2026-08-26T00:37:24+08:00 MATRIX_LANE_PASSED project=hivepress-content slot=slot-d exit=0 secs=135 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-hivepress-content.log
+2026-08-26T00:37:51+08:00 STAGE_PASSED project=wptsall-content slot=slot-a stage=7 name=verify
+2026-08-26T00:37:51+08:00 RUN_PASSED project=wptsall-content slot=slot-a ok=1
+2026-08-26T00:37:51+08:00 MATRIX_LANE_PASSED project=wptsall-content slot=slot-a exit=0 secs=130 category=none log=/home/john/wpmmcc-ats3.0/wpmmcc-ats/tests/e2e/reports/matrix-lane-20260826-002258-wptsall-content.log

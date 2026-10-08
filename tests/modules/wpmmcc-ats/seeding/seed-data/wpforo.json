@@ -1,0 +1,106 @@
+{
+    "_meta": {
+        "plugin_slug": "wpforo",
+        "plugin_name": "wpForo Forum",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "wpForo Forum seed data - uses custom tables",
+        "note": "wpForo uses custom database tables (wpforo_forums, wpforo_topics, wpforo_posts) instead of WordPress posts. Requires direct table insertion.",
+        "fields_source": "custom tables (wpforo_forums, wpforo_topics, wpforo_posts, wpforo_categories)",
+        "fields_verified": "2026-01-27"
+    },
+    "custom_tables": {
+        "categories": [
+            {
+                "title": "General",
+                "slug": "general",
+                "description": "General discussion forums",
+                "icon": "fas fa-comments"
+            },
+            {
+                "title": "Support",
+                "slug": "support",
+                "description": "Get help from our community",
+                "icon": "fas fa-question-circle"
+            }
+        ],
+        "forums": [
+            {
+                "category_ref": "General",
+                "title": "Introductions",
+                "description": "Introduce yourself to the community",
+                "icon": "fas fa-user"
+            },
+            {
+                "category_ref": "General",
+                "title": "General Chat",
+                "description": "Discuss anything on your mind",
+                "icon": "fas fa-coffee"
+            },
+            {
+                "category_ref": "Support",
+                "title": "Technical Support",
+                "description": "Get help with technical issues",
+                "icon": "fas fa-wrench"
+            },
+            {
+                "category_ref": "Support",
+                "title": "Billing Questions",
+                "description": "Questions about billing and payments",
+                "icon": "fas fa-credit-card"
+            },
+            {
+                "category_ref": "General",
+                "title": "News & Announcements",
+                "description": "Official news and updates",
+                "icon": "fas fa-bullhorn"
+            }
+        ],
+        "topics": [
+            {
+                "forum_ref": "Introductions",
+                "title": "Hello from New York!",
+                "content": "<p>Hi everyone! Just joined the community. Looking forward to connecting with all of you.</p>"
+            },
+            {
+                "forum_ref": "Introductions",
+                "title": "Greetings from Australia",
+                "content": "<p>G'day! New member here, excited to be part of this community.</p>"
+            },
+            {
+                "forum_ref": "Technical Support",
+                "title": "Installation help needed",
+                "content": "<p>I'm having trouble with the installation process. Can someone guide me through the steps?</p>"
+            },
+            {
+                "forum_ref": "Technical Support",
+                "title": "Performance optimization tips",
+                "content": "<p>What are some ways to improve performance? Any recommendations appreciated.</p>"
+            },
+            {
+                "forum_ref": "News & Announcements",
+                "title": "Welcome to our new forum!",
+                "content": "<p>Welcome to our brand new community forum. Please read the guidelines before posting.</p>"
+            },
+            {
+                "forum_ref": "General Chat",
+                "title": "What are you working on?",
+                "content": "<p>Share what projects you're currently working on!</p>"
+            }
+        ],
+        "posts": [
+            {
+                "topic_ref": "Hello from New York!",
+                "content": "<p>Welcome! Great to have you here.</p>"
+            },
+            {
+                "topic_ref": "Installation help needed",
+                "content": "<p>Can you share what error message you're seeing? That will help us diagnose the issue.</p>"
+            },
+            {
+                "topic_ref": "Installation help needed",
+                "content": "<p>Make sure you have the latest version installed. That fixed similar issues for me.</p>"
+            }
+        ]
+    }
+}

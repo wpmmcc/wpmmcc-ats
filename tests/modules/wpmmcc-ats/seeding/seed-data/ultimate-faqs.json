@@ -1,0 +1,71 @@
+{
+    "_meta": {
+        "plugin_slug": "ultimate-faqs",
+        "plugin_name": "Ultimate FAQs",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "Ultimate FAQs seed data for FAQ entries",
+        "fields_source": "v4-scanner (unknown-ufaq.json) - no custom meta fields",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "ufaq-category": [
+            {"name": "General", "slug": "general"},
+            {"name": "Billing", "slug": "billing"},
+            {"name": "Technical", "slug": "technical"},
+            {"name": "Shipping", "slug": "shipping"}
+        ]
+    },
+    "posts": {
+        "ufaq": [
+            {
+                "post_title": "How do I create an account?",
+                "post_content": "<p>To create an account, click the 'Sign Up' button in the top right corner. Fill in your email address and choose a password. You'll receive a confirmation email to verify your account.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["general"]}
+            },
+            {
+                "post_title": "What payment methods do you accept?",
+                "post_content": "<p>We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for orders over $500.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["billing"]}
+            },
+            {
+                "post_title": "How do I reset my password?",
+                "post_content": "<p>Click 'Forgot Password' on the login page. Enter your email address and we'll send you a link to reset your password. The link expires after 24 hours.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["technical"]}
+            },
+            {
+                "post_title": "What is your refund policy?",
+                "post_content": "<p>We offer a 30-day money-back guarantee on all products. If you're not satisfied, contact our support team to initiate a refund. Refunds are processed within 5-7 business days.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["billing"]}
+            },
+            {
+                "post_title": "How long does shipping take?",
+                "post_content": "<p>Standard shipping takes 5-7 business days. Express shipping (2-3 days) is available for an additional fee. International shipping varies by location.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["shipping"]}
+            },
+            {
+                "post_title": "Do you ship internationally?",
+                "post_content": "<p>Yes, we ship to over 50 countries worldwide. Shipping costs and delivery times vary by destination. Check our shipping calculator at checkout.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["shipping"]}
+            },
+            {
+                "post_title": "How do I contact support?",
+                "post_content": "<p>You can reach our support team via email at support@example.com, live chat on our website, or by calling 1-800-EXAMPLE. Support is available Monday-Friday, 9AM-6PM EST.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["general"]}
+            },
+            {
+                "post_title": "What are the system requirements?",
+                "post_content": "<p>Our software requires Windows 10+ or macOS 10.15+, 4GB RAM minimum (8GB recommended), and 500MB free disk space.</p>",
+                "post_status": "publish",
+                "taxonomy": {"ufaq-category": ["technical"]}
+            }
+        ]
+    }
+}

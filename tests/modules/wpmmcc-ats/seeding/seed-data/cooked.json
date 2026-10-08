@@ -1,0 +1,91 @@
+{
+    "_meta": {
+        "plugin_slug": "cooked",
+        "plugin_name": "Cooked",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Cooked recipe plugin seed data",
+        "fields_source": "v4-scanner (cp-cp_recipe.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "cp_recipe_category": [
+            {"name": "Main Dishes", "slug": "main-dishes"},
+            {"name": "Desserts", "slug": "desserts"},
+            {"name": "Appetizers", "slug": "appetizers"},
+            {"name": "Vegetarian", "slug": "vegetarian"}
+        ]
+    },
+    "posts": {
+        "cp_recipe": [
+            {
+                "post_title": "Classic Italian Pasta Carbonara",
+                "post_content": "<p>A traditional Roman pasta dish made with eggs, cheese, pancetta, and black pepper.</p><h3>Ingredients</h3><ul><li>400g spaghetti</li><li>200g pancetta or guanciale</li><li>4 large eggs</li><li>100g Pecorino Romano cheese</li><li>Black pepper to taste</li></ul><h3>Instructions</h3><ol><li>Cook pasta in salted boiling water until al dente.</li><li>While pasta cooks, fry pancetta until crispy.</li><li>Beat eggs with grated cheese and pepper.</li><li>Toss hot pasta with pancetta, then remove from heat.</li><li>Add egg mixture and toss quickly to coat.</li></ol>",
+                "post_excerpt": "Authentic Italian carbonara with crispy pancetta.",
+                "post_status": "publish",
+                "meta": {
+                    "_cp_recipe_prep_time": "15",
+                    "_cp_recipe_cook_time": "20",
+                    "_cp_recipe_total_time": "35",
+                    "_cp_recipe_servings": "4",
+                    "_cp_recipe_difficulty": "medium",
+                    "_cp_recipe_calories": "580"
+                },
+                "taxonomy": {"cp_recipe_category": ["main-dishes"]}
+            },
+            {
+                "post_title": "New York Style Cheesecake",
+                "post_content": "<p>Rich and creamy cheesecake with a graham cracker crust.</p><h3>Ingredients</h3><ul><li>Graham cracker crust</li><li>900g cream cheese</li><li>200g sugar</li><li>4 eggs</li><li>Vanilla extract</li></ul>",
+                "post_excerpt": "Classic New York cheesecake recipe.",
+                "post_status": "publish",
+                "meta": {
+                    "_cp_recipe_prep_time": "30",
+                    "_cp_recipe_cook_time": "60",
+                    "_cp_recipe_servings": "12",
+                    "_cp_recipe_difficulty": "medium"
+                },
+                "taxonomy": {"cp_recipe_category": ["desserts"]}
+            },
+            {
+                "post_title": "Crispy Bruschetta",
+                "post_content": "<p>Fresh tomato bruschetta with garlic and basil on toasted bread.</p>",
+                "post_excerpt": "Simple and delicious Italian appetizer.",
+                "post_status": "publish",
+                "meta": {
+                    "_cp_recipe_prep_time": "15",
+                    "_cp_recipe_cook_time": "5",
+                    "_cp_recipe_servings": "8",
+                    "_cp_recipe_difficulty": "easy"
+                },
+                "taxonomy": {"cp_recipe_category": ["appetizers"]}
+            },
+            {
+                "post_title": "Mediterranean Quinoa Bowl",
+                "post_content": "<p>Healthy quinoa bowl with roasted vegetables, chickpeas, and tahini dressing.</p>",
+                "post_excerpt": "Nutritious and filling vegetarian meal.",
+                "post_status": "publish",
+                "meta": {
+                    "_cp_recipe_prep_time": "20",
+                    "_cp_recipe_cook_time": "30",
+                    "_cp_recipe_servings": "4",
+                    "_cp_recipe_difficulty": "easy",
+                    "_cp_recipe_calories": "420"
+                },
+                "taxonomy": {"cp_recipe_category": ["vegetarian", "main-dishes"]}
+            },
+            {
+                "post_title": "Chocolate Lava Cake",
+                "post_content": "<p>Individual chocolate cakes with a molten center. Perfect for special occasions.</p>",
+                "post_excerpt": "Decadent chocolate dessert with gooey center.",
+                "post_status": "publish",
+                "meta": {
+                    "_cp_recipe_prep_time": "15",
+                    "_cp_recipe_cook_time": "12",
+                    "_cp_recipe_servings": "6",
+                    "_cp_recipe_difficulty": "medium"
+                },
+                "taxonomy": {"cp_recipe_category": ["desserts"]}
+            }
+        ]
+    }
+}

@@ -1,0 +1,85 @@
+{
+    "_meta": {
+        "plugin_slug": "site-reviews",
+        "plugin_name": "Site Reviews",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Site Reviews seed data for reviews",
+        "fields_source": "database query (site-review meta_keys, _rating/_author/_email prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "site-review-category": [
+            {"name": "Products", "slug": "products"},
+            {"name": "Services", "slug": "services"},
+            {"name": "Customer Support", "slug": "customer-support"}
+        ]
+    },
+    "posts": {
+        "site-review": [
+            {
+                "post_title": "Excellent Product Quality",
+                "post_content": "I've been using this product for 3 months and it has exceeded my expectations. The build quality is outstanding and customer support is very responsive.",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "5",
+                    "_author": "John Smith",
+                    "_email": "john@example.com",
+                    "_submitted": "1"
+                },
+                "taxonomy": {"site-review-category": ["products"]}
+            },
+            {
+                "post_title": "Great Service Experience",
+                "post_content": "Professional service from start to finish. The team was knowledgeable and completed the work on time. Highly recommend!",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "5",
+                    "_author": "Sarah Johnson",
+                    "_email": "sarah@example.com"
+                },
+                "taxonomy": {"site-review-category": ["services"]}
+            },
+            {
+                "post_title": "Good Value for Money",
+                "post_content": "The product works as described. Delivery was fast and packaging was secure. Would buy again.",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "4",
+                    "_author": "Mike Brown"
+                },
+                "taxonomy": {"site-review-category": ["products"]}
+            },
+            {
+                "post_title": "Quick Support Response",
+                "post_content": "Had an issue with my order and customer support resolved it within 24 hours. Very impressed with their efficiency.",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "5",
+                    "_author": "Emily Davis"
+                },
+                "taxonomy": {"site-review-category": ["customer-support"]}
+            },
+            {
+                "post_title": "Solid Performance",
+                "post_content": "Using this for my business and it handles everything we throw at it. Documentation could be better but overall satisfied.",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "4",
+                    "_author": "Robert Wilson"
+                },
+                "taxonomy": {"site-review-category": ["products"]}
+            },
+            {
+                "post_title": "Professional Installation",
+                "post_content": "The installation team was punctual and professional. They explained everything clearly and cleaned up after finishing.",
+                "post_status": "publish",
+                "meta": {
+                    "_rating": "5",
+                    "_author": "Lisa Anderson"
+                },
+                "taxonomy": {"site-review-category": ["services"]}
+            }
+        ]
+    }
+}

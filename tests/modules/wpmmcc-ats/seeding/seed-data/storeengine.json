@@ -1,0 +1,62 @@
+{
+    "_meta": {
+        "plugin_slug": "storeengine",
+        "plugin_name": "StoreEngine",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "StoreEngine seed data for products",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "storeengine_product": [
+            {
+                "post_title": "Professional Camera Kit",
+                "post_content": "<p>Complete photography kit including DSLR camera, lenses, tripod, and carrying case.</p>",
+                "post_excerpt": "All-in-one professional camera kit.",
+                "post_status": "publish",
+                "meta": {
+                    "_se_price": "1299.99",
+                    "_se_sale_price": "1099.99",
+                    "_se_sku": "CAM-001",
+                    "_se_stock": "25",
+                    "_se_weight": "5.5"
+                }
+            },
+            {
+                "post_title": "Gaming Laptop Pro",
+                "post_content": "<p>High-performance gaming laptop with RTX graphics, 16GB RAM, and 1TB SSD.</p>",
+                "post_excerpt": "Powerful gaming laptop for enthusiasts.",
+                "post_status": "publish",
+                "meta": {
+                    "_se_price": "1899.99",
+                    "_se_sku": "LAP-002",
+                    "_se_stock": "15"
+                }
+            },
+            {
+                "post_title": "Wireless Speaker System",
+                "post_content": "<p>Multi-room audio system with rich sound and easy setup.</p>",
+                "post_excerpt": "Premium wireless speakers.",
+                "post_status": "publish",
+                "meta": {
+                    "_se_price": "449.99",
+                    "_se_sale_price": "399.99",
+                    "_se_sku": "SPK-003",
+                    "_se_stock": "40"
+                }
+            },
+            {
+                "post_title": "Smart Home Starter Kit",
+                "post_content": "<p>Everything you need to start your smart home journey. Includes hub, lights, and sensors.</p>",
+                "post_excerpt": "Complete smart home kit.",
+                "post_status": "publish",
+                "meta": {
+                    "_se_price": "299.99",
+                    "_se_sku": "SH-004",
+                    "_se_stock": "60"
+                }
+            }
+        ]
+    }
+}

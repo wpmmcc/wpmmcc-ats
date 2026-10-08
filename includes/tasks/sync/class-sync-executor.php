@@ -507,6 +507,9 @@ class Sync_Executor {
 		}
 
 		$field_formats = self::get_field_content_formats_for_sync( $relation_id, $subtype, $object_type, $object_id );
+		$field_formats = self::apply_text_product_write_formats( $field_formats, $field_results );
+		$translated_fields = self::omit_file_url_text_products( $translated_fields, $field_results );
+		$translated_meta   = self::omit_file_url_text_products( $translated_meta, $field_results );
 		$translated_fields = array_filter(
 			$translated_fields,
 			static function ( $key ) use ( $field_formats, $object_type ) {
@@ -1466,6 +1469,97 @@ class Sync_Executor {
 	 * @param array $field_results Callback field_results array.
 	 * @return int
 	 */
+	/**
+	 * Rule action that may write a value. Skip and unknown types do not.
+	 *
+	 * `action` wins when present. Older rules store the action in `type`.
+	 * A content format such as plain_text is not an action.
+	 *
+	 * @param array $config Field capability.
+	 * @return string translate, copy, or empty.
+	 */
+	private static function writable_field_action( array $config ): string {
+		$action = sanitize_key( (string) ( $config['action'] ?? '' ) );
+		if ( '' === $action ) {
+			$action = sanitize_key( (string) ( $config['type'] ?? '' ) );
+		}
+		if ( 'as_is' === $action ) {
+			$action = 'copy';
+		}
+		return in_array( $action, array( 'translate', 'copy' ), true ) ? $action : '';
+	}
+
+	/**
+	 * Text products are sentences, not file addresses.
+	 *
+	 * OCR, subtitles, transcripts, document text and an explicit copy stay on
+	 * the plain-text writer. A binary replace keeps the rule's media format.
+	 * Fields the rule did not select are not added.
+	 *
+	 * @param array $field_formats Field to content_format.
+	 * @param array $field_results Callback field_results.
+	 * @return array
+	 */
+	private static function apply_text_product_write_formats( array $field_formats, array $field_results ): array {
+		foreach ( $field_results as $row ) {
+			if ( ! is_array( $row ) || ! self::field_result_is_text_product( $row ) ) {
+				continue;
+			}
+			$field = (string) ( $row['field'] ?? '' );
+			if ( '' === $field || ! array_key_exists( $field, $field_formats ) ) {
+				continue;
+			}
+			$field_formats[ $field ] = 'plain_text';
+		}
+		return $field_formats;
+	}
+
+	/**
+	 * Drop a text-product value that is only a file URL.
+	 *
+	 * @param array $values        Translated fields or meta.
+	 * @param array $field_results Callback field_results.
+	 * @return array
+	 */
+	private static function omit_file_url_text_products( array $values, array $field_results ): array {
+		foreach ( $field_results as $row ) {
+			if ( ! is_array( $row ) || ! self::field_result_is_text_product( $row, false ) ) {
+				continue;
+			}
+			$field = (string) ( $row['field'] ?? '' );
+			if ( '' === $field || ! array_key_exists( $field, $values ) ) {
+				continue;
+			}
+			$text = trim( (string) $values[ $field ] );
+			if ( '' !== $text && ! preg_match( '/\s/u', $text ) && filter_var( $text, FILTER_VALIDATE_URL ) ) {
+				unset( $values[ $field ] );
+			}
+		}
+		return $values;
+	}
+
+	/**
+	 * Whether a callback row landed a text product rather than a file replace.
+	 *
+	 * @param array $row           One field_results row.
+	 * @param bool  $include_copy  Copied source text uses the text writer too.
+	 * @return bool
+	 */
+	private static function field_result_is_text_product( array $row, bool $include_copy = true ): bool {
+		if ( 'success' !== sanitize_key( (string) ( $row['status'] ?? '' ) ) ) {
+			return false;
+		}
+		$stage = sanitize_key( (string) ( $row['transform_stage'] ?? '' ) );
+		if ( '' === $stage ) {
+			$stage = sanitize_key( (string) ( $row['detail'] ?? '' ) );
+		}
+		$stages = array( 'ocr_text', 'subtitle_text', 'transcript_text', 'document_text', 'text_field' );
+		if ( $include_copy ) {
+			$stages[] = 'copied_without_provider';
+		}
+		return in_array( $stage, $stages, true );
+	}
+
 	private static function count_structured_field_failures( array $field_results ): int {
 		$count = 0;
 		foreach ( $field_results as $row ) {
@@ -1549,8 +1643,9 @@ class Sync_Executor {
 				$enabled_rule = true;
 
 				foreach ( $field_caps as $field_name => $config ) {
+					$action = is_array( $config ) ? self::writable_field_action( $config ) : '';
 					if ( is_array( $config ) && ( $config['enabled'] ?? true )
-						&& 'translate' === ( $config['type'] ?? '' ) ) {
+						&& '' !== $action ) {
 						$format = sanitize_key( (string) ( $config['content_format'] ?? 'plain_text' ) );
 						if ( class_exists( '\\WPTSALL\\Core\\Smart_Field_Classifier' ) ) {
 							$format = \WPTSALL\Core\Smart_Field_Classifier::normalize_content_format( $format, 'plain_text' );

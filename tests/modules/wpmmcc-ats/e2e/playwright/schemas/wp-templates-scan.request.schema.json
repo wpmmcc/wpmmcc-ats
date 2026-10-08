@@ -1,0 +1,9 @@
+{
+  "$id": "wp-templates-scan.request.schema.json",
+  "type": "object",
+  "required": ["relation_id"],
+  "properties": {
+    "relation_id": { "type": ["integer", "number", "string"] }
+  },
+  "additionalProperties": true
+}

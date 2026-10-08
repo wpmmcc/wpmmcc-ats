@@ -1,0 +1,122 @@
+{
+    "_meta": {
+        "plugin_slug": "simply-schedule-appointments",
+        "plugin_name": "Simply Schedule Appointments",
+        "type": "booking",
+        "generated_at": "2026-01-27 04:51:16"
+    },
+    "appointment_types": [
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "lp_course"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        },
+        {
+            "name": "房产看房",
+            "slug": "property-viewing",
+            "duration": 60,
+            "description": "预约实地看房",
+            "related_post_types": [
+                "property"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约看房",
+                "page_slug": "book-property-viewing"
+            }
+        },
+        {
+            "name": "房产看房",
+            "slug": "property-viewing",
+            "duration": 60,
+            "description": "预约实地看房",
+            "related_post_types": [
+                "rtcl_listing"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约看房",
+                "page_slug": "book-property-viewing"
+            }
+        },
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "course"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        },
+        {
+            "name": "产品演示",
+            "slug": "product-demo",
+            "duration": 45,
+            "description": "产品功能演示和咨询",
+            "related_post_types": [
+                "product"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约产品演示",
+                "page_slug": "book-product-demo"
+            }
+        },
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "academy_courses"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        },
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "stm-courses"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        },
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "courses"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        }
+    ]
+}

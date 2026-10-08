@@ -1,0 +1,92 @@
+{
+    "_meta": {
+        "plugin_slug": "propertyhive",
+        "plugin_name": "PropertyHive",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "PropertyHive seed data for real estate listings",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "property_type": [
+            {"name": "House", "slug": "house"},
+            {"name": "Flat", "slug": "flat"},
+            {"name": "Bungalow", "slug": "bungalow"}
+        ],
+        "availability": [
+            {"name": "For Sale", "slug": "for-sale"},
+            {"name": "To Let", "slug": "to-let"}
+        ]
+    },
+    "posts": {
+        "property": [
+            {
+                "post_title": "Charming Victorian Townhouse",
+                "post_content": "<p>Beautifully restored Victorian townhouse with original features and modern amenities.</p>",
+                "post_excerpt": "Period property with character.",
+                "post_status": "publish",
+                "meta": {
+                    "_price": "425000",
+                    "_bedrooms": "4",
+                    "_bathrooms": "2",
+                    "_reception_rooms": "2",
+                    "_address_street": "12 Victoria Road",
+                    "_address_two": "Kensington",
+                    "_address_city": "London"
+                },
+                "taxonomy": {
+                    "property_type": ["house"],
+                    "availability": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Modern City Centre Apartment",
+                "post_content": "<p>Stylish apartment in prime city centre location. Perfect for professionals.</p>",
+                "post_excerpt": "City centre living.",
+                "post_status": "publish",
+                "meta": {
+                    "_price": "1500",
+                    "_price_qualifier": "pcm",
+                    "_bedrooms": "2",
+                    "_bathrooms": "1"
+                },
+                "taxonomy": {
+                    "property_type": ["flat"],
+                    "availability": ["to-let"]
+                }
+            },
+            {
+                "post_title": "Seaside Bungalow",
+                "post_content": "<p>Detached bungalow with sea views. Large garden and parking for multiple vehicles.</p>",
+                "post_excerpt": "Coastal retirement property.",
+                "post_status": "publish",
+                "meta": {
+                    "_price": "350000",
+                    "_bedrooms": "3",
+                    "_bathrooms": "2"
+                },
+                "taxonomy": {
+                    "property_type": ["bungalow"],
+                    "availability": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Executive Family Home",
+                "post_content": "<p>Spacious executive home in sought-after location. Double garage and landscaped gardens.</p>",
+                "post_excerpt": "Premium family residence.",
+                "post_status": "publish",
+                "meta": {
+                    "_price": "695000",
+                    "_bedrooms": "5",
+                    "_bathrooms": "3",
+                    "_reception_rooms": "3"
+                },
+                "taxonomy": {
+                    "property_type": ["house"],
+                    "availability": ["for-sale"]
+                }
+            }
+        ]
+    }
+}

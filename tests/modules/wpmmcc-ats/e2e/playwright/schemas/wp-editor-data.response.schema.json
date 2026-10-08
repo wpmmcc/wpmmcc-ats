@@ -1,0 +1,39 @@
+{
+  "$id": "wp-editor-data.response.schema.json",
+  "type": "object",
+  "required": ["source", "field_config", "relation", "target"],
+  "properties": {
+    "source": {
+      "type": "object",
+      "required": ["ID"],
+      "properties": {
+        "ID": { "type": ["integer", "number"] },
+        "post_title": { "type": "string" },
+        "post_type": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "target": { "type": ["object", "null"] },
+    "field_config": {
+      "type": "object",
+      "required": ["translate_fields", "field_capabilities"],
+      "properties": {
+        "translate_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "field_capabilities": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "relation": {
+      "type": "object",
+      "properties": {
+        "id": { "type": ["integer", "number", "string"] },
+        "relation_id": { "type": ["integer", "number", "string"] }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

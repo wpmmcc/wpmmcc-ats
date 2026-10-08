@@ -1,0 +1,114 @@
+# Bounded integrated cross matrix: content plugin × vendor template × site topology
+# Used by: run-content-vendor-integrated-matrix.sh (P1)
+# Strategy: representative vendors × plugins by content modality — NOT full Cartesian product
+#
+version: 1
+updated: "2026-08-24"
+catalog: tests/infra/fixtures/VENDOR_CATALOG.json
+project_specs: tests/modules/wpmmcc-ats/e2e/project-specs.json
+plan_doc: tests/docs/e2e/COMPREHENSIVE-INTEGRATED-TEST-PLAN.md
+
+# ── Vendor representatives (see plan §2) ─────────────────────────────────────
+vendors:
+  V-T1: { template: mock-sign-md5, modality: text, sign_family: baidu_md5 }
+  V-T2: { template: official-mock-text-v1, modality: text, sign_family: bearer_v1 }
+  V-R1: { template: mock-sign-sha256, modality: rich_html, sign_family: youdao_sha256 }
+  V-S1: { template: official-mock-structured-v1, modality: structured, sign_family: bearer_v1 }
+  V-I1: { template: official-mock-image-v1, modality: image, sign_family: bearer_v1 }
+  V-A1: { template: official-mock-audio-v1, modality: audio, sign_family: bearer_v1 }
+  V-V1: { template: official-mock-video-v1, modality: video, sign_family: bearer_v1 }
+  V-D1: { template: official-mock-document-v1, modality: document, sign_family: bearer_v1 }
+  V-O1: { template: mock-sign-oauth, modality: text, sign_family: oauth_jwt }
+
+# ── Site topology tiers (plan §4) ────────────────────────────────────────────
+topologies:
+  T0_virtual:
+    relation: virtual
+    target: v_smoke_fixed
+    frontend_prefix: /en_us/
+    lab_requirement: single-site-ok
+  T1_subsite:
+    relation: wp_subsite
+    target_blog_min: 2
+    frontend_prefix: /en_us/
+    lab_requirement: WPTSALL_LAB_MULTISITE=1
+  T2_self:
+    relation: self
+    target: blog1_en
+    lab_requirement: single-site-ok
+  T3_dual:
+    relations: [virtual, wp_subsite]
+    lab_requirement: WPTSALL_LAB_MULTISITE=1
+
+# ── Integrated edges: plugin × primary vendor × topology × task_types ────────
+# task_types: text | rich_html | media_ref | serialized_php | json_structured
+edges:
+  # Commerce
+  - { project: woocommerce-content, vendor: V-T1, topology: T0_virtual, task_types: [text, rich_html, serialized_php], native_frontend: product_permalink, native_admin: product_edit }
+  - { project: woocommerce-content, vendor: V-I1, topology: T0_virtual, task_types: [media_ref], native_frontend: product_gallery, native_admin: product_edit }
+  - { project: woocommerce-content, vendor: V-T1, topology: T3_dual, task_types: [text], native_frontend: product_permalink, release_only: true }
+
+  - { project: easy-digital-downloads-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], native_frontend: download_permalink, native_admin: download_edit }
+  - { project: easy-digital-downloads-content, vendor: V-D1, topology: T0_virtual, task_types: [document], native_frontend: download_permalink }
+
+  # Community
+  - { project: bbpress-content, vendor: V-T1, topology: T0_virtual, task_types: [text, rich_html], native_frontend: topic_permalink, native_admin: topic_edit }
+  - { project: site-reviews-content, vendor: V-R1, topology: T0_virtual, task_types: [rich_html], native_frontend: review_block, native_admin: review_list }
+
+  # LMS (+ video modality)
+  - { project: tutor-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], native_frontend: course_permalink, native_admin: course_edit }
+  - { project: tutor-content, vendor: V-V1, topology: T0_virtual, task_types: [media_ref], native_frontend: lesson_video, release_only: true }
+  - { project: learnpress-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], native_frontend: course_permalink }
+  - { project: learnpress-content, vendor: V-V1, topology: T0_virtual, task_types: [media_ref], release_only: true }
+  - { project: lifterlms-content, vendor: V-T1, topology: T0_virtual, task_types: [text, rich_html], native_frontend: course_permalink }
+
+  # Events / jobs / listings
+  - { project: the-events-calendar-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], native_frontend: event_permalink, native_admin: event_edit }
+  - { project: events-manager-content, vendor: V-T1, topology: T0_virtual, task_types: [text, rich_html], native_frontend: event_permalink }
+  - { project: wp-job-manager-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], native_frontend: job_permalink, native_admin: job_edit }
+  - { project: directorist-content, vendor: V-R1, topology: T0_virtual, task_types: [rich_html, serialized_php], native_frontend: listing_permalink, avoid_paths: [search-home] }
+  - { project: hivepress-content, vendor: V-S1, topology: T0_virtual, task_types: [json_structured, rich_html], native_frontend: listing_permalink }
+
+  # Media / builder / meta
+  - { project: envira-gallery-lite-content, vendor: V-I1, topology: T0_virtual, task_types: [media_ref, serialized_php], native_frontend: gallery_permalink, native_admin: gallery_edit }
+  - { project: seriously-simple-podcasting-content, vendor: V-A1, topology: T0_virtual, task_types: [media_ref, rich_html], native_frontend: episode_permalink, native_admin: episode_edit }
+  - { project: elementor-content, vendor: V-S1, topology: T0_virtual, task_types: [json_structured, rich_html], native_frontend: page_permalink, native_admin: elementor_edit }
+  - { project: elementor-content, vendor: V-I1, topology: T0_virtual, task_types: [media_ref], release_only: true }
+  - { project: wordpress-seo-content, vendor: V-T1, topology: T0_virtual, task_types: [plain_text], native_frontend: post_permalink, native_admin: post_yoast_panel }
+  - { project: advanced-custom-fields-content, vendor: V-T1, topology: T0_virtual, task_types: [plain_text], native_frontend: product_acf_fields }
+  - { project: wp-recipe-maker-content, vendor: V-D1, topology: T0_virtual, task_types: [document, rich_html], native_frontend: recipe_permalink, native_admin: recipe_edit }
+
+  # Give + baseline
+  - { project: give-content, vendor: V-T2, topology: T0_virtual, task_types: [text, rich_html], json_hotplug: true, native_frontend: form_embed }
+  - { project: wptsall-content, vendor: V-T1, topology: T2_self, task_types: [text, rich_html, serialized_php, json_structured], native_frontend: post_permalink }
+  - { project: wptsall-content, vendor: V-I1, topology: T0_virtual, task_types: [media_ref], native_frontend: attachment_permalink }
+
+  # OAuth cross-cutting (Client binding flow)
+  - { project: wptsall-content, vendor: V-O1, topology: T0_virtual, task_types: [text], client_only: true, release_only: true }
+
+# ── Subsite topology subset (T1) — run when multisite lab enabled ────────────
+subsite_representatives:
+  - woocommerce-content
+  - tutor-content
+  - elementor-content
+  - bbpress-content
+  - the-events-calendar-content
+  - wptsall-content
+
+# ── Execution tiers ──────────────────────────────────────────────────────────
+execution:
+  nightly:
+    scope: core-only
+    edges: primary_only  # vendor = first edge per project
+    topology: [T0_virtual]
+  weekly:
+    scope: full
+    edges: all_non_release_only
+    topology: [T0_virtual]
+    native_admin_smoke: true
+  release:
+    scope: full
+    edges: all
+    topology: [T0_virtual, T1_subsite, T3_dual]
+    native_admin_smoke: true
+    client_support_bundle: true

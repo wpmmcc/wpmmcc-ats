@@ -1,0 +1,89 @@
+{
+    "_meta": {
+        "plugin_slug": "wordpress-seo",
+        "plugin_name": "Yoast SEO",
+        "type": "seo",
+        "version": "1.0.0",
+        "description": "SEO meta 数据填充配置"
+    },
+
+    "seo_templates": {
+        "_description": "根据 post_type 生成 SEO 数据的模板",
+
+        "product": {
+            "title_template": "{post_title} - 在线购买 | {site_name}",
+            "desc_template": "{post_excerpt} 立即购买，享受优惠价格和快速配送。",
+            "focuskw_source": "post_title"
+        },
+        "forum": {
+            "title_template": "{post_title} - 讨论区 | {site_name}",
+            "desc_template": "加入 {post_title} 讨论，与社区成员交流观点和经验。",
+            "focuskw_source": "post_title"
+        },
+        "topic": {
+            "title_template": "{post_title} | {site_name} 论坛",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "download": {
+            "title_template": "下载 {post_title} | {site_name}",
+            "desc_template": "{post_excerpt} 立即下载，安全可靠。",
+            "focuskw_source": "post_title"
+        },
+        "rtcl_listing": {
+            "title_template": "{post_title} - 分类信息 | {site_name}",
+            "desc_template": "{post_excerpt} 查看详情，联系卖家。",
+            "focuskw_source": "post_title"
+        },
+        "property": {
+            "title_template": "{post_title} - 房产出售/出租 | {site_name}",
+            "desc_template": "{post_excerpt} 查看房源详情，预约看房。",
+            "focuskw_source": "post_title"
+        },
+        "academy_courses": {
+            "title_template": "学习 {post_title} | {site_name} 在线课程",
+            "desc_template": "{post_excerpt} 立即报名，开始学习之旅。",
+            "focuskw_source": "post_title"
+        },
+        "stm-courses": {
+            "title_template": "{post_title} - 专业课程 | {site_name}",
+            "desc_template": "{post_excerpt} 专业导师授课，系统学习。",
+            "focuskw_source": "post_title"
+        },
+        "cp_recipe": {
+            "title_template": "{post_title} 食谱 | {site_name}",
+            "desc_template": "学做 {post_title}，{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "envira": {
+            "title_template": "{post_title} 相册 | {site_name}",
+            "desc_template": "浏览 {post_title} 精选图片集。",
+            "focuskw_source": "post_title"
+        },
+        "site-review": {
+            "title_template": "{post_title} 评价 | {site_name}",
+            "desc_template": "查看关于 {post_title} 的用户评价和反馈。",
+            "focuskw_source": "post_title"
+        }
+    },
+
+    "target_post_types": [
+        "product",
+        "forum",
+        "topic",
+        "download",
+        "rtcl_listing",
+        "property",
+        "academy_courses",
+        "stm-courses",
+        "cp_recipe",
+        "envira",
+        "site-review"
+    ],
+
+    "meta_fields": {
+        "_yoast_wpseo_title": "seo_title",
+        "_yoast_wpseo_metadesc": "seo_description",
+        "_yoast_wpseo_focuskw": "focus_keyword"
+    }
+}

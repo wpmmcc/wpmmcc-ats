@@ -1,0 +1,140 @@
+{
+    "_meta": {
+        "plugin_slug": "simply-schedule-appointments",
+        "plugin_name": "Simply Schedule Appointments",
+        "type": "booking",
+        "version": "1.0.0",
+        "description": "预约系统配置"
+    },
+
+    "appointment_types": [
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "duration_unit": "minutes",
+            "buffer_before": 5,
+            "buffer_after": 5,
+            "capacity": 1,
+            "description": "与课程顾问一对一咨询，了解课程详情和学习规划",
+            "availability": {
+                "days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+                "start_time": "09:00",
+                "end_time": "18:00"
+            },
+            "form_fields": ["name", "email", "phone", "interest_course"],
+            "related_post_types": ["academy_courses", "stm-courses"],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        },
+        {
+            "name": "房产看房",
+            "slug": "property-viewing",
+            "duration": 60,
+            "duration_unit": "minutes",
+            "buffer_before": 15,
+            "buffer_after": 15,
+            "capacity": 1,
+            "description": "预约实地看房，经纪人全程陪同",
+            "availability": {
+                "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
+                "start_time": "10:00",
+                "end_time": "19:00"
+            },
+            "form_fields": ["name", "email", "phone", "property_id", "preferred_date"],
+            "related_post_types": ["property", "rtcl_listing"],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约看房",
+                "page_slug": "book-property-viewing"
+            }
+        },
+        {
+            "name": "产品演示",
+            "slug": "product-demo",
+            "duration": 45,
+            "duration_unit": "minutes",
+            "buffer_before": 10,
+            "buffer_after": 10,
+            "capacity": 5,
+            "description": "产品功能演示和使用培训",
+            "availability": {
+                "days": ["monday", "wednesday", "friday"],
+                "start_time": "14:00",
+                "end_time": "17:00"
+            },
+            "form_fields": ["name", "email", "company", "product_interest"],
+            "related_post_types": ["product", "download"],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约产品演示",
+                "page_slug": "book-product-demo"
+            }
+        },
+        {
+            "name": "技术支持",
+            "slug": "technical-support",
+            "duration": 30,
+            "duration_unit": "minutes",
+            "buffer_before": 5,
+            "buffer_after": 5,
+            "capacity": 1,
+            "description": "一对一技术问题解答和支持",
+            "availability": {
+                "days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+                "start_time": "09:00",
+                "end_time": "17:00"
+            },
+            "form_fields": ["name", "email", "issue_description"],
+            "related_post_types": ["download"],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约技术支持",
+                "page_slug": "book-technical-support"
+            }
+        },
+        {
+            "name": "餐厅预约",
+            "slug": "restaurant-reservation",
+            "duration": 120,
+            "duration_unit": "minutes",
+            "buffer_before": 0,
+            "buffer_after": 30,
+            "capacity": 20,
+            "description": "餐厅座位预约",
+            "availability": {
+                "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+                "start_time": "11:00",
+                "end_time": "21:00"
+            },
+            "form_fields": ["name", "phone", "party_size", "special_requests"],
+            "related_post_types": ["cp_recipe"],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "餐厅预约",
+                "page_slug": "restaurant-reservation"
+            }
+        }
+    ],
+
+    "staff_members": [
+        {
+            "name": "张顾问",
+            "email": "zhang@example.com",
+            "services": ["course-consultation", "product-demo"]
+        },
+        {
+            "name": "李经纪",
+            "email": "li@example.com",
+            "services": ["property-viewing"]
+        },
+        {
+            "name": "王技术",
+            "email": "wang@example.com",
+            "services": ["technical-support", "product-demo"]
+        }
+    ]
+}

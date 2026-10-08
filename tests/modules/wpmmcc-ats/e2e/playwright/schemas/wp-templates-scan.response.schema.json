@@ -1,0 +1,22 @@
+{
+  "$id": "wp-templates-scan.response.schema.json",
+  "type": "object",
+  "required": ["success"],
+  "properties": {
+    "success": { "const": true },
+    "templates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text_domain": { "type": "string" },
+          "source_type": { "type": "string" },
+          "entry_count": { "type": ["integer", "number"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "relation_id": { "type": ["integer", "number", "string"] }
+  },
+  "additionalProperties": true
+}

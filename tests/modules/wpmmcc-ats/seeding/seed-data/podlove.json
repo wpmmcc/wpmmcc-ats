@@ -1,0 +1,77 @@
+{
+    "_meta": {
+        "plugin_slug": "podlove-podcasting-plugin-for-wordpress",
+        "plugin_name": "Podlove / Seriously Simple Podcasting",
+        "plan": "D",
+        "version": "1.0.1",
+        "description": "Podcast seed data (compatible with SSP and Podlove)",
+        "note": "Uses 'podcast' post_type shared by SSP. Field names from v4 scanner verification.",
+        "fields_source": "v4-scanner (unknown-podcast.json)",
+        "fields_verified": "2026-01-27",
+        "compatible_plugins": ["seriously-simple-podcasting", "podlove-podcasting-plugin-for-wordpress"]
+    },
+    "posts": {
+        "podcast": [
+            {
+                "post_title": "Episode 1: Getting Started with Tech",
+                "post_content": "<p>In our first episode, we discuss the basics of getting started in the tech industry.</p><h3>Show Notes</h3><ul><li>Introduction to tech careers</li><li>Learning resources</li><li>Industry trends</li></ul>",
+                "post_excerpt": "Getting started in the tech industry.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "00:45:30",
+                    "episode_type": "full",
+                    "date_recorded": "2026-01-15",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                }
+            },
+            {
+                "post_title": "Episode 2: Interview with Industry Leader",
+                "post_content": "<p>We sit down with a leading tech entrepreneur to discuss innovation and leadership.</p>",
+                "post_excerpt": "Interview with tech entrepreneur.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "00:52:15",
+                    "episode_type": "full",
+                    "date_recorded": "2026-01-18",
+                    "audio_file": "{{media:podcast-episode-2.mp3}}"
+                }
+            },
+            {
+                "post_title": "Episode 3: The Future of AI",
+                "post_content": "<p>Exploring artificial intelligence and its impact on various industries.</p>",
+                "post_excerpt": "AI and its future impact.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "00:48:00",
+                    "episode_type": "full",
+                    "date_recorded": "2026-01-20",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                }
+            },
+            {
+                "post_title": "Bonus: Quick Tips for Developers",
+                "post_content": "<p>A short bonus episode with rapid-fire tips for developers.</p>",
+                "post_excerpt": "Quick developer tips.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "00:15:00",
+                    "episode_type": "bonus",
+                    "date_recorded": "2026-01-22",
+                    "audio_file": "{{media:podcast-episode-2.mp3}}"
+                }
+            },
+            {
+                "post_title": "Episode 4: Remote Work Best Practices",
+                "post_content": "<p>Tips and strategies for effective remote work in tech.</p>",
+                "post_excerpt": "Remote work strategies.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "00:40:30",
+                    "episode_type": "full",
+                    "date_recorded": "2026-01-25",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                }
+            }
+        ]
+    }
+}

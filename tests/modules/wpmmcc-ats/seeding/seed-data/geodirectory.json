@@ -1,0 +1,77 @@
+{
+    "_meta": {
+        "plugin_slug": "geodirectory",
+        "plugin_name": "GeoDirectory",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "GeoDirectory seed data for location-based listings",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "gd_placecategory": [
+            {"name": "Restaurants", "slug": "restaurants"},
+            {"name": "Hotels", "slug": "hotels"},
+            {"name": "Entertainment", "slug": "entertainment"},
+            {"name": "Shopping", "slug": "shopping"}
+        ]
+    },
+    "posts": {
+        "gd_place": [
+            {
+                "post_title": "Harbor View Restaurant",
+                "post_content": "<p>Fine dining with spectacular harbor views. Fresh seafood and local ingredients.</p>",
+                "post_excerpt": "Waterfront fine dining restaurant.",
+                "post_status": "publish",
+                "meta": {
+                    "geodir_contact": "555-0501",
+                    "geodir_email": "reservations@harborview.example.com",
+                    "geodir_website": "https://harborview.example.com",
+                    "geodir_street": "100 Harbor Drive",
+                    "geodir_city": "San Diego",
+                    "geodir_region": "CA",
+                    "geodir_zip": "92101",
+                    "geodir_latitude": "32.7157",
+                    "geodir_longitude": "-117.1611",
+                    "geodir_overall_rating": "4.5"
+                },
+                "taxonomy": {"gd_placecategory": ["restaurants"]}
+            },
+            {
+                "post_title": "Grand Plaza Hotel",
+                "post_content": "<p>Luxury hotel in the heart of downtown. World-class amenities and service.</p>",
+                "post_excerpt": "Five-star downtown hotel.",
+                "post_status": "publish",
+                "meta": {
+                    "geodir_contact": "555-0502",
+                    "geodir_street": "200 Plaza Avenue",
+                    "geodir_city": "San Diego",
+                    "geodir_overall_rating": "4.8"
+                },
+                "taxonomy": {"gd_placecategory": ["hotels"]}
+            },
+            {
+                "post_title": "Sunset Cinema",
+                "post_content": "<p>State-of-the-art movie theater with IMAX and premium seating.</p>",
+                "post_excerpt": "Modern multiplex cinema.",
+                "post_status": "publish",
+                "meta": {
+                    "geodir_contact": "555-0503",
+                    "geodir_street": "50 Entertainment Blvd"
+                },
+                "taxonomy": {"gd_placecategory": ["entertainment"]}
+            },
+            {
+                "post_title": "Market Street Mall",
+                "post_content": "<p>Premier shopping destination with over 200 stores and restaurants.</p>",
+                "post_excerpt": "Major shopping mall.",
+                "post_status": "publish",
+                "meta": {
+                    "geodir_contact": "555-0504",
+                    "geodir_website": "https://marketstreetmall.example.com"
+                },
+                "taxonomy": {"gd_placecategory": ["shopping"]}
+            }
+        ]
+    }
+}

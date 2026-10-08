@@ -1,0 +1,116 @@
+{
+    "_meta": {
+        "plugin_slug": "woocommerce",
+        "plugin_name": "WooCommerce (Supplementary)",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Supplementary WooCommerce products with realistic English descriptions to complement the official sample_products.csv which uses Lorem ipsum.",
+        "note": "These products are loaded in Phase 2 after the official CSV import in Phase 1. Only use if WooCommerce is active."
+    },
+    "taxonomies": {
+        "product_cat": [
+            {"name": "Outdoor Gear", "slug": "outdoor-gear"},
+            {"name": "Kitchen & Dining", "slug": "kitchen-dining"}
+        ]
+    },
+    "posts": {
+        "product": [
+            {
+                "post_title": "Insulated Stainless Steel Water Bottle",
+                "post_content": "<p>Stay hydrated on the go with our double-wall vacuum insulated water bottle. Keeps drinks cold for 24 hours or hot for 12 hours.</p><h3>Features</h3><ul><li>18/8 food-grade stainless steel</li><li>BPA-free and leak-proof lid</li><li>Wide mouth for easy filling and cleaning</li><li>Available in 20 oz and 32 oz sizes</li></ul><p>Perfect for hiking, gym workouts, or daily commuting. The powder-coated exterior provides a comfortable, non-slip grip even when wet.</p>",
+                "post_excerpt": "Double-wall vacuum insulated bottle that keeps drinks cold 24h or hot 12h.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "_regular_price": "29.99",
+                    "_price": "24.99",
+                    "_sale_price": "24.99",
+                    "_sku": "WB-INSULATED-001",
+                    "_stock_status": "instock",
+                    "_manage_stock": "yes",
+                    "_stock": "150",
+                    "_yoast_wpseo_title": "Insulated Water Bottle - Stay Hydrated Anywhere",
+                    "_yoast_wpseo_metadesc": "Double-wall vacuum insulated stainless steel bottle. Keeps drinks cold 24h or hot 12h. BPA-free, leak-proof. Perfect for hiking and commuting.",
+                    "_yoast_wpseo_focuskw": "insulated water bottle"
+                },
+                "taxonomy": {
+                    "product_cat": ["outdoor-gear"]
+                }
+            },
+            {
+                "post_title": "Cast Iron Dutch Oven 6-Quart",
+                "post_content": "<p>Our enameled cast iron Dutch oven is the ultimate kitchen workhorse. Ideal for slow-cooking stews, braising meats, baking bread, and simmering soups.</p><h3>Why Choose Cast Iron?</h3><ul><li>Superior heat retention and even distribution</li><li>Enamel coating prevents rust and is easy to clean</li><li>Oven-safe up to 500 degrees Fahrenheit</li><li>Compatible with all cooktops including induction</li></ul><p>The self-basting lid locks in moisture and flavor. Heavy-duty stainless steel knob stays cool during stovetop cooking.</p>",
+                "post_excerpt": "Enameled cast iron Dutch oven for slow-cooking, braising, and baking.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-2.jpg}}",
+                "meta": {
+                    "_regular_price": "89.99",
+                    "_price": "89.99",
+                    "_sku": "KD-DUTCHOVEN-001",
+                    "_stock_status": "instock",
+                    "_manage_stock": "yes",
+                    "_stock": "45",
+                    "_weight": "12",
+                    "_yoast_wpseo_title": "Cast Iron Dutch Oven 6-Quart - Kitchen Essential",
+                    "_yoast_wpseo_metadesc": "Enameled cast iron Dutch oven for slow-cooking, braising, and baking. Oven-safe to 500F, compatible with all cooktops including induction.",
+                    "_yoast_wpseo_focuskw": "cast iron dutch oven"
+                },
+                "taxonomy": {
+                    "product_cat": ["kitchen-dining"]
+                }
+            },
+            {
+                "post_title": "Ultralight Camping Hammock with Straps",
+                "post_content": "<p>Relax anywhere with our ultralight parachute nylon hammock. Weighs only 12 oz and packs down to the size of a softball.</p><h3>Includes</h3><ul><li>Heavy-duty carabiner clips</li><li>Tree-friendly straps (10 ft each)</li><li>Attached stuff sack</li></ul><p>Supports up to 400 lbs. Triple-stitched seams for maximum durability. Sets up in under 2 minutes.</p>",
+                "post_excerpt": "Ultralight camping hammock with tree straps. Supports 400 lbs.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-3.jpg}}",
+                "meta": {
+                    "_regular_price": "34.99",
+                    "_price": "34.99",
+                    "_sku": "OG-HAMMOCK-001",
+                    "_stock_status": "instock"
+                },
+                "taxonomy": {
+                    "product_cat": ["outdoor-gear"]
+                }
+            },
+            {
+                "post_title": "Bamboo Cutting Board Set (3-Piece)",
+                "post_content": "<p>Eco-friendly bamboo cutting boards in three convenient sizes. Naturally antimicrobial and gentle on knife edges.</p><p>Includes small (8x6\"), medium (12x9\"), and large (16x12\") boards with juice grooves to contain messes.</p>",
+                "post_excerpt": "Three-piece bamboo cutting board set with juice grooves.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "_regular_price": "39.99",
+                    "_price": "29.99",
+                    "_sale_price": "29.99",
+                    "_sku": "KD-BAMBOO-SET-001",
+                    "_stock_status": "instock",
+                    "_yoast_wpseo_title": "3-Piece Bamboo Cutting Board Set with Juice Grooves",
+                    "_yoast_wpseo_metadesc": "Eco-friendly bamboo cutting boards in 3 sizes. Naturally antimicrobial, gentle on knives. Includes juice grooves to contain messes.",
+                    "_yoast_wpseo_focuskw": "bamboo cutting board set"
+                },
+                "taxonomy": {
+                    "product_cat": ["kitchen-dining"]
+                }
+            },
+            {
+                "post_title": "LED Camping Lantern (Rechargeable)",
+                "post_content": "<p>Bright and compact rechargeable lantern with 4 lighting modes. USB-C charging provides up to 100 hours of light on low setting.</p>",
+                "post_excerpt": "Rechargeable LED lantern with 100-hour battery life.",
+                "post_status": "draft",
+                "featured_image": "{{media:product-2.jpg}}",
+                "meta": {
+                    "_regular_price": "24.99",
+                    "_price": "24.99",
+                    "_sku": "OG-LANTERN-001",
+                    "_stock_status": "instock"
+                },
+                "taxonomy": {
+                    "product_cat": ["outdoor-gear"]
+                }
+            }
+        ]
+    }
+}

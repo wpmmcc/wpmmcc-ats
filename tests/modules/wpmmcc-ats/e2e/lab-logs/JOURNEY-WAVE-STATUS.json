@@ -1,0 +1,25 @@
+{
+  "updated_at": "2026-09-07T03:43:59.619292+00:00",
+  "wave_id": "20260907-112634",
+  "passed": [
+    "advanced-custom-fields-content",
+    "bbpress-content",
+    "easy-digital-downloads-content",
+    "events-manager-content",
+    "hivepress-content",
+    "learnpress-content",
+    "lifterlms-content",
+    "the-events-calendar-content",
+    "tutor-content",
+    "woocommerce-content",
+    "wp-job-manager-content"
+  ],
+  "failed": [],
+  "running": [],
+  "passed_count": 11,
+  "failed_count": 0,
+  "total": 20,
+  "failures": {},
+  "wave_log": "/home/john/wpmmcc-ats3.0/tests/modules/wpmmcc-ats/e2e/lab-logs/journey-wave-20260907-112634.log",
+  "last_event": "2026-09-07T11:43:59+08:00 JOURNEY_BATCH_DONE wave=20260907-112634 batch_done=11 fail=0"
+}

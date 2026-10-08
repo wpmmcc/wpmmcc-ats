@@ -1,0 +1,116 @@
+{
+    "plugin": "wordpress-core",
+    "plan": "E",
+    "mode": "corporate-site",
+    "checks": [
+        {
+            "name": "Pages count",
+            "passed": true,
+            "expected": 4,
+            "actual": "5"
+        },
+        {
+            "name": "Posts count",
+            "passed": true,
+            "expected": 3,
+            "actual": "10"
+        },
+        {
+            "name": "Page: 首页",
+            "passed": true,
+            "slug": "home"
+        },
+        {
+            "name": "Page: 服务项目",
+            "passed": true,
+            "slug": "services"
+        },
+        {
+            "name": "Page: 关于我们",
+            "passed": true,
+            "slug": "about"
+        },
+        {
+            "name": "Page: 联系我们",
+            "passed": true,
+            "slug": "contact"
+        },
+        {
+            "name": "Category: 公司新闻",
+            "passed": true
+        },
+        {
+            "name": "Category: 行业动态",
+            "passed": true
+        },
+        {
+            "name": "Frontend: 首页",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/",
+            "status_code": 200
+        },
+        {
+            "name": "Frontend: 服务",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/services\/",
+            "status_code": 200
+        },
+        {
+            "name": "Frontend: 关于",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/about\/",
+            "status_code": 200
+        },
+        {
+            "name": "Frontend: 联系",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/contact\/",
+            "status_code": 200
+        },
+        {
+            "name": "Frontend: 文章详情",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/microservices-architecture-experience\/",
+            "status_code": 200
+        },
+        {
+            "name": "Frontend: 公司新闻归档",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/category\/company-news\/",
+            "status_code": 200
+        },
+        {
+            "name": "Backend: Posts list",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/wp-admin\/edit.php"
+        },
+        {
+            "name": "Backend: Pages list",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/wp-admin\/edit.php?post_type=page"
+        },
+        {
+            "name": "Backend: Categories",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/wp-admin\/edit-tags.php?taxonomy=category"
+        },
+        {
+            "name": "Backend: Menus",
+            "passed": true,
+            "url": "https:\/\/blog.wpmm.cc\/wp-admin\/nav-menus.php"
+        },
+        {
+            "name": "Navigation Menu",
+            "passed": true
+        }
+    ],
+    "passed": 19,
+    "failed": 0,
+    "pass_rate": 100,
+    "timestamp": "2026-02-19 09:18:56",
+    "summary": {
+        "passed": 19,
+        "total": 19,
+        "rate": 100
+    }
+}

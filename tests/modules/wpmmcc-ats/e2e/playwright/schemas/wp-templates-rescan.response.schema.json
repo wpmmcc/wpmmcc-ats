@@ -1,0 +1,11 @@
+{
+  "$id": "wp-templates-rescan.response.schema.json",
+  "type": "object",
+  "required": ["success", "new", "updated"],
+  "properties": {
+    "success": { "const": true },
+    "new": { "type": ["integer", "number"] },
+    "updated": { "type": ["integer", "number"] }
+  },
+  "additionalProperties": true
+}

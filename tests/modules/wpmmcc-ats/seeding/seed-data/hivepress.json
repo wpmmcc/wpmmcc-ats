@@ -1,0 +1,107 @@
+{
+    "_meta": {
+        "plugin_slug": "hivepress",
+        "plugin_name": "HivePress",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "HivePress seed data for marketplace listings and vendors",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "hp_listing_category": [
+            {"name": "Freelance Services", "slug": "freelance-services"},
+            {"name": "Digital Products", "slug": "digital-products"},
+            {"name": "Physical Goods", "slug": "physical-goods"}
+        ]
+    },
+    "posts": {
+        "hp_vendor": [
+            {
+                "post_title": "Creative Design Studio",
+                "post_content": "<p>Professional design services for businesses. We specialize in branding, web design, and marketing materials.</p>",
+                "post_excerpt": "Full-service design studio.",
+                "post_status": "publish",
+                "meta": {
+                    "hp_vendor_verified": "1",
+                    "hp_vendor_rating": "4.8"
+                }
+            },
+            {
+                "post_title": "Tech Solutions Hub",
+                "post_content": "<p>Your one-stop shop for digital products and tech services.</p>",
+                "post_excerpt": "Digital products and services.",
+                "post_status": "publish",
+                "meta": {
+                    "hp_vendor_verified": "1"
+                }
+            },
+            {
+                "post_title": "Artisan Crafts Co",
+                "post_content": "<p>Handmade artisan products with attention to quality and detail.</p>",
+                "post_excerpt": "Handcrafted artisan products.",
+                "post_status": "publish",
+                "meta": {}
+            }
+        ],
+        "hp_listing": [
+            {
+                "post_title": "Logo Design Package",
+                "post_content": "<p>Professional logo design with unlimited revisions. Includes brand guidelines and multiple file formats.</p>",
+                "post_excerpt": "Professional logo design service.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "hp_listing_price": "299",
+                    "hp_listing_vendor": "{{hp_vendor:0}}"
+                },
+                "taxonomy": {"hp_listing_category": ["freelance-services"]}
+            },
+            {
+                "post_title": "Website Template Bundle",
+                "post_content": "<p>Collection of 10 premium website templates for various industries.</p>",
+                "post_excerpt": "Premium website templates.",
+                "post_status": "publish",
+                "meta": {
+                    "hp_listing_price": "99",
+                    "hp_listing_vendor": "{{hp_vendor:1}}"
+                },
+                "taxonomy": {"hp_listing_category": ["digital-products"]}
+            },
+            {
+                "post_title": "Social Media Marketing Service",
+                "post_content": "<p>Monthly social media management including content creation and analytics.</p>",
+                "post_excerpt": "Complete social media management.",
+                "post_status": "publish",
+                "meta": {
+                    "hp_listing_price": "499",
+                    "hp_listing_vendor": "{{hp_vendor:0}}"
+                },
+                "taxonomy": {"hp_listing_category": ["freelance-services"]}
+            },
+            {
+                "post_title": "Handmade Ceramic Vase Set",
+                "post_content": "<p>Set of 3 handcrafted ceramic vases. Each piece is unique.</p>",
+                "post_excerpt": "Artisan ceramic vases.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-3.jpg}}",
+                "meta": {
+                    "hp_listing_price": "149",
+                    "hp_listing_vendor": "{{hp_vendor:2}}"
+                },
+                "taxonomy": {"hp_listing_category": ["physical-goods"]}
+            },
+            {
+                "post_title": "Marketplace SEO Audit",
+                "post_content": "<p>Technical SEO review for marketplace sites, including listing schema, internal linking, and multilingual metadata.</p>",
+                "post_excerpt": "SEO audit package for marketplace websites.",
+                "post_status": "publish",
+                "meta": {
+                    "hp_listing_price": "399",
+                    "hp_listing_vendor": "{{hp_vendor:1}}"
+                },
+                "taxonomy": {"hp_listing_category": ["freelance-services"]}
+            }
+        ]
+    }
+}

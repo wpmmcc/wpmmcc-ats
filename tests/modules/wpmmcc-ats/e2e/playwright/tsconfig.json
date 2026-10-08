@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "official-gate/**/*.ts",
+    "support-plugin-webui/**/*.ts",
+    "support-client-server/**/*.ts",
+    "support-client-local-ui/**/*.ts",
+    "client-ui-setup/review-mode.local.spec.ts",
+    "comprehensive/17-translate-editor-save.spec.ts",
+    "comprehensive/20-content-plugin-admin-save.owned.spec.ts",
+    "comprehensive/21-content-type-admin-save.owned.spec.ts",
+    "support-client-mock/**/*.ts",
+    "support-web-control-plane/**/*.ts",
+    "audit-web-control-plane/**/*.ts",
+    "playwright.config.ts",
+    "playwright.support-plugin-webui.config.ts",
+    "playwright.client-local-ui.config.ts",
+    "playwright.client-review-owned.config.ts",
+    "playwright.manual-editor-owned.config.ts",
+    "playwright.content-admin-owned.config.ts",
+    "playwright.content-matrix-owned.config.ts",
+    "playwright.client-server-support.config.ts",
+    "playwright.client-mock-support.config.ts",
+    "playwright.web-control-plane.config.ts",
+    "playwright.audit-web-control-plane.config.ts"
+  ]
+}

@@ -1,0 +1,2331 @@
+{
+    "generated_at": "2026-01-27 11:51:40",
+    "plans": {
+        "A": {
+            "name": "基础商业套件",
+            "official_data_count": 4,
+            "custom_seeding_count": 8,
+            "utility_count": 8,
+            "utility_plugins": [
+                {
+                    "slug": "wordpress-seo",
+                    "name": "Yoast SEO",
+                    "type": "seo",
+                    "has_associations": true
+                },
+                {
+                    "slug": "advanced-custom-fields",
+                    "name": "ACF",
+                    "type": "custom_fields",
+                    "has_associations": true
+                },
+                {
+                    "slug": "contact-form-7",
+                    "name": "Contact Form 7",
+                    "type": "forms",
+                    "has_associations": true
+                },
+                {
+                    "slug": "tablepress",
+                    "name": "TablePress",
+                    "type": "tables",
+                    "has_associations": true
+                },
+                {
+                    "slug": "easy-appointments",
+                    "name": "Easy Appointments",
+                    "type": "booking",
+                    "has_associations": true
+                },
+                {
+                    "slug": "simply-schedule-appointments",
+                    "name": "Simply Schedule Appointments",
+                    "type": "booking",
+                    "has_associations": true
+                },
+                {
+                    "slug": "powerpress",
+                    "name": "PowerPress",
+                    "type": "podcast",
+                    "has_associations": true
+                },
+                {
+                    "slug": "redirection",
+                    "name": "Redirection",
+                    "type": "redirect",
+                    "has_associations": true
+                }
+            ],
+            "custom_seeding_plugins": [
+                {
+                    "slug": "academy",
+                    "name": "Academy LMS",
+                    "seed_file": "academy.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "academy-academy_courses.json",
+                        "academy-academy_lessons.json"
+                    ],
+                    "seed_meta_fields": [
+                        "academy_course_duration_hours",
+                        "academy_course_duration_minutes",
+                        "academy_course_level",
+                        "academy_course_price",
+                        "academy_course_sale_price",
+                        "academy_course_max_students",
+                        "academy_course_requirements",
+                        "academy_lesson_duration",
+                        "academy_lesson_order",
+                        "academy_lesson_course_id",
+                        "academy_quiz_course_id",
+                        "academy_quiz_duration",
+                        "academy_quiz_pass_percentage"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "academy_course_price",
+                        "academy_course_duration",
+                        "academy_course_lessons",
+                        "academy_course_students",
+                        "academy_course_rating",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_relation_id",
+                        "_wptsall_sync_hash_2",
+                        "academy_course_duration_hours",
+                        "academy_course_duration_minutes",
+                        "academy_course_level",
+                        "academy_course_sale_price",
+                        "academy_course_max_students",
+                        "academy_course_requirements",
+                        "academy_lesson_duration",
+                        "academy_lesson_order",
+                        "academy_lesson_course_id"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "academy_course_duration_hours",
+                            "academy_course_duration_minutes",
+                            "academy_course_level",
+                            "academy_course_price",
+                            "academy_course_sale_price",
+                            "academy_course_max_students",
+                            "academy_course_requirements",
+                            "academy_lesson_duration",
+                            "academy_lesson_order",
+                            "academy_lesson_course_id"
+                        ],
+                        "seed_only": {
+                            "10": "academy_quiz_course_id",
+                            "11": "academy_quiz_duration",
+                            "12": "academy_quiz_pass_percentage"
+                        },
+                        "v4_only": {
+                            "0": "_thumbnail_id",
+                            "2": "academy_course_duration",
+                            "3": "academy_course_lessons",
+                            "4": "academy_course_students",
+                            "5": "academy_course_rating",
+                            "6": "_yoast_wpseo_title",
+                            "7": "_yoast_wpseo_metadesc",
+                            "8": "_aioseo_title",
+                            "9": "_aioseo_description",
+                            "10": "_wptsall_sync_hash",
+                            "11": "_wptsall_sync_hash_1",
+                            "12": "_wptsall_relation_id",
+                            "13": "_wptsall_sync_hash_2"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "masterstudy-lms-learning-management-system",
+                    "name": "MasterStudy LMS",
+                    "seed_file": "masterstudy-lms.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "masterstudy-lms-learning-management-system-stm-courses.json",
+                        "masterstudy-lms-learning-management-system-stm-lessons.json",
+                        "masterstudy-lms-learning-management-system-stm-orders.json",
+                        "masterstudy-lms-learning-management-system-stm-payout.json",
+                        "masterstudy-lms-learning-management-system-stm-questions.json",
+                        "masterstudy-lms-learning-management-system-stm-quizzes.json",
+                        "masterstudy-lms-learning-management-system-stm-reviews.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_ms_course_price",
+                        "_ms_course_sale_price",
+                        "_ms_course_duration",
+                        "_ms_course_students",
+                        "_ms_course_rating",
+                        "level",
+                        "lesson_course_id",
+                        "lesson_duration",
+                        "quiz_course_id",
+                        "quiz_duration",
+                        "quiz_passing_score"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "_ms_course_price",
+                        "_ms_course_sale_price",
+                        "_ms_course_duration",
+                        "_ms_course_lessons",
+                        "_ms_course_students",
+                        "_ms_course_rating",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_relation_id",
+                        "_ms_lesson_duration",
+                        "_ms_lesson_order",
+                        "_ms_lesson_free",
+                        "_wptsall_target_id_2",
+                        "_wptsall_target_blog_id_2",
+                        "_wptsall_sync_hash_2",
+                        "_wptsall_target_id_1",
+                        "_wptsall_virtual_site_1",
+                        "_wptsall_virtual_site_id",
+                        "_wptsall_source_post_id",
+                        "_wptsall_source_blog_id"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_ms_course_price",
+                            "_ms_course_sale_price",
+                            "_ms_course_duration",
+                            "_ms_course_students",
+                            "_ms_course_rating"
+                        ],
+                        "seed_only": {
+                            "5": "level",
+                            "6": "lesson_course_id",
+                            "7": "lesson_duration",
+                            "8": "quiz_course_id",
+                            "9": "quiz_duration",
+                            "10": "quiz_passing_score"
+                        },
+                        "v4_only": {
+                            "0": "_thumbnail_id",
+                            "4": "_ms_course_lessons",
+                            "7": "_yoast_wpseo_title",
+                            "8": "_yoast_wpseo_metadesc",
+                            "9": "_aioseo_title",
+                            "10": "_aioseo_description",
+                            "11": "_wptsall_sync_hash",
+                            "12": "_wptsall_sync_hash_1",
+                            "13": "_wptsall_relation_id",
+                            "14": "_ms_lesson_duration",
+                            "15": "_ms_lesson_order",
+                            "16": "_ms_lesson_free",
+                            "17": "_wptsall_target_id_2",
+                            "18": "_wptsall_target_blog_id_2",
+                            "19": "_wptsall_sync_hash_2",
+                            "20": "_wptsall_target_id_1",
+                            "21": "_wptsall_virtual_site_1",
+                            "22": "_wptsall_virtual_site_id",
+                            "23": "_wptsall_source_post_id",
+                            "24": "_wptsall_source_blog_id"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "classified-listing",
+                    "name": "Classified Listing",
+                    "seed_file": "classified-listing.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "classified-listing-rtcl_listing.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_rtcl_price",
+                        "_rtcl_price_type",
+                        "_rtcl_listing_type",
+                        "_rtcl_phone",
+                        "_rtcl_email",
+                        "_rtcl_address",
+                        "_rtcl_latitude",
+                        "_rtcl_longitude"
+                    ],
+                    "v4_meta_fields": [
+                        "_rtcl_publish_count",
+                        "_rtcl_review_count",
+                        "_rtcl_rating_count",
+                        "_rtcl_average_rating",
+                        "_thumbnail_id",
+                        "_rtcl_price",
+                        "_rtcl_price_type",
+                        "_rtcl_contact_name",
+                        "_rtcl_phone",
+                        "_rtcl_email",
+                        "_rtcl_address",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_views",
+                        "_wptsall_sync_hash",
+                        "_rtcl_price_unit",
+                        "_wptsall_relation_id",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_sync_hash_2",
+                        "_rtcl_listing_type",
+                        "_rtcl_latitude",
+                        "_rtcl_longitude"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_rtcl_price",
+                            "_rtcl_price_type",
+                            "_rtcl_listing_type",
+                            "_rtcl_phone",
+                            "_rtcl_email",
+                            "_rtcl_address",
+                            "_rtcl_latitude",
+                            "_rtcl_longitude"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_rtcl_publish_count",
+                            "1": "_rtcl_review_count",
+                            "2": "_rtcl_rating_count",
+                            "3": "_rtcl_average_rating",
+                            "4": "_thumbnail_id",
+                            "7": "_rtcl_contact_name",
+                            "11": "_yoast_wpseo_title",
+                            "12": "_yoast_wpseo_metadesc",
+                            "13": "_aioseo_title",
+                            "14": "_aioseo_description",
+                            "15": "_views",
+                            "16": "_wptsall_sync_hash",
+                            "17": "_rtcl_price_unit",
+                            "18": "_wptsall_relation_id",
+                            "19": "_wptsall_sync_hash_1",
+                            "20": "_wptsall_sync_hash_2"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "easy-property-listings",
+                    "name": "Easy Property Listings",
+                    "seed_file": "easy-property-listings.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "epl-epl_contact.json"
+                    ],
+                    "seed_meta_fields": [
+                        "property_price",
+                        "property_bedrooms",
+                        "property_bathrooms",
+                        "property_garage",
+                        "property_land_area",
+                        "property_land_area_unit",
+                        "property_building_area",
+                        "property_building_area_unit",
+                        "property_year_built",
+                        "property_address_street",
+                        "property_address_city",
+                        "property_address_state",
+                        "property_address_postal_code",
+                        "property_price_type"
+                    ],
+                    "v4_meta_fields": [],
+                    "comparison": {
+                        "matched": [],
+                        "seed_only": [
+                            "property_price",
+                            "property_bedrooms",
+                            "property_bathrooms",
+                            "property_garage",
+                            "property_land_area",
+                            "property_land_area_unit",
+                            "property_building_area",
+                            "property_building_area_unit",
+                            "property_year_built",
+                            "property_address_street",
+                            "property_address_city",
+                            "property_address_state",
+                            "property_address_postal_code",
+                            "property_price_type"
+                        ],
+                        "v4_only": []
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "cooked",
+                    "name": "Cooked",
+                    "seed_file": "cooked.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "cp-cp_recipe.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_cp_recipe_prep_time",
+                        "_cp_recipe_cook_time",
+                        "_cp_recipe_total_time",
+                        "_cp_recipe_servings",
+                        "_cp_recipe_difficulty",
+                        "_cp_recipe_calories"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "_cp_recipe_prep_time",
+                        "_cp_recipe_cook_time",
+                        "_cp_recipe_total_time",
+                        "_cp_recipe_servings",
+                        "_cp_recipe_difficulty",
+                        "_cp_recipe_calories",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_wp_old_slug",
+                        "_wptsall_relation_id",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_sync_hash_2"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_cp_recipe_prep_time",
+                            "_cp_recipe_cook_time",
+                            "_cp_recipe_total_time",
+                            "_cp_recipe_servings",
+                            "_cp_recipe_difficulty",
+                            "_cp_recipe_calories"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_thumbnail_id",
+                            "7": "_yoast_wpseo_title",
+                            "8": "_yoast_wpseo_metadesc",
+                            "9": "_aioseo_title",
+                            "10": "_aioseo_description",
+                            "11": "_wptsall_sync_hash",
+                            "12": "_wp_old_slug",
+                            "13": "_wptsall_relation_id",
+                            "14": "_wptsall_sync_hash_1",
+                            "15": "_wptsall_sync_hash_2"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "envira-gallery-lite",
+                    "name": "Envira Gallery",
+                    "seed_file": "envira-gallery-lite.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-envira.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_envira_gallery_data",
+                        "_envira_gallery_description"
+                    ],
+                    "v4_meta_fields": [
+                        "_envira_gallery_data",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_eg_gallery_data",
+                        "_wptsall_target_id_2",
+                        "_wptsall_target_blog_id_2",
+                        "_wptsall_sync_hash_2",
+                        "_wptsall_target_id_1",
+                        "_wptsall_virtual_site_1",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_relation_id",
+                        "_wptsall_virtual_site_id",
+                        "_wptsall_source_post_id",
+                        "_wptsall_source_blog_id",
+                        "_envira_gallery_description"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_envira_gallery_data",
+                            "_envira_gallery_description"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "1": "_yoast_wpseo_title",
+                            "2": "_yoast_wpseo_metadesc",
+                            "3": "_aioseo_title",
+                            "4": "_aioseo_description",
+                            "5": "_eg_gallery_data",
+                            "6": "_wptsall_target_id_2",
+                            "7": "_wptsall_target_blog_id_2",
+                            "8": "_wptsall_sync_hash_2",
+                            "9": "_wptsall_target_id_1",
+                            "10": "_wptsall_virtual_site_1",
+                            "11": "_wptsall_sync_hash_1",
+                            "12": "_wptsall_relation_id",
+                            "13": "_wptsall_virtual_site_id",
+                            "14": "_wptsall_source_post_id",
+                            "15": "_wptsall_source_blog_id"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "site-reviews",
+                    "name": "Site Reviews",
+                    "seed_file": "site-reviews.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "gemini_labs-site-review.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_rating",
+                        "_author",
+                        "_email",
+                        "_submitted"
+                    ],
+                    "v4_meta_fields": [
+                        "_submitted",
+                        "_submitted_hash",
+                        "_custom_slug",
+                        "_custom_meta",
+                        "_custom_featured_media",
+                        "_rating",
+                        "_author",
+                        "_email",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_target_id_2",
+                        "_wptsall_target_blog_id_2",
+                        "_wptsall_sync_hash_2",
+                        "_wptsall_target_id_1",
+                        "_wptsall_virtual_site_1",
+                        "_wptsall_sync_hash_1",
+                        "_thumbnail_id",
+                        "_wptsall_sync_hash",
+                        "_wptsall_relation_id",
+                        "_wptsall_virtual_site_id",
+                        "_wptsall_source_post_id",
+                        "_wptsall_source_blog_id"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_rating",
+                            "_author",
+                            "_email",
+                            "_submitted"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "1": "_submitted_hash",
+                            "2": "_custom_slug",
+                            "3": "_custom_meta",
+                            "4": "_custom_featured_media",
+                            "8": "_yoast_wpseo_title",
+                            "9": "_yoast_wpseo_metadesc",
+                            "10": "_aioseo_title",
+                            "11": "_aioseo_description",
+                            "12": "_wptsall_target_id_2",
+                            "13": "_wptsall_target_blog_id_2",
+                            "14": "_wptsall_sync_hash_2",
+                            "15": "_wptsall_target_id_1",
+                            "16": "_wptsall_virtual_site_1",
+                            "17": "_wptsall_sync_hash_1",
+                            "18": "_thumbnail_id",
+                            "19": "_wptsall_sync_hash",
+                            "20": "_wptsall_relation_id",
+                            "21": "_wptsall_virtual_site_id",
+                            "22": "_wptsall_source_post_id",
+                            "23": "_wptsall_source_blog_id"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "testimonial-free",
+                    "name": "Testimonial Free",
+                    "seed_file": "testimonial-free.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "spt-spt_testimonial.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_client_name",
+                        "_client_designation",
+                        "_client_company",
+                        "_rating"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "spt_testimonial_client_name",
+                        "spt_testimonial_client_designation",
+                        "spt_testimonial_client_company",
+                        "spt_testimonial_rating",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_target_id_2",
+                        "_wptsall_target_blog_id_2",
+                        "_wptsall_sync_hash_2",
+                        "_wptsall_target_id_1",
+                        "_wptsall_virtual_site_1",
+                        "_wptsall_sync_hash_1",
+                        "_wptsall_sync_hash",
+                        "_wptsall_relation_id",
+                        "_wptsall_virtual_site_id",
+                        "_wptsall_source_post_id",
+                        "_wptsall_source_blog_id",
+                        "_client_name",
+                        "_client_designation",
+                        "_client_company",
+                        "_rating"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_client_name",
+                            "_client_designation",
+                            "_client_company",
+                            "_rating"
+                        ],
+                        "seed_only": [],
+                        "v4_only": [
+                            "_thumbnail_id",
+                            "spt_testimonial_client_name",
+                            "spt_testimonial_client_designation",
+                            "spt_testimonial_client_company",
+                            "spt_testimonial_rating",
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description",
+                            "_wptsall_target_id_2",
+                            "_wptsall_target_blog_id_2",
+                            "_wptsall_sync_hash_2",
+                            "_wptsall_target_id_1",
+                            "_wptsall_virtual_site_1",
+                            "_wptsall_sync_hash_1",
+                            "_wptsall_sync_hash",
+                            "_wptsall_relation_id",
+                            "_wptsall_virtual_site_id",
+                            "_wptsall_source_post_id",
+                            "_wptsall_source_blog_id"
+                        ]
+                    },
+                    "is_custom_table": false
+                }
+            ]
+        },
+        "B": {
+            "name": "替代套件",
+            "official_data_count": 1,
+            "custom_seeding_count": 9,
+            "utility_count": 6,
+            "utility_plugins": [
+                {
+                    "slug": "all-in-one-seo-pack",
+                    "name": "All in One SEO",
+                    "type": "seo",
+                    "has_associations": true
+                },
+                {
+                    "slug": "meta-box",
+                    "name": "Meta Box",
+                    "type": "custom_fields",
+                    "has_associations": true
+                },
+                {
+                    "slug": "ninja-forms",
+                    "name": "Ninja Forms",
+                    "type": "forms",
+                    "has_associations": true
+                },
+                {
+                    "slug": "paid-member-subscriptions",
+                    "name": "Paid Member Subscriptions",
+                    "type": "membership",
+                    "has_associations": true
+                },
+                {
+                    "slug": "booking",
+                    "name": "Booking Calendar",
+                    "type": "booking",
+                    "has_associations": true
+                },
+                {
+                    "slug": "fluent-booking",
+                    "name": "Fluent Booking",
+                    "type": "booking",
+                    "has_associations": true
+                }
+            ],
+            "custom_seeding_plugins": [
+                {
+                    "slug": "directorist",
+                    "name": "Directorist",
+                    "seed_file": "directorist.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "at-at_biz_dir.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_address",
+                        "_phone",
+                        "_email",
+                        "_website",
+                        "_price_range",
+                        "_latitude",
+                        "_longitude",
+                        "_business_hours"
+                    ],
+                    "v4_meta_fields": [
+                        "_atbdp_address",
+                        "_atbdp_phone",
+                        "_atbdp_email",
+                        "_atbdp_website",
+                        "_atbdp_price_range",
+                        "_atbdp_business_hours",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_address",
+                        "_phone",
+                        "_email",
+                        "_website",
+                        "_price_range",
+                        "_latitude",
+                        "_longitude",
+                        "_business_hours"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_address",
+                            "_phone",
+                            "_email",
+                            "_website",
+                            "_price_range",
+                            "_latitude",
+                            "_longitude",
+                            "_business_hours"
+                        ],
+                        "seed_only": [],
+                        "v4_only": [
+                            "_atbdp_address",
+                            "_atbdp_phone",
+                            "_atbdp_email",
+                            "_atbdp_website",
+                            "_atbdp_price_range",
+                            "_atbdp_business_hours",
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "the-events-calendar",
+                    "name": "The Events Calendar",
+                    "seed_file": "the-events-calendar.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "tribe-tribe_events.json",
+                        "tribe-tribe_venue.json",
+                        "tribe-tribe_organizer.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_VenueAddress",
+                        "_VenueCity",
+                        "_VenueState",
+                        "_VenueCountry",
+                        "_VenueZip",
+                        "_VenuePhone",
+                        "_VenueCapacity",
+                        "_OrganizerPhone",
+                        "_OrganizerEmail",
+                        "_OrganizerWebsite",
+                        "_EventStartDate",
+                        "_EventEndDate",
+                        "_EventStartDateUTC",
+                        "_EventEndDateUTC",
+                        "_EventVenueID",
+                        "_EventOrganizerID",
+                        "_EventCost",
+                        "_EventURL"
+                    ],
+                    "v4_meta_fields": [
+                        "_EventOrigin",
+                        "_tribe_modified_fields",
+                        "_EventStartDate",
+                        "_EventEndDate",
+                        "_EventVenue",
+                        "_EventAddress",
+                        "_EventCost",
+                        "_EventCurrencySymbol",
+                        "_EventURL",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_EventStartDateUTC",
+                        "_EventEndDateUTC",
+                        "_EventVenueID",
+                        "_EventOrganizerID",
+                        "_VenueOrigin",
+                        "_VenueAddress",
+                        "_VenueCity",
+                        "_VenueState",
+                        "_VenueCountry",
+                        "_VenueZip",
+                        "_VenuePhone",
+                        "_VenueCapacity",
+                        "_OrganizerOrigin",
+                        "_OrganizerPhone",
+                        "_OrganizerEmail",
+                        "_OrganizerWebsite",
+                        "footnotes"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_VenueAddress",
+                            "_VenueCity",
+                            "_VenueState",
+                            "_VenueCountry",
+                            "_VenueZip",
+                            "_VenuePhone",
+                            "_VenueCapacity",
+                            "_OrganizerPhone",
+                            "_OrganizerEmail",
+                            "_OrganizerWebsite",
+                            "_EventStartDate",
+                            "_EventEndDate",
+                            "_EventStartDateUTC",
+                            "_EventEndDateUTC",
+                            "_EventVenueID",
+                            "_EventOrganizerID",
+                            "_EventCost",
+                            "_EventURL"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_EventOrigin",
+                            "1": "_tribe_modified_fields",
+                            "4": "_EventVenue",
+                            "5": "_EventAddress",
+                            "7": "_EventCurrencySymbol",
+                            "9": "_yoast_wpseo_title",
+                            "10": "_yoast_wpseo_metadesc",
+                            "11": "_aioseo_title",
+                            "12": "_aioseo_description",
+                            "13": "_wptsall_sync_hash",
+                            "18": "_VenueOrigin",
+                            "26": "_OrganizerOrigin",
+                            "30": "footnotes"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "wp-job-manager",
+                    "name": "WP Job Manager",
+                    "seed_file": "wp-job-manager.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "job-job_listing.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_job_location",
+                        "_application",
+                        "_company_name",
+                        "_company_website",
+                        "_company_tagline",
+                        "_job_salary"
+                    ],
+                    "v4_meta_fields": [
+                        "_filled",
+                        "_featured",
+                        "_job_location",
+                        "_company_name",
+                        "_company_website",
+                        "_job_salary",
+                        "_job_type",
+                        "_job_expires",
+                        "_application_email",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_application",
+                        "_company_tagline"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_job_location",
+                            "_application",
+                            "_company_name",
+                            "_company_website",
+                            "_company_tagline",
+                            "_job_salary"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_filled",
+                            "1": "_featured",
+                            "6": "_job_type",
+                            "7": "_job_expires",
+                            "8": "_application_email",
+                            "9": "_yoast_wpseo_title",
+                            "10": "_yoast_wpseo_metadesc",
+                            "11": "_aioseo_title",
+                            "12": "_aioseo_description"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "essential-real-estate",
+                    "name": "Essential Real Estate",
+                    "seed_file": "essential-real-estate.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-property.json"
+                    ],
+                    "seed_meta_fields": [
+                        "property_price",
+                        "property_bedrooms",
+                        "property_bathrooms",
+                        "property_area",
+                        "property_garage",
+                        "property_address",
+                        "property_city",
+                        "property_state",
+                        "property_price_suffix"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "property_price",
+                        "property_price_text",
+                        "_price",
+                        "property_bedrooms",
+                        "_bedrooms",
+                        "property_bathrooms",
+                        "_bathrooms",
+                        "property_area",
+                        "_area",
+                        "property_area_unit",
+                        "property_address",
+                        "_address",
+                        "property_floor",
+                        "property_year_built",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_wptsall_sync_hash_1",
+                        "_wp_old_slug",
+                        "_view_statistics",
+                        "property_price_unit",
+                        "property_land_area",
+                        "_wptsall_relation_id",
+                        "_wptsall_sync_hash_2",
+                        "property_garage",
+                        "property_land_area_unit",
+                        "property_building_area",
+                        "property_building_area_unit",
+                        "property_address_street",
+                        "property_address_city",
+                        "property_address_state",
+                        "property_address_postal_code",
+                        "property_price_type",
+                        "property_city",
+                        "property_state",
+                        "property_price_suffix",
+                        "_address_concatenated",
+                        "_features_concatenated",
+                        "_descriptions_concatenated",
+                        "_owner_details",
+                        "_reception_rooms",
+                        "_address_street",
+                        "_address_two",
+                        "_address_city",
+                        "_availability_change_date",
+                        "_price_qualifier"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "property_price",
+                            "property_bedrooms",
+                            "property_bathrooms",
+                            "property_area",
+                            "property_garage",
+                            "property_address",
+                            "property_city",
+                            "property_state",
+                            "property_price_suffix"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_thumbnail_id",
+                            "2": "property_price_text",
+                            "3": "_price",
+                            "5": "_bedrooms",
+                            "7": "_bathrooms",
+                            "9": "_area",
+                            "10": "property_area_unit",
+                            "12": "_address",
+                            "13": "property_floor",
+                            "14": "property_year_built",
+                            "15": "_yoast_wpseo_title",
+                            "16": "_yoast_wpseo_metadesc",
+                            "17": "_aioseo_title",
+                            "18": "_aioseo_description",
+                            "19": "_wptsall_sync_hash",
+                            "20": "_wptsall_sync_hash_1",
+                            "21": "_wp_old_slug",
+                            "22": "_view_statistics",
+                            "23": "property_price_unit",
+                            "24": "property_land_area",
+                            "25": "_wptsall_relation_id",
+                            "26": "_wptsall_sync_hash_2",
+                            "28": "property_land_area_unit",
+                            "29": "property_building_area",
+                            "30": "property_building_area_unit",
+                            "31": "property_address_street",
+                            "32": "property_address_city",
+                            "33": "property_address_state",
+                            "34": "property_address_postal_code",
+                            "35": "property_price_type",
+                            "39": "_address_concatenated",
+                            "40": "_features_concatenated",
+                            "41": "_descriptions_concatenated",
+                            "42": "_owner_details",
+                            "43": "_reception_rooms",
+                            "44": "_address_street",
+                            "45": "_address_two",
+                            "46": "_address_city",
+                            "47": "_availability_change_date",
+                            "48": "_price_qualifier"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "asgaros-forum",
+                    "name": "Asgaros Forum",
+                    "seed_file": "asgaros-forum.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "asgaros-forum-forum_forums.json",
+                        "asgaros-forum-forum_polls.json",
+                        "asgaros-forum-forum_polls_options.json",
+                        "asgaros-forum-forum_polls_votes.json",
+                        "asgaros-forum-forum_posts.json",
+                        "asgaros-forum-forum_reactions.json",
+                        "asgaros-forum-forum_reports.json",
+                        "asgaros-forum-forum_topics.json"
+                    ],
+                    "seed_meta_fields": [
+                        "name",
+                        "description",
+                        "parent_id",
+                        "sort",
+                        "first_post_content",
+                        "text"
+                    ],
+                    "v4_meta_fields": [
+                        "name",
+                        "parent_id",
+                        "parent_forum",
+                        "description",
+                        "icon",
+                        "sort",
+                        "forum_status",
+                        "slug",
+                        "title",
+                        "multiple",
+                        "poll_id",
+                        "option_id",
+                        "user_id",
+                        "text",
+                        "forum_id",
+                        "date",
+                        "date_edit",
+                        "author_id",
+                        "author_edit",
+                        "uploads",
+                        "post_id",
+                        "reaction",
+                        "datestamp",
+                        "reporter_id",
+                        "views",
+                        "sticky",
+                        "closed",
+                        "approved"
+                    ],
+                    "comparison": {
+                        "matched": {
+                            "0": "name",
+                            "1": "description",
+                            "2": "parent_id",
+                            "3": "sort",
+                            "5": "text"
+                        },
+                        "seed_only": {
+                            "4": "first_post_content"
+                        },
+                        "v4_only": {
+                            "2": "parent_forum",
+                            "4": "icon",
+                            "6": "forum_status",
+                            "7": "slug",
+                            "8": "title",
+                            "9": "multiple",
+                            "10": "poll_id",
+                            "11": "option_id",
+                            "12": "user_id",
+                            "14": "forum_id",
+                            "15": "date",
+                            "16": "date_edit",
+                            "17": "author_id",
+                            "18": "author_edit",
+                            "19": "uploads",
+                            "20": "post_id",
+                            "21": "reaction",
+                            "22": "datestamp",
+                            "23": "reporter_id",
+                            "24": "views",
+                            "25": "sticky",
+                            "26": "closed",
+                            "27": "approved"
+                        }
+                    },
+                    "is_custom_table": true
+                },
+                {
+                    "slug": "delicious-recipes",
+                    "name": "Delicious Recipes",
+                    "seed_file": "delicious-recipes.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-recipe.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_dr_prep_time",
+                        "_dr_cook_time",
+                        "_dr_servings",
+                        "_dr_difficulty",
+                        "_dr_calories"
+                    ],
+                    "v4_meta_fields": [
+                        "_dr_prep_time",
+                        "_dr_cook_time",
+                        "_dr_servings",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_delicious_recipes_view_count",
+                        "_dr_difficulty",
+                        "_dr_calories"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_dr_prep_time",
+                            "_dr_cook_time",
+                            "_dr_servings",
+                            "_dr_difficulty",
+                            "_dr_calories"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "3": "_yoast_wpseo_title",
+                            "4": "_yoast_wpseo_metadesc",
+                            "5": "_aioseo_title",
+                            "6": "_aioseo_description",
+                            "7": "_delicious_recipes_view_count"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "foogallery",
+                    "name": "FooGallery",
+                    "seed_file": "foogallery.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-foogallery.json"
+                    ],
+                    "seed_meta_fields": [
+                        "foogallery_default_gallery_template",
+                        "foogallery_items_count"
+                    ],
+                    "v4_meta_fields": [
+                        "foogallery_attachments",
+                        "_foogallery_template",
+                        "_foogallery_settings",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "foogallery_default_gallery_template",
+                        "foogallery_items_count"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "foogallery_default_gallery_template",
+                            "foogallery_items_count"
+                        ],
+                        "seed_only": [],
+                        "v4_only": [
+                            "foogallery_attachments",
+                            "_foogallery_template",
+                            "_foogallery_settings",
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "portfolio-post-type",
+                    "name": "Portfolio",
+                    "seed_file": "portfolio-post-type.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-portfolio.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_portfolio_client",
+                        "_portfolio_url",
+                        "_portfolio_date"
+                    ],
+                    "v4_meta_fields": [
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_portfolio_client",
+                        "_portfolio_url",
+                        "_portfolio_date"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_portfolio_client",
+                            "_portfolio_url",
+                            "_portfolio_date"
+                        ],
+                        "seed_only": [],
+                        "v4_only": [
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "seriously-simple-podcasting",
+                    "name": "Seriously Simple Podcasting",
+                    "seed_file": "seriously-simple-podcasting.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-podcast.json"
+                    ],
+                    "seed_meta_fields": [
+                        "duration",
+                        "episode_type",
+                        "date_recorded"
+                    ],
+                    "v4_meta_fields": [
+                        "duration",
+                        "episode_type",
+                        "date_recorded",
+                        "footnotes"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "duration",
+                            "episode_type",
+                            "date_recorded"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "3": "footnotes"
+                        }
+                    },
+                    "is_custom_table": false
+                }
+            ]
+        },
+        "C": {
+            "name": "传统小众套件",
+            "official_data_count": 3,
+            "custom_seeding_count": 5,
+            "utility_count": 5,
+            "utility_plugins": [
+                {
+                    "slug": "seo-by-rank-math",
+                    "name": "Rank Math SEO",
+                    "type": "seo",
+                    "has_associations": true
+                },
+                {
+                    "slug": "pods",
+                    "name": "Pods",
+                    "type": "custom_fields",
+                    "has_associations": true
+                },
+                {
+                    "slug": "restrict-content",
+                    "name": "Restrict Content",
+                    "type": "membership",
+                    "has_associations": true
+                },
+                {
+                    "slug": "bookly-responsive-appointment-booking-tool",
+                    "name": "Bookly",
+                    "type": "booking",
+                    "has_associations": true
+                },
+                {
+                    "slug": "podcast-player",
+                    "name": "Podcast Player",
+                    "type": "podcast",
+                    "has_associations": true
+                }
+            ],
+            "custom_seeding_plugins": [
+                {
+                    "slug": "estatik",
+                    "name": "Estatik",
+                    "seed_file": "estatik.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-properties.json"
+                    ],
+                    "seed_meta_fields": [
+                        "property_price",
+                        "property_bedrooms",
+                        "property_bathrooms",
+                        "property_area",
+                        "property_area_unit",
+                        "property_address",
+                        "property_price_text",
+                        "property_land_area",
+                        "property_year_built"
+                    ],
+                    "v4_meta_fields": [
+                        "property_price",
+                        "property_price_text",
+                        "_price",
+                        "property_bedrooms",
+                        "_bedrooms",
+                        "property_bathrooms",
+                        "_bathrooms",
+                        "property_area",
+                        "_area",
+                        "property_area_unit",
+                        "property_address",
+                        "_address",
+                        "property_floor",
+                        "property_year_built",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "property_price_unit",
+                        "property_land_area"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "property_price",
+                            "property_bedrooms",
+                            "property_bathrooms",
+                            "property_area",
+                            "property_area_unit",
+                            "property_address",
+                            "property_price_text",
+                            "property_land_area",
+                            "property_year_built"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "2": "_price",
+                            "4": "_bedrooms",
+                            "6": "_bathrooms",
+                            "8": "_area",
+                            "11": "_address",
+                            "12": "property_floor",
+                            "14": "_yoast_wpseo_title",
+                            "15": "_yoast_wpseo_metadesc",
+                            "16": "_aioseo_title",
+                            "17": "_aioseo_description",
+                            "18": "property_price_unit"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "wp-recipe-maker",
+                    "name": "WP Recipe Maker",
+                    "seed_file": "wp-recipe-maker.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "wprm-wprm_recipe.json"
+                    ],
+                    "seed_meta_fields": [
+                        "wprm_prep_time",
+                        "wprm_cook_time",
+                        "wprm_total_time",
+                        "wprm_servings",
+                        "wprm_servings_unit",
+                        "wprm_calories"
+                    ],
+                    "v4_meta_fields": [
+                        "wprm_prep_time",
+                        "wprm_cook_time",
+                        "wprm_total_time",
+                        "wprm_servings",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "wprm_prep_time",
+                            "wprm_cook_time",
+                            "wprm_total_time",
+                            "wprm_servings"
+                        ],
+                        "seed_only": {
+                            "4": "wprm_servings_unit",
+                            "5": "wprm_calories"
+                        },
+                        "v4_only": {
+                            "4": "_yoast_wpseo_title",
+                            "5": "_yoast_wpseo_metadesc",
+                            "6": "_aioseo_title",
+                            "7": "_aioseo_description"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "simple-job-board",
+                    "name": "Simple Job Board",
+                    "seed_file": "simple-job-board.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-jobpost.json",
+                        "jobpost-jobpost_applicants.json"
+                    ],
+                    "seed_meta_fields": [
+                        "jobpost_company",
+                        "jobpost_salary",
+                        "jobpost_location",
+                        "jobpost_type"
+                    ],
+                    "v4_meta_fields": [
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description"
+                    ],
+                    "comparison": {
+                        "matched": [],
+                        "seed_only": [
+                            "jobpost_company",
+                            "jobpost_salary",
+                            "jobpost_location",
+                            "jobpost_type"
+                        ],
+                        "v4_only": [
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "ultimate-faqs",
+                    "name": "Ultimate FAQs",
+                    "seed_file": "ultimate-faqs.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-ufaq.json"
+                    ],
+                    "seed_meta_fields": [],
+                    "v4_meta_fields": [
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_yoast_wpseo_focuskw"
+                    ],
+                    "comparison": {
+                        "matched": [],
+                        "seed_only": [],
+                        "v4_only": [
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description",
+                            "_yoast_wpseo_focuskw"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "wp-customer-reviews",
+                    "name": "WP Customer Reviews",
+                    "seed_file": "wp-customer-reviews.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "wpcr3-wpcr3_review.json"
+                    ],
+                    "seed_meta_fields": [
+                        "wpcr3_review_rating",
+                        "wpcr3_review_name",
+                        "wpcr3_review_email",
+                        "wpcr3_review_status"
+                    ],
+                    "v4_meta_fields": [
+                        "wpcr3_review_rating",
+                        "wpcr3_review_name",
+                        "wpcr3_review_email",
+                        "wpcr3_review_status",
+                        "wpcr3_review_response",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "wpcr3_review_rating",
+                            "wpcr3_review_name",
+                            "wpcr3_review_email",
+                            "wpcr3_review_status"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "4": "wpcr3_review_response",
+                            "5": "_yoast_wpseo_title",
+                            "6": "_yoast_wpseo_metadesc",
+                            "7": "_aioseo_title",
+                            "8": "_aioseo_description"
+                        }
+                    },
+                    "is_custom_table": false
+                }
+            ]
+        },
+        "D": {
+            "name": "扩展套件",
+            "official_data_count": 2,
+            "custom_seeding_count": 9,
+            "utility_count": 2,
+            "utility_plugins": [
+                {
+                    "slug": "simple-membership",
+                    "name": "Simple Membership",
+                    "type": "membership",
+                    "has_associations": true
+                },
+                {
+                    "slug": "ameliabooking",
+                    "name": "Amelia",
+                    "type": "booking",
+                    "has_associations": true
+                }
+            ],
+            "custom_seeding_plugins": [
+                {
+                    "slug": "storeengine",
+                    "name": "StoreEngine",
+                    "seed_file": "storeengine.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "storeengine-storeengine_product.json",
+                        "storeengine-storeengine_coupon.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_se_price",
+                        "_se_sale_price",
+                        "_se_sku",
+                        "_se_stock",
+                        "_se_weight"
+                    ],
+                    "v4_meta_fields": [
+                        "_se_price",
+                        "_se_sale_price",
+                        "_se_sku",
+                        "_se_stock",
+                        "_se_weight",
+                        "_storeengine_product_shipping_type",
+                        "_storeengine_product_physical_weight",
+                        "_storeengine_product_physical_weight_unit",
+                        "_storeengine_product_physical_length",
+                        "_storeengine_product_physical_width",
+                        "_storeengine_product_physical_height",
+                        "_storeengine_product_physical_dimension_unit",
+                        "_storeengine_product_digital_auto_complete",
+                        "_storeengine_product_hide",
+                        "_storeengine_product_enable_license_creation",
+                        "_storeengine_product_gallery_ids",
+                        "_storeengine_product_tax_status",
+                        "_storeengine_product_download_type",
+                        "_storeengine_product_downloadable_files",
+                        "_storeengine_upsell_ids",
+                        "_storeengine_crosssell_ids",
+                        "_storeengine_product_purchase_redirect_type",
+                        "_storeengine_product_purchase_redirect_url",
+                        "_storeengine_coupon_name",
+                        "_storeengine_coupon_type",
+                        "_storeengine_coupon_amount",
+                        "_storeengine_coupon_time_type",
+                        "_storeengine_coupon_customer_usage_limit",
+                        "_storeengine_coupon_type_of_min_requirement",
+                        "_storeengine_coupon_min_purchase_quantity",
+                        "_storeengine_coupon_min_purchase_amount",
+                        "_storeengine_coupon_who_can_use",
+                        "_storeengine_coupon_usage_count",
+                        "_storeengine_coupon_usage_limit",
+                        "_storeengine_coupon_used_by",
+                        "_storeengine_coupon_start_date_time",
+                        "_storeengine_coupon_end_date_time"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_se_price",
+                            "_se_sale_price",
+                            "_se_sku",
+                            "_se_stock",
+                            "_se_weight"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "5": "_storeengine_product_shipping_type",
+                            "6": "_storeengine_product_physical_weight",
+                            "7": "_storeengine_product_physical_weight_unit",
+                            "8": "_storeengine_product_physical_length",
+                            "9": "_storeengine_product_physical_width",
+                            "10": "_storeengine_product_physical_height",
+                            "11": "_storeengine_product_physical_dimension_unit",
+                            "12": "_storeengine_product_digital_auto_complete",
+                            "13": "_storeengine_product_hide",
+                            "14": "_storeengine_product_enable_license_creation",
+                            "15": "_storeengine_product_gallery_ids",
+                            "16": "_storeengine_product_tax_status",
+                            "17": "_storeengine_product_download_type",
+                            "18": "_storeengine_product_downloadable_files",
+                            "19": "_storeengine_upsell_ids",
+                            "20": "_storeengine_crosssell_ids",
+                            "21": "_storeengine_product_purchase_redirect_type",
+                            "22": "_storeengine_product_purchase_redirect_url",
+                            "23": "_storeengine_coupon_name",
+                            "24": "_storeengine_coupon_type",
+                            "25": "_storeengine_coupon_amount",
+                            "26": "_storeengine_coupon_time_type",
+                            "27": "_storeengine_coupon_customer_usage_limit",
+                            "28": "_storeengine_coupon_type_of_min_requirement",
+                            "29": "_storeengine_coupon_min_purchase_quantity",
+                            "30": "_storeengine_coupon_min_purchase_amount",
+                            "31": "_storeengine_coupon_who_can_use",
+                            "32": "_storeengine_coupon_usage_count",
+                            "33": "_storeengine_coupon_usage_limit",
+                            "34": "_storeengine_coupon_used_by",
+                            "35": "_storeengine_coupon_start_date_time",
+                            "36": "_storeengine_coupon_end_date_time"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "hivepress",
+                    "name": "HivePress",
+                    "seed_file": "hivepress.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "hp-hp_listing.json",
+                        "hp-hp_vendor.json"
+                    ],
+                    "seed_meta_fields": [
+                        "hp_vendor_verified",
+                        "hp_vendor_rating",
+                        "hp_listing_price",
+                        "hp_listing_vendor"
+                    ],
+                    "v4_meta_fields": [
+                        "hp_price",
+                        "hp_rating",
+                        "hp_rating_count",
+                        "hp_featured",
+                        "hp_verified",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_transient_hp_models\/listing_category\/afd355bfd9944288ea9de00ede553b30",
+                        "_transient_timeout_hp_models\/listing_category\/afd355bfd9944288ea9de00ede553b30",
+                        "_transient_hp_models\/listing_category\/24ea88fe1d91fbd22225e2aece009e1b",
+                        "_transient_timeout_hp_models\/listing_category\/24ea88fe1d91fbd22225e2aece009e1b",
+                        "_transient_hp_models\/listing_category\/5d4e28fadd4486811dc9358b5bc3cd51",
+                        "_transient_timeout_hp_models\/listing_category\/5d4e28fadd4486811dc9358b5bc3cd51",
+                        "_transient_hp_models\/listing_category\/version",
+                        "_transient_hp_models\/listing_category\/f3cb3bc9a8b64353bcadbd862f448cd6",
+                        "_transient_timeout_hp_models\/listing_category\/f3cb3bc9a8b64353bcadbd862f448cd6",
+                        "_transient_timeout_hp_models\/listing_category\/version",
+                        "_transient_hp_models\/attachment\/version",
+                        "_transient_timeout_hp_models\/attachment\/version",
+                        "_transient_hp_models\/attachment\/71fe0ae81e458a35e4249d8e33040caf",
+                        "_transient_timeout_hp_models\/attachment\/71fe0ae81e458a35e4249d8e33040caf",
+                        "_transient_hp_models\/listing_category\/066f36928842a40682bd2e90a8a970e6",
+                        "_transient_timeout_hp_models\/listing_category\/066f36928842a40682bd2e90a8a970e6",
+                        "_transient_hp_models\/listing_category\/f8e1012ea04e008d2191462c22f061bb",
+                        "_transient_timeout_hp_models\/listing_category\/f8e1012ea04e008d2191462c22f061bb",
+                        "_transient_hp_models\/listing_category\/6c2054a6f1a646c98288b01648cbb191",
+                        "_transient_timeout_hp_models\/listing_category\/6c2054a6f1a646c98288b01648cbb191",
+                        "_transient_hp_models\/listing_category\/9d83d0fe8ad171bc5200ef5ce977b75c",
+                        "_transient_timeout_hp_models\/listing_category\/9d83d0fe8ad171bc5200ef5ce977b75c",
+                        "_transient_hp_models\/listing_category\/de9927943888ed26a7ef7b00c1fd4723",
+                        "_transient_timeout_hp_models\/listing_category\/de9927943888ed26a7ef7b00c1fd4723",
+                        "hp_listing_price",
+                        "hp_listing_vendor",
+                        "_transient_hp_models\/listing_category\/4a462e71a3c0b96eb301b4aa1d1e6a74",
+                        "_transient_timeout_hp_models\/listing_category\/4a462e71a3c0b96eb301b4aa1d1e6a74",
+                        "_transient_hp_models\/attachment\/8f2beaf61fae5c260ce82aeda67dfda4",
+                        "_transient_timeout_hp_models\/attachment\/8f2beaf61fae5c260ce82aeda67dfda4",
+                        "_transient_hp_models\/listing_category\/637358e23a0abe3ca07151fb470b4792",
+                        "_transient_timeout_hp_models\/listing_category\/637358e23a0abe3ca07151fb470b4792",
+                        "_transient_hp_models\/listing_category\/80da2a8fa7cbc806c42bbd0c04e3cce4",
+                        "_transient_timeout_hp_models\/listing_category\/80da2a8fa7cbc806c42bbd0c04e3cce4",
+                        "_transient_hp_models\/listing_category\/bf98ac0b1bc62cd72e0483120b494088",
+                        "_transient_timeout_hp_models\/listing_category\/bf98ac0b1bc62cd72e0483120b494088",
+                        "_transient_hp_models\/listing_category\/1c4fad6ef479ec370648ef66f2d5e2db",
+                        "_transient_timeout_hp_models\/listing_category\/1c4fad6ef479ec370648ef66f2d5e2db",
+                        "_transient_hp_models\/listing_category\/704414ef3e566fb68348d1fdf8e98eea",
+                        "_transient_timeout_hp_models\/listing_category\/704414ef3e566fb68348d1fdf8e98eea",
+                        "_transient_hp_models\/listing_category\/1d58dcea52cee34fc015f51dc4c08718",
+                        "_transient_timeout_hp_models\/listing_category\/1d58dcea52cee34fc015f51dc4c08718",
+                        "_transient_hp_models\/listing_category\/f1a96115bdadccbee4ba9a8a755fddd8",
+                        "_transient_timeout_hp_models\/listing_category\/f1a96115bdadccbee4ba9a8a755fddd8",
+                        "_transient_hp_models\/listing_category\/5694d28a14471ac026a86e54e17f446f",
+                        "_transient_timeout_hp_models\/listing_category\/5694d28a14471ac026a86e54e17f446f",
+                        "_transient_hp_models\/listing_category\/7924d88b1cff735298ed8ad5098cbd60",
+                        "_transient_timeout_hp_models\/listing_category\/7924d88b1cff735298ed8ad5098cbd60",
+                        "_transient_hp_models\/listing_category\/14fe0f18658cf18b60123193ba2f9f85",
+                        "_transient_timeout_hp_models\/listing_category\/14fe0f18658cf18b60123193ba2f9f85",
+                        "_transient_hp_models\/listing_category\/888935e8555cd80014453e0d40b83a73",
+                        "_transient_timeout_hp_models\/listing_category\/888935e8555cd80014453e0d40b83a73",
+                        "_transient_hp_models\/listing_category\/50534b7150b1cc9aa5272fd1c251aa9e",
+                        "_transient_timeout_hp_models\/listing_category\/50534b7150b1cc9aa5272fd1c251aa9e",
+                        "_transient_hp_models\/listing_category\/09072299a9a52ac0e6eb94ccc57236e2",
+                        "_transient_timeout_hp_models\/listing_category\/09072299a9a52ac0e6eb94ccc57236e2",
+                        "_transient_hp_models\/listing_category\/8b2bc12b74a432e9c2eeab31bf1d55e7",
+                        "_transient_timeout_hp_models\/listing_category\/8b2bc12b74a432e9c2eeab31bf1d55e7",
+                        "_transient_hp_models\/vendor_category\/89ee24c5642f7f80b0af7efa8044775e",
+                        "_transient_timeout_hp_models\/vendor_category\/89ee24c5642f7f80b0af7efa8044775e",
+                        "_transient_hp_models\/vendor_category\/ea156a2116fbe1c56357b249016fc852",
+                        "_transient_timeout_hp_models\/vendor_category\/ea156a2116fbe1c56357b249016fc852",
+                        "_transient_hp_models\/vendor_category\/4f44cfb4e8ccd3bc96f4e9724f6f56bb",
+                        "_transient_timeout_hp_models\/vendor_category\/4f44cfb4e8ccd3bc96f4e9724f6f56bb",
+                        "_transient_hp_models\/vendor_category\/version",
+                        "_transient_hp_models\/vendor_category\/87ca61d9df2dd5721c88d2c686dd7da8",
+                        "_transient_timeout_hp_models\/vendor_category\/87ca61d9df2dd5721c88d2c686dd7da8",
+                        "_transient_timeout_hp_models\/vendor_category\/version",
+                        "_transient_hp_models\/vendor_category\/d31d93d4c92fce136e78702fe604d11a",
+                        "_transient_timeout_hp_models\/vendor_category\/d31d93d4c92fce136e78702fe604d11a",
+                        "_transient_hp_models\/vendor_category\/9591025e2bcdcfa842c18645d1b1608d",
+                        "_transient_timeout_hp_models\/vendor_category\/9591025e2bcdcfa842c18645d1b1608d",
+                        "_transient_hp_models\/vendor_category\/93e98aa45a98ef88f722f8f7c74e31ed",
+                        "_transient_timeout_hp_models\/vendor_category\/93e98aa45a98ef88f722f8f7c74e31ed",
+                        "_transient_hp_models\/vendor_category\/b8496eca524dd0a6033da44a271cd64f",
+                        "_transient_timeout_hp_models\/vendor_category\/b8496eca524dd0a6033da44a271cd64f",
+                        "_transient_hp_models\/listing\/version",
+                        "_transient_timeout_hp_models\/listing\/version",
+                        "_transient_hp_models\/vendor_category\/3b4067a06fef448098132cc2bc67b95b",
+                        "_transient_timeout_hp_models\/vendor_category\/3b4067a06fef448098132cc2bc67b95b",
+                        "_transient_hp_models\/vendor_category\/cae15433843d71345a41bf98c7803504",
+                        "_transient_timeout_hp_models\/vendor_category\/cae15433843d71345a41bf98c7803504",
+                        "_transient_hp_models\/vendor_category\/450f2dee346c7dea0469f660bcb451e5",
+                        "_transient_timeout_hp_models\/vendor_category\/450f2dee346c7dea0469f660bcb451e5",
+                        "_transient_hp_models\/vendor_category\/d07755f755283bc533d1a8f9e2364d32",
+                        "_transient_timeout_hp_models\/vendor_category\/d07755f755283bc533d1a8f9e2364d32",
+                        "_transient_hp_models\/vendor_category\/3e4872d23c6cf19f3650334aa350b620",
+                        "_transient_timeout_hp_models\/vendor_category\/3e4872d23c6cf19f3650334aa350b620",
+                        "hp_vendor_verified",
+                        "hp_vendor_rating",
+                        "_transient_hp_models\/vendor_category\/af75bd59204e6c8e7b3fb86cfd343d67",
+                        "_transient_timeout_hp_models\/vendor_category\/af75bd59204e6c8e7b3fb86cfd343d67",
+                        "_transient_hp_models\/vendor_category\/8c264f4cf4dfb4646c96de2746c2af9d",
+                        "_transient_timeout_hp_models\/vendor_category\/8c264f4cf4dfb4646c96de2746c2af9d",
+                        "_transient_hp_models\/vendor_category\/e0a634c88fd4f93b48721b8745c5a400",
+                        "_transient_timeout_hp_models\/vendor_category\/e0a634c88fd4f93b48721b8745c5a400",
+                        "_transient_hp_models\/vendor_category\/278c545f260b1b472658e1a13fa0ab52",
+                        "_transient_timeout_hp_models\/vendor_category\/278c545f260b1b472658e1a13fa0ab52",
+                        "_transient_hp_models\/vendor_category\/964266f3efed6516cda18fbbb1f09538",
+                        "_transient_timeout_hp_models\/vendor_category\/964266f3efed6516cda18fbbb1f09538"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "hp_vendor_verified",
+                            "hp_vendor_rating",
+                            "hp_listing_price",
+                            "hp_listing_vendor"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "hp_price",
+                            "1": "hp_rating",
+                            "2": "hp_rating_count",
+                            "3": "hp_featured",
+                            "4": "hp_verified",
+                            "5": "_yoast_wpseo_title",
+                            "6": "_yoast_wpseo_metadesc",
+                            "7": "_aioseo_title",
+                            "8": "_aioseo_description",
+                            "9": "_transient_hp_models\/listing_category\/afd355bfd9944288ea9de00ede553b30",
+                            "10": "_transient_timeout_hp_models\/listing_category\/afd355bfd9944288ea9de00ede553b30",
+                            "11": "_transient_hp_models\/listing_category\/24ea88fe1d91fbd22225e2aece009e1b",
+                            "12": "_transient_timeout_hp_models\/listing_category\/24ea88fe1d91fbd22225e2aece009e1b",
+                            "13": "_transient_hp_models\/listing_category\/5d4e28fadd4486811dc9358b5bc3cd51",
+                            "14": "_transient_timeout_hp_models\/listing_category\/5d4e28fadd4486811dc9358b5bc3cd51",
+                            "15": "_transient_hp_models\/listing_category\/version",
+                            "16": "_transient_hp_models\/listing_category\/f3cb3bc9a8b64353bcadbd862f448cd6",
+                            "17": "_transient_timeout_hp_models\/listing_category\/f3cb3bc9a8b64353bcadbd862f448cd6",
+                            "18": "_transient_timeout_hp_models\/listing_category\/version",
+                            "19": "_transient_hp_models\/attachment\/version",
+                            "20": "_transient_timeout_hp_models\/attachment\/version",
+                            "21": "_transient_hp_models\/attachment\/71fe0ae81e458a35e4249d8e33040caf",
+                            "22": "_transient_timeout_hp_models\/attachment\/71fe0ae81e458a35e4249d8e33040caf",
+                            "23": "_transient_hp_models\/listing_category\/066f36928842a40682bd2e90a8a970e6",
+                            "24": "_transient_timeout_hp_models\/listing_category\/066f36928842a40682bd2e90a8a970e6",
+                            "25": "_transient_hp_models\/listing_category\/f8e1012ea04e008d2191462c22f061bb",
+                            "26": "_transient_timeout_hp_models\/listing_category\/f8e1012ea04e008d2191462c22f061bb",
+                            "27": "_transient_hp_models\/listing_category\/6c2054a6f1a646c98288b01648cbb191",
+                            "28": "_transient_timeout_hp_models\/listing_category\/6c2054a6f1a646c98288b01648cbb191",
+                            "29": "_transient_hp_models\/listing_category\/9d83d0fe8ad171bc5200ef5ce977b75c",
+                            "30": "_transient_timeout_hp_models\/listing_category\/9d83d0fe8ad171bc5200ef5ce977b75c",
+                            "31": "_transient_hp_models\/listing_category\/de9927943888ed26a7ef7b00c1fd4723",
+                            "32": "_transient_timeout_hp_models\/listing_category\/de9927943888ed26a7ef7b00c1fd4723",
+                            "35": "_transient_hp_models\/listing_category\/4a462e71a3c0b96eb301b4aa1d1e6a74",
+                            "36": "_transient_timeout_hp_models\/listing_category\/4a462e71a3c0b96eb301b4aa1d1e6a74",
+                            "37": "_transient_hp_models\/attachment\/8f2beaf61fae5c260ce82aeda67dfda4",
+                            "38": "_transient_timeout_hp_models\/attachment\/8f2beaf61fae5c260ce82aeda67dfda4",
+                            "39": "_transient_hp_models\/listing_category\/637358e23a0abe3ca07151fb470b4792",
+                            "40": "_transient_timeout_hp_models\/listing_category\/637358e23a0abe3ca07151fb470b4792",
+                            "41": "_transient_hp_models\/listing_category\/80da2a8fa7cbc806c42bbd0c04e3cce4",
+                            "42": "_transient_timeout_hp_models\/listing_category\/80da2a8fa7cbc806c42bbd0c04e3cce4",
+                            "43": "_transient_hp_models\/listing_category\/bf98ac0b1bc62cd72e0483120b494088",
+                            "44": "_transient_timeout_hp_models\/listing_category\/bf98ac0b1bc62cd72e0483120b494088",
+                            "45": "_transient_hp_models\/listing_category\/1c4fad6ef479ec370648ef66f2d5e2db",
+                            "46": "_transient_timeout_hp_models\/listing_category\/1c4fad6ef479ec370648ef66f2d5e2db",
+                            "47": "_transient_hp_models\/listing_category\/704414ef3e566fb68348d1fdf8e98eea",
+                            "48": "_transient_timeout_hp_models\/listing_category\/704414ef3e566fb68348d1fdf8e98eea",
+                            "49": "_transient_hp_models\/listing_category\/1d58dcea52cee34fc015f51dc4c08718",
+                            "50": "_transient_timeout_hp_models\/listing_category\/1d58dcea52cee34fc015f51dc4c08718",
+                            "51": "_transient_hp_models\/listing_category\/f1a96115bdadccbee4ba9a8a755fddd8",
+                            "52": "_transient_timeout_hp_models\/listing_category\/f1a96115bdadccbee4ba9a8a755fddd8",
+                            "53": "_transient_hp_models\/listing_category\/5694d28a14471ac026a86e54e17f446f",
+                            "54": "_transient_timeout_hp_models\/listing_category\/5694d28a14471ac026a86e54e17f446f",
+                            "55": "_transient_hp_models\/listing_category\/7924d88b1cff735298ed8ad5098cbd60",
+                            "56": "_transient_timeout_hp_models\/listing_category\/7924d88b1cff735298ed8ad5098cbd60",
+                            "57": "_transient_hp_models\/listing_category\/14fe0f18658cf18b60123193ba2f9f85",
+                            "58": "_transient_timeout_hp_models\/listing_category\/14fe0f18658cf18b60123193ba2f9f85",
+                            "59": "_transient_hp_models\/listing_category\/888935e8555cd80014453e0d40b83a73",
+                            "60": "_transient_timeout_hp_models\/listing_category\/888935e8555cd80014453e0d40b83a73",
+                            "61": "_transient_hp_models\/listing_category\/50534b7150b1cc9aa5272fd1c251aa9e",
+                            "62": "_transient_timeout_hp_models\/listing_category\/50534b7150b1cc9aa5272fd1c251aa9e",
+                            "63": "_transient_hp_models\/listing_category\/09072299a9a52ac0e6eb94ccc57236e2",
+                            "64": "_transient_timeout_hp_models\/listing_category\/09072299a9a52ac0e6eb94ccc57236e2",
+                            "65": "_transient_hp_models\/listing_category\/8b2bc12b74a432e9c2eeab31bf1d55e7",
+                            "66": "_transient_timeout_hp_models\/listing_category\/8b2bc12b74a432e9c2eeab31bf1d55e7",
+                            "67": "_transient_hp_models\/vendor_category\/89ee24c5642f7f80b0af7efa8044775e",
+                            "68": "_transient_timeout_hp_models\/vendor_category\/89ee24c5642f7f80b0af7efa8044775e",
+                            "69": "_transient_hp_models\/vendor_category\/ea156a2116fbe1c56357b249016fc852",
+                            "70": "_transient_timeout_hp_models\/vendor_category\/ea156a2116fbe1c56357b249016fc852",
+                            "71": "_transient_hp_models\/vendor_category\/4f44cfb4e8ccd3bc96f4e9724f6f56bb",
+                            "72": "_transient_timeout_hp_models\/vendor_category\/4f44cfb4e8ccd3bc96f4e9724f6f56bb",
+                            "73": "_transient_hp_models\/vendor_category\/version",
+                            "74": "_transient_hp_models\/vendor_category\/87ca61d9df2dd5721c88d2c686dd7da8",
+                            "75": "_transient_timeout_hp_models\/vendor_category\/87ca61d9df2dd5721c88d2c686dd7da8",
+                            "76": "_transient_timeout_hp_models\/vendor_category\/version",
+                            "77": "_transient_hp_models\/vendor_category\/d31d93d4c92fce136e78702fe604d11a",
+                            "78": "_transient_timeout_hp_models\/vendor_category\/d31d93d4c92fce136e78702fe604d11a",
+                            "79": "_transient_hp_models\/vendor_category\/9591025e2bcdcfa842c18645d1b1608d",
+                            "80": "_transient_timeout_hp_models\/vendor_category\/9591025e2bcdcfa842c18645d1b1608d",
+                            "81": "_transient_hp_models\/vendor_category\/93e98aa45a98ef88f722f8f7c74e31ed",
+                            "82": "_transient_timeout_hp_models\/vendor_category\/93e98aa45a98ef88f722f8f7c74e31ed",
+                            "83": "_transient_hp_models\/vendor_category\/b8496eca524dd0a6033da44a271cd64f",
+                            "84": "_transient_timeout_hp_models\/vendor_category\/b8496eca524dd0a6033da44a271cd64f",
+                            "85": "_transient_hp_models\/listing\/version",
+                            "86": "_transient_timeout_hp_models\/listing\/version",
+                            "87": "_transient_hp_models\/vendor_category\/3b4067a06fef448098132cc2bc67b95b",
+                            "88": "_transient_timeout_hp_models\/vendor_category\/3b4067a06fef448098132cc2bc67b95b",
+                            "89": "_transient_hp_models\/vendor_category\/cae15433843d71345a41bf98c7803504",
+                            "90": "_transient_timeout_hp_models\/vendor_category\/cae15433843d71345a41bf98c7803504",
+                            "91": "_transient_hp_models\/vendor_category\/450f2dee346c7dea0469f660bcb451e5",
+                            "92": "_transient_timeout_hp_models\/vendor_category\/450f2dee346c7dea0469f660bcb451e5",
+                            "93": "_transient_hp_models\/vendor_category\/d07755f755283bc533d1a8f9e2364d32",
+                            "94": "_transient_timeout_hp_models\/vendor_category\/d07755f755283bc533d1a8f9e2364d32",
+                            "95": "_transient_hp_models\/vendor_category\/3e4872d23c6cf19f3650334aa350b620",
+                            "96": "_transient_timeout_hp_models\/vendor_category\/3e4872d23c6cf19f3650334aa350b620",
+                            "99": "_transient_hp_models\/vendor_category\/af75bd59204e6c8e7b3fb86cfd343d67",
+                            "100": "_transient_timeout_hp_models\/vendor_category\/af75bd59204e6c8e7b3fb86cfd343d67",
+                            "101": "_transient_hp_models\/vendor_category\/8c264f4cf4dfb4646c96de2746c2af9d",
+                            "102": "_transient_timeout_hp_models\/vendor_category\/8c264f4cf4dfb4646c96de2746c2af9d",
+                            "103": "_transient_hp_models\/vendor_category\/e0a634c88fd4f93b48721b8745c5a400",
+                            "104": "_transient_timeout_hp_models\/vendor_category\/e0a634c88fd4f93b48721b8745c5a400",
+                            "105": "_transient_hp_models\/vendor_category\/278c545f260b1b472658e1a13fa0ab52",
+                            "106": "_transient_timeout_hp_models\/vendor_category\/278c545f260b1b472658e1a13fa0ab52",
+                            "107": "_transient_hp_models\/vendor_category\/964266f3efed6516cda18fbbb1f09538",
+                            "108": "_transient_timeout_hp_models\/vendor_category\/964266f3efed6516cda18fbbb1f09538"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "geodirectory",
+                    "name": "GeoDirectory",
+                    "seed_file": "geodirectory.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "gd-gd_place.json"
+                    ],
+                    "seed_meta_fields": [
+                        "geodir_contact",
+                        "geodir_email",
+                        "geodir_website",
+                        "geodir_street",
+                        "geodir_city",
+                        "geodir_region",
+                        "geodir_zip",
+                        "geodir_latitude",
+                        "geodir_longitude",
+                        "geodir_overall_rating"
+                    ],
+                    "v4_meta_fields": [
+                        "geodir_contact",
+                        "geodir_email",
+                        "geodir_website",
+                        "geodir_street",
+                        "geodir_city",
+                        "geodir_region",
+                        "geodir_zip",
+                        "geodir_latitude",
+                        "geodir_longitude",
+                        "geodir_overall_rating",
+                        "geodir_phone",
+                        "geodir_business_hours"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "geodir_contact",
+                            "geodir_email",
+                            "geodir_website",
+                            "geodir_street",
+                            "geodir_city",
+                            "geodir_region",
+                            "geodir_zip",
+                            "geodir_latitude",
+                            "geodir_longitude",
+                            "geodir_overall_rating"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "10": "geodir_phone",
+                            "11": "geodir_business_hours"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "forumwp",
+                    "name": "ForumWP",
+                    "seed_file": "forumwp.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "fmwp-fmwp_forum.json",
+                        "fmwp-fmwp_topic.json",
+                        "fmwp-fmwp_reply.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_fmwp_forum",
+                        "_fmwp_topic"
+                    ],
+                    "v4_meta_fields": [
+                        "fmwp_last_update",
+                        "fmwp_original_content",
+                        "_fmwp_forum_icon",
+                        "_fmwp_forum_color",
+                        "fmwp_views",
+                        "_fmwp_views",
+                        "_fmwp_topic_views",
+                        "_fmwp_topic_votes",
+                        "_fmwp_forum",
+                        "_fmwp_votes",
+                        "_fmwp_topic"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_fmwp_forum",
+                            "_fmwp_topic"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "fmwp_last_update",
+                            "1": "fmwp_original_content",
+                            "2": "_fmwp_forum_icon",
+                            "3": "_fmwp_forum_color",
+                            "4": "fmwp_views",
+                            "5": "_fmwp_views",
+                            "6": "_fmwp_topic_views",
+                            "7": "_fmwp_topic_votes",
+                            "9": "_fmwp_votes"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "propertyhive",
+                    "name": "PropertyHive",
+                    "seed_file": "propertyhive.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-property.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_price",
+                        "_bedrooms",
+                        "_bathrooms",
+                        "_reception_rooms",
+                        "_address_street",
+                        "_address_two",
+                        "_address_city",
+                        "_price_qualifier"
+                    ],
+                    "v4_meta_fields": [
+                        "_thumbnail_id",
+                        "property_price",
+                        "property_price_text",
+                        "_price",
+                        "property_bedrooms",
+                        "_bedrooms",
+                        "property_bathrooms",
+                        "_bathrooms",
+                        "property_area",
+                        "_area",
+                        "property_area_unit",
+                        "property_address",
+                        "_address",
+                        "property_floor",
+                        "property_year_built",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_wptsall_sync_hash",
+                        "_wptsall_sync_hash_1",
+                        "_wp_old_slug",
+                        "_view_statistics",
+                        "property_price_unit",
+                        "property_land_area",
+                        "_wptsall_relation_id",
+                        "_wptsall_sync_hash_2",
+                        "property_garage",
+                        "property_land_area_unit",
+                        "property_building_area",
+                        "property_building_area_unit",
+                        "property_address_street",
+                        "property_address_city",
+                        "property_address_state",
+                        "property_address_postal_code",
+                        "property_price_type",
+                        "property_city",
+                        "property_state",
+                        "property_price_suffix",
+                        "_address_concatenated",
+                        "_features_concatenated",
+                        "_descriptions_concatenated",
+                        "_owner_details",
+                        "_reception_rooms",
+                        "_address_street",
+                        "_address_two",
+                        "_address_city",
+                        "_availability_change_date",
+                        "_price_qualifier"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_price",
+                            "_bedrooms",
+                            "_bathrooms",
+                            "_reception_rooms",
+                            "_address_street",
+                            "_address_two",
+                            "_address_city",
+                            "_price_qualifier"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "0": "_thumbnail_id",
+                            "1": "property_price",
+                            "2": "property_price_text",
+                            "4": "property_bedrooms",
+                            "6": "property_bathrooms",
+                            "8": "property_area",
+                            "9": "_area",
+                            "10": "property_area_unit",
+                            "11": "property_address",
+                            "12": "_address",
+                            "13": "property_floor",
+                            "14": "property_year_built",
+                            "15": "_yoast_wpseo_title",
+                            "16": "_yoast_wpseo_metadesc",
+                            "17": "_aioseo_title",
+                            "18": "_aioseo_description",
+                            "19": "_wptsall_sync_hash",
+                            "20": "_wptsall_sync_hash_1",
+                            "21": "_wp_old_slug",
+                            "22": "_view_statistics",
+                            "23": "property_price_unit",
+                            "24": "property_land_area",
+                            "25": "_wptsall_relation_id",
+                            "26": "_wptsall_sync_hash_2",
+                            "27": "property_garage",
+                            "28": "property_land_area_unit",
+                            "29": "property_building_area",
+                            "30": "property_building_area_unit",
+                            "31": "property_address_street",
+                            "32": "property_address_city",
+                            "33": "property_address_state",
+                            "34": "property_address_postal_code",
+                            "35": "property_price_type",
+                            "36": "property_city",
+                            "37": "property_state",
+                            "38": "property_price_suffix",
+                            "39": "_address_concatenated",
+                            "40": "_features_concatenated",
+                            "41": "_descriptions_concatenated",
+                            "42": "_owner_details",
+                            "47": "_availability_change_date"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "events-manager",
+                    "name": "Events Manager",
+                    "seed_file": "events-manager.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-event.json",
+                        "unknown-location.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_location_address",
+                        "_location_town",
+                        "_location_state",
+                        "_location_country",
+                        "_event_start_date",
+                        "_event_end_date",
+                        "_event_start_time",
+                        "_event_end_time",
+                        "_location_id",
+                        "_event_tickets_price"
+                    ],
+                    "v4_meta_fields": [
+                        "_event_start_date",
+                        "_event_start_time",
+                        "_event_end_date",
+                        "_event_end_time",
+                        "_location_name",
+                        "_location_address",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "_location_id",
+                        "_event_tickets_price",
+                        "_location_town",
+                        "_location_state",
+                        "_location_country"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "_location_address",
+                            "_location_town",
+                            "_location_state",
+                            "_location_country",
+                            "_event_start_date",
+                            "_event_end_date",
+                            "_event_start_time",
+                            "_event_end_time",
+                            "_location_id",
+                            "_event_tickets_price"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "4": "_location_name",
+                            "6": "_yoast_wpseo_title",
+                            "7": "_yoast_wpseo_metadesc",
+                            "8": "_aioseo_title",
+                            "9": "_aioseo_description"
+                        }
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "wp-job-openings",
+                    "name": "WP Job Openings",
+                    "seed_file": "wp-job-openings.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "awsm-awsm_job_openings.json",
+                        "awsm-awsm_job_application.json"
+                    ],
+                    "seed_meta_fields": [
+                        "awsm_job_company",
+                        "awsm_job_salary"
+                    ],
+                    "v4_meta_fields": [
+                        "_awsm_job_expiry",
+                        "_awsm_job_featured",
+                        "_awsm_apply_type",
+                        "_awsm_job_salary",
+                        "_awsm_job_requirements",
+                        "_awsm_job_benefits",
+                        "_yoast_wpseo_title",
+                        "_yoast_wpseo_metadesc",
+                        "_aioseo_title",
+                        "_aioseo_description",
+                        "awsm_job_company",
+                        "awsm_job_salary"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "awsm_job_company",
+                            "awsm_job_salary"
+                        ],
+                        "seed_only": [],
+                        "v4_only": [
+                            "_awsm_job_expiry",
+                            "_awsm_job_featured",
+                            "_awsm_apply_type",
+                            "_awsm_job_salary",
+                            "_awsm_job_requirements",
+                            "_awsm_job_benefits",
+                            "_yoast_wpseo_title",
+                            "_yoast_wpseo_metadesc",
+                            "_aioseo_title",
+                            "_aioseo_description"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "give",
+                    "name": "GiveWP",
+                    "seed_file": "give.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "give-give_forms.json",
+                        "give-give_payment.json"
+                    ],
+                    "seed_meta_fields": [
+                        "_give_set_price",
+                        "_give_custom_amount",
+                        "_give_levels_minimum_amount",
+                        "_give_levels_maximum_amount",
+                        "_give_goal_option",
+                        "_give_set_goal",
+                        "_give_recurring",
+                        "_give_period"
+                    ],
+                    "v4_meta_fields": [
+                        "give_comment_id"
+                    ],
+                    "comparison": {
+                        "matched": [],
+                        "seed_only": [
+                            "_give_set_price",
+                            "_give_custom_amount",
+                            "_give_levels_minimum_amount",
+                            "_give_levels_maximum_amount",
+                            "_give_goal_option",
+                            "_give_set_goal",
+                            "_give_recurring",
+                            "_give_period"
+                        ],
+                        "v4_only": [
+                            "give_comment_id"
+                        ]
+                    },
+                    "is_custom_table": false
+                },
+                {
+                    "slug": "podlove-podcasting-plugin-for-wordpress",
+                    "name": "Podlove",
+                    "seed_file": "podlove.json",
+                    "seed_exists": true,
+                    "v4_files": [
+                        "unknown-podcast.json"
+                    ],
+                    "seed_meta_fields": [
+                        "duration",
+                        "episode_type",
+                        "date_recorded"
+                    ],
+                    "v4_meta_fields": [
+                        "duration",
+                        "episode_type",
+                        "date_recorded",
+                        "footnotes"
+                    ],
+                    "comparison": {
+                        "matched": [
+                            "duration",
+                            "episode_type",
+                            "date_recorded"
+                        ],
+                        "seed_only": [],
+                        "v4_only": {
+                            "3": "footnotes"
+                        }
+                    },
+                    "is_custom_table": false
+                }
+            ]
+        }
+    },
+    "summary": {
+        "total_custom_seeding_plugins": 31,
+        "plugins_with_v4_match": 31,
+        "plugins_without_v4_match": 0,
+        "total_seed_meta_fields": 197,
+        "total_v4_meta_fields": 620,
+        "matched_fields": 159,
+        "seed_only_fields": 38,
+        "v4_only_fields": 461
+    }
+}

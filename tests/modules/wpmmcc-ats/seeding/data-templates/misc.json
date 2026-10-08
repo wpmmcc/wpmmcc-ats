@@ -1,0 +1,303 @@
+{
+    "_meta": {
+        "version": "1.2.0",
+        "description": "其他插件数据模板 - 下载、评价、作品集、捐赠等",
+        "post_types": ["download", "spt_testimonial", "site-review", "portfolio", "give_forms", "tablepress_table"],
+        "plugins": ["easy-digital-downloads", "testimonial-free", "site-reviews", "portfolio-post-type", "give", "tablepress"],
+        "_notes": {
+            "skipped_post_types": {
+                "spt_testimonial": "public=false, 通过 shortcode 展示，无前端 URL 路由",
+                "give_forms": "public=false, 通过 shortcode 展示捐赠表单"
+            },
+            "reason": "与扫描器逻辑一致：只有 publicly_queryable=true 或 public=true+rewrite 的 post types 才会被填充和扫描"
+        }
+    },
+    "easy_digital_downloads": {
+        "categories": [
+            {"name": "WordPress插件", "slug": "wp-plugins"},
+            {"name": "WordPress主题", "slug": "wp-themes"},
+            {"name": "设计素材", "slug": "design-assets"}
+        ],
+        "downloads": [
+            {
+                "id": "download_1",
+                "title": "高级表单生成器插件",
+                "slug": "advanced-form-builder",
+                "featured_image": "product-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>功能强大的WordPress表单生成器插件，支持拖拽式创建表单，无需编码。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>插件特点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>拖拽式表单构建器</li>\n<li>30+表单字段类型</li>\n<li>条件逻辑支持</li>\n<li>邮件通知和自动回复</li>\n<li>反垃圾邮件保护</li>\n<li>与WooCommerce集成</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "WordPress拖拽式表单生成器，30+字段类型，条件逻辑支持",
+                "status": "publish",
+                "categories": ["wp-plugins"],
+                "meta": {
+                    "edd_price": "79",
+                    "_edd_download_sales": "1250",
+                    "_edd_download_earnings": "98750",
+                    "_yoast_wpseo_title": "高级表单生成器插件 - WordPress表单插件",
+                    "_yoast_wpseo_metadesc": "WordPress拖拽式表单生成器插件，30+字段类型，条件逻辑，79美元。"
+                },
+                "verification": {
+                    "title_contains": "表单生成器",
+                    "price_contains": "79",
+                    "meta_contains": "拖拽式"
+                }
+            },
+            {
+                "id": "download_2",
+                "title": "多功能企业主题",
+                "slug": "multipurpose-business-theme",
+                "featured_image": "product-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>适合各类企业网站的多功能WordPress主题，现代化设计，高度可定制。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>100+预设模板</li>\n<li>页面构建器集成</li>\n<li>响应式设计</li>\n<li>SEO优化</li>\n<li>WooCommerce兼容</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "多功能WordPress企业主题，100+模板，响应式设计",
+                "status": "publish",
+                "categories": ["wp-themes"],
+                "meta": {
+                    "edd_price": "59",
+                    "_edd_download_sales": "2100",
+                    "_yoast_wpseo_title": "多功能企业主题 - WordPress企业网站主题",
+                    "_yoast_wpseo_metadesc": "多功能WordPress企业主题，100+模板，响应式设计，59美元。"
+                },
+                "verification": {
+                    "title_contains": "企业主题",
+                    "price_contains": "59"
+                }
+            }
+        ]
+    },
+    "testimonials": {
+        "items": [
+            {
+                "id": "testimonial_1",
+                "title": "王建国 - 科技公司CEO",
+                "slug": "testimonial-wang",
+                "featured_image": "avatar-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>使用这个WordPress插件后，我们网站的性能提升了50%，用户体验大幅改善。强烈推荐给所有WordPress用户！</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "spt_testimonial_client_name": "王建国",
+                    "spt_testimonial_client_designation": "CEO",
+                    "spt_testimonial_client_company": "创新科技有限公司",
+                    "spt_testimonial_rating": "5",
+                    "_yoast_wpseo_title": "客户评价 - 王建国 创新科技CEO",
+                    "_yoast_wpseo_metadesc": "创新科技CEO王建国对我们产品的评价：网站性能提升50%。"
+                },
+                "verification": {
+                    "title_contains": "王建国",
+                    "content_contains": "性能提升"
+                }
+            },
+            {
+                "id": "testimonial_2",
+                "title": "李明华 - 电商运营总监",
+                "slug": "testimonial-li",
+                "featured_image": "avatar-text-1.png",
+                "content": "<!-- wp:paragraph -->\n<p>这个WooCommerce扩展帮助我们提高了订单转化率，客服响应速度也快，非常满意的购物体验。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "spt_testimonial_client_name": "李明华",
+                    "spt_testimonial_client_designation": "电商运营总监",
+                    "spt_testimonial_client_company": "优品电商",
+                    "spt_testimonial_rating": "5",
+                    "_yoast_wpseo_title": "客户评价 - 李明华 优品电商运营总监",
+                    "_yoast_wpseo_metadesc": "优品电商运营总监李明华的评价：转化率提升，服务满意。"
+                },
+                "verification": {
+                    "title_contains": "李明华",
+                    "content_contains": "转化率"
+                }
+            }
+        ]
+    },
+    "site_reviews": {
+        "reviews": [
+            {
+                "id": "review_1",
+                "title": "优秀的服务体验",
+                "slug": "excellent-service",
+                "content": "客服团队非常专业，响应及时，问题都能得到快速解决。产品质量也很好，物超所值！",
+                "status": "publish",
+                "meta": {
+                    "_rating": "5",
+                    "_author": "张先生",
+                    "_email": "zhang@example.com",
+                    "_yoast_wpseo_title": "客户评价 - 优秀的服务体验",
+                    "_yoast_wpseo_metadesc": "客户对我们服务的五星评价：专业响应及时，产品物超所值。"
+                },
+                "verification": {
+                    "title_contains": "优秀的服务",
+                    "content_contains": "专业"
+                }
+            }
+        ]
+    },
+    "portfolio": {
+        "categories": [
+            {"name": "网页设计", "slug": "web-design"},
+            {"name": "品牌设计", "slug": "branding"},
+            {"name": "UI/UX设计", "slug": "ui-ux"}
+        ],
+        "items": [
+            {
+                "id": "portfolio_1",
+                "title": "科技公司官网改版设计",
+                "slug": "tech-company-website-redesign",
+                "featured_image": "gallery-1.png",
+                "content": "<!-- wp:paragraph -->\n<p>为一家人工智能科技公司进行官网改版设计，采用现代简约风格，突出技术实力和创新形象。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>项目概述</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>客户：某AI科技公司</li>\n<li>类型：官网改版</li>\n<li>技术：WordPress + 定制主题</li>\n<li>周期：6周</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "AI科技公司官网改版，现代简约设计风格",
+                "status": "publish",
+                "categories": ["web-design"],
+                "meta": {
+                    "portfolio_client": "某AI科技公司",
+                    "portfolio_date": "2024-03",
+                    "portfolio_url": "https://ai-tech.example.com",
+                    "_yoast_wpseo_title": "科技公司官网改版设计 - 作品案例",
+                    "_yoast_wpseo_metadesc": "AI科技公司官网改版设计案例，现代简约风格，WordPress定制开发。"
+                },
+                "verification": {
+                    "title_contains": "官网改版",
+                    "content_contains": "人工智能"
+                }
+            },
+            {
+                "id": "portfolio_2",
+                "title": "餐饮品牌VI设计",
+                "slug": "restaurant-brand-vi-design",
+                "featured_image": "featured-text-2.png",
+                "content": "<!-- wp:paragraph -->\n<p>为新锐餐饮品牌打造完整的视觉识别系统，包括Logo、色彩体系、应用规范等。</p>\n<!-- /wp:paragraph -->",
+                "excerpt": "餐饮品牌VI视觉识别系统设计",
+                "status": "publish",
+                "categories": ["branding"],
+                "meta": {
+                    "portfolio_client": "味道餐饮集团",
+                    "portfolio_date": "2024-02",
+                    "_yoast_wpseo_title": "餐饮品牌VI设计 - 品牌设计案例",
+                    "_yoast_wpseo_metadesc": "餐饮品牌VI视觉识别系统设计，包括Logo、色彩体系、应用规范。"
+                },
+                "verification": {
+                    "title_contains": "VI设计",
+                    "content_contains": "视觉识别"
+                }
+            }
+        ]
+    },
+    "give": {
+        "forms": [
+            {
+                "id": "give_form_1",
+                "title": "乡村教育援助计划",
+                "slug": "rural-education-support",
+                "featured_image": "course-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>帮助偏远地区儿童获得优质教育资源。您的每一份捐赠都将用于购买教学设备、培训教师、改善教学环境。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>项目用途</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>购买教学设备和图书</li>\n<li>资助贫困学生</li>\n<li>培训乡村教师</li>\n<li>改善学校基础设施</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "帮助偏远地区儿童获得优质教育",
+                "status": "publish",
+                "meta": {
+                    "_give_set_price": "100",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "100000",
+                    "_give_form_earnings": "45680",
+                    "_yoast_wpseo_title": "乡村教育援助计划 - 在线捐赠",
+                    "_yoast_wpseo_metadesc": "支持乡村教育援助计划，帮助偏远地区儿童获得优质教育资源。"
+                },
+                "verification": {
+                    "title_contains": "乡村教育",
+                    "content_contains": "教学设备"
+                }
+            },
+            {
+                "id": "give_form_2",
+                "title": "流浪动物救助基金",
+                "slug": "stray-animal-rescue",
+                "featured_image": "featured-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>为流浪动物提供食物、医疗和临时庇护所。我们致力于帮助每一个需要帮助的小生命。</p>\n<!-- /wp:paragraph -->",
+                "excerpt": "救助流浪动物，给它们一个温暖的家",
+                "status": "publish",
+                "meta": {
+                    "_give_set_price": "50",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "50000",
+                    "_give_form_earnings": "28900",
+                    "_yoast_wpseo_title": "流浪动物救助基金 - 在线捐赠",
+                    "_yoast_wpseo_metadesc": "支持流浪动物救助基金，为流浪动物提供食物和医疗。"
+                },
+                "verification": {
+                    "title_contains": "流浪动物",
+                    "content_contains": "庇护所"
+                }
+            }
+        ]
+    },
+    "tablepress": {
+        "_notes": "TablePress 使用自定义表结构存储，需要特殊处理",
+        "tables": [
+            {
+                "id": "tablepress_1",
+                "title": "产品价格对比表",
+                "slug": "product-pricing-comparison",
+                "description": "不同版本产品的功能和价格对比",
+                "data": [
+                    ["功能", "基础版", "专业版", "企业版"],
+                    ["用户数量", "1人", "5人", "无限制"],
+                    ["存储空间", "5GB", "50GB", "无限制"],
+                    ["技术支持", "邮件", "邮件+电话", "24/7专属"],
+                    ["API访问", "否", "是", "是"],
+                    ["自定义域名", "否", "是", "是"],
+                    ["价格/月", "¥99", "¥299", "¥999"]
+                ],
+                "options": {
+                    "table_head": true,
+                    "alternating_row_colors": true,
+                    "print_name": true
+                },
+                "verification": {
+                    "title_contains": "价格对比",
+                    "data_contains": "专业版"
+                }
+            },
+            {
+                "id": "tablepress_2",
+                "title": "团队成员联系表",
+                "slug": "team-contact-list",
+                "description": "公司团队成员联系方式",
+                "data": [
+                    ["姓名", "职位", "邮箱", "电话"],
+                    ["张总", "CEO", "zhang@company.com", "138-xxxx-0001"],
+                    ["李经理", "技术总监", "li@company.com", "138-xxxx-0002"],
+                    ["王主管", "市场经理", "wang@company.com", "138-xxxx-0003"],
+                    ["赵工程师", "高级开发", "zhao@company.com", "138-xxxx-0004"]
+                ],
+                "options": {
+                    "table_head": true,
+                    "alternating_row_colors": true,
+                    "row_hover": true
+                },
+                "verification": {
+                    "title_contains": "联系表",
+                    "data_contains": "技术总监"
+                }
+            },
+            {
+                "id": "tablepress_3",
+                "title": "服务时间表",
+                "slug": "service-schedule",
+                "description": "每周服务时间安排",
+                "data": [
+                    ["时间段", "周一至周五", "周六", "周日"],
+                    ["09:00-12:00", "正常服务", "预约服务", "休息"],
+                    ["12:00-14:00", "午休", "午休", "休息"],
+                    ["14:00-18:00", "正常服务", "预约服务", "休息"],
+                    ["18:00-21:00", "值班服务", "休息", "休息"]
+                ],
+                "options": {
+                    "table_head": true,
+                    "alternating_row_colors": true,
+                    "datatables_sort": false
+                },
+                "verification": {
+                    "title_contains": "时间表",
+                    "data_contains": "正常服务"
+                }
+            }
+        ]
+    }
+}

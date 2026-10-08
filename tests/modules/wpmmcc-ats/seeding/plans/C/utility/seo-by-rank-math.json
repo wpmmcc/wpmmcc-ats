@@ -1,0 +1,63 @@
+{
+    "_meta": {
+        "plugin_slug": "seo-by-rank-math",
+        "plugin_name": "Yoast SEO",
+        "type": "seo",
+        "generated_at": "2026-01-27 09:55:02",
+        "based_on": [
+            "properties (39)",
+            "course (3)",
+            "lesson (181)",
+            "quiz (12)",
+            "sensei_email (15)",
+            "jobpost (29)",
+            "ufaq (59)"
+        ]
+    },
+    "seo_templates": {
+        "properties": {
+            "title_template": "{post_title} | {site_name}",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "course": {
+            "title_template": "学习 {post_title} | {site_name} 在线课程",
+            "desc_template": "{post_excerpt} 立即报名，开始学习之旅。",
+            "focuskw_source": "post_title"
+        },
+        "lesson": {
+            "title_template": "学习 {post_title} | {site_name} 在线课程",
+            "desc_template": "{post_excerpt} 立即报名，开始学习之旅。",
+            "focuskw_source": "post_title"
+        },
+        "quiz": {
+            "title_template": "{post_title} | {site_name}",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "sensei_email": {
+            "title_template": "{post_title} | {site_name}",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "jobpost": {
+            "title_template": "{post_title} | {site_name}",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        },
+        "ufaq": {
+            "title_template": "{post_title} | {site_name}",
+            "desc_template": "{post_excerpt}",
+            "focuskw_source": "post_title"
+        }
+    },
+    "target_post_types": [
+        "properties",
+        "course",
+        "lesson",
+        "quiz",
+        "sensei_email",
+        "jobpost",
+        "ufaq"
+    ]
+}

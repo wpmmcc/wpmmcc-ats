@@ -1,0 +1,437 @@
+{
+  "generated_at": "2026-08-28",
+  "source_of_truth": [
+    "tests/modules/wpmmcc-ats/e2e/project-specs.json",
+    "tests/modules/wpmmcc-ats/e2e/E2E-COMMERCE-CONTENT-PLAN-2026-03-16.md",
+    "tests/modules/wpmmcc-ats/e2e/E2E-LEARNING-CONTENT-PLAN-2026-03-16.md",
+    "tests/modules/wpmmcc-ats/e2e/E2E-COMMUNITY-CONTENT-PLAN-2026-03-17.md",
+    "tests/modules/wpmmcc-ats/e2e/E2E-LISTINGS-EVENTS-CONTENT-PLAN-2026-03-17.md",
+    "tests/modules/wpmmcc-ats/e2e/E2E-MEDIA-BUILDER-CONTENT-PLAN-2026-03-17.md",
+    "tests/modules/wpmmcc-ats/e2e/E2E-CONTENT-META-CONTENT-PLAN-2026-03-17.md"
+  ],
+  "policy": {
+    "baseline_meaning": "Each plugin project currently has a green core-only lane and at least one hard write-back proof object.",
+    "gap_meaning": "Missing items are the next high-value business content types to add as hard proof. They are not blockers for the current green baseline unless marked release_required later.",
+    "shared_out_of_scope": [
+      "transactional order/payment data",
+      "site-wide page capture",
+      "SMTP delivery itself",
+      "non-content operational telemetry"
+    ]
+  },
+  "projects": [
+    {
+      "project": "woocommerce-content",
+      "plugin_slug": "woocommerce",
+      "family": "commerce-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "product"
+      ],
+      "covered_support_surface": [
+        "serialized product attributes",
+        "seo meta",
+        "excerpt",
+        "product review text"
+      ],
+      "missing_high_value_objects": [
+        "product_cat",
+        "product_tag",
+        "global product attributes and attribute terms"
+      ],
+      "deferred_out_of_scope": [
+        "orders",
+        "coupons",
+        "transactional emails"
+      ],
+      "recommended_next_lane": "Expand commerce Stage 7 verifier and project seed/relation expectations"
+    },
+    {
+      "project": "easy-digital-downloads-content",
+      "plugin_slug": "easy-digital-downloads",
+      "family": "commerce-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [
+        "download"
+      ],
+      "covered_support_surface": [
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "download_category",
+        "download_tag",
+        "download purchase/summary metadata that is editor-managed content"
+      ],
+      "deferred_out_of_scope": [
+        "payment records",
+        "license emails"
+      ],
+      "recommended_next_lane": "Expand commerce Stage 7 verifier and plugin-webui support lane"
+    },
+    {
+      "project": "bbpress-content",
+      "plugin_slug": "bbpress",
+      "family": "community-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "topic"
+      ],
+      "covered_support_surface": [
+        "forum",
+        "reply",
+        "topic-tag",
+        "reply seed gate"
+      ],
+      "missing_high_value_objects": [
+        "forum title and description as hard proof",
+        "reply write-back as hard proof"
+      ],
+      "deferred_out_of_scope": [
+        "private moderation workflow text"
+      ],
+      "recommended_next_lane": "Expand community Stage 7 verifier to include forum/reply hard proof"
+    },
+    {
+      "project": "tutor-content",
+      "plugin_slug": "tutor",
+      "family": "learning-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "courses"
+      ],
+      "covered_support_surface": [
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "lesson content",
+        "quiz text",
+        "course taxonomy labels"
+      ],
+      "deferred_out_of_scope": [
+        "student progress",
+        "orders"
+      ],
+      "recommended_next_lane": "Split learning seed plans further and add lesson/quiz hard proof"
+    },
+    {
+      "project": "learnpress-content",
+      "plugin_slug": "learnpress",
+      "family": "learning-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "lp_course"
+      ],
+      "covered_support_surface": [
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "lp_lesson",
+        "lp_quiz",
+        "course taxonomy labels"
+      ],
+      "deferred_out_of_scope": [
+        "student orders",
+        "course progress state"
+      ],
+      "recommended_next_lane": "Split learning seed plans further and add lesson/quiz hard proof"
+    },
+    {
+      "project": "the-events-calendar-content",
+      "plugin_slug": "the-events-calendar",
+      "family": "listings-events-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "tribe_events"
+      ],
+      "covered_support_surface": [
+        "tribe_events_cat",
+        "event body rich text"
+      ],
+      "missing_high_value_objects": [
+        "tribe_venue",
+        "tribe_organizer"
+      ],
+      "deferred_out_of_scope": [
+        "ticketing flows"
+      ],
+      "recommended_next_lane": "Expand listings-events Stage 7 verifier to include venue/organizer"
+    },
+    {
+      "project": "wp-job-manager-content",
+      "plugin_slug": "wp-job-manager",
+      "family": "listings-events-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "job_listing"
+      ],
+      "covered_support_surface": [
+        "listing body rich text",
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "job_listing_category",
+        "job_listing_type"
+      ],
+      "deferred_out_of_scope": [
+        "application records",
+        "resume manager objects"
+      ],
+      "recommended_next_lane": "Expand listings-events Stage 7 verifier to include listing taxonomies"
+    },
+    {
+      "project": "envira-gallery-lite-content",
+      "plugin_slug": "envira-gallery-lite",
+      "family": "media-builder-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [
+        "envira"
+      ],
+      "covered_support_surface": [
+        "serialized gallery payload",
+        "gallery editor text"
+      ],
+      "missing_high_value_objects": [
+        "gallery item captions",
+        "gallery item alt/title text routed with attachment context"
+      ],
+      "deferred_out_of_scope": [
+        "binary image translation itself"
+      ],
+      "recommended_next_lane": "Add mixed gallery attachment-text hard proof in media-builder lane and component-template media lane"
+    },
+    {
+      "project": "seriously-simple-podcasting-content",
+      "plugin_slug": "seriously-simple-podcasting",
+      "family": "content-meta-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [
+        "podcast"
+      ],
+      "covered_support_surface": [
+        "episode post body",
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "podcast series taxonomy labels",
+        "episode summary/subtitle style metadata when managed as content"
+      ],
+      "deferred_out_of_scope": [
+        "audio file binary translation"
+      ],
+      "recommended_next_lane": "Expand content-meta verifier and plugin-webui support lane"
+    },
+    {
+      "project": "wp-recipe-maker-content",
+      "plugin_slug": "wp-recipe-maker",
+      "family": "content-meta-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [
+        "wprm_recipe"
+      ],
+      "covered_support_surface": [
+        "recipe body rich text",
+        "seo meta",
+        "excerpt"
+      ],
+      "missing_high_value_objects": [
+        "structured ingredient text",
+        "structured instruction text",
+        "recipe taxonomy labels"
+      ],
+      "deferred_out_of_scope": [
+        "nutrition calculation values"
+      ],
+      "recommended_next_lane": "Add structured recipe field routing proof via component-template structured lane plus Stage 7 verifier expansion"
+    },
+    {
+      "project": "elementor-content",
+      "plugin_slug": "elementor",
+      "family": "media-builder-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "page with _elementor_data"
+      ],
+      "covered_support_surface": [
+        "elementor json payload",
+        "elementor_library scan coverage"
+      ],
+      "missing_high_value_objects": [
+        "elementor_library template hard proof",
+        "builder widget text on reusable templates"
+      ],
+      "deferred_out_of_scope": [
+        "visual layout fidelity as pixel-perfect page translation"
+      ],
+      "recommended_next_lane": "Expand media-builder Stage 7 verifier to add reusable template hard proof"
+    },
+    {
+      "project": "wordpress-seo-content",
+      "plugin_slug": "wordpress-seo",
+      "family": "content-meta-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "post seo meta",
+        "page seo meta"
+      ],
+      "covered_support_surface": [
+        "_yoast_wpseo_title",
+        "_yoast_wpseo_metadesc"
+      ],
+      "missing_high_value_objects": [
+        "term seo meta for category/tag",
+        "open graph and social text meta"
+      ],
+      "deferred_out_of_scope": [
+        "search index refresh timing"
+      ],
+      "recommended_next_lane": "Expand content-meta verifier and taxonomy meta proof"
+    },
+    {
+      "project": "advanced-custom-fields-content",
+      "plugin_slug": "advanced-custom-fields",
+      "family": "content-meta-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "product brand field"
+      ],
+      "covered_support_surface": [
+        "plain text ACF meta on Woo product"
+      ],
+      "missing_high_value_objects": [
+        "repeater fields",
+        "group/flexible content fields",
+        "gallery/relationship text-bearing fields"
+      ],
+      "deferred_out_of_scope": [
+        "binary media payloads in ACF gallery"
+      ],
+      "recommended_next_lane": "Add structured ACF fixture lane and field-capability verifier expansion"
+    },
+    {
+      "project": "site-reviews-content",
+      "plugin_slug": "site-reviews",
+      "family": "community-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [
+        "site-review"
+      ],
+      "covered_support_surface": [
+        "review body rich text",
+        "review title/content"
+      ],
+      "missing_high_value_objects": [
+        "site-review-category taxonomy labels"
+      ],
+      "deferred_out_of_scope": [
+        "moderation queue labels"
+      ],
+      "recommended_next_lane": "Expand community Stage 7 verifier and plugin-webui support lane"
+    },
+    {
+      "project": "wptsall-content",
+      "plugin_slug": "wptsall",
+      "family": "core-content",
+      "support_browser_covered": true,
+      "covered_hard_gate_objects": [
+        "post",
+        "page",
+        "category",
+        "post_tag",
+        "attachment"
+      ],
+      "covered_support_surface": [
+        "slug",
+        "excerpt",
+        "seo meta",
+        "media_ref",
+        "plugin_i18n",
+        "config_i18n"
+      ],
+      "missing_high_value_objects": [
+        "theme_i18n completed callback proof",
+        "core comment text if later declared in plugin scope",
+        "site option/config objects beyond current config_i18n baseline"
+      ],
+      "deferred_out_of_scope": [
+        "whole-page translation"
+      ],
+      "recommended_next_lane": "Expand Stage 7 field verifier when theme_i18n gains completed callback evidence"
+    },
+    {
+      "project": "directorist-content",
+      "plugin_slug": "directorist",
+      "family": "listings-events-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [],
+      "covered_support_surface": [],
+      "missing_high_value_objects": [
+        "baseline hard-gate object not yet seeded"
+      ],
+      "deferred_out_of_scope": [],
+      "recommended_next_lane": "Add seed + Stage 7 hard proof; currently deferred vs matrix T0 smoke",
+      "matrix_status": "deferred_coverage_gap"
+    },
+    {
+      "project": "events-manager-content",
+      "plugin_slug": "events-manager",
+      "family": "listings-events-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [],
+      "covered_support_surface": [],
+      "missing_high_value_objects": [
+        "baseline hard-gate object not yet seeded"
+      ],
+      "deferred_out_of_scope": [],
+      "recommended_next_lane": "Add seed + Stage 7 hard proof; currently deferred vs matrix T0 smoke",
+      "matrix_status": "deferred_coverage_gap"
+    },
+    {
+      "project": "give-content",
+      "plugin_slug": "give",
+      "family": "commerce-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [],
+      "covered_support_surface": [],
+      "missing_high_value_objects": [
+        "baseline hard-gate object not yet seeded"
+      ],
+      "deferred_out_of_scope": [],
+      "recommended_next_lane": "Add seed + Stage 7 hard proof; currently deferred vs matrix T0 smoke",
+      "matrix_status": "deferred_coverage_gap"
+    },
+    {
+      "project": "hivepress-content",
+      "plugin_slug": "hivepress",
+      "family": "listings-events-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [],
+      "covered_support_surface": [],
+      "missing_high_value_objects": [
+        "baseline hard-gate object not yet seeded"
+      ],
+      "deferred_out_of_scope": [],
+      "recommended_next_lane": "Add seed + Stage 7 hard proof; currently deferred vs matrix T0 smoke",
+      "matrix_status": "deferred_coverage_gap"
+    },
+    {
+      "project": "lifterlms-content",
+      "plugin_slug": "lifterlms",
+      "family": "learning-content",
+      "support_browser_covered": false,
+      "covered_hard_gate_objects": [],
+      "covered_support_surface": [],
+      "missing_high_value_objects": [
+        "baseline hard-gate object not yet seeded"
+      ],
+      "deferred_out_of_scope": [],
+      "recommended_next_lane": "Add seed + Stage 7 hard proof; currently deferred vs matrix T0 smoke",
+      "matrix_status": "deferred_coverage_gap"
+    }
+  ],
+  "alignment_note": "Aligned to project-specs.json plugin_projects (20). Entries with matrix_status=deferred_coverage_gap lack hard Stage-7 proof but remain in the T0 matrix."
+}

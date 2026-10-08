@@ -1,0 +1,24 @@
+{
+    "_meta": {
+        "plugin_slug": "bookly-responsive-appointment-booking-tool",
+        "plugin_name": "Simply Schedule Appointments",
+        "type": "booking",
+        "generated_at": "2026-01-27 09:55:02"
+    },
+    "appointment_types": [
+        {
+            "name": "课程咨询",
+            "slug": "course-consultation",
+            "duration": 30,
+            "description": "与课程顾问一对一咨询",
+            "related_post_types": [
+                "course"
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "预约课程咨询",
+                "page_slug": "book-course-consultation"
+            }
+        }
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "_meta": {
+        "version": "1.0.0",
+        "description": "WPTSALL 测试数据模板 - 公共配置",
+        "updated": "2026-01-10"
+    },
+    "seo": {
+        "yoast": {
+            "title_suffix": " - 测试站点",
+            "meta_desc_suffix": " | WPTSALL测试数据"
+        },
+        "aioseo": {
+            "title_suffix": " - 测试站点",
+            "meta_desc_suffix": " | WPTSALL测试数据"
+        },
+        "rankmath": {
+            "title_suffix": " - 测试站点",
+            "meta_desc_suffix": " | WPTSALL测试数据"
+        }
+    },
+    "media": {
+        "placeholder_image": {
+            "url": "https://picsum.photos/800/600",
+            "alt": "测试图片",
+            "title": "WPTSALL测试图片"
+        }
+    },
+    "taxonomies": {
+        "category": [
+            {"name": "技术教程", "slug": "tech-tutorial", "description": "技术相关教程文章"},
+            {"name": "产品评测", "slug": "product-review", "description": "各类产品评测"},
+            {"name": "行业资讯", "slug": "industry-news", "description": "行业最新资讯"}
+        ],
+        "post_tag": [
+            {"name": "WordPress", "slug": "wordpress"},
+            {"name": "插件开发", "slug": "plugin-dev"},
+            {"name": "前端技术", "slug": "frontend"},
+            {"name": "后端技术", "slug": "backend"},
+            {"name": "SEO优化", "slug": "seo"}
+        ]
+    },
+    "users": {
+        "author": {
+            "display_name": "测试作者",
+            "user_id": 1
+        }
+    },
+    "verification": {
+        "check_title_in_html": true,
+        "check_meta_description": true,
+        "check_og_tags": true,
+        "check_canonical": true,
+        "check_custom_fields": true
+    }
+}

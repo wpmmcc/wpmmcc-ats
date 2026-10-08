@@ -1,0 +1,144 @@
+{
+    "_meta": {
+        "version": "1.0.0",
+        "description": "分类信息/目录插件数据模板",
+        "post_types": ["rtcl_listing", "at_biz_dir"],
+        "plugins": ["classified-listing", "directorist"]
+    },
+    "taxonomies": {
+        "rtcl_category": [
+            {"name": "二手车", "slug": "used-cars"},
+            {"name": "房屋租售", "slug": "real-estate"},
+            {"name": "数码产品", "slug": "electronics"},
+            {"name": "家具家电", "slug": "furniture"}
+        ],
+        "rtcl_location": [
+            {"name": "北京", "slug": "beijing"},
+            {"name": "上海", "slug": "shanghai"},
+            {"name": "广州", "slug": "guangzhou"}
+        ]
+    },
+    "classified_listing": {
+        "listings": [
+            {
+                "id": "rtcl_1",
+                "title": "2022款宝马3系 低公里数 急售",
+                "slug": "bmw-3-series-2022-sale",
+                "content": "<!-- wp:paragraph -->\n<p>2022款宝马320Li豪华版，行驶里程仅2万公里，车况极佳，无事故无泡水。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>车辆信息</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>品牌：宝马</li>\n<li>型号：320Li 豪华版</li>\n<li>年份：2022年</li>\n<li>里程：2万公里</li>\n<li>颜色：矿石白</li>\n<li>变速箱：自动</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>因置换新车急售，价格可小刀，诚意买家请联系。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "category": "used-cars",
+                "location": "beijing",
+                "meta": {
+                    "_rtcl_price": "258000",
+                    "price": "258000",
+                    "_rtcl_price_type": "fixed",
+                    "_rtcl_contact_name": "王先生",
+                    "_rtcl_phone": "13800138000",
+                    "_rtcl_email": "wang@example.com",
+                    "_rtcl_address": "北京市朝阳区望京",
+                    "_yoast_wpseo_title": "2022款宝马320Li急售 - 2万公里 25.8万",
+                    "_yoast_wpseo_metadesc": "2022款宝马320Li豪华版急售，2万公里，车况极佳，25.8万元，北京望京可看车。"
+                },
+                "verification": {
+                    "title_contains": "宝马3系",
+                    "price_contains": "258000",
+                    "meta_contains": "320Li"
+                }
+            },
+            {
+                "id": "rtcl_2",
+                "title": "苹果MacBook Pro 16寸 M2 Max 95新",
+                "slug": "macbook-pro-16-m2-max",
+                "content": "<!-- wp:paragraph -->\n<p>2023款MacBook Pro 16寸，M2 Max芯片，32GB内存，1TB存储，成色95新。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>配置信息</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>型号：MacBook Pro 16寸 2023款</li>\n<li>芯片：Apple M2 Max</li>\n<li>内存：32GB</li>\n<li>存储：1TB SSD</li>\n<li>电池循环：86次</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "category": "electronics",
+                "location": "shanghai",
+                "meta": {
+                    "_rtcl_price": "18500",
+                    "price": "18500",
+                    "_rtcl_price_type": "fixed",
+                    "_rtcl_contact_name": "李小姐",
+                    "_rtcl_phone": "13900139000",
+                    "_rtcl_email": "li@example.com",
+                    "_rtcl_address": "上海市浦东新区",
+                    "_yoast_wpseo_title": "MacBook Pro 16寸 M2 Max 95新 - 1.85万",
+                    "_yoast_wpseo_metadesc": "2023款MacBook Pro 16寸M2 Max，32GB内存1TB存储，95新，1.85万元。"
+                },
+                "verification": {
+                    "title_contains": "MacBook Pro",
+                    "price_contains": "18500",
+                    "meta_contains": "M2 Max"
+                }
+            },
+            {
+                "id": "rtcl_3",
+                "title": "朝阳区CBD两居室月租8000元",
+                "slug": "chaoyang-cbd-2br-rent",
+                "content": "<!-- wp:paragraph -->\n<p>朝阳区CBD核心地段精装两居室出租，家电齐全，拎包入住。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>户型：两室一厅一卫</li>\n<li>面积：85平方米</li>\n<li>楼层：15/28层</li>\n<li>朝向：南北通透</li>\n<li>装修：精装修</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "category": "real-estate",
+                "location": "beijing",
+                "meta": {
+                    "_rtcl_price": "8000",
+                    "price": "8000",
+                    "_rtcl_price_type": "on_call",
+                    "_rtcl_price_unit": "月",
+                    "_rtcl_contact_name": "张女士",
+                    "_rtcl_phone": "13700137000",
+                    "_yoast_wpseo_title": "朝阳CBD两居室出租 - 月租8000元",
+                    "_yoast_wpseo_metadesc": "朝阳区CBD精装两居室出租，85平南北通透，月租8000元，拎包入住。"
+                },
+                "verification": {
+                    "title_contains": "两居室",
+                    "price_contains": "8000",
+                    "meta_contains": "CBD"
+                }
+            }
+        ]
+    },
+    "directorist": {
+        "listings": [
+            {
+                "id": "atbiz_1",
+                "title": "星光咖啡馆 - 文艺范儿咖啡店",
+                "slug": "starlight-cafe",
+                "content": "<!-- wp:paragraph -->\n<p>隐藏在胡同里的文艺咖啡馆，手冲咖啡和甜点都很棒，适合看书和工作。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>店铺特色</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>手冲单品咖啡</li>\n<li>自制甜点</li>\n<li>安静的阅读环境</li>\n<li>免费WiFi和插座</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "meta": {
+                    "_atbdp_address": "北京市东城区南锣鼓巷胡同12号",
+                    "_atbdp_phone": "010-88888888",
+                    "_atbdp_email": "hello@starlightcafe.com",
+                    "_atbdp_website": "https://starlightcafe.com",
+                    "_atbdp_price_range": "$$",
+                    "_atbdp_business_hours": "09:00-22:00",
+                    "_yoast_wpseo_title": "星光咖啡馆 - 南锣鼓巷文艺咖啡店",
+                    "_yoast_wpseo_metadesc": "南锣鼓巷胡同里的文艺咖啡馆，手冲咖啡和自制甜点，安静舒适的环境。"
+                },
+                "verification": {
+                    "title_contains": "星光咖啡馆",
+                    "content_contains": "手冲咖啡"
+                }
+            },
+            {
+                "id": "atbiz_2",
+                "title": "健身工坊 - 专业健身工作室",
+                "slug": "fitness-workshop",
+                "content": "<!-- wp:paragraph -->\n<p>专业的私教健身工作室，提供一对一私教课程、团体课程和康复训练。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>一对一私教</li>\n<li>团体操课</li>\n<li>运动康复</li>\n<li>体态矫正</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "meta": {
+                    "_atbdp_address": "上海市静安区南京西路1000号",
+                    "_atbdp_phone": "021-66666666",
+                    "_atbdp_email": "info@fitnessworkshop.com",
+                    "_atbdp_price_range": "$$$",
+                    "_atbdp_business_hours": "07:00-22:00",
+                    "_yoast_wpseo_title": "健身工坊 - 上海专业健身工作室",
+                    "_yoast_wpseo_metadesc": "上海静安区专业健身工作室，一对一私教、团体课程、运动康复服务。"
+                },
+                "verification": {
+                    "title_contains": "健身工坊",
+                    "content_contains": "私教"
+                }
+            }
+        ]
+    }
+}

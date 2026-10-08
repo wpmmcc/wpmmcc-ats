@@ -1,0 +1,101 @@
+{
+    "_meta": {
+        "plugin_slug": "simple-job-board",
+        "plugin_name": "Simple Job Board",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "Simple Job Board seed data for job postings",
+        "fields_source": "database query (jobpost meta_keys, jobpost_* prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "jobpost_category": [
+            {"name": "Technology", "slug": "technology"},
+            {"name": "Marketing", "slug": "marketing"},
+            {"name": "Finance", "slug": "finance"},
+            {"name": "Operations", "slug": "operations"}
+        ],
+        "jobpost_location": [
+            {"name": "Remote", "slug": "remote"},
+            {"name": "New York", "slug": "new-york"},
+            {"name": "San Francisco", "slug": "san-francisco"}
+        ],
+        "jobpost_job_type": [
+            {"name": "Full-time", "slug": "full-time"},
+            {"name": "Part-time", "slug": "part-time"},
+            {"name": "Contract", "slug": "contract"}
+        ]
+    },
+    "posts": {
+        "jobpost": [
+            {
+                "post_title": "Full Stack Developer",
+                "post_content": "<p>We're looking for a skilled full stack developer to join our team.</p><h3>Requirements</h3><ul><li>3+ years of experience with React and Node.js</li><li>Database experience (PostgreSQL preferred)</li><li>Strong problem-solving skills</li></ul>",
+                "post_excerpt": "Join our team as a full stack developer.",
+                "post_status": "publish",
+                "meta": {
+                    "jobpost_company": "TechStartup Inc",
+                    "jobpost_salary": "$100,000 - $130,000",
+                    "jobpost_location": "San Francisco, CA",
+                    "jobpost_type": "Full-time"
+                },
+                "taxonomy": {
+                    "jobpost_category": ["technology"],
+                    "jobpost_location": ["san-francisco"],
+                    "jobpost_job_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "Content Marketing Specialist",
+                "post_content": "<p>Create compelling content that drives engagement and conversions.</p>",
+                "post_excerpt": "Content marketing role with growth opportunities.",
+                "post_status": "publish",
+                "meta": {
+                    "jobpost_company": "MediaGroup Agency",
+                    "jobpost_salary": "$60,000 - $80,000",
+                    "jobpost_location": "Remote",
+                    "jobpost_type": "Full-time"
+                },
+                "taxonomy": {
+                    "jobpost_category": ["marketing"],
+                    "jobpost_location": ["remote"],
+                    "jobpost_job_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "Financial Analyst",
+                "post_content": "<p>Analyze financial data and prepare reports for executive decision-making.</p>",
+                "post_excerpt": "Financial analyst position in growing company.",
+                "post_status": "publish",
+                "meta": {
+                    "jobpost_company": "Capital Financial Services",
+                    "jobpost_salary": "$75,000 - $95,000",
+                    "jobpost_location": "New York, NY",
+                    "jobpost_type": "Full-time"
+                },
+                "taxonomy": {
+                    "jobpost_category": ["finance"],
+                    "jobpost_location": ["new-york"],
+                    "jobpost_job_type": ["full-time"]
+                }
+            },
+            {
+                "post_title": "Operations Manager",
+                "post_content": "<p>Oversee daily operations and improve efficiency across departments.</p>",
+                "post_excerpt": "Lead operations for established company.",
+                "post_status": "publish",
+                "meta": {
+                    "jobpost_company": "LogiCorp",
+                    "jobpost_salary": "$85,000 - $110,000",
+                    "jobpost_location": "New York, NY",
+                    "jobpost_type": "Full-time"
+                },
+                "taxonomy": {
+                    "jobpost_category": ["operations"],
+                    "jobpost_location": ["new-york"],
+                    "jobpost_job_type": ["full-time"]
+                }
+            }
+        ]
+    }
+}

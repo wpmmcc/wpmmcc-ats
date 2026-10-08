@@ -1,0 +1,118 @@
+{
+    "_meta": {
+        "plugin_slug": "forumwp",
+        "plugin_name": "ForumWP",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "ForumWP seed data for forums, topics, and replies",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "fmwp_forum": [
+            {
+                "post_title": "Getting Started",
+                "post_content": "<p>New to our community? Start here!</p>",
+                "post_excerpt": "Guides and resources for new members.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Product Discussions",
+                "post_content": "<p>Discuss our products and share your experiences.</p>",
+                "post_excerpt": "Talk about products and features.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Help & Support",
+                "post_content": "<p>Get help from the community and support team.</p>",
+                "post_excerpt": "Community support forum.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Feature Ideas",
+                "post_content": "<p>Share your ideas for new features.</p>",
+                "post_excerpt": "Suggest new features.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Off-Topic",
+                "post_content": "<p>Chat about anything!</p>",
+                "post_excerpt": "General discussions.",
+                "post_status": "publish",
+                "meta": {}
+            }
+        ],
+        "fmwp_topic": [
+            {
+                "post_title": "Welcome to our new community forum!",
+                "post_content": "<p>Hello everyone and welcome! This is the official community forum. Please read the guidelines before posting.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_forum": "{{fmwp_forum:0}}"
+                }
+            },
+            {
+                "post_title": "How to get the most out of our product",
+                "post_content": "<p>Here are some tips for maximizing your productivity with our product.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_forum": "{{fmwp_forum:1}}"
+                }
+            },
+            {
+                "post_title": "Need help with configuration",
+                "post_content": "<p>I'm having trouble setting up the advanced options. Can someone help?</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_forum": "{{fmwp_forum:2}}"
+                }
+            },
+            {
+                "post_title": "Dark mode request",
+                "post_content": "<p>Would love to see a dark mode option in the next update!</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_forum": "{{fmwp_forum:3}}"
+                }
+            }
+        ],
+        "fmwp_reply": [
+            {
+                "post_title": "",
+                "post_content": "<p>Welcome! Great to have this new forum.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_topic": "{{fmwp_topic:0}}"
+                }
+            },
+            {
+                "post_title": "",
+                "post_content": "<p>Thanks for these tips! Very helpful.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_topic": "{{fmwp_topic:1}}"
+                }
+            },
+            {
+                "post_title": "",
+                "post_content": "<p>Have you tried checking the settings panel? There's a configuration wizard there.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_topic": "{{fmwp_topic:2}}"
+                }
+            },
+            {
+                "post_title": "",
+                "post_content": "<p>+1 for dark mode! My eyes would appreciate it.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_fmwp_topic": "{{fmwp_topic:3}}"
+                }
+            }
+        ]
+    }
+}

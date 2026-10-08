@@ -1,0 +1,25 @@
+{
+  "$id": "wp-models-list.response.schema.json",
+  "type": "object",
+  "required": ["models", "total"],
+  "properties": {
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "plugin_slug"],
+        "properties": {
+          "id": { "type": ["integer", "number", "string"] },
+          "plugin_slug": { "type": "string" },
+          "status": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "total": { "type": ["integer", "number"] },
+    "page": { "type": ["integer", "number"] },
+    "per_page": { "type": ["integer", "number"] },
+    "total_pages": { "type": ["integer", "number"] }
+  },
+  "additionalProperties": true
+}

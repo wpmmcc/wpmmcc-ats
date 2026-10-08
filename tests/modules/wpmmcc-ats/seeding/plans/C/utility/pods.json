@@ -1,0 +1,54 @@
+{
+    "_meta": {
+        "plugin_slug": "pods",
+        "plugin_name": "Advanced Custom Fields",
+        "type": "custom_fields",
+        "generated_at": "2026-01-27 09:55:02"
+    },
+    "field_groups": [
+        {
+            "key": "group_course_info",
+            "title": "课程额外信息",
+            "post_types": [
+                "course"
+            ],
+            "fields": [
+                {
+                    "key": "field_skill_level",
+                    "name": "skill_level",
+                    "label": "难度级别",
+                    "type": "select"
+                },
+                {
+                    "key": "field_duration",
+                    "name": "total_hours",
+                    "label": "总学时",
+                    "type": "number"
+                },
+                {
+                    "key": "field_language",
+                    "name": "language",
+                    "label": "授课语言",
+                    "type": "text"
+                }
+            ],
+            "sample_values": [
+                {
+                    "skill_level": "初级",
+                    "total_hours": 40,
+                    "language": "中文"
+                },
+                {
+                    "skill_level": "中级",
+                    "total_hours": 60,
+                    "language": "英文"
+                },
+                {
+                    "skill_level": "高级",
+                    "total_hours": 80,
+                    "language": "中文"
+                }
+            ]
+        }
+    ]
+}

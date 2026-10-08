@@ -1,0 +1,9 @@
+{
+  "suite": "seeding-run-plan",
+  "plan": "A",
+  "stage": "seed",
+  "status": "failed",
+  "exit_code": 1,
+  "finished_at": "2026-08-20T11:51:13Z",
+  "log": "/home/john/wpmmcc-ats3.0/tests/modules/wpmmcc-ats/seeding/plans/A/results/run-plan-20260820-195054.log"
+}

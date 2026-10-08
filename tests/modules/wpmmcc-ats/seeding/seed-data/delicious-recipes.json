@@ -1,0 +1,93 @@
+{
+    "_meta": {
+        "plugin_slug": "delicious-recipes",
+        "plugin_name": "Delicious Recipes",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Delicious Recipes seed data for recipe posts",
+        "fields_source": "database query (recipe meta_keys, _dr_ prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "recipe-course": [
+            {"name": "Breakfast", "slug": "breakfast"},
+            {"name": "Lunch", "slug": "lunch"},
+            {"name": "Dinner", "slug": "dinner"},
+            {"name": "Dessert", "slug": "dessert"}
+        ],
+        "recipe-cuisine": [
+            {"name": "American", "slug": "american"},
+            {"name": "Italian", "slug": "italian"},
+            {"name": "Asian", "slug": "asian"}
+        ]
+    },
+    "posts": {
+        "recipe": [
+            {
+                "post_title": "Fluffy Pancakes with Maple Syrup",
+                "post_content": "<p>Light and fluffy pancakes perfect for weekend brunch.</p><h3>Ingredients</h3><ul><li>2 cups all-purpose flour</li><li>2 eggs</li><li>1.5 cups milk</li><li>1/4 cup melted butter</li><li>2 tbsp sugar</li></ul>",
+                "post_excerpt": "Classic fluffy pancakes recipe.",
+                "post_status": "publish",
+                "meta": {
+                    "_dr_prep_time": "10",
+                    "_dr_cook_time": "15",
+                    "_dr_servings": "4",
+                    "_dr_difficulty": "easy",
+                    "_dr_calories": "350"
+                },
+                "taxonomy": {
+                    "recipe-course": ["breakfast"],
+                    "recipe-cuisine": ["american"]
+                }
+            },
+            {
+                "post_title": "Authentic Margherita Pizza",
+                "post_content": "<p>Traditional Neapolitan pizza with fresh tomatoes, mozzarella, and basil.</p>",
+                "post_excerpt": "Classic Italian Margherita pizza.",
+                "post_status": "publish",
+                "meta": {
+                    "_dr_prep_time": "30",
+                    "_dr_cook_time": "15",
+                    "_dr_servings": "2",
+                    "_dr_difficulty": "medium"
+                },
+                "taxonomy": {
+                    "recipe-course": ["dinner"],
+                    "recipe-cuisine": ["italian"]
+                }
+            },
+            {
+                "post_title": "Chicken Teriyaki Rice Bowl",
+                "post_content": "<p>Quick and delicious teriyaki chicken served over steamed rice.</p>",
+                "post_excerpt": "Easy Japanese-style chicken bowl.",
+                "post_status": "publish",
+                "meta": {
+                    "_dr_prep_time": "15",
+                    "_dr_cook_time": "20",
+                    "_dr_servings": "4",
+                    "_dr_difficulty": "easy"
+                },
+                "taxonomy": {
+                    "recipe-course": ["lunch", "dinner"],
+                    "recipe-cuisine": ["asian"]
+                }
+            },
+            {
+                "post_title": "Tiramisu",
+                "post_content": "<p>Classic Italian dessert with layers of coffee-soaked ladyfingers and mascarpone cream.</p>",
+                "post_excerpt": "Traditional Italian tiramisu.",
+                "post_status": "publish",
+                "meta": {
+                    "_dr_prep_time": "45",
+                    "_dr_cook_time": "0",
+                    "_dr_servings": "8",
+                    "_dr_difficulty": "medium"
+                },
+                "taxonomy": {
+                    "recipe-course": ["dessert"],
+                    "recipe-cuisine": ["italian"]
+                }
+            }
+        ]
+    }
+}

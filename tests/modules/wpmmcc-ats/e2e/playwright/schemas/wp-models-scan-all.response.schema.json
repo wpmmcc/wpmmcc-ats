@@ -1,0 +1,14 @@
+{
+  "$id": "wp-models-scan-all.response.schema.json",
+  "type": "object",
+  "required": ["success", "models_created", "models_updated", "total_rules"],
+  "properties": {
+    "success": { "const": true },
+    "models_created": { "type": ["integer", "number"] },
+    "models_updated": { "type": ["integer", "number"] },
+    "models_failed": { "type": ["integer", "number"] },
+    "total_rules": { "type": ["integer", "number"] },
+    "details": { "type": ["array", "object"] }
+  },
+  "additionalProperties": true
+}

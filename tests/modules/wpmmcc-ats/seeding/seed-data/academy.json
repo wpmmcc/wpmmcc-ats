@@ -1,0 +1,198 @@
+{
+    "_meta": {
+        "plugin_slug": "academy",
+        "plugin_name": "Academy LMS",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Academy LMS seed data for courses, lessons, and quizzes",
+        "fields_source": "v4-scanner (academy-academy_courses.json, academy-academy_lessons.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "academy_course_categories": [
+            {"name": "Web Development", "slug": "web-development"},
+            {"name": "Data Science", "slug": "data-science"},
+            {"name": "Business", "slug": "business"}
+        ]
+    },
+    "posts": {
+        "academy_courses": [
+            {
+                "post_title": "Complete Web Development Bootcamp",
+                "post_content": "<p>Master modern web development from HTML to React. This comprehensive course covers frontend, backend, and database technologies.</p><h3>What you'll learn</h3><ul><li>HTML5 & CSS3 fundamentals</li><li>JavaScript ES6+</li><li>React and Node.js</li><li>Database design with MongoDB</li></ul>",
+                "post_excerpt": "Learn full-stack web development from scratch with hands-on projects.",
+                "post_status": "publish",
+                "featured_image": "{{media:course-1.jpg}}",
+                "meta": {
+                    "academy_course_duration_hours": "40",
+                    "academy_course_duration_minutes": "0",
+                    "academy_course_level": "beginner",
+                    "academy_course_price": "199.99",
+                    "academy_course_sale_price": "149.99",
+                    "academy_course_max_students": "100",
+                    "academy_course_requirements": "Basic computer skills",
+                    "academy_course_intro_video": "{{media:course-video-1.mp4}}"
+                },
+                "taxonomy": {"academy_course_categories": ["web-development"]}
+            },
+            {
+                "post_title": "Python for Data Science",
+                "post_content": "<p>Dive into data science with Python. Learn data analysis, visualization, and machine learning fundamentals.</p><h3>Course Highlights</h3><ul><li>Python programming basics</li><li>NumPy and Pandas</li><li>Data visualization with Matplotlib</li><li>Introduction to Machine Learning</li></ul>",
+                "post_excerpt": "Start your data science journey with Python and popular libraries.",
+                "post_status": "publish",
+                "featured_image": "{{media:featured-1.jpg}}",
+                "meta": {
+                    "academy_course_duration_hours": "35",
+                    "academy_course_duration_minutes": "30",
+                    "academy_course_level": "intermediate",
+                    "academy_course_price": "249.99",
+                    "academy_course_sale_price": "199.99",
+                    "academy_course_max_students": "80",
+                    "academy_course_intro_video": "{{media:course-video-2.mp4}}"
+                },
+                "taxonomy": {"academy_course_categories": ["data-science"]}
+            },
+            {
+                "post_title": "Business Communication Skills",
+                "post_content": "<p>Enhance your professional communication skills. Learn effective writing, presentation, and interpersonal communication.</p>",
+                "post_excerpt": "Develop essential business communication skills for career success.",
+                "post_status": "publish",
+                "meta": {
+                    "academy_course_duration_hours": "15",
+                    "academy_course_level": "beginner",
+                    "academy_course_price": "79.99"
+                },
+                "taxonomy": {"academy_course_categories": ["business"]}
+            },
+            {
+                "post_title": "Advanced JavaScript Patterns",
+                "post_content": "<p>Take your JavaScript skills to the next level. Learn design patterns, performance optimization, and modern frameworks.</p>",
+                "post_excerpt": "Master advanced JavaScript concepts and design patterns.",
+                "post_status": "publish",
+                "meta": {
+                    "academy_course_duration_hours": "25",
+                    "academy_course_level": "advanced",
+                    "academy_course_price": "179.99",
+                    "academy_course_requirements": "Intermediate JavaScript knowledge"
+                },
+                "taxonomy": {"academy_course_categories": ["web-development"]}
+            },
+            {
+                "post_title": "Machine Learning Fundamentals",
+                "post_content": "<p>Understand the core concepts of machine learning. Build predictive models and learn algorithm selection.</p>",
+                "post_excerpt": "Start building machine learning models with scikit-learn.",
+                "post_status": "publish",
+                "meta": {
+                    "academy_course_duration_hours": "45",
+                    "academy_course_level": "intermediate",
+                    "academy_course_price": "299.99",
+                    "academy_course_sale_price": "249.99"
+                },
+                "taxonomy": {"academy_course_categories": ["data-science"]}
+            },
+            {
+                "post_title": "Blockchain Development Workshop",
+                "post_content": "<p>Learn blockchain fundamentals and build decentralized applications. Covers Solidity and smart contracts.</p>",
+                "post_excerpt": "Build decentralized apps with blockchain technology.",
+                "post_status": "draft",
+                "meta": {
+                    "academy_course_duration_hours": "30",
+                    "academy_course_level": "advanced",
+                    "academy_course_price": "349.99"
+                },
+                "taxonomy": {"academy_course_categories": ["web-development"]}
+            },
+            {
+                "post_title": "UX Design Principles",
+                "post_content": "<p>Master user experience design. Learn research methods, wireframing, and usability testing.</p>",
+                "post_excerpt": "Create better user experiences with proven design principles.",
+                "post_status": "pending",
+                "meta": {
+                    "academy_course_duration_hours": "20",
+                    "academy_course_level": "beginner",
+                    "academy_course_price": "129.99"
+                },
+                "taxonomy": {"academy_course_categories": ["business"]}
+            }
+        ],
+        "academy_lessons": [
+            {
+                "post_title": "Introduction to HTML",
+                "post_content": "<p>Learn the basics of HTML markup language. Understand document structure, tags, and semantic elements.</p>",
+                "post_excerpt": "HTML fundamentals and document structure",
+                "post_status": "publish",
+                "meta": {
+                    "academy_lesson_duration": "45 minutes",
+                    "academy_lesson_order": "1",
+                    "academy_lesson_course_id": "{{academy_courses:0}}"
+                }
+            },
+            {
+                "post_title": "CSS Styling Basics",
+                "post_content": "<p>Style your HTML pages with CSS. Learn selectors, properties, and the box model.</p>",
+                "post_excerpt": "CSS selectors and styling fundamentals",
+                "post_status": "publish",
+                "meta": {
+                    "academy_lesson_duration": "60 minutes",
+                    "academy_lesson_order": "2",
+                    "academy_lesson_course_id": "{{academy_courses:0}}"
+                }
+            },
+            {
+                "post_title": "JavaScript Variables and Data Types",
+                "post_content": "<p>Understand JavaScript variables, data types, and type coercion. Learn var, let, and const differences.</p>",
+                "post_excerpt": "JavaScript data types and variable declarations",
+                "post_status": "publish",
+                "meta": {
+                    "academy_lesson_duration": "50 minutes",
+                    "academy_lesson_order": "3",
+                    "academy_lesson_course_id": "{{academy_courses:0}}"
+                }
+            },
+            {
+                "post_title": "Python Environment Setup",
+                "post_content": "<p>Set up your Python development environment. Install Python, pip, and essential packages.</p>",
+                "post_excerpt": "Setting up Python and required tools",
+                "post_status": "publish",
+                "meta": {
+                    "academy_lesson_duration": "30 minutes",
+                    "academy_lesson_order": "1",
+                    "academy_lesson_course_id": "{{academy_courses:1}}"
+                }
+            },
+            {
+                "post_title": "NumPy Arrays",
+                "post_content": "<p>Learn NumPy array operations. Understand array creation, indexing, and mathematical operations.</p>",
+                "post_excerpt": "Working with NumPy arrays",
+                "post_status": "publish",
+                "meta": {
+                    "academy_lesson_duration": "55 minutes",
+                    "academy_lesson_order": "2",
+                    "academy_lesson_course_id": "{{academy_courses:1}}"
+                }
+            }
+        ],
+        "academy_quizzes": [
+            {
+                "post_title": "HTML Basics Quiz",
+                "post_content": "",
+                "post_status": "publish",
+                "meta": {
+                    "academy_quiz_course_id": "{{academy_courses:0}}",
+                    "academy_quiz_duration": "15",
+                    "academy_quiz_pass_percentage": "70"
+                }
+            },
+            {
+                "post_title": "Python Fundamentals Quiz",
+                "post_content": "",
+                "post_status": "publish",
+                "meta": {
+                    "academy_quiz_course_id": "{{academy_courses:1}}",
+                    "academy_quiz_duration": "20",
+                    "academy_quiz_pass_percentage": "60"
+                }
+            }
+        ]
+    }
+}

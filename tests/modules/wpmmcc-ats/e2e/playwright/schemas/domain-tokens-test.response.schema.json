@@ -1,0 +1,10 @@
+{
+  "$id": "domain-tokens-test.response.schema.json",
+  "type": "object",
+  "required": ["success", "data"],
+  "properties": {
+    "success": { "const": true },
+    "data": { "type": "object" }
+  },
+  "additionalProperties": true
+}

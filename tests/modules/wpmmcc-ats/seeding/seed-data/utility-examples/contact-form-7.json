@@ -1,0 +1,82 @@
+{
+    "_meta": {
+        "plugin_slug": "contact-form-7",
+        "plugin_name": "Contact Form 7",
+        "type": "forms",
+        "version": "1.0.0",
+        "description": "Contact Form 7 表单配置"
+    },
+
+    "forms": [
+        {
+            "name": "联系我们",
+            "slug": "contact-us",
+            "form_content": "<label>您的姓名\n    [text* your-name]</label>\n\n<label>您的邮箱\n    [email* your-email]</label>\n\n<label>主题\n    [text* your-subject]</label>\n\n<label>您的留言\n    [textarea your-message]</label>\n\n[submit \"发送\"]",
+            "mail_template": {
+                "subject": "[_site_title] 联系表单: [your-subject]",
+                "body": "姓名: [your-name]\n邮箱: [your-email]\n主题: [your-subject]\n\n留言内容:\n[your-message]"
+            },
+            "embed_config": {
+                "create_page": true,
+                "page_title": "联系我们",
+                "page_slug": "contact"
+            }
+        },
+        {
+            "name": "产品询价",
+            "slug": "product-inquiry",
+            "form_content": "<label>您的姓名\n    [text* your-name]</label>\n\n<label>您的邮箱\n    [email* your-email]</label>\n\n<label>您的电话\n    [tel your-phone]</label>\n\n<label>产品名称\n    [text* product-name]</label>\n\n<label>询价数量\n    [number quantity min:1]</label>\n\n<label>详细需求\n    [textarea your-requirements]</label>\n\n[submit \"提交询价\"]",
+            "mail_template": {
+                "subject": "[_site_title] 产品询价: [product-name]",
+                "body": "客户信息:\n姓名: [your-name]\n邮箱: [your-email]\n电话: [your-phone]\n\n产品: [product-name]\n数量: [quantity]\n\n详细需求:\n[your-requirements]"
+            },
+            "embed_config": {
+                "create_page": true,
+                "page_title": "产品询价",
+                "page_slug": "product-inquiry"
+            }
+        },
+        {
+            "name": "房产咨询",
+            "slug": "property-inquiry",
+            "form_content": "<label>您的姓名\n    [text* your-name]</label>\n\n<label>您的邮箱\n    [email* your-email]</label>\n\n<label>您的电话\n    [tel* your-phone]</label>\n\n<label>房源编号\n    [text property-id]</label>\n\n<label>预约看房时间\n    [date preferred-date]</label>\n\n<label>咨询内容\n    [textarea your-message]</label>\n\n[submit \"提交咨询\"]",
+            "mail_template": {
+                "subject": "[_site_title] 房产咨询: [property-id]",
+                "body": "客户信息:\n姓名: [your-name]\n邮箱: [your-email]\n电话: [your-phone]\n\n房源编号: [property-id]\n预约时间: [preferred-date]\n\n咨询内容:\n[your-message]"
+            },
+            "embed_config": {
+                "create_page": true,
+                "page_title": "房产咨询",
+                "page_slug": "property-inquiry"
+            }
+        },
+        {
+            "name": "课程报名",
+            "slug": "course-enrollment",
+            "form_content": "<label>您的姓名\n    [text* your-name]</label>\n\n<label>您的邮箱\n    [email* your-email]</label>\n\n<label>您的电话\n    [tel* your-phone]</label>\n\n<label>课程名称\n    [text* course-name]</label>\n\n<label>教育背景\n    [select education \"高中\" \"大专\" \"本科\" \"硕士\" \"博士\"]</label>\n\n<label>其他说明\n    [textarea additional-info]</label>\n\n[submit \"提交报名\"]",
+            "mail_template": {
+                "subject": "[_site_title] 课程报名: [course-name]",
+                "body": "学员信息:\n姓名: [your-name]\n邮箱: [your-email]\n电话: [your-phone]\n教育背景: [education]\n\n报名课程: [course-name]\n\n其他说明:\n[additional-info]"
+            },
+            "embed_config": {
+                "create_page": true,
+                "page_title": "课程报名",
+                "page_slug": "course-enrollment"
+            }
+        },
+        {
+            "name": "反馈表单",
+            "slug": "feedback",
+            "form_content": "<label>您的姓名（可选）\n    [text your-name]</label>\n\n<label>您的邮箱（可选）\n    [email your-email]</label>\n\n<label>反馈类型\n    [select feedback-type \"建议\" \"投诉\" \"咨询\" \"其他\"]</label>\n\n<label>满意度评分\n    [select rating \"非常满意\" \"满意\" \"一般\" \"不满意\" \"非常不满意\"]</label>\n\n<label>详细反馈\n    [textarea* your-feedback]</label>\n\n[submit \"提交反馈\"]",
+            "mail_template": {
+                "subject": "[_site_title] 用户反馈: [feedback-type]",
+                "body": "反馈人: [your-name]\n邮箱: [your-email]\n\n反馈类型: [feedback-type]\n满意度: [rating]\n\n详细反馈:\n[your-feedback]"
+            },
+            "embed_config": {
+                "create_page": true,
+                "page_title": "用户反馈",
+                "page_slug": "feedback"
+            }
+        }
+    ]
+}

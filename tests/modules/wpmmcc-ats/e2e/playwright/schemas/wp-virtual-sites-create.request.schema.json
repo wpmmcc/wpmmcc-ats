@@ -1,0 +1,18 @@
+{
+  "$id": "wp-virtual-sites-create.request.schema.json",
+  "type": "object",
+  "required": ["name", "path_prefix", "lang"],
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "path_prefix": { "type": "string", "minLength": 1 },
+    "lang": { "type": "string", "minLength": 1 },
+    "subtitle": { "type": "string" },
+    "logo_url": { "type": "string" },
+    "enable_blog_sync": { "type": ["integer", "number", "boolean"] },
+    "blog_source_site": { "type": ["integer", "number"] },
+    "permalink_structure": { "type": "string" },
+    "category_base": { "type": "string" },
+    "tag_base": { "type": "string" }
+  },
+  "additionalProperties": true
+}

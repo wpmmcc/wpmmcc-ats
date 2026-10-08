@@ -1,0 +1,203 @@
+{
+    "_meta": {
+        "plugin_slug": "the-events-calendar",
+        "plugin_name": "The Events Calendar",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "The Events Calendar seed data for events, venues, and organizers",
+        "fields_source": "v4-scanner (tribe-tribe_events.json, tribe-tribe_venue.json, tribe-tribe_organizer.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "tribe_events_cat": [
+            {
+                "name": "Conferences",
+                "slug": "conferences"
+            },
+            {
+                "name": "Workshops",
+                "slug": "workshops"
+            },
+            {
+                "name": "Networking",
+                "slug": "networking"
+            },
+            {
+                "name": "Social",
+                "slug": "social"
+            }
+        ]
+    },
+    "posts": {
+        "tribe_venue": [
+            {
+                "post_title": "Downtown Convention Center",
+                "post_content": "<p>State-of-the-art convention center with multiple halls and meeting rooms.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_VenueAddress": "1000 Convention Way",
+                    "_VenueCity": "New York",
+                    "_VenueState": "NY",
+                    "_VenueCountry": "United States",
+                    "_VenueZip": "10001",
+                    "_VenuePhone": "555-0301",
+                    "_VenueCapacity": "5000"
+                }
+            },
+            {
+                "post_title": "Tech Hub Coworking Space",
+                "post_content": "<p>Modern coworking space with event facilities and high-speed internet.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_VenueAddress": "250 Innovation Street",
+                    "_VenueCity": "San Francisco",
+                    "_VenueState": "CA",
+                    "_VenueCapacity": "200"
+                }
+            },
+            {
+                "post_title": "Lakeside Garden Pavilion",
+                "post_content": "<p>Beautiful outdoor venue overlooking the lake. Perfect for social events.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_VenueAddress": "50 Lakeside Drive",
+                    "_VenueCapacity": "300"
+                }
+            }
+        ],
+        "tribe_organizer": [
+            {
+                "post_title": "Tech Events Inc",
+                "post_content": "<p>Leading organizer of technology conferences and workshops.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_OrganizerPhone": "555-0401",
+                    "_OrganizerEmail": "info@techevents.example.com",
+                    "_OrganizerWebsite": "https://techevents.example.com"
+                }
+            },
+            {
+                "post_title": "Business Networking Association",
+                "post_content": "<p>Connecting professionals through networking events.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_OrganizerEmail": "connect@bna.example.com"
+                }
+            }
+        ],
+        "tribe_events": [
+            {
+                "post_title": "Annual Tech Conference 2026",
+                "post_content": "<p>Join industry leaders for three days of innovation and learning.</p><h3>Highlights</h3><ul><li>Keynote speakers from top tech companies</li><li>Hands-on workshops</li><li>Networking opportunities</li></ul>",
+                "post_excerpt": "The biggest tech conference of the year.",
+                "post_status": "publish",
+                "meta": {
+                    "_EventStartDate": "2026-06-15 09:00:00",
+                    "_EventEndDate": "2026-06-17 18:00:00",
+                    "_EventStartDateUTC": "2026-06-15 09:00:00",
+                    "_EventEndDateUTC": "2026-06-17 18:00:00",
+                    "_EventTimezone": "UTC",
+                    "_EventTimezoneAbbr": "UTC",
+                    "_EventVenueID": "{{tribe_venue:0}}",
+                    "_EventOrganizerID": "{{tribe_organizer:0}}",
+                    "_EventCost": "299",
+                    "_EventURL": "https://techconf2026.example.com"
+                },
+                "taxonomy": {
+                    "tribe_events_cat": [
+                        "conferences"
+                    ]
+                }
+            },
+            {
+                "post_title": "Web Development Workshop",
+                "post_content": "<p>Full-day workshop on modern web development techniques.</p>",
+                "post_excerpt": "Hands-on workshop for web developers.",
+                "post_status": "publish",
+                "meta": {
+                    "_EventStartDate": "2026-04-20 09:00:00",
+                    "_EventEndDate": "2026-04-20 18:00:00",
+                    "_EventVenueID": "{{tribe_venue:1}}",
+                    "_EventCost": "75",
+                    "_EventStartDateUTC": "2026-04-20 09:00:00",
+                    "_EventEndDateUTC": "2026-04-20 18:00:00",
+                    "_EventTimezone": "UTC",
+                    "_EventTimezoneAbbr": "UTC"
+                },
+                "taxonomy": {
+                    "tribe_events_cat": [
+                        "workshops"
+                    ]
+                }
+            },
+            {
+                "post_title": "Monthly Business Mixer",
+                "post_content": "<p>Casual networking event for local business professionals.</p>",
+                "post_excerpt": "Network with local business professionals.",
+                "post_status": "publish",
+                "meta": {
+                    "_EventStartDate": "2026-03-15 09:00:00",
+                    "_EventEndDate": "2026-03-15 18:00:00",
+                    "_EventVenueID": "{{tribe_venue:2}}",
+                    "_EventOrganizerID": "{{tribe_organizer:1}}",
+                    "_EventCost": "Free",
+                    "_EventStartDateUTC": "2026-03-15 09:00:00",
+                    "_EventEndDateUTC": "2026-03-15 18:00:00",
+                    "_EventTimezone": "UTC",
+                    "_EventTimezoneAbbr": "UTC"
+                },
+                "taxonomy": {
+                    "tribe_events_cat": [
+                    "networking"
+                    ]
+                }
+            },
+            {
+                "post_title": "Product Leadership Roundtable",
+                "post_content": "<p>An invite-only roundtable for product managers and founders discussing roadmap strategy, pricing experiments, and customer discovery.</p>",
+                "post_excerpt": "Product strategy discussion for product leaders.",
+                "post_status": "publish",
+                "meta": {
+                    "_EventStartDate": "2026-09-24 13:00:00",
+                    "_EventEndDate": "2026-09-24 17:00:00",
+                    "_EventVenueID": "{{tribe_venue:1}}",
+                    "_EventOrganizerID": "{{tribe_organizer:0}}",
+                    "_EventCost": "120",
+                    "_EventStartDateUTC": "2026-09-24 13:00:00",
+                    "_EventEndDateUTC": "2026-09-24 17:00:00",
+                    "_EventTimezone": "UTC",
+                    "_EventTimezoneAbbr": "UTC",
+                    "_EventURL": "https://product-roundtable.example.com"
+                },
+                "taxonomy": {
+                    "tribe_events_cat": [
+                        "networking"
+                    ]
+                }
+            },
+            {
+                "post_title": "Open Source Contributor Day",
+                "post_content": "<p>A hands-on contributor day where maintainers help attendees file issues, improve documentation, and submit their first pull requests.</p>",
+                "post_excerpt": "Hands-on open source contribution workshop.",
+                "post_status": "publish",
+                "meta": {
+                    "_EventStartDate": "2026-10-08 10:00:00",
+                    "_EventEndDate": "2026-10-08 16:00:00",
+                    "_EventVenueID": "{{tribe_venue:0}}",
+                    "_EventOrganizerID": "{{tribe_organizer:1}}",
+                    "_EventCost": "Free",
+                    "_EventStartDateUTC": "2026-10-08 10:00:00",
+                    "_EventEndDateUTC": "2026-10-08 16:00:00",
+                    "_EventTimezone": "UTC",
+                    "_EventTimezoneAbbr": "UTC",
+                    "_EventURL": "https://opensource-day.example.com"
+                },
+                "taxonomy": {
+                    "tribe_events_cat": [
+                        "workshops"
+                    ]
+                }
+            }
+        ]
+    }
+}
