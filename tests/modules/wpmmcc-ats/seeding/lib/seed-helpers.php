@@ -253,12 +253,20 @@ function seed_get_official_source( $plugin_slug ) {
  * @param string $type 日志类型 (info, success, error, warning)
  */
 function seed_log( $msg, $type = 'info' ) {
-    $prefix = match ( $type ) {
-        'success' => "\033[32m✓\033[0m",
-        'error'   => "\033[31m✗\033[0m",
-        'warning' => "\033[33m⚠\033[0m",
-        default   => '→',
-    };
+    switch ( $type ) {
+        case 'success':
+            $prefix = "\033[32m✓\033[0m";
+            break;
+        case 'error':
+            $prefix = "\033[31m✗\033[0m";
+            break;
+        case 'warning':
+            $prefix = "\033[33m⚠\033[0m";
+            break;
+        default:
+            $prefix = '→';
+            break;
+    }
 
     $line = date( '[H:i:s] ' ) . $prefix . ' ' . $msg . "\n";
     echo $line;
