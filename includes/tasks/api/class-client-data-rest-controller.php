@@ -2766,9 +2766,13 @@ class Client_Data_REST_Controller {
 			}
 			return new \WP_REST_Response(
 				array(
-					'success'    => true,
-					'idempotent' => true,
-					'result_id'  => (int) $existing['id'],
+					'success'       => true,
+					'idempotent'    => true,
+					'result_id'     => (int) $existing['id'],
+					'result_status' => $existing_status,
+					'sync_task_id'  => 0,
+					'queued'        => false,
+					'protocol'      => 'v2',
 				),
 				200
 			);
@@ -3329,12 +3333,19 @@ class Client_Data_REST_Controller {
 			)
 		);
 
+		$result_status = 'synced';
+		if ( is_array( $sync_result ) && ! empty( $sync_result['skipped'] ) ) {
+			$result_status = 'cancelled';
+		} elseif ( is_array( $sync_result ) && ! empty( $sync_result['partial'] ) ) {
+			$result_status = 'partial';
+		}
 		$response = array(
-			'success'      => true,
-			'result_id'    => $result_id,
-			'sync_task_id' => $sync_task_id,
-			'queued'       => ( $sync_task_id > 0 ),
-			'protocol'     => 'v2',
+			'success'       => true,
+			'result_id'     => $result_id,
+			'result_status' => $result_status,
+			'sync_task_id'  => $sync_task_id,
+			'queued'        => ( $sync_task_id > 0 ),
+			'protocol'      => 'v2',
 		);
 
 		if ( $sync_result ) {
@@ -4110,6 +4121,7 @@ class Client_Data_REST_Controller {
 			array(
 				'success'         => 0 === $rejected_count,
 				'result_id'       => (int) $result_id,
+				'result_status'   => 0 === $rejected_count ? 'synced' : 'failed',
 				'sync_task_id'    => 0,
 				'queued'          => false,
 				'protocol'        => 'v2',
