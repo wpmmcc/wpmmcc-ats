@@ -11,6 +11,7 @@ WPMMCC ATS ist ein WordPress-Plugin, das eine einsprachige Website in eine mehrs
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Funktionen
 - Content-Scan — findet übersetzbare Felder in Beiträgen, Taxonomien, Meta, Content-Plugins von Drittanbietern und Themes
@@ -20,6 +21,10 @@ WPMMCC ATS ist ein WordPress-Plugin, das eine einsprachige Website in eine mehrs
 - Protocol-v2-Client-API — WPTSALL Client holt Aufgaben ab und schreibt Ergebnisse zurück
 - Sprachpakete — Englisch eingebaut; vereinfachtes Chinesisch in Arbeit (siehe unten)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Voraussetzungen
 - WordPress 6.2 oder neuer
 - PHP 7.4 oder neuer
@@ -28,7 +33,7 @@ WPMMCC ATS ist ein WordPress-Plugin, das eine einsprachige Website in eine mehrs
 ## Installation
 1. Lade das ZIP der neuesten Version von der Releases-Seite dieses Repositorys herunter (oder packe den Quellcode selbst)
 2. In wp-admin unter Plugins → Installieren → Plugin hochladen das ZIP hochladen und aktivieren
-3. Öffne das WPMMCC-ATS-Menü in wp-admin
+3. Öffne das Menü WPTSALL in wp-admin
 
 ## Schnellstart (manuelles Übersetzen, ohne Client)
 1. Scanne deine Content-Plugins oder erstelle einen Übersetzungsregel-Satz in den WPMMCC-ATS-Adminseiten

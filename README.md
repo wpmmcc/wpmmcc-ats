@@ -11,14 +11,19 @@ WPMMCC ATS is a WordPress plugin that turns a single-language site into a multil
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Features
 - Content scanning — detects translatable fields in posts, taxonomies, meta, third-party content plugins and themes
-- Site relations — link source and target languages, including virtual sites with their own URL prefix
+- Site relations — link source and target languages, including virtual sites with their own URL prefix and network subsites
 - Manual translation editor — translate posts and fields entirely inside WordPress admin
 - Translation rules — one rule set shared by the manual editor and the client API
 - Protocol v2 client API — lets the WPTSALL Client claim tasks and write results back
 - Language packs — English built in; Simplified Chinese (zh_CN) bundled and auto-loaded when your site language is set (see below)
+
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
 
 ## Requirements
 - WordPress 6.2 or newer
@@ -28,15 +33,15 @@ WPMMCC ATS is a WordPress plugin that turns a single-language site into a multil
 ## Installation
 1. Download the latest release ZIP from this repository's Releases page (or zip the source yourself)
 2. In wp-admin go to Plugins → Add New → Upload Plugin, upload the ZIP, then activate
-3. Open the WPMMCC ATS menu in wp-admin
+3. Open the WPTSALL menu in wp-admin
 
 ## Quick start (manual translation, no client needed)
 1. Scan your content plugins or create a translation rule set from the WPMMCC ATS admin pages
-2. Add a site relation: pick a source language and a target language — a virtual site gets its own URL prefix such as /en_us/
+2. Add a site relation: pick a source language and a target language — a virtual site gets its own URL prefix such as /en_us/, or relate a network subsite
 3. Open a post in the manual translation editor and translate it; the target site updates as you save
 
 ## Automatic translation
-For automatic translation, install the companion WPTSALL Client (WebUI or Desktop). It connects to your site directly with a device-scoped token, claims translation tasks, calls the translation provider you configure, and writes the results back. See the client repository: https://github.com/wpmmcc/wptsall-client
+For automatic translation, install the companion WPTSALL Client. WebUI is a browser page that defaults to 127.0.0.1:8977. Desktop is a local window at 127.0.0.1:8978 and stays on this computer. The client connects to your site with a device-scoped token, claims translation tasks, calls the translation provider you configure, and writes the results back. It does not talk to the WPMMCC sync plugin. See the client repository: https://github.com/wpmmcc/wptsall-client
 
 ## Updating
 - Updates install through the standard WordPress updater — Dashboard → Updates, or the Plugins page. No manual steps are required

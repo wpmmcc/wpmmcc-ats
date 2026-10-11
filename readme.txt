@@ -41,7 +41,7 @@ This plugin can expose a REST API on **your own WordPress site** so an optional 
 * **Client download and documentation**: usage help at https://www.wpmm.cc/docs/, source code at https://github.com/wpmmcc/wptsall-client, signed installers and kits at https://github.com/wpmmcc/wptsall-client-releases
   * Linux/macOS: [install script](https://github.com/wpmmcc/wptsall-client-releases/raw/main/install.sh) — review it, then run: `bash install.sh` (WebUI) or follow Desktop install notes in the same repository
   * Windows: [installation guide](https://github.com/wpmmcc/wptsall-client-releases)
-* The client's local web UI listens on 127.0.0.1:8977 by default (loopback only, on the machine where you run the client). Port 8977 is unregistered and uncommon, so conflicts are rare; if another program has taken it, the WPTSALL_WEB_UI_PORT environment variable selects a different port.
+* The client's local web UI listens on 127.0.0.1:8977 by default (loopback only, on the machine where you run the client). The Desktop app listens on 127.0.0.1:8978 and stays on this computer. Port 8977 is unregistered and uncommon, so conflicts are rare; if another program has taken it, the WPTSALL_WEB_UI_PORT environment variable selects a different port for the web UI.
 
 The client is NOT required. All plugin features work for manual translation without it.
 
@@ -85,6 +85,10 @@ No. The slug was assigned for this product. The "wp" segment is part of the vend
 = Can I use this with Polylang or WPML? =
 
 This plugin can coexist with Polylang and WPML. However, it provides its own independent multilingual system. You do not need Polylang or WPML to use this plugin.
+
+= Can I use this together with the WPMMCC sync plugin? =
+
+Yes. Both plugins can be installed on the same site, and they stay separate. WPMMCC ATS translates over its own REST channel (wptsall/v2) and stores its own translations, mappings, translation memory, and progress. WPMMCC copies content over a separate channel (wpmmcc/v1) and does not translate. The ATS Translation Dashboard counts only the ATS channel. The optional translation client talks only to WPMMCC ATS.
 
 = Where do plugin interface translations come from? =
 

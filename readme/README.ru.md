@@ -11,6 +11,7 @@ WPMMCC ATS — плагин WordPress, превращающий одноязыч
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Возможности
 - Сканирование контента — находит переводимые поля в записях, таксономиях, meta, сторонних контентных плагинах и темах
@@ -20,6 +21,10 @@ WPMMCC ATS — плагин WordPress, превращающий одноязыч
 - Клиентское API Protocol v2 — позволяет WPTSALL Client забирать задачи и записывать результаты
 - Языковые пакеты — английский встроен; упрощённый китайский в процессе (см. ниже)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Требования
 - WordPress 6.2 или новее
 - PHP 7.4 или новее
@@ -28,7 +33,7 @@ WPMMCC ATS — плагин WordPress, превращающий одноязыч
 ## Установка
 1. Скачайте ZIP последней версии со страницы Releases этого репозитория (или упакуйте исходники сами)
 2. В wp-admin: Плагины → Добавить новый → Загрузить плагин, загрузите ZIP и активируйте
-3. Откройте меню WPMMCC ATS в wp-admin
+3. Откройте меню WPTSALL в wp-admin
 
 ## Быстрый старт (ручной перевод, клиент не нужен)
 1. Просканируйте контентные плагины или создайте набор правил перевода на страницах WPMMCC ATS

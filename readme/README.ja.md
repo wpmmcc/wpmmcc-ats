@@ -11,6 +11,7 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## 機能
 - コンテンツスキャン — 投稿・タクソノミー・meta・サードパーティコンテンツプラグイン・テーマの翻訳可能フィールドを検出
@@ -20,6 +21,10 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 - Protocol v2 クライアント API — WPTSALL Client がタスクを取得して結果を書き戻し
 - 言語パック — 英語内蔵、簡体字中国語は翻訳進行中(下記参照)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## 要件
 - WordPress 6.2 以上
 - PHP 7.4 以上
@@ -28,7 +33,7 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 ## インストール
 1. このリポジトリの Releases ページから最新 ZIP をダウンロード(またはソースから自分で zip を作成)
 2. wp-admin の プラグイン → 新規追加 → プラグインのアップロード から ZIP をアップロードして有効化
-3. wp-admin の WPMMCC ATS メニューを開く
+3. wp-admin の WPTSALL メニューを開く
 
 ## クイックスタート(手動翻訳・クライアント不要)
 1. WPMMCC ATS 管理ページからコンテンツプラグインをスキャン、または翻訳ルールセットを作成

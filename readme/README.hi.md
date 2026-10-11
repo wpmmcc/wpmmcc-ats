@@ -11,6 +11,7 @@ WPMMCC ATS एक WordPress प्लगइन है जो एकभाषी 
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## विशेषताएँ
 - कंटेंट स्कैन — पोस्ट, टैक्सोनॉमी, meta, थर्ड-पार्टी कंटेंट प्लगइन और थीम के अनुवाद योग्य फ़ील्ड पहचानता है
@@ -20,6 +21,10 @@ WPMMCC ATS एक WordPress प्लगइन है जो एकभाषी 
 - Protocol v2 क्लाइंट API — WPTSALL Client कार्य लेकर परिणाम वापस लिखता है
 - भाषा पैक — अंग्रेज़ी अंतर्निहित; सरलीकृत चीनी प्रगति पर (नीचे देखें)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## आवश्यकताएँ
 - WordPress 6.2 या नया
 - PHP 7.4 या नया
@@ -28,7 +33,7 @@ WPMMCC ATS एक WordPress प्लगइन है जो एकभाषी 
 ## स्थापना
 1. इस रिपॉज़िटरी के Releases पृष्ठ से नवीनतम ZIP डाउनलोड करें (या स्रोत से स्वयं zip बनाएँ)
 2. wp-admin में Plugins → Add New → Upload Plugin से ZIP अपलोड कर सक्रिय करें
-3. wp-admin में WPMMCC ATS मेन्यू खोलें
+3. wp-admin में WPTSALL मेन्यू खोलें
 
 ## त्वरित शुरुआत (मैनुअल अनुवाद, क्लाइंट की आवश्यकता नहीं)
 1. WPMMCC ATS एडमिन पृष्ठों से कंटेंट प्लगइन स्कैन करें या अनुवाद नियम सेट बनाएँ

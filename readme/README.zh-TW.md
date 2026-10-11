@@ -20,6 +20,10 @@ WPMMCC ATS 是一個把單語 WordPress 網站變成多語系網站的外掛。�
 - Protocol v2 用戶端 API——供 WPTSALL 用戶端領取任務並寫回結果
 - 語言包——英文內建;簡體中文包翻譯進行中(見下文)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## 環境需求
 - WordPress 6.2 或更新版本
 - PHP 7.4 或更新版本
@@ -28,7 +32,7 @@ WPMMCC ATS 是一個把單語 WordPress 網站變成多語系網站的外掛。�
 ## 安裝
 1. 從本儲存庫 Releases 頁下載最新 ZIP(或自行打包原始碼)
 2. 在 wp-admin 進入 外掛 → 安裝外掛 → 上傳外掛,上傳 ZIP 後啟用
-3. 在 wp-admin 開啟 WPMMCC ATS 選單
+3. 在 wp-admin 開啟名為 WPTSALL 的選單
 
 ## 快速上手(手動翻譯,無需用戶端)
 1. 從 WPMMCC ATS 管理頁掃描內容外掛或建立翻譯規則

@@ -11,6 +11,7 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Fitur
 - Pemindaian konten — mendeteksi bidang terjemahan di pos, taksonomi, meta, plugin konten pihak ketiga, dan tema
@@ -20,6 +21,10 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 - API klien Protocol v2 — memungkinkan WPTSALL Client mengambil tugas dan menulis hasilnya kembali
 - Paket bahasa — Inggris bawaan; Mandarin sederhana sedang berjalan (lihat di bawah)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Persyaratan
 - WordPress 6.2 atau lebih baru
 - PHP 7.4 atau lebih baru
@@ -28,7 +33,7 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 ## Instalasi
 1. Unduh ZIP rilis terbaru dari halaman Releases repositori ini (atau zip sendiri dari kode sumber)
 2. Di wp-admin buka Plugins → Add New → Upload Plugin, unggah ZIP lalu aktifkan
-3. Buka menu WPMMCC ATS di wp-admin
+3. Buka menu WPTSALL di wp-admin
 
 ## Mulai cepat (terjemahan manual, tanpa klien)
 1. Pindai plugin konten Anda atau buat set aturan terjemahan dari halaman admin WPMMCC ATS

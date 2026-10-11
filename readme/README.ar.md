@@ -11,6 +11,7 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## الميزات
 - فحص المحتوى — يكتشف الحقول القابلة للترجمة في المقالات والتصنيفات والبيانات الوصفية وإضافات المحتوى الخارجية والقوالب
@@ -20,6 +21,10 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 - واجهة العميل Protocol v2 — تتيح لعميل WPTSALL استلام المهام وكتابة النتائج
 - حزم اللغات — الإنجليزية مدمجة؛ الصينية المبسطة قيد الإنجاز (انظر أدناه)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## المتطلبات
 - ووردبريس 6.2 أو أحدث
 - PHP 7.4 أو أحدث
@@ -28,7 +33,7 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 ## التثبيت
 1. نزّل ملف ZIP لأحدث إصدار من صفحة Releases في هذا المستودع ( أو اضغط المصدر بنفسك)
 2. في لوحة التحكم: الإضافات → أضف جديدًا →ارفع الإضافة، ارفع الملف ثم فعّل الإضافة
-3. افتح قائمة WPMMCC ATS في لوحة التحكم
+3. افتح قائمة WPTSALL في لوحة التحكم
 
 ## البداية السريعة (ترجمة يدوية، دون عميل)
 1. افحص إضافات المحتوى أو أنشئ مجموعة قواعد ترجمة من صفحات إدارة WPMMCC ATS

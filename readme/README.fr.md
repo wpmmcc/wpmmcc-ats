@@ -11,6 +11,7 @@ WPMMCC ATS est un plugin WordPress qui transforme un site monolingue en site mul
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Fonctionnalités
 - Analyse de contenu — détecte les champs traduisibles dans les articles, taxonomies, meta, plugins de contenu tiers et thèmes
@@ -20,6 +21,10 @@ WPMMCC ATS est un plugin WordPress qui transforme un site monolingue en site mul
 - API client Protocol v2 — permet à WPTSALL Client de réclamer des tâches et d'écrire les résultats
 - Paquets de langue — anglais intégré ; chinois simplifié en cours (voir ci-dessous)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Prérequis
 - WordPress 6.2 ou plus récent
 - PHP 7.4 ou plus récent
@@ -28,7 +33,7 @@ WPMMCC ATS est un plugin WordPress qui transforme un site monolingue en site mul
 ## Installation
 1. Téléchargez le ZIP de la dernière version depuis la page Releases de ce dépôt (ou compressez vous-même les sources)
 2. Dans wp-admin, allez dans Extensions → Ajouter → Téléverser une extension, téléversez le ZIP puis activez
-3. Ouvrez le menu WPMMCC ATS dans wp-admin
+3. Ouvrez le menu WPTSALL dans wp-admin
 
 ## Démarrage rapide (traduction manuelle, sans client)
 1. Analysez vos plugins de contenu ou créez un jeu de règles depuis les pages d'administration WPMMCC ATS

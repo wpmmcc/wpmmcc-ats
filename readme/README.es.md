@@ -11,6 +11,7 @@ WPMMCC ATS es un plugin de WordPress que convierte un sitio monolingüe en un si
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Características
 - Escaneo de contenido: detecta campos traducibles en entradas, taxonomías, meta, plugins de contenido de terceros y temas
@@ -20,6 +21,10 @@ WPMMCC ATS es un plugin de WordPress que convierte un sitio monolingüe en un si
 - API de cliente Protocol v2: permite a WPTSALL Client reclamar tareas y escribir los resultados
 - Paquetes de idioma: inglés integrado; chino simplificado en progreso (ver abajo)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Requisitos
 - WordPress 6.2 o superior
 - PHP 7.4 o superior
@@ -28,7 +33,7 @@ WPMMCC ATS es un plugin de WordPress que convierte un sitio monolingüe en un si
 ## Instalación
 1. Descarga el ZIP de la última versión desde la página Releases de este repositorio (o comprime el código fuente tú mismo)
 2. En wp-admin ve a Plugins → Añadir nuevo → Subir plugin, sube el ZIP y actívalo
-3. Abre el menú WPMMCC ATS en wp-admin
+3. Abre el menú WPTSALL en wp-admin
 
 ## Inicio rápido (traducción manual, sin cliente)
 1. Escanea tus plugins de contenido o crea un conjunto de reglas desde las páginas de administración de WPMMCC ATS

@@ -11,6 +11,7 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Tính năng
 - Quét nội dung — phát hiện trường dịch được trong bài viết, taxonomy, meta, plugin nội dung bên thứ ba và theme
@@ -20,6 +21,10 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 - API client Protocol v2 — cho phép WPTSALL Client nhận tác vụ và ghi kết quả về
 - Gói ngôn ngữ — tiếng Anh tích hợp; tiếng Trung giản thể đang tiến hành (xem dưới)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Yêu cầu
 - WordPress 6.2 trở lên
 - PHP 7.4 trở lên
@@ -28,7 +33,7 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 ## Cài đặt
 1. Tải ZIP bản mới nhất từ trang Releases của repo này (hoặc tự nén mã nguồn)
 2. Trong wp-admin vào Plugins → Add New → Upload Plugin, tải ZIP lên rồi kích hoạt
-3. Mở menu WPMMCC ATS trong wp-admin
+3. Mở menu WPTSALL trong wp-admin
 
 ## Bắt đầu nhanh (dịch thủ công, không cần client)
 1. Quét các plugin nội dung hoặc tạo bộ quy tắc dịch từ trang quản trị WPMMCC ATS

@@ -11,6 +11,7 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## Özellikler
 - İçerik tarama — yazılarda, taksonomilerde, meta verilerde, üçüncü taraf içerik eklentilerinde ve temalarda çevrilebilir alanları tespit eder
@@ -20,6 +21,10 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 - Protocol v2 istemci API'si — WPTSALL Client görevleri alır ve sonuçları geri yazar
 - Dil paketleri — İngilizce gömülü; Basitleştirilmiş Çince sürüyor (aşağıya bakın)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## Gereksinimler
 - WordPress 6.2 veya daha yenisi
 - PHP 7.4 veya daha yenisi
@@ -28,7 +33,7 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 ## Kurulum
 1. Bu depodun Releases sayfasından en son ZIP'i indirin (veya kaynağı kendiniz zip'leyin)
 2. wp-admin'de Eklentiler → Yeni Ekle → Eklenti Yükle ile ZIP'i yükleyip etkinleştirin
-3. wp-admin'de WPMMCC ATS menüsünü açın
+3. wp-admin'de WPTSALL menüsünü açın
 
 ## Hızlı başlangıç (manuel çeviri, istemci gerekmez)
 1. WPMMCC ATS yönetim sayfalarından içerik eklentilerinizi tarayın veya bir çeviri kural seti oluşturun

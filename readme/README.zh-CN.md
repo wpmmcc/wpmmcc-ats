@@ -11,14 +11,19 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 - 文档与使用帮助（English / 简体中文）— https://www.wpmm.cc/docs/
 - WordPress.org 插件页 — https://wordpress.org/plugins/wpmmcc-ats/
 - 配套客户端仓库 — https://github.com/wpmmcc/wptsall-client
+- 另一个同步插件 WPMMCC — https://github.com/wpmmcc/wpmmcc
 
 ## 功能
 - 内容扫描 — 探测文章、分类法、meta、第三方内容插件与主题中的可翻译字段
-- 站点关系 — 关联源语言与目标语言，支持带独立 URL 前缀的虚拟站点
+- 站点关系 — 关联源语言与目标语言，支持带独立 URL 前缀的虚拟站点，也支持网络子站点
 - 手动翻译编辑器 — 完全在 WordPress 后台（wp-admin）内完成文章与字段翻译
 - 翻译规则 — 手动翻译编辑器与客户端 API 共用同一套规则集
 - Protocol v2 客户端 API — 供 WPTSALL 客户端领取任务并写回结果
 - 语言包 — 英文为内置源语言；简体中文（zh_CN）语言包内置并随版本提供（见下文）
+
+## 另一个插件
+
+WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，负责在站点之间复制内容。它不翻译，也不使用这个客户端，后台菜单名是 WPMMCC Sync。本插件的后台菜单名是 WPTSALL。
 
 ## 环境要求
 - WordPress 6.2 或更高版本
@@ -28,15 +33,15 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 ## 安装
 1. 从本仓库 Releases 页下载最新 ZIP 包（或自行打包源码）
 2. 在 wp-admin 进入 插件 → 安装插件 → 上传插件，上传 ZIP 后启用
-3. 在 wp-admin 打开 WPMMCC ATS 菜单
+3. 在 wp-admin 打开名为 WPTSALL 的菜单
 
 ## 快速上手（手动翻译，无需客户端）
-1. 在 WPMMCC ATS 管理页扫描内容插件或创建翻译规则集
-2. 添加站点关系：选择源语言与目标语言 — 虚拟站点会获得独立 URL 前缀（如 /en_us/）
+1. 在 WPTSALL 管理页扫描内容插件或创建翻译规则集
+2. 添加站点关系：选择源语言与目标语言 — 虚拟站点会获得独立 URL 前缀（如 /en_us/），也可以关联网络子站点
 3. 在手动翻译编辑器中打开一篇文章并翻译；保存后目标站点随之更新
 
 ## 自动翻译
-自动翻译请安装配套的 WPTSALL 客户端（WebUI 或 Desktop）。它使用设备级令牌直连站点，领取翻译任务，调用配置的翻译厂商端点，并把结果写回。客户端仓库：https://github.com/wpmmcc/wptsall-client
+自动翻译请安装配套的 WPTSALL 客户端。WebUI 是浏览器页面，默认地址是 127.0.0.1:8977。Desktop 是本机窗口，监听 127.0.0.1:8978，只留在这台电脑上。客户端使用设备级令牌直连本插件，领取翻译任务，调用你配置的翻译服务，并把结果写回。它不连接 WPMMCC 同步插件。客户端仓库：https://github.com/wpmmcc/wptsall-client
 
 ## 更新
 - 通过标准 WordPress 更新程序升级 — 仪表盘 → 更新，或插件列表页。无需手动操作

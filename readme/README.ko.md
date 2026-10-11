@@ -11,6 +11,7 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 - Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
 - Companion client repository — https://github.com/wpmmcc/wptsall-client
+- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
 
 ## 기능
 - 콘텐츠 스캔 — 글·텍소노미·meta·서드파티 콘텐츠 플러그인·테마의 번역 가능 필드 탐지
@@ -20,6 +21,10 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 - Protocol v2 클라이언트 API — WPTSALL Client가 작업을 가져와 결과를 다시 기록
 - 언어 팩 — 영어 내장, 간체 중국어는 번역 진행 중(아래 참고)
 
+## A different plugin
+
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+
 ## 요구 사항
 - WordPress 6.2 이상
 - PHP 7.4 이상
@@ -28,7 +33,7 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 ## 설치
 1. 이 저장소의 Releases 페이지에서 최신 ZIP 다운로드(또는 소스를 직접 zip)
 2. wp-admin의 플러그인 → 새로 추가 → 플러그인 업로드에서 ZIP을 올리고 활성화
-3. wp-admin의 WPMMCC ATS 메뉴 열기
+3. wp-admin에서 이름이 WPTSALL인 메뉴를 엽니다
 
 ## 빠른 시작(수동 번역, 클라이언트 불필요)
 1. WPMMCC ATS 관리 페이지에서 콘텐츠 플러그인을 스캔하거나 번역 규칙 세트 생성
