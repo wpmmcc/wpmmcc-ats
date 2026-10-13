@@ -92,7 +92,7 @@ This plugin can coexist with Polylang and WPML. However, it provides its own ind
 
 = Can I use this together with the WPMMCC sync plugin? =
 
-Yes. Both plugins can be installed on the same site, and they stay separate. WPMMCC ATS translates over its own REST channel (wptsall/v2) and stores its own translations, mappings, translation memory, and progress. WPMMCC copies content over a separate channel (wpmmcc/v1) and does not translate. The ATS Translation Dashboard counts only the ATS channel. The optional translation client talks only to WPMMCC ATS.
+Yes. Both plugins can be installed on the same site, and they stay separate. WPMMCC ATS translates over its own REST channel (wptsall/v2) and stores its own translations, mappings, translation memory, and progress. WPMMCC copies content over a separate channel (wpmmcc/v1). A direct WPMMCC pairing only syncs. When the WPTSALL Client pairs those sites, sync_and_translate translates the title, content, and excerpt before the push. The ATS Translation Dashboard counts only the ATS channel.
 
 = Where do plugin interface translations come from? =
 
@@ -230,6 +230,7 @@ For field discovery the plugin reads data from third-party content plugins — W
 
 = 2.1.10 =
 * Changed: Directory listing describes the current free translation plugin, with screenshots of the WPTSALL admin screens and links to https://www.wpmm.cc/ and the WPTSALL Client on GitHub.
+* Changed: The WPMMCC pairing note says a direct pairing only syncs, and the WPTSALL Client can translate the title, content, and excerpt while syncing.
 
 = 2.1.9 =
 * Changed: Release version is 2.1.9, the same number as the WPMMCC sync plugin.
