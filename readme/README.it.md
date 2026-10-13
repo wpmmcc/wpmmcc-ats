@@ -27,7 +27,7 @@ WPMMCC ATS è un plugin WordPress che trasforma un sito monolingue in un sito mu
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Requisiti
 - WordPress 6.2 o successivo
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Apri un articolo nell'editor di traduzione manuale e traducilo; al salvataggio il sito di destinazione si aggiorna
 
 ## Traduzione automatica
-Per la traduzione automatica installa il client companion WPTSALL Client (WebUI o Desktop). Si collega direttamente al tuo sito con un token di dispositivo, preleva le attività di traduzione, chiama il provider configurato e riscrive i risultati. Repository del client: https://github.com/wpmmcc/wptsall-client Lo stesso client può anche associarsi a WPMMCC: in quel caso copia solo i contenuti e non traduce tramite quel plugin. La WebUI usa 127.0.0.1:8977 e Desktop è in ascolto su 127.0.0.1:8978, su questo computer. Guida: https://www.wpmm.cc/docs/client-guide.html .
+Per la traduzione automatica installa il client companion WPTSALL Client (WebUI o Desktop). Si collega direttamente al tuo sito con un token di dispositivo, preleva le attività di traduzione, chiama il provider configurato e riscrive i risultati. Repository del client: https://github.com/wpmmcc/wptsall-client Lo stesso client può anche associarsi a WPMMCC. L'associazione diretta sincronizza soltanto, e quel modulo rifiuta sync_and_translate. Tramite il client, titolo, contenuto e riassunto vengono tradotti prima dell'invio. Il plugin non chiama il fornitore di traduzione. La WebUI usa 127.0.0.1:8977 e Desktop è in ascolto su 127.0.0.1:8978, su questo computer. Guida: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Aggiornamento
 - Gli aggiornamenti si installano tramite l'aggiornatore standard di WordPress — Bacheca → Aggiornamenti, o dalla pagina Plugin. Non sono richiesti passaggi manuali

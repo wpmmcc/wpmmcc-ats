@@ -27,7 +27,7 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## 要件
 - WordPress 6.2 以上
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. 手動翻訳エディターで投稿を開いて翻訳;保存するとターゲットサイトに反映されます
 
 ## 自動翻訳
-自動翻訳には companion の WPTSALL Client(WebUI または Desktop)をインストールしてください。デバイストークンであなたのサイトへ直接接続し、翻訳タスクを取得し、設定した翻訳プロバイダーを呼び出し、結果を書き戻します。クライアントリポジトリ: https://github.com/wpmmcc/wptsall-client 同じクライアントは WPMMCC ともペアリングできます。その場合は内容をコピーするだけで、そのプラグイン経由では翻訳しません。WebUI の既定は 127.0.0.1:8977、Desktop は 127.0.0.1:8978 でこのコンピュータに留まります。手順: https://www.wpmm.cc/docs/client-guide.html 。
+自動翻訳には companion の WPTSALL Client(WebUI または Desktop)をインストールしてください。デバイストークンであなたのサイトへ直接接続し、翻訳タスクを取得し、設定した翻訳プロバイダーを呼び出し、結果を書き戻します。クライアントリポジトリ: https://github.com/wpmmcc/wptsall-client 同じクライアントは WPMMCC ともペアリングできます。サイト同士の直接ペアは同期のみで、直接フォームは sync_and_translate を拒否します。クライアント経由では、プッシュ前にタイトル、本文、抜粋を翻訳できます。プラグイン自体は翻訳ベンダーを呼びません。WebUI の既定は 127.0.0.1:8977、Desktop は 127.0.0.1:8978 でこのコンピュータに留まります。手順: https://www.wpmm.cc/docs/client-guide.html 。
 
 ## アップデート
 - 標準の WordPress アップデーター（ダッシュボード → 更新、またはプラグインページ）から更新できます。手動操作は不要です

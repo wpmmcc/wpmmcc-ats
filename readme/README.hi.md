@@ -27,7 +27,7 @@ WPMMCC ATS एक WordPress प्लगइन है जो एकभाषी 
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## आवश्यकताएँ
 - WordPress 6.2 या नया
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. मैनुअल अनुवाद संपादक में पोस्ट खोलकर अनुवाद करें; सहेजने पर लक्ष्य साइट अद्यतन होती है
 
 ## स्वचालित अनुवाद
-स्वचालित अनुवाद के लिए साथी क्लाइंट WPTSALL Client (WebUI या Desktop) स्थापित करें। यह डिवाइस टोकन से आपकी साइट से सीधे जुड़ता है, अनुवाद कार्य लेता है, आपके विन्यस्त प्रोवाइडर को कॉल करता है और परिणाम वापस लिखता है। क्लाइंट रिपॉज़िटरी: https://github.com/wpmmcc/wptsall-client वही क्लाइंट WPMMCC से भी जुड़ सकता है; तब वह केवल सामग्री कॉपी करता है और उस प्लगइन के माध्यम से अनुवाद नहीं करता। WebUI 127.0.0.1:8977 है, Desktop 127.0.0.1:8978 पर सुनता है और इसी कंप्यूटर पर रहता है। गाइड: https://www.wpmm.cc/docs/client-guide.html .
+स्वचालित अनुवाद के लिए साथी क्लाइंट WPTSALL Client (WebUI या Desktop) स्थापित करें। यह डिवाइस टोकन से आपकी साइट से सीधे जुड़ता है, अनुवाद कार्य लेता है, आपके विन्यस्त प्रोवाइडर को कॉल करता है और परिणाम वापस लिखता है। क्लाइंट रिपॉज़िटरी: https://github.com/wpmmcc/wptsall-client वही क्लाइंट WPMMCC से भी जुड़ सकता है। सीधी पेयरिंग केवल सिंक करती है, और वह फ़ॉर्म sync_and_translate को अस्वीकार करता है। क्लाइंट के माध्यम से पुश से पहले शीर्षक, सामग्री और अंश का अनुवाद होता है। प्लगइन अनुवाद प्रदाता को कॉल नहीं करता। WebUI 127.0.0.1:8977 है, Desktop 127.0.0.1:8978 पर सुनता है और इसी कंप्यूटर पर रहता है। गाइड: https://www.wpmm.cc/docs/client-guide.html .
 
 ## अपडेट करना
 - अपडेट मानक WordPress अपडेटर के माध्यम से इंस्टॉल होते हैं — डैशबोर्ड → अपडेट, या प्लगइन पृष्ठ। किसी मैन्युअल कदम की आवश्यकता नहीं है

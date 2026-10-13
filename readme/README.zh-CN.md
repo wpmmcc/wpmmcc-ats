@@ -27,7 +27,7 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 
 ## 另一个插件
 
-WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，在站点之间复制内容。后台菜单是 WPMMCC Sync，REST 命名空间是 wpmmcc/v1。它不翻译。直接配对只复制内容。可选的 WPTSALL 客户端也可以作为同步对端配对 WPMMCC。本插件的菜单是 WPTSALL，REST 命名空间是 wptsall/v2。目录页：https://wordpress.org/plugins/wpmmcc/ 。
+WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，在站点之间复制内容。后台菜单是 WPMMCC Sync，REST 命名空间是 wpmmcc/v1。直接配对只复制内容，该表单会拒绝 sync_and_translate。可选的 WPTSALL 客户端配对 WPMMCC 后，可以在同步时翻译标题、正文和摘要。本插件的菜单是 WPTSALL，REST 命名空间是 wptsall/v2。目录页：https://wordpress.org/plugins/wpmmcc/ 。
 
 ## 环境要求
 - WordPress 6.2 或更高版本
@@ -45,7 +45,7 @@ WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，在站点之间
 3. 在手动翻译编辑器中打开一篇文章并翻译；保存后目标站点随之更新
 
 ## 自动翻译
-自动翻译请安装配套的 WPTSALL 客户端。WebUI 是浏览器页面，默认地址是 127.0.0.1:8977。Desktop 监听 127.0.0.1:8978，只留在这台电脑上。客户端用设备令牌连接本插件，领取翻译任务，调用你配置的翻译服务，并把结果写回。厂商密钥留在客户端。同一个客户端也可以配对 WPMMCC，只复制内容，不通过那个插件翻译。源码：https://github.com/wpmmcc/wptsall-client 。签名发布：https://github.com/wpmmcc/wptsall-client/releases 。指南：https://www.wpmm.cc/docs/client-guide.html 。
+自动翻译请安装配套的 WPTSALL 客户端。WebUI 是浏览器页面，默认地址是 127.0.0.1:8977。Desktop 监听 127.0.0.1:8978，只留在这台电脑上。客户端用设备令牌连接本插件，领取翻译任务，调用你配置的翻译服务，并把结果写回。厂商密钥留在客户端。同一个客户端也可以配对 WPMMCC。站点直接配对只同步，直接表单会拒绝 sync_and_translate。经客户端配对时，sync_and_translate 会在推送前于客户端翻译标题、正文和摘要。WPMMCC 插件不调用翻译厂商。源码：https://github.com/wpmmcc/wptsall-client 。签名发布：https://github.com/wpmmcc/wptsall-client/releases 。指南：https://www.wpmm.cc/docs/client-guide.html 。
 
 ## 更新
 - 通过标准 WordPress 更新程序升级 — 仪表盘 → 更新，或插件列表页。无需手动操作

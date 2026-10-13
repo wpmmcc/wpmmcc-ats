@@ -27,7 +27,7 @@ WPMMCC ATS — плагин WordPress, превращающий одноязыч
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Требования
 - WordPress 6.2 или новее
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Откройте запись в редакторе ручного перевода и переведите её; при сохранении целевой сайт обновится
 
 ## Автоматический перевод
-Для автоматического перевода установите клиент-компаньон WPTSALL Client (WebUI или Desktop). Он подключается к вашему сайту напрямую с токеном устройства, забирает задачи перевода, вызывает настроенного провайдера и записывает результаты обратно. Репозиторий клиента: https://github.com/wpmmcc/wptsall-client Тот же клиент может связаться и с WPMMCC: тогда он только копирует содержимое и не переводит через этот плагин. WebUI использует 127.0.0.1:8977, Desktop слушает 127.0.0.1:8978 и остаётся на этом компьютере. Руководство: https://www.wpmm.cc/docs/client-guide.html .
+Для автоматического перевода установите клиент-компаньон WPTSALL Client (WebUI или Desktop). Он подключается к вашему сайту напрямую с токеном устройства, забирает задачи перевода, вызывает настроенного провайдера и записывает результаты обратно. Репозиторий клиента: https://github.com/wpmmcc/wptsall-client Тот же клиент может связаться и с WPMMCC. Прямое сопряжение только синхронизирует, форма отклоняет sync_and_translate. Через клиент заголовок, содержимое и отрывок переводятся перед отправкой. Плагин не вызывает поставщика перевода. WebUI использует 127.0.0.1:8977, Desktop слушает 127.0.0.1:8978 и остаётся на этом компьютере. Руководство: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Обновление
 - Обновления устанавливаются через стандартный инструмент обновления WordPress — Консоль → Обновления или на странице «Плагины». Ручных действий не требуется

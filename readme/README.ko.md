@@ -27,7 +27,7 @@ WPMMCC ATS는 단일 언어 WordPress 사이트를 다국어 사이트로 바꾸
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## 요구 사항
 - WordPress 6.2 이상
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. 수동 번역 에디터에서 글을 열어 번역하고, 저장하면 대상 사이트에 반영됩니다
 
 ## 자동 번역
-자동 번역에는 함께 제공되는 WPTSALL Client(WebUI 또는 Desktop)를 설치하세요. 기기 토큰으로 사이트에 직접 연결해 번역 작업을 가져오고, 설정한 번역 제공자를 호출한 뒤 결과를 다시 기록합니다. 클라이언트 저장소: https://github.com/wpmmcc/wptsall-client 같은 클라이언트는 WPMMCC와도 페어링할 수 있습니다. 그때는 콘텐츠만 복사하고 그 플러그인으로는 번역하지 않습니다. WebUI 기본 주소는 127.0.0.1:8977, Desktop은 127.0.0.1:8978이며 이 컴퓨터에만 있습니다. 안내: https://www.wpmm.cc/docs/client-guide.html .
+자동 번역에는 함께 제공되는 WPTSALL Client(WebUI 또는 Desktop)를 설치하세요. 기기 토큰으로 사이트에 직접 연결해 번역 작업을 가져오고, 설정한 번역 제공자를 호출한 뒤 결과를 다시 기록합니다. 클라이언트 저장소: https://github.com/wpmmcc/wptsall-client 같은 클라이언트는 WPMMCC와도 페어링할 수 있습니다. 사이트끼리 직접 페어링하면 동기화만 하며, 직접 양식은 sync_and_translate 를 거부합니다. 클라이언트로 페어링하면 푸시 전에 제목, 본문, 요약을 번역할 수 있습니다. 플러그인은 번역 업체를 호출하지 않습니다. WebUI 기본 주소는 127.0.0.1:8977, Desktop은 127.0.0.1:8978이며 이 컴퓨터에만 있습니다. 안내: https://www.wpmm.cc/docs/client-guide.html .
 
 ## 업데이트
 - 표준 WordPress 업데이터(알림판 → 업데이트 또는 플러그인 페이지)를 통해 설치됩니다. 수동 작업은 필요하지 않습니다

@@ -27,7 +27,7 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Gereksinimler
 - WordPress 6.2 veya daha yenisi
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Manuel çeviri editöründe bir yazıyı açıp çevirin; kaydettiğinizde hedef site güncellenir
 
 ## Otomatik çeviri
-Otomatik çeviri için companion istemci WPTSALL Client'ı (WebUI veya Desktop) kurun. Cihaz token'ı ile sitenize doğrudan bağlanır, çeviri görevlerini alır, yapılandırdığınız sağlayıcıyı çağırır ve sonuçları geri yazar. İstemci deposu: https://github.com/wpmmcc/wptsall-client Aynı istemci WPMMCC ile de eşleşebilir; bu durumda yalnızca içerik kopyalar ve o eklenti üzerinden çeviri yapmaz. WebUI 127.0.0.1:8977 kullanır, Desktop 127.0.0.1:8978 adresini dinler ve bu bilgisayarda kalır. Kılavuz: https://www.wpmm.cc/docs/client-guide.html .
+Otomatik çeviri için companion istemci WPTSALL Client'ı (WebUI veya Desktop) kurun. Cihaz token'ı ile sitenize doğrudan bağlanır, çeviri görevlerini alır, yapılandırdığınız sağlayıcıyı çağırır ve sonuçları geri yazar. İstemci deposu: https://github.com/wpmmcc/wptsall-client Aynı istemci WPMMCC ile de eşleşebilir. Doğrudan eşleme yalnızca eşitler ve bu form sync_and_translate isteğini reddeder. İstemci üzerinden başlık, içerik ve özet göndermeden önce çevrilir. Eklenti çeviri sağlayıcısını çağırmaz. WebUI 127.0.0.1:8977 kullanır, Desktop 127.0.0.1:8978 adresini dinler ve bu bilgisayarda kalır. Kılavuz: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Güncelleme
 - Güncellemeler standart WordPress güncelleyicisi aracılığıyla kurulur — Başlangıç → Güncellemeler veya Eklentiler sayfası. Manuel bir işlem gerekmez

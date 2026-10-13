@@ -27,7 +27,7 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Persyaratan
 - WordPress 6.2 atau lebih baru
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Buka sebuah pos di editor terjemahan manual dan terjemahkan; saat disimpan situs target ikut diperbarui
 
 ## Terjemahan otomatis
-Untuk terjemahan otomatis, pasang klien pendamping WPTSALL Client (WebUI atau Desktop). Ia terhubung langsung ke situs Anda dengan token perangkat, mengambil tugas terjemahan, memanggil penyedia yang Anda konfigurasi, dan menulis hasilnya kembali. Repositori klien: https://github.com/wpmmcc/wptsall-client Klien yang sama juga dapat berpasangan dengan WPMMCC; saat itu ia hanya menyalin konten dan tidak menerjemahkan lewat plugin itu. WebUI memakai 127.0.0.1:8977, Desktop mendengarkan di 127.0.0.1:8978 dan tetap di komputer ini. Panduan: https://www.wpmm.cc/docs/client-guide.html .
+Untuk terjemahan otomatis, pasang klien pendamping WPTSALL Client (WebUI atau Desktop). Ia terhubung langsung ke situs Anda dengan token perangkat, mengambil tugas terjemahan, memanggil penyedia yang Anda konfigurasi, dan menulis hasilnya kembali. Repositori klien: https://github.com/wpmmcc/wptsall-client Klien yang sama juga dapat berpasangan dengan WPMMCC. Pemasangan langsung hanya menyinkronkan, dan formulir itu menolak sync_and_translate. Lewat klien, judul, isi, dan kutipan diterjemahkan sebelum dikirim. Plugin tidak memanggil penyedia terjemahan. WebUI memakai 127.0.0.1:8977, Desktop mendengarkan di 127.0.0.1:8978 dan tetap di komputer ini. Panduan: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Pembaruan
 - Pembaruan diinstal melalui pembaru standar WordPress — Dasbor → Pembaruan, atau halaman Plugin. Tidak ada langkah manual yang diperlukan

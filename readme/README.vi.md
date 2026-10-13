@@ -27,7 +27,7 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. A direct pairing copies content only, and that form rejects sync_and_translate. The optional WPTSALL Client can pair with WPMMCC and translate the title, content, and excerpt while syncing. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Yêu cầu
 - WordPress 6.2 trở lên
@@ -45,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Mở một bài trong trình soạn thảo dịch thủ công và dịch; khi lưu, site đích được cập nhật
 
 ## Dịch tự động
-Để dịch tự động, hãy cài client đi kèm WPTSALL Client (WebUI hoặc Desktop). Nó kết nối trực tiếp tới site của bạn bằng token thiết bị, nhận tác vụ dịch, gọi nhà cung cấp bạn cấu hình và ghi kết quả về. Repo client: https://github.com/wpmmcc/wptsall-client Cùng một client cũng có thể ghép với WPMMCC; khi đó nó chỉ sao chép nội dung và không dịch qua plugin đó. WebUI dùng 127.0.0.1:8977, Desktop lắng nghe 127.0.0.1:8978 và chỉ ở trên máy này. Hướng dẫn: https://www.wpmm.cc/docs/client-guide.html .
+Để dịch tự động, hãy cài client đi kèm WPTSALL Client (WebUI hoặc Desktop). Nó kết nối trực tiếp tới site của bạn bằng token thiết bị, nhận tác vụ dịch, gọi nhà cung cấp bạn cấu hình và ghi kết quả về. Repo client: https://github.com/wpmmcc/wptsall-client Cùng một client cũng có thể ghép với WPMMCC. Ghép trực tiếp chỉ đồng bộ, và biểu mẫu đó từ chối sync_and_translate. Qua client, tiêu đề, nội dung và đoạn trích được dịch trước khi đẩy đi. Plugin không gọi nhà cung cấp dịch. WebUI dùng 127.0.0.1:8977, Desktop lắng nghe 127.0.0.1:8978 và chỉ ở trên máy này. Hướng dẫn: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Cập nhật
 - Các bản cập nhật được cài đặt qua trình cập nhật tiêu chuẩn của WordPress — Bảng tin → Cập nhật, hoặc trang Plugin. Không cần thực hiện thao tác thủ công
