@@ -8,10 +8,14 @@ WPMMCC ATS est un plugin WordPress qui transforme un site monolingue en site mul
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## Fonctionnalités
 - Analyse de contenu — détecte les champs traduisibles dans les articles, taxonomies, meta, plugins de contenu tiers et thèmes
@@ -23,7 +27,7 @@ WPMMCC ATS est un plugin WordPress qui transforme un site monolingue en site mul
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Prérequis
 - WordPress 6.2 ou plus récent
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - Aucun compte, abonnement ni clé de licence requis
 
 ## Installation
-1. Téléchargez le ZIP de la dernière version depuis la page Releases de ce dépôt (ou compressez vous-même les sources)
+1. Installez-le depuis WordPress.org : Extensions → Ajouter, cherchez WPMMCC ATS, puis activez. Page : https://wordpress.org/plugins/wpmmcc-ats/
 2. Dans wp-admin, allez dans Extensions → Ajouter → Téléverser une extension, téléversez le ZIP puis activez
 3. Ouvrez le menu WPTSALL dans wp-admin
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Ouvrez un article dans l'éditeur de traduction manuelle et traduisez-le ; le site cible se met à jour à l'enregistrement
 
 ## Traduction automatique
-Pour la traduction automatique, installez le client compagnon WPTSALL Client (WebUI ou Desktop). Il se connecte directement à votre site avec un jeton d'appareil, réclame des tâches, appelle le fournisseur que vous configurez et écrit les résultats. Dépôt du client : https://github.com/wpmmcc/wptsall-client
+Pour la traduction automatique, installez le client compagnon WPTSALL Client (WebUI ou Desktop). Il se connecte directement à votre site avec un jeton d'appareil, réclame des tâches, appelle le fournisseur que vous configurez et écrit les résultats. Dépôt du client : https://github.com/wpmmcc/wptsall-client Le même client peut aussi s'appairer à WPMMCC : il copie alors le contenu et ne traduit pas via ce plugin. La WebUI utilise 127.0.0.1:8977 et Desktop écoute sur 127.0.0.1:8978, sur cet ordinateur. Guide : https://www.wpmm.cc/docs/client-guide.html .
 
 ## Mises à jour
 - Les mises à jour s'installent via le gestionnaire standard de WordPress — Tableau de bord → Mises à jour, ou la page Extensions. Aucune manipulation manuelle n'est requise

@@ -8,10 +8,14 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 
 ## 相关链接
 - 项目官网 — https://www.wpmm.cc/
-- 文档与使用帮助（English / 简体中文）— https://www.wpmm.cc/docs/
+- 文档（English / 简体中文）— https://www.wpmm.cc/docs/
+- 入门 — https://www.wpmm.cc/docs/getting-started.html
 - WordPress.org 插件页 — https://wordpress.org/plugins/wpmmcc-ats/
-- 配套客户端仓库 — https://github.com/wpmmcc/wptsall-client
-- 另一个同步插件 WPMMCC — https://github.com/wpmmcc/wpmmcc
+- 配套客户端 — https://github.com/wpmmcc/wptsall-client
+- 客户端发布 — https://github.com/wpmmcc/wptsall-client/releases
+- 客户端指南 — https://www.wpmm.cc/docs/client-guide.html
+- 同步插件 WPMMCC — https://github.com/wpmmcc/wpmmcc
+- WPMMCC 的 WordPress.org 页面 — https://wordpress.org/plugins/wpmmcc/
 
 ## 功能
 - 内容扫描 — 探测文章、分类法、meta、第三方内容插件与主题中的可翻译字段
@@ -23,7 +27,7 @@ WPMMCC ATS 是一个把单语言 WordPress 站点转为多语言站点的插件�
 
 ## 另一个插件
 
-WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，负责在站点之间复制内容。它不翻译，也不使用这个客户端，后台菜单名是 WPMMCC Sync。本插件的后台菜单名是 WPTSALL。
+WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，在站点之间复制内容。后台菜单是 WPMMCC Sync，REST 命名空间是 wpmmcc/v1。它不翻译。直接配对只复制内容。可选的 WPTSALL 客户端也可以作为同步对端配对 WPMMCC。本插件的菜单是 WPTSALL，REST 命名空间是 wptsall/v2。目录页：https://wordpress.org/plugins/wpmmcc/ 。
 
 ## 环境要求
 - WordPress 6.2 或更高版本
@@ -31,8 +35,8 @@ WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，负责在站点
 - 无需账号、订阅或许可证密钥
 
 ## 安装
-1. 从本仓库 Releases 页下载最新 ZIP 包（或自行打包源码）
-2. 在 wp-admin 进入 插件 → 安装插件 → 上传插件，上传 ZIP 后启用
+1. 从 WordPress.org 安装：插件 → 安装插件，搜索 WPMMCC ATS 后启用。目录页：https://wordpress.org/plugins/wpmmcc-ats/
+2. 也可以上传用本仓库源码打包的 ZIP
 3. 在 wp-admin 打开名为 WPTSALL 的菜单
 
 ## 快速上手（手动翻译，无需客户端）
@@ -41,7 +45,7 @@ WPMMCC（https://github.com/wpmmcc/wpmmcc）是另一个插件，负责在站点
 3. 在手动翻译编辑器中打开一篇文章并翻译；保存后目标站点随之更新
 
 ## 自动翻译
-自动翻译请安装配套的 WPTSALL 客户端。WebUI 是浏览器页面，默认地址是 127.0.0.1:8977。Desktop 是本机窗口，监听 127.0.0.1:8978，只留在这台电脑上。客户端使用设备级令牌直连本插件，领取翻译任务，调用你配置的翻译服务，并把结果写回。它不连接 WPMMCC 同步插件。客户端仓库：https://github.com/wpmmcc/wptsall-client
+自动翻译请安装配套的 WPTSALL 客户端。WebUI 是浏览器页面，默认地址是 127.0.0.1:8977。Desktop 监听 127.0.0.1:8978，只留在这台电脑上。客户端用设备令牌连接本插件，领取翻译任务，调用你配置的翻译服务，并把结果写回。厂商密钥留在客户端。同一个客户端也可以配对 WPMMCC，只复制内容，不通过那个插件翻译。源码：https://github.com/wpmmcc/wptsall-client 。签名发布：https://github.com/wpmmcc/wptsall-client/releases 。指南：https://www.wpmm.cc/docs/client-guide.html 。
 
 ## 更新
 - 通过标准 WordPress 更新程序升级 — 仪表盘 → 更新，或插件列表页。无需手动操作

@@ -22,7 +22,7 @@ WPMMCC ATS 是一個把單語 WordPress 網站變成多語系網站的外掛。�
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## 環境需求
 - WordPress 6.2 或更新版本
@@ -30,7 +30,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - 無需帳號、訂閱或授權金鑰
 
 ## 安裝
-1. 從本儲存庫 Releases 頁下載最新 ZIP(或自行打包原始碼)
+1. 從 WordPress.org 安裝：外掛 → 安裝外掛，搜尋 WPMMCC ATS 後啟用。目錄頁：https://wordpress.org/plugins/wpmmcc-ats/
 2. 在 wp-admin 進入 外掛 → 安裝外掛 → 上傳外掛,上傳 ZIP 後啟用
 3. 在 wp-admin 開啟名為 WPTSALL 的選單
 
@@ -40,7 +40,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. 在手動翻譯編輯器中開啟一篇文章並翻譯;儲存後目標站台隨之更新
 
 ## 自動翻譯
-自動翻譯請安裝配套的 WPTSALL 用戶端(WebUI 或 Desktop)。它使用裝置級權杖直連你的網站,領取翻譯任務,呼叫你設定的翻譯廠商,並把結果寫回。用戶端儲存庫:https://github.com/wpmmcc/wptsall-client
+自動翻譯請安裝配套的 WPTSALL 用戶端(WebUI 或 Desktop)。它使用裝置級權杖直連你的網站,領取翻譯任務,呼叫你設定的翻譯廠商,並把結果寫回。用戶端儲存庫:https://github.com/wpmmcc/wptsall-client 同一個用戶端也可以配對 WPMMCC，只複製內容，不透過那個外掛翻譯。WebUI 預設 127.0.0.1:8977，Desktop 監聽 127.0.0.1:8978，只留在這台電腦。指南：https://www.wpmm.cc/docs/client-guide.html 。
 
 ## 更新
 - 透過標準 WordPress 更新程序升級——控制台 → 更新,或外掛頁面。無需手動操作

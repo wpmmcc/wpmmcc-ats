@@ -8,10 +8,14 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## Tính năng
 - Quét nội dung — phát hiện trường dịch được trong bài viết, taxonomy, meta, plugin nội dung bên thứ ba và theme
@@ -23,7 +27,7 @@ WPMMCC ATS là plugin WordPress biến một site đơn ngữ thành site đa ng
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Yêu cầu
 - WordPress 6.2 trở lên
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - Không cần tài khoản, thuê bao hay khóa giấy phép
 
 ## Cài đặt
-1. Tải ZIP bản mới nhất từ trang Releases của repo này (hoặc tự nén mã nguồn)
+1. Cài từ WordPress.org: Plugins → Add New, tìm WPMMCC ATS rồi kích hoạt. Trang: https://wordpress.org/plugins/wpmmcc-ats/
 2. Trong wp-admin vào Plugins → Add New → Upload Plugin, tải ZIP lên rồi kích hoạt
 3. Mở menu WPTSALL trong wp-admin
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Mở một bài trong trình soạn thảo dịch thủ công và dịch; khi lưu, site đích được cập nhật
 
 ## Dịch tự động
-Để dịch tự động, hãy cài client đi kèm WPTSALL Client (WebUI hoặc Desktop). Nó kết nối trực tiếp tới site của bạn bằng token thiết bị, nhận tác vụ dịch, gọi nhà cung cấp bạn cấu hình và ghi kết quả về. Repo client: https://github.com/wpmmcc/wptsall-client
+Để dịch tự động, hãy cài client đi kèm WPTSALL Client (WebUI hoặc Desktop). Nó kết nối trực tiếp tới site của bạn bằng token thiết bị, nhận tác vụ dịch, gọi nhà cung cấp bạn cấu hình và ghi kết quả về. Repo client: https://github.com/wpmmcc/wptsall-client Cùng một client cũng có thể ghép với WPMMCC; khi đó nó chỉ sao chép nội dung và không dịch qua plugin đó. WebUI dùng 127.0.0.1:8977, Desktop lắng nghe 127.0.0.1:8978 và chỉ ở trên máy này. Hướng dẫn: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Cập nhật
 - Các bản cập nhật được cài đặt qua trình cập nhật tiêu chuẩn của WordPress — Bảng tin → Cập nhật, hoặc trang Plugin. Không cần thực hiện thao tác thủ công

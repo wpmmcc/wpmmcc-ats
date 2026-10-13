@@ -8,10 +8,14 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## 機能
 - コンテンツスキャン — 投稿・タクソノミー・meta・サードパーティコンテンツプラグイン・テーマの翻訳可能フィールドを検出
@@ -23,7 +27,7 @@ WPMMCC ATS は、単一言語の WordPress サイトを多言語サイトに変�
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## 要件
 - WordPress 6.2 以上
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - アカウント・サブスクリプション・ライセンスキーは不要
 
 ## インストール
-1. このリポジトリの Releases ページから最新 ZIP をダウンロード(またはソースから自分で zip を作成)
+1. WordPress.org からインストールします。プラグイン → 新規追加で WPMMCC ATS を検索して有効化してください。ディレクトリ：https://wordpress.org/plugins/wpmmcc-ats/
 2. wp-admin の プラグイン → 新規追加 → プラグインのアップロード から ZIP をアップロードして有効化
 3. wp-admin の WPTSALL メニューを開く
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. 手動翻訳エディターで投稿を開いて翻訳;保存するとターゲットサイトに反映されます
 
 ## 自動翻訳
-自動翻訳には companion の WPTSALL Client(WebUI または Desktop)をインストールしてください。デバイストークンであなたのサイトへ直接接続し、翻訳タスクを取得し、設定した翻訳プロバイダーを呼び出し、結果を書き戻します。クライアントリポジトリ: https://github.com/wpmmcc/wptsall-client
+自動翻訳には companion の WPTSALL Client(WebUI または Desktop)をインストールしてください。デバイストークンであなたのサイトへ直接接続し、翻訳タスクを取得し、設定した翻訳プロバイダーを呼び出し、結果を書き戻します。クライアントリポジトリ: https://github.com/wpmmcc/wptsall-client 同じクライアントは WPMMCC ともペアリングできます。その場合は内容をコピーするだけで、そのプラグイン経由では翻訳しません。WebUI の既定は 127.0.0.1:8977、Desktop は 127.0.0.1:8978 でこのコンピュータに留まります。手順: https://www.wpmm.cc/docs/client-guide.html 。
 
 ## アップデート
 - 標準の WordPress アップデーター（ダッシュボード → 更新、またはプラグインページ）から更新できます。手動操作は不要です

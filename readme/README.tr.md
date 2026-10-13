@@ -8,10 +8,14 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## Özellikler
 - İçerik tarama — yazılarda, taksonomilerde, meta verilerde, üçüncü taraf içerik eklentilerinde ve temalarda çevrilebilir alanları tespit eder
@@ -23,7 +27,7 @@ WPMMCC ATS, tek dilli bir siteyi çok dilli bir siteye dönüştüren bir WordPr
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Gereksinimler
 - WordPress 6.2 veya daha yenisi
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - Hesap, abonelik veya lisans anahtarı gerekmez
 
 ## Kurulum
-1. Bu depodun Releases sayfasından en son ZIP'i indirin (veya kaynağı kendiniz zip'leyin)
+1. WordPress.org üzerinden kurun: Eklentiler → Yeni Ekle, WPMMCC ATS arayıp etkinleştirin. Sayfa: https://wordpress.org/plugins/wpmmcc-ats/
 2. wp-admin'de Eklentiler → Yeni Ekle → Eklenti Yükle ile ZIP'i yükleyip etkinleştirin
 3. wp-admin'de WPTSALL menüsünü açın
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Manuel çeviri editöründe bir yazıyı açıp çevirin; kaydettiğinizde hedef site güncellenir
 
 ## Otomatik çeviri
-Otomatik çeviri için companion istemci WPTSALL Client'ı (WebUI veya Desktop) kurun. Cihaz token'ı ile sitenize doğrudan bağlanır, çeviri görevlerini alır, yapılandırdığınız sağlayıcıyı çağırır ve sonuçları geri yazar. İstemci deposu: https://github.com/wpmmcc/wptsall-client
+Otomatik çeviri için companion istemci WPTSALL Client'ı (WebUI veya Desktop) kurun. Cihaz token'ı ile sitenize doğrudan bağlanır, çeviri görevlerini alır, yapılandırdığınız sağlayıcıyı çağırır ve sonuçları geri yazar. İstemci deposu: https://github.com/wpmmcc/wptsall-client Aynı istemci WPMMCC ile de eşleşebilir; bu durumda yalnızca içerik kopyalar ve o eklenti üzerinden çeviri yapmaz. WebUI 127.0.0.1:8977 kullanır, Desktop 127.0.0.1:8978 adresini dinler ve bu bilgisayarda kalır. Kılavuz: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Güncelleme
 - Güncellemeler standart WordPress güncelleyicisi aracılığıyla kurulur — Başlangıç → Güncellemeler veya Eklentiler sayfası. Manuel bir işlem gerekmez

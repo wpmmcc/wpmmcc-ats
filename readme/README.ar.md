@@ -8,10 +8,14 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## الميزات
 - فحص المحتوى — يكتشف الحقول القابلة للترجمة في المقالات والتصنيفات والبيانات الوصفية وإضافات المحتوى الخارجية والقوالب
@@ -23,7 +27,7 @@ WPMMCC ATS إضافة ووردبريس تحوّل موقعًا أحادي الل
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## المتطلبات
 - ووردبريس 6.2 أو أحدث
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - لا حاجة إلى حساب أو اشتراك أو مفتاح ترخيص
 
 ## التثبيت
-1. نزّل ملف ZIP لأحدث إصدار من صفحة Releases في هذا المستودع ( أو اضغط المصدر بنفسك)
+1. ثبّته من WordPress.org: الإضافات → أضف جديدًا، ابحث عن WPMMCC ATS ثم فعّله. الصفحة: https://wordpress.org/plugins/wpmmcc-ats/
 2. في لوحة التحكم: الإضافات → أضف جديدًا →ارفع الإضافة، ارفع الملف ثم فعّل الإضافة
 3. افتح قائمة WPTSALL في لوحة التحكم
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. افتح مقالًا في محرر الترجمة اليدوية وترجمه؛ يتحدث الموقع الهدف عند الحفظ
 
 ## الترجمة الآلية
-للترجمة الآلية، ثبّت العميل المرافق WPTSALL Client (WebUI أو Desktop). يتصل بموقعك مباشرة برمز جهاز، ويستلم مهام الترجمة، ويستدعي مزوّد الترجمة الذي ضبطته، ثم يكتب النتائج. مستودع العميل: https://github.com/wpmmcc/wptsall-client
+للترجمة الآلية، ثبّت العميل المرافق WPTSALL Client (WebUI أو Desktop). يتصل بموقعك مباشرة برمز جهاز، ويستلم مهام الترجمة، ويستدعي مزوّد الترجمة الذي ضبطته، ثم يكتب النتائج. مستودع العميل: https://github.com/wpmmcc/wptsall-client يمكن للعميل نفسه أيضًا الاقتران مع WPMMCC، وعندها ينسخ المحتوى فقط ولا يترجم عبر تلك الإضافة. WebUI على 127.0.0.1:8977 وDesktop على 127.0.0.1:8978 ويبقى على هذا الجهاز. الدليل: https://www.wpmm.cc/docs/client-guide.html .
 
 ## التحديث
 - تُثبّت التحديثات عبر أداة تحديث ووردبريس القياسية — لوحة التحكم ← التحديثات، أو صفحة الإضافات. لا يلزم اتخاذ أي خطوات يدوية

@@ -8,10 +8,14 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 
 ## Links
 - Project website — https://www.wpmm.cc/
-- Documentation and usage help (English / 简体中文) — https://www.wpmm.cc/docs/
+- Documentation (English / 简体中文) — https://www.wpmm.cc/docs/
+- Getting started — https://www.wpmm.cc/docs/getting-started.html
 - This plugin on WordPress.org — https://wordpress.org/plugins/wpmmcc-ats/
-- Companion client repository — https://github.com/wpmmcc/wptsall-client
-- WPMMCC, the separate sync plugin — https://github.com/wpmmcc/wpmmcc
+- Companion client — https://github.com/wpmmcc/wptsall-client
+- Client releases — https://github.com/wpmmcc/wptsall-client/releases
+- Client guide — https://www.wpmm.cc/docs/client-guide.html
+- WPMMCC sync plugin — https://github.com/wpmmcc/wpmmcc
+- WPMMCC on WordPress.org — https://wordpress.org/plugins/wpmmcc/
 
 ## Fitur
 - Pemindaian konten — mendeteksi bidang terjemahan di pos, taksonomi, meta, plugin konten pihak ketiga, dan tema
@@ -23,7 +27,7 @@ WPMMCC ATS adalah plugin WordPress yang mengubah situs satu bahasa menjadi multi
 
 ## A different plugin
 
-WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. It does not translate, it does not use this client, and its wp-admin menu is named WPMMCC Sync. This plugin's menu is named WPTSALL.
+WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies content between sites. Its wp-admin menu is WPMMCC Sync and its REST namespace is wpmmcc/v1. It does not translate. A direct pairing copies content only. The optional WPTSALL Client can also pair with WPMMCC as a sync peer. This plugin's menu is WPTSALL and its REST namespace is wptsall/v2. Directory page: https://wordpress.org/plugins/wpmmcc/ .
 
 ## Persyaratan
 - WordPress 6.2 atau lebih baru
@@ -31,7 +35,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 - Tanpa akun, langganan, atau kunci lisensi
 
 ## Instalasi
-1. Unduh ZIP rilis terbaru dari halaman Releases repositori ini (atau zip sendiri dari kode sumber)
+1. Pasang dari WordPress.org: Plugins → Add New, cari WPMMCC ATS lalu aktifkan. Halaman: https://wordpress.org/plugins/wpmmcc-ats/
 2. Di wp-admin buka Plugins → Add New → Upload Plugin, unggah ZIP lalu aktifkan
 3. Buka menu WPTSALL di wp-admin
 
@@ -41,7 +45,7 @@ WPMMCC (https://github.com/wpmmcc/wpmmcc) is a separate plugin that copies conte
 3. Buka sebuah pos di editor terjemahan manual dan terjemahkan; saat disimpan situs target ikut diperbarui
 
 ## Terjemahan otomatis
-Untuk terjemahan otomatis, pasang klien pendamping WPTSALL Client (WebUI atau Desktop). Ia terhubung langsung ke situs Anda dengan token perangkat, mengambil tugas terjemahan, memanggil penyedia yang Anda konfigurasi, dan menulis hasilnya kembali. Repositori klien: https://github.com/wpmmcc/wptsall-client
+Untuk terjemahan otomatis, pasang klien pendamping WPTSALL Client (WebUI atau Desktop). Ia terhubung langsung ke situs Anda dengan token perangkat, mengambil tugas terjemahan, memanggil penyedia yang Anda konfigurasi, dan menulis hasilnya kembali. Repositori klien: https://github.com/wpmmcc/wptsall-client Klien yang sama juga dapat berpasangan dengan WPMMCC; saat itu ia hanya menyalin konten dan tidak menerjemahkan lewat plugin itu. WebUI memakai 127.0.0.1:8977, Desktop mendengarkan di 127.0.0.1:8978 dan tetap di komputer ini. Panduan: https://www.wpmm.cc/docs/client-guide.html .
 
 ## Pembaruan
 - Pembaruan diinstal melalui pembaru standar WordPress — Dasbor → Pembaruan, atau halaman Plugin. Tidak ada langkah manual yang diperlukan
