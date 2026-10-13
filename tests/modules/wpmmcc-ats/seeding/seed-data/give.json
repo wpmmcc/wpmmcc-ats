@@ -1,0 +1,101 @@
+{
+    "_meta": {
+        "plugin_slug": "give",
+        "plugin_name": "GiveWP",
+        "plan": "D",
+        "version": "1.0.1",
+        "description": "GiveWP seed data for donation forms",
+        "fields_source": "v4-scanner + wp_give_formmeta table verification",
+        "fields_verified": "2026-01-27",
+        "storage_note": "GiveWP stores form meta in custom table 'wp_give_formmeta', not wp_postmeta. Seeder creates give_forms CPT for discover/smoke; full formmeta via Give API is optional.",
+        "custom_table": "wp_give_formmeta",
+        "force_standard_seed": true
+    },
+    "posts": {
+        "give_forms": [
+            {
+                "post_title": "General Fund",
+                "post_content": "<p>Support our general operations and help us continue our mission. Every donation makes a difference.</p>",
+                "post_excerpt": "Support our general operations.",
+                "post_status": "publish",
+                "meta": {
+                    "_give_set_price": "25",
+                    "_give_custom_amount": "enabled",
+                    "_give_levels_minimum_amount": "10",
+                    "_give_levels_maximum_amount": "10000",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "50000"
+                }
+            },
+            {
+                "post_title": "Education Initiative",
+                "post_content": "<p>Help provide education resources to underserved communities.</p>",
+                "post_excerpt": "Support education programs.",
+                "post_status": "publish",
+                "meta": {
+                    "_give_set_price": "50",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "25000"
+                }
+            },
+            {
+                "post_title": "Emergency Relief Fund",
+                "post_content": "<p>Provide immediate assistance to those affected by natural disasters and emergencies.</p>",
+                "post_excerpt": "Help disaster relief efforts.",
+                "post_status": "publish",
+                "meta": {
+                    "_give_set_price": "100",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "100000"
+                }
+            },
+            {
+                "post_title": "Monthly Giving Program",
+                "post_content": "<p>Become a monthly supporter and provide sustainable funding for our programs.</p>",
+                "post_excerpt": "Recurring monthly donations.",
+                "post_status": "publish",
+                "meta": {
+                    "_give_set_price": "25",
+                    "_give_recurring": "enabled",
+                    "_give_period": "month"
+                }
+            },
+            {
+                "post_title": "Scholarship Fund",
+                "post_content": "<p>Help students achieve their dreams through educational scholarships.</p>",
+                "post_excerpt": "Support student scholarships.",
+                "post_status": "publish",
+                "meta": {
+                    "_give_set_price": "250",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "75000"
+                }
+            },
+            {
+                "post_title": "Animal Shelter Support",
+                "post_content": "<p>Help local animal shelters provide care, food, and medical treatment for rescued animals.</p>",
+                "post_excerpt": "Support animal rescue operations.",
+                "post_status": "draft",
+                "meta": {
+                    "_give_set_price": "30",
+                    "_give_custom_amount": "enabled",
+                    "_give_goal_option": "enabled",
+                    "_give_set_goal": "15000"
+                }
+            },
+            {
+                "post_title": "Community Garden Project",
+                "post_content": "<p>Fund the creation and maintenance of community gardens in urban neighborhoods.</p>",
+                "post_excerpt": "Support urban community gardens.",
+                "post_status": "pending",
+                "meta": {
+                    "_give_set_price": "20",
+                    "_give_custom_amount": "enabled"
+                }
+            }
+        ]
+    }
+}

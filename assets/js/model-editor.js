@@ -77,22 +77,10 @@
                 self.deleteModel(modelId, $(this));
             });
 
-            // Import modal
-            $('#wptsall-import-btn').on('click', function(e) {
-                e.preventDefault();
-                $('#wptsall-import-modal').show();
-            });
-
             // Export modal
             $('#wptsall-export-btn').on('click', function(e) {
                 e.preventDefault();
                 $('#wptsall-export-modal').show();
-            });
-
-            // Import form
-            $('#wptsall-import-form').on('submit', function(e) {
-                e.preventDefault();
-                self.importModels();
             });
 
             // Export form
@@ -110,11 +98,6 @@
             // Export select all
             $('#export-select-all').on('change', function() {
                 $('input[name="export_models[]"]').prop('checked', $(this).is(':checked'));
-            });
-
-            // Import file preview
-            $('#import-file').on('change', function() {
-                self.previewImportFile(this.files[0]);
             });
 
             // Custom plugin input toggle
@@ -648,72 +631,10 @@
         },
 
         // Import/Export functions
-        previewImportFile: function(file) {
-            if (!file) return;
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    var data = JSON.parse(e.target.result);
-                    var preview = '';
-
-                    if (Array.isArray(data)) {
-                        preview = 'Will import ' + data.length + ' model(s):\n';
-                        data.forEach(function(model) {
-                            preview += '- ' + (model.plugin_name || model.slug) + '\n';
-                        });
-                    } else if (data.slug) {
-                        preview = 'Will import 1 model:\n- ' + (data.plugin_name || data.slug);
-                    } else {
-                        preview = 'Invalid model configuration file';
-                    }
-
-                    $('#import-preview-content').text(preview);
-                    $('#import-preview').show();
-                } catch (err) {
-                    $('#import-preview-content').text('File parse error: ' + err.message);
-                    $('#import-preview').show();
-                }
-            };
-            reader.readAsText(file);
-        },
-
-        importModels: function() {
-            var self = this;
-            var fileInput = document.getElementById('import-file');
-            var file = fileInput.files[0];
-
-            if (!file) {
-                alert('Please select a file');
-                return;
-            }
-
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    var data = JSON.parse(e.target.result);
-                    var overwrite = $('#import-overwrite').is(':checked');
-
-                    wp.apiFetch({
-                        path: 'wptsall/v2/models/import',
-                        method: 'POST',
-                        data: {
-                            models: Array.isArray(data) ? data : [data],
-                            overwrite: overwrite
-                        }
-                    }).then(function(response) {
-                        alert('Import successful! Imported ' + response.imported + ' model(s)');
-                        location.reload();
-                    }).catch(function(error) {
-                        alert('Import failed: ' + (error.message || 'Unknown error'));
-                    });
-                } catch (err) {
-                    alert('File parse error: ' + err.message);
-                }
-            };
-            reader.readAsText(file);
-        },
-
+        // ATS-P2-02 (3.8flash C2): the legacy single-window importModels() /
+        // previewImportFile() pair (plain-overwrite v2/models/import flow, no
+        // conflict dialog) was removed with its topbar entry and modal —
+        // importModelV3()/ImportFlowHandler is the single-model entry.
         exportModels: function() {
             var selected = [];
 

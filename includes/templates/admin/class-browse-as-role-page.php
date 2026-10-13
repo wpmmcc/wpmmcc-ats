@@ -24,6 +24,22 @@ class Browse_As_Role_Page {
 	const PAGE_SLUG = 'wptsall-browse-as-role';
 	const CAP       = 'manage_wptsall_security';
 	const TRANSIENT = 'wptsall_browse_gettext_hits';
+	/**
+	 * UI-28-04: hard ceiling on captured hits. The old implementation
+	 * rewrote the whole accumulated array to wp_options on EVERY gettext
+	 * call (O(N²) bytes; on this lab an armed session grew the option to
+	 * 570KB and wedged Apache workers indefinitely — a one-click self-DoS).
+	 */
+	const MAX_HITS = 20000;
+
+	/** @var bool|null Tri-state: null = not yet resolved, else session armed? */
+	private static $record_active = null;
+
+	/** @var array<string,array> Per-request capture buffer (deduped by key). */
+	private static $record_buffer = array();
+
+	/** @var bool Ensures flush_record_buffer() writes at most once. */
+	private static $buffer_flushed = false;
 
 	/**
 	 * @return void
@@ -73,29 +89,70 @@ class Browse_As_Role_Page {
 	}
 
 	/**
+	 * UI-28-04 rewrite: capture into a per-request static buffer and persist
+	 * ONCE on shutdown. The previous version did get_transient()+set_transient()
+	 * of the entire accumulated hits array on every gettext call — with a
+	 * heavy-i18n site (Tutor LMS / Elementor / WooCommerce …) one page render
+	 * performed thousands of full-array reads+writes and wedged PHP workers
+	 * for minutes (live-verified 2026-09-20: 380% CPU, all workers in R
+	 * state, site-wide timeout). Per-request cost is now: 1 transient read
+	 * (armed flag) + at most 1 read-modify-write at shutdown.
+	 *
 	 * @param string $domain  Text domain.
 	 * @param string $text    Msgid.
 	 * @param string $context Msgctxt.
 	 * @return void
 	 */
 	private static function maybe_record( $domain, $text, $context ) {
-		if ( ! get_transient( self::TRANSIENT . '_active' ) ) {
+		if ( null === self::$record_active ) {
+			self::$record_active = (bool) get_transient( self::TRANSIENT . '_active' );
+			if ( self::$record_active ) {
+				add_action( 'shutdown', array( __CLASS__, 'flush_record_buffer' ), 999 );
+			}
+		}
+		if ( ! self::$record_active ) {
 			return;
 		}
 		if ( '' === trim( (string) $text ) ) {
 			return;
 		}
-		$hits = get_transient( self::TRANSIENT );
-		if ( ! is_array( $hits ) ) {
-			$hits = array();
+		if ( count( self::$record_buffer ) >= self::MAX_HITS ) {
+			return; // Ceiling reached: keep capturing cheap, drop extras.
 		}
 		$key = md5( (string) $domain . '|' . (string) $context . '|' . (string) $text );
-		$hits[ $key ] = array(
+		if ( isset( self::$record_buffer[ $key ] ) ) {
+			return;
+		}
+		self::$record_buffer[ $key ] = array(
 			'domain'  => (string) $domain,
 			'msgid'   => (string) $text,
 			'msgctxt' => (string) $context,
 		);
+	}
+
+	/**
+	 * Persist the per-request capture buffer: one read-modify-write of the
+	 * transient per request, honouring the MAX_HITS ceiling.
+	 *
+	 * @return void
+	 */
+	public static function flush_record_buffer() {
+		if ( self::$buffer_flushed || ! self::$record_active || empty( self::$record_buffer ) ) {
+			return;
+		}
+		self::$buffer_flushed = true;
+		$hits = get_transient( self::TRANSIENT );
+		if ( ! is_array( $hits ) ) {
+			$hits = array();
+		}
+		foreach ( self::$record_buffer as $key => $hit ) {
+			if ( count( $hits ) >= self::MAX_HITS ) {
+				break;
+			}
+			$hits[ $key ] = $hit;
+		}
 		set_transient( self::TRANSIENT, $hits, HOUR_IN_SECONDS );
+		self::$record_buffer = array();
 	}
 
 	/**
@@ -105,7 +162,6 @@ class Browse_As_Role_Page {
 		if ( ! current_user_can( self::CAP ) ) {
 			return;
 		}
-		global $wp_roles;
 		$hits = get_transient( self::TRANSIENT );
 		if ( ! is_array( $hits ) ) {
 			$hits = array();
@@ -118,14 +174,12 @@ class Browse_As_Role_Page {
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:640px;margin-bottom:16px;">
 			<?php wp_nonce_field( 'wptsall_start_browse' ); ?>
 			<input type="hidden" name="action" value="wptsall_start_browse_session">
-			<p>
-				<label for="role"><?php esc_html_e( 'Role to simulate (opens front-end in new tab after start)', 'wpmmcc-ats' ); ?></label><br>
-				<select name="role" id="role">
-					<?php foreach ( $wp_roles->roles as $role_key => $role ) : ?>
-						<option value="<?php echo esc_attr( $role_key ); ?>"><?php echo esc_html( translate_user_role( $role['name'] ) ); ?></option>
-					<?php endforeach; ?>
-				</select>
-			</p>
+			<?php
+			// UI-28-04a: a "Role to simulate" select used to render here but
+			// handle_start() never read it — gettext capture is role-agnostic
+			// (it records whatever strings the CURRENT user's render fires).
+			// Removed so the form stops promising behaviour that exists.
+			?>
 			<?php submit_button( __( 'Start tracking session', 'wpmmcc-ats' ), 'primary', 'submit', false ); ?>
 		</form>
 		<p><?php

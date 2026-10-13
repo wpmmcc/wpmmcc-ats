@@ -1,0 +1,100 @@
+{
+    "_meta": {
+        "plugin_slug": "testimonial-free",
+        "plugin_name": "Testimonial Free",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Testimonial Free seed data for testimonials",
+        "fields_source": "database query (spt_testimonial meta_keys, _client_* prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "spt_testimonial": [
+            {
+                "post_title": "Amazing Product - Changed My Business",
+                "post_content": "This solution has transformed how we operate. Our productivity increased by 40% within the first month. The team support is outstanding.",
+                "post_status": "publish",
+                "meta": {
+                    "sp_tpro_meta_options": {
+                        "tpro_name": "David Chen",
+                        "tpro_designation": "CEO",
+                        "tpro_company_name": "TechStart Inc.",
+                        "tpro_rating": "five_star"
+                    },
+                    "_client_name": "David Chen",
+                    "_client_designation": "CEO",
+                    "_client_company": "TechStart Inc.",
+                    "_rating": "5"
+                }
+            },
+            {
+                "post_title": "Highly Recommended",
+                "post_content": "As a small business owner, I needed something reliable and affordable. This exceeded all my expectations. The value is unmatched.",
+                "post_status": "publish",
+                "meta": {
+                    "sp_tpro_meta_options": {
+                        "tpro_name": "Maria Garcia",
+                        "tpro_designation": "Owner",
+                        "tpro_company_name": "Garcia Designs",
+                        "tpro_rating": "five_star"
+                    },
+                    "_client_name": "Maria Garcia",
+                    "_client_designation": "Owner",
+                    "_client_company": "Garcia Designs",
+                    "_rating": "5"
+                }
+            },
+            {
+                "post_title": "Professional and Reliable",
+                "post_content": "Working with this team has been a pleasure. They deliver quality work on time, every time. Their attention to detail is impressive.",
+                "post_status": "publish",
+                "meta": {
+                    "sp_tpro_meta_options": {
+                        "tpro_name": "James Taylor",
+                        "tpro_designation": "Marketing Director",
+                        "tpro_company_name": "Global Media Corp",
+                        "tpro_rating": "five_star"
+                    },
+                    "_client_name": "James Taylor",
+                    "_client_designation": "Marketing Director",
+                    "_client_company": "Global Media Corp",
+                    "_rating": "5"
+                }
+            },
+            {
+                "post_title": "Great Support Team",
+                "post_content": "When we encountered issues, the support team was there immediately. They resolved our problems quickly and professionally.",
+                "post_status": "publish",
+                "meta": {
+                    "sp_tpro_meta_options": {
+                        "tpro_name": "Amanda White",
+                        "tpro_designation": "Operations Manager",
+                        "tpro_company_name": "White Solutions",
+                        "tpro_rating": "four_star"
+                    },
+                    "_client_name": "Amanda White",
+                    "_client_designation": "Operations Manager",
+                    "_client_company": "White Solutions",
+                    "_rating": "4"
+                }
+            },
+            {
+                "post_title": "Worth Every Penny",
+                "post_content": "Initially hesitant about the investment, but the ROI has been incredible. Best decision we made for our company this year.",
+                "post_status": "publish",
+                "meta": {
+                    "sp_tpro_meta_options": {
+                        "tpro_name": "Thomas Miller",
+                        "tpro_designation": "Founder",
+                        "tpro_company_name": "Miller Ventures",
+                        "tpro_rating": "five_star"
+                    },
+                    "_client_name": "Thomas Miller",
+                    "_client_designation": "Founder",
+                    "_client_company": "Miller Ventures",
+                    "_rating": "5"
+                }
+            }
+        ]
+    }
+}

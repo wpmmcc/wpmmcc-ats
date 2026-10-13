@@ -13,6 +13,11 @@
         currentModelId: null,
         options: null,
 
+        // Unique sentinel marking "validation failed; chain fully handled".
+        // Never use null/undefined for this — a REST endpoint may legitimately
+        // resolve those, which would collide and skip the button reset.
+        VALIDATION_STOP: {},
+
         init: function() {
             var self = this;
 
@@ -358,7 +363,7 @@
                 if (!validation.valid) {
                     $btn.prop('disabled', false).text(originalText);
                     self.showValidationErrors(validation.errors);
-                    return;
+                    return self.VALIDATION_STOP; // Handled; stop the chain without saving.
                 }
 
                 // Validation passed, save
@@ -379,11 +384,22 @@
                     data: data
                 });
             }).then(function(response) {
-                if (response && response.success) {
-                    $btn.prop('disabled', false).text(originalText);
-                    $('#wptsall-rule-modal-v2').hide();
-                    location.reload();
+                if (response === self.VALIDATION_STOP) {
+                    return; // Validation-invalid sentinel from the step above.
                 }
+                // The save request settled (2xx). Reset the button FIRST no
+                // matter the response body shape: an unexpected body (e.g. a
+                // proxy-stripped or future-shaped payload without `success`)
+                // must never leave the button stuck at "Saving...".
+                $btn.prop('disabled', false).text(originalText);
+
+                if (response && response.success === false) {
+                    alert('Save failed: ' + (response.message || 'Unknown error'));
+                    return;
+                }
+
+                $('#wptsall-rule-modal-v2').hide();
+                location.reload();
             }).catch(function(error) {
                 $btn.prop('disabled', false).text(originalText);
 
@@ -524,12 +540,14 @@
                 return;
             }
 
+            // wp.apiFetch only serializes `data` into request bodies for
+            // non-GET methods; a GET must carry its params in the path query
+            // string. The endpoint declares data_type/object_name as required,
+            // so dropping them (the old `data:` form) always 400s and the
+            // field suggestion list never loads.
             wp.apiFetch({
-                path: 'wptsall/v2/fields',
-                data: {
-                    data_type: dataType,
-                    object_name: objectName
-                }
+                path: 'wptsall/v2/fields?data_type=' + encodeURIComponent(dataType) +
+                    '&object_name=' + encodeURIComponent(objectName)
             }).then(function(fields) {
                 self.updateFieldSuggestions(fields);
             }).catch(function(error) {

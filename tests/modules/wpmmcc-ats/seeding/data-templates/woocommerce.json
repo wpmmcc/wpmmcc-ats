@@ -1,0 +1,363 @@
+{
+    "_meta": {
+        "version": "1.1.0",
+        "description": "WooCommerce 电商数据模板（完整版）",
+        "post_types": ["product"],
+        "plugins": ["woocommerce"],
+        "rest_namespace": "wc/v3",
+        "updated": "2026-01-10"
+    },
+    "categories": [
+        {
+            "id": "cat_electronics",
+            "name": "电子产品",
+            "slug": "electronics",
+            "description": "各类电子产品和数码设备",
+            "image": "product-1.jpg"
+        },
+        {
+            "id": "cat_clothing",
+            "name": "服装服饰",
+            "slug": "clothing",
+            "description": "男装、女装及配饰",
+            "image": "product-2.jpg"
+        },
+        {
+            "id": "cat_books",
+            "name": "图书音像",
+            "slug": "books",
+            "description": "书籍、音乐和影视产品",
+            "image": "product-3.jpg"
+        }
+    ],
+    "tags": [
+        {"name": "热销", "slug": "hot-sale"},
+        {"name": "新品", "slug": "new-arrival"},
+        {"name": "限时优惠", "slug": "limited-offer"},
+        {"name": "包邮", "slug": "free-shipping"},
+        {"name": "品质保证", "slug": "quality-guaranteed"}
+    ],
+    "attributes": [
+        {
+            "name": "颜色",
+            "slug": "color",
+            "terms": ["红色", "蓝色", "黑色", "白色", "灰色"]
+        },
+        {
+            "name": "尺码",
+            "slug": "size",
+            "terms": ["S", "M", "L", "XL", "XXL"]
+        },
+        {
+            "name": "材质",
+            "slug": "material",
+            "terms": ["纯棉", "涤纶", "羊毛", "真皮", "塑料"]
+        }
+    ],
+    "products": [
+        {
+            "id": "product_1",
+            "name": "智能无线蓝牙耳机",
+            "slug": "wireless-bluetooth-headphones",
+            "type": "simple",
+            "status": "publish",
+            "featured": true,
+            "catalog_visibility": "visible",
+            "description": "<!-- wp:paragraph -->\n<p>这款智能无线蓝牙耳机采用最新蓝牙5.0技术，提供稳定连接和出色音质。主动降噪功能让您沉浸在音乐世界中。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>产品特点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>蓝牙5.0，连接更稳定</li>\n<li>主动降噪，隔绝外界干扰</li>\n<li>30小时超长续航</li>\n<li>舒适佩戴设计</li>\n<li>IPX4防水等级</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>技术规格</h2>\n<!-- /wp:heading -->\n\n<!-- wp:table -->\n<figure class=\"wp-block-table\"><table><tbody><tr><td>蓝牙版本</td><td>5.0</td></tr><tr><td>续航时间</td><td>30小时</td></tr><tr><td>充电时间</td><td>2小时</td></tr><tr><td>频响范围</td><td>20Hz-20kHz</td></tr><tr><td>阻抗</td><td>32Ω</td></tr></tbody></table></figure>\n<!-- /wp:table -->\n\n<!-- wp:heading -->\n<h2>包装清单</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>蓝牙耳机 x 1</li>\n<li>充电盒 x 1</li>\n<li>Type-C充电线 x 1</li>\n<li>耳塞套（S/M/L）x 3对</li>\n<li>说明书 x 1</li>\n</ul>\n<!-- /wp:list -->",
+            "short_description": "蓝牙5.0技术，主动降噪，30小时续航，舒适佩戴，IPX4防水",
+            "regular_price": "599.00",
+            "sale_price": "399.00",
+            "sku": "WBH-001",
+            "stock_quantity": 100,
+            "stock_status": "instock",
+            "manage_stock": true,
+            "low_stock_amount": 10,
+            "sold_individually": false,
+            "weight": "0.25",
+            "dimensions": {
+                "length": "8",
+                "width": "6",
+                "height": "4"
+            },
+            "shipping_class": "standard",
+            "featured_image": "product-1.jpg",
+            "gallery_images": ["product-text-1.png", "product-text-2.png"],
+            "categories": ["electronics"],
+            "tags": ["hot-sale", "new-arrival", "quality-guaranteed"],
+            "attributes": [
+                {
+                    "name": "颜色",
+                    "options": ["黑色", "白色"],
+                    "visible": true,
+                    "variation": false
+                }
+            ],
+            "upsell_ids": ["product_4"],
+            "cross_sell_ids": ["product_4"],
+            "reviews": [
+                {
+                    "reviewer": "张先生",
+                    "reviewer_email": "zhang@example.com",
+                    "rating": 5,
+                    "review": "音质非常棒，降噪效果很好，续航也给力。戴着很舒服，通勤必备！",
+                    "verified": true
+                },
+                {
+                    "reviewer": "李女士",
+                    "reviewer_email": "li@example.com",
+                    "rating": 4,
+                    "review": "整体不错，音质清晰，就是充电盒有点大。",
+                    "verified": true
+                },
+                {
+                    "reviewer": "王同学",
+                    "reviewer_email": "wang@example.com",
+                    "rating": 5,
+                    "review": "性价比超高！比我之前用的贵牌子音质还好，强烈推荐。",
+                    "verified": true
+                }
+            ],
+            "meta": {
+                "_yoast_wpseo_title": "智能无线蓝牙耳机 - 主动降噪30小时续航",
+                "_yoast_wpseo_metadesc": "采用蓝牙5.0技术的智能无线耳机，主动降噪，30小时续航，原价599元现仅售399元。",
+                "_yoast_wpseo_focuskw": "无线蓝牙耳机",
+                "_aioseo_title": "智能无线蓝牙耳机 - 主动降噪30小时续航",
+                "_aioseo_description": "采用蓝牙5.0技术的智能无线耳机，主动降噪，30小时续航。",
+                "rank_math_title": "智能无线蓝牙耳机 - 主动降噪30小时续航",
+                "rank_math_description": "采用蓝牙5.0技术的智能无线耳机，主动降噪，30小时续航。"
+            },
+            "verification": {
+                "title_contains": "智能无线蓝牙耳机",
+                "price_contains": "399",
+                "meta_contains": "主动降噪"
+            }
+        },
+        {
+            "id": "product_2",
+            "name": "经典款男士休闲衬衫",
+            "slug": "classic-mens-casual-shirt",
+            "type": "simple",
+            "status": "publish",
+            "featured": false,
+            "catalog_visibility": "visible",
+            "description": "<!-- wp:paragraph -->\n<p>这款经典男士休闲衬衫采用优质纯棉面料，透气舒适，适合日常穿着和商务场合。精选新疆长绒棉，手感细腻柔软。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>面料特点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>100%新疆长绒棉</li>\n<li>透气吸汗，干爽舒适</li>\n<li>抗皱处理，不易起皱</li>\n<li>环保染料，健康安全</li>\n<li>预缩工艺，不易变形</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>设计亮点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>经典修身版型</li>\n<li>精致纽扣设计</li>\n<li>加固车缝工艺</li>\n<li>隐藏式领撑</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>尺码建议</h2>\n<!-- /wp:heading -->\n\n<!-- wp:table -->\n<figure class=\"wp-block-table\"><table><thead><tr><th>尺码</th><th>胸围</th><th>肩宽</th><th>衣长</th></tr></thead><tbody><tr><td>M</td><td>104</td><td>44</td><td>72</td></tr><tr><td>L</td><td>108</td><td>46</td><td>74</td></tr><tr><td>XL</td><td>112</td><td>48</td><td>76</td></tr><tr><td>XXL</td><td>116</td><td>50</td><td>78</td></tr></tbody></table></figure>\n<!-- /wp:table -->\n\n<!-- wp:paragraph -->\n<p><strong>洗涤说明：</strong>建议30°C以下水温手洗或机洗，避免漂白，中温熨烫，悬挂晾干。</p>\n<!-- /wp:paragraph -->",
+            "short_description": "100%新疆长绒棉，透气舒适，经典百搭款式，商务休闲皆宜",
+            "regular_price": "299.00",
+            "sale_price": "",
+            "sku": "MCS-002",
+            "stock_quantity": 200,
+            "stock_status": "instock",
+            "manage_stock": true,
+            "low_stock_amount": 20,
+            "sold_individually": false,
+            "weight": "0.35",
+            "dimensions": {
+                "length": "35",
+                "width": "25",
+                "height": "3"
+            },
+            "shipping_class": "standard",
+            "featured_image": "product-2.jpg",
+            "gallery_images": ["product-text-2.png", "product-text-3.png"],
+            "categories": ["clothing"],
+            "tags": ["new-arrival", "quality-guaranteed"],
+            "attributes": [
+                {
+                    "name": "颜色",
+                    "options": ["白色", "蓝色", "灰色"],
+                    "visible": true,
+                    "variation": false
+                },
+                {
+                    "name": "尺码",
+                    "options": ["M", "L", "XL", "XXL"],
+                    "visible": true,
+                    "variation": false
+                },
+                {
+                    "name": "材质",
+                    "options": ["纯棉"],
+                    "visible": true,
+                    "variation": false
+                }
+            ],
+            "reviews": [
+                {
+                    "reviewer": "赵经理",
+                    "reviewer_email": "zhao@example.com",
+                    "rating": 5,
+                    "review": "面料很好，穿着舒服，版型也不错。出差必带！",
+                    "verified": true
+                },
+                {
+                    "reviewer": "钱先生",
+                    "reviewer_email": "qian@example.com",
+                    "rating": 4,
+                    "review": "质量不错，就是尺码偏小，建议买大一号。",
+                    "verified": true
+                }
+            ],
+            "meta": {
+                "_yoast_wpseo_title": "经典款男士休闲衬衫 - 100%纯棉透气舒适",
+                "_yoast_wpseo_metadesc": "经典款男士休闲衬衫，100%新疆长绒棉面料，透气舒适，适合日常和商务场合，仅售299元。",
+                "_yoast_wpseo_focuskw": "男士衬衫",
+                "_aioseo_title": "经典款男士休闲衬衫 - 100%纯棉透气舒适",
+                "_aioseo_description": "经典款男士休闲衬衫，100%纯棉面料，透气舒适。",
+                "rank_math_title": "经典款男士休闲衬衫 - 100%纯棉透气舒适",
+                "rank_math_description": "经典款男士休闲衬衫，100%纯棉面料，透气舒适。"
+            },
+            "verification": {
+                "title_contains": "男士休闲衬衫",
+                "price_contains": "299",
+                "meta_contains": "纯棉"
+            }
+        },
+        {
+            "id": "product_3",
+            "name": "Python编程从入门到精通",
+            "slug": "python-programming-book",
+            "type": "simple",
+            "status": "publish",
+            "featured": true,
+            "catalog_visibility": "visible",
+            "virtual": true,
+            "downloadable": false,
+            "description": "<!-- wp:paragraph -->\n<p>这本《Python编程从入门到精通》是Python学习的经典教材，适合零基础读者。本书循序渐进，配有大量实战案例，助您快速掌握Python编程。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>本书特点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>零基础入门友好，无需编程经验</li>\n<li>循序渐进的学习路径</li>\n<li>100+实战案例，边学边练</li>\n<li>覆盖Python 3.11新特性</li>\n<li>配套视频教程和源码</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>内容概要</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>Python环境搭建与基础语法</li>\n<li>数据类型与运算符</li>\n<li>流程控制与函数</li>\n<li>面向对象编程</li>\n<li>文件操作与异常处理</li>\n<li>常用标准库与第三方库</li>\n<li>Web开发入门（Flask/Django）</li>\n<li>数据分析与可视化</li>\n<li>自动化办公实战</li>\n<li>项目实战：爬虫、数据分析、Web应用</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>读者评价</h2>\n<!-- /wp:heading -->\n\n<!-- wp:quote -->\n<blockquote class=\"wp-block-quote\"><p>\"这本书讲解清晰，例子丰富，非常适合自学。跟着书学完后，我成功转行做了Python开发！\"</p><cite>—— 读者 小明</cite></blockquote>\n<!-- /wp:quote -->\n\n<!-- wp:paragraph -->\n<p><strong>作者简介：</strong>张博士，10年Python开发经验，知名技术博主，累计培训学员超过10万人。</p>\n<!-- /wp:paragraph -->",
+            "short_description": "零基础入门，100+实战案例，Python 3.11全覆盖，配套视频和源码",
+            "regular_price": "89.00",
+            "sale_price": "69.00",
+            "sku": "BOOK-PY-001",
+            "stock_quantity": 500,
+            "stock_status": "instock",
+            "manage_stock": true,
+            "low_stock_amount": 50,
+            "weight": "0.8",
+            "dimensions": {
+                "length": "26",
+                "width": "18",
+                "height": "3"
+            },
+            "shipping_class": "free-shipping",
+            "featured_image": "product-3.jpg",
+            "gallery_images": ["product-text-1.png"],
+            "categories": ["books"],
+            "tags": ["hot-sale", "free-shipping", "quality-guaranteed"],
+            "upsell_ids": [],
+            "cross_sell_ids": [],
+            "reviews": [
+                {
+                    "reviewer": "小明",
+                    "reviewer_email": "xiaoming@example.com",
+                    "rating": 5,
+                    "review": "讲解清晰，例子丰富，跟着学完成功转行了！强烈推荐给想学Python的朋友。",
+                    "verified": true
+                },
+                {
+                    "reviewer": "程序员小李",
+                    "reviewer_email": "xiaoli@example.com",
+                    "rating": 5,
+                    "review": "作为参考书也很好，内容全面，查阅方便。",
+                    "verified": true
+                },
+                {
+                    "reviewer": "大学生小王",
+                    "reviewer_email": "xiaowang@example.com",
+                    "rating": 4,
+                    "review": "内容不错，但部分章节略显简单，希望出进阶版。",
+                    "verified": true
+                }
+            ],
+            "meta": {
+                "_yoast_wpseo_title": "Python编程从入门到精通 - 零基础学Python",
+                "_yoast_wpseo_metadesc": "Python编程经典教材，零基础入门，100+实战案例，覆盖Python 3.11，原价89元现售69元包邮。",
+                "_yoast_wpseo_focuskw": "Python编程",
+                "_aioseo_title": "Python编程从入门到精通 - 零基础学Python",
+                "_aioseo_description": "Python编程经典教材，零基础入门，100+实战案例。",
+                "rank_math_title": "Python编程从入门到精通 - 零基础学Python",
+                "rank_math_description": "Python编程经典教材，零基础入门，100+实战案例。"
+            },
+            "verification": {
+                "title_contains": "Python编程",
+                "price_contains": "69",
+                "meta_contains": "零基础"
+            }
+        },
+        {
+            "id": "product_4",
+            "name": "便携式移动电源20000mAh",
+            "slug": "portable-power-bank-20000",
+            "type": "simple",
+            "status": "publish",
+            "featured": true,
+            "catalog_visibility": "visible",
+            "description": "<!-- wp:paragraph -->\n<p>大容量20000mAh移动电源，支持多设备同时充电，快充技术让充电更高效。采用高品质锂聚合物电芯，安全可靠。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>产品亮点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>20000mAh超大容量，手机可充5-6次</li>\n<li>支持QC3.0/PD 22.5W双向快充</li>\n<li>三输出接口，可同时充3台设备</li>\n<li>智能芯片，自动识别设备匹配最佳电流</li>\n<li>LED数显，电量一目了然</li>\n<li>多重安全保护，使用更放心</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>技术规格</h2>\n<!-- /wp:heading -->\n\n<!-- wp:table -->\n<figure class=\"wp-block-table\"><table><tbody><tr><td>电池容量</td><td>20000mAh / 74Wh</td></tr><tr><td>输入接口</td><td>Type-C (18W PD) / Micro USB (12W)</td></tr><tr><td>输出接口</td><td>USB-A x2 (22.5W) + Type-C (20W)</td></tr><tr><td>快充协议</td><td>QC3.0 / PD3.0 / SCP / FCP</td></tr><tr><td>产品尺寸</td><td>150 x 70 x 25 mm</td></tr><tr><td>产品重量</td><td>约420g</td></tr></tbody></table></figure>\n<!-- /wp:table -->\n\n<!-- wp:heading -->\n<h2>安全保护</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>过充保护</li>\n<li>过放保护</li>\n<li>过流保护</li>\n<li>短路保护</li>\n<li>过温保护</li>\n<li>输出过压保护</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>包装清单：</strong>移动电源x1、Type-C充电线x1、说明书x1、保修卡x1</p>\n<!-- /wp:paragraph -->",
+            "short_description": "20000mAh大容量，支持QC3.0/PD快充，三接口输出，LED数显，多重保护",
+            "regular_price": "199.00",
+            "sale_price": "159.00",
+            "sku": "PB-20K-001",
+            "stock_quantity": 150,
+            "stock_status": "instock",
+            "manage_stock": true,
+            "low_stock_amount": 15,
+            "sold_individually": false,
+            "weight": "0.42",
+            "dimensions": {
+                "length": "15",
+                "width": "7",
+                "height": "2.5"
+            },
+            "shipping_class": "standard",
+            "featured_image": "product-1.jpg",
+            "gallery_images": ["product-text-3.png", "product-text-1.png"],
+            "categories": ["electronics"],
+            "tags": ["hot-sale", "limited-offer", "free-shipping"],
+            "attributes": [
+                {
+                    "name": "颜色",
+                    "options": ["黑色", "白色", "蓝色"],
+                    "visible": true,
+                    "variation": false
+                }
+            ],
+            "upsell_ids": ["product_1"],
+            "cross_sell_ids": ["product_1"],
+            "reviews": [
+                {
+                    "reviewer": "出差达人",
+                    "reviewer_email": "traveler@example.com",
+                    "rating": 5,
+                    "review": "容量够大，充电速度快，出差再也不担心手机没电了！",
+                    "verified": true
+                },
+                {
+                    "reviewer": "数码爱好者",
+                    "reviewer_email": "digifan@example.com",
+                    "rating": 5,
+                    "review": "支持的快充协议很全面，iPhone和安卓都能快充，性价比很高。",
+                    "verified": true
+                },
+                {
+                    "reviewer": "户外玩家",
+                    "reviewer_email": "outdoor@example.com",
+                    "rating": 4,
+                    "review": "容量大但也比较重，户外携带稍显不便，但充电效果确实好。",
+                    "verified": true
+                }
+            ],
+            "meta": {
+                "_yoast_wpseo_title": "便携式移动电源20000mAh - 快充大容量",
+                "_yoast_wpseo_metadesc": "20000mAh大容量移动电源，支持QC3.0/PD快充协议，三接口输出，限时特惠159元包邮。",
+                "_yoast_wpseo_focuskw": "移动电源",
+                "_aioseo_title": "便携式移动电源20000mAh - 快充大容量",
+                "_aioseo_description": "20000mAh大容量移动电源，支持QC3.0/PD快充协议。",
+                "rank_math_title": "便携式移动电源20000mAh - 快充大容量",
+                "rank_math_description": "20000mAh大容量移动电源，支持QC3.0/PD快充协议。"
+            },
+            "verification": {
+                "title_contains": "移动电源",
+                "price_contains": "159",
+                "meta_contains": "20000mAh"
+            }
+        }
+    ]
+}

@@ -1,0 +1,180 @@
+{
+    "_meta": {
+        "plugin_slug": "tablepress",
+        "plugin_name": "TablePress",
+        "type": "tables",
+        "generated_at": "2026-01-27 04:51:16"
+    },
+    "tables": [
+        {
+            "name": "课程时间表",
+            "slug": "course-schedule",
+            "description": "课程安排",
+            "columns": [
+                "时间",
+                "周一",
+                "周二",
+                "周三",
+                "周四",
+                "周五"
+            ],
+            "data": [
+                [
+                    "09:00-10:30",
+                    "基础课程",
+                    "-",
+                    "基础课程",
+                    "-",
+                    "基础课程"
+                ],
+                [
+                    "10:45-12:15",
+                    "-",
+                    "进阶课程",
+                    "-",
+                    "进阶课程",
+                    "-"
+                ],
+                [
+                    "14:00-15:30",
+                    "实践课程",
+                    "-",
+                    "实践课程",
+                    "-",
+                    "项目实战"
+                ]
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "课程时间表",
+                "page_slug": "course-schedule"
+            }
+        },
+        {
+            "name": "房产户型参数表",
+            "slug": "property-specs",
+            "description": "户型规格参数",
+            "columns": [
+                "户型",
+                "面积",
+                "卧室",
+                "浴室",
+                "价格区间"
+            ],
+            "data": [
+                [
+                    "一居室",
+                    "45-60㎡",
+                    "1",
+                    "1",
+                    "¥80-120万"
+                ],
+                [
+                    "两居室",
+                    "70-90㎡",
+                    "2",
+                    "1",
+                    "¥150-200万"
+                ],
+                [
+                    "三居室",
+                    "100-130㎡",
+                    "3",
+                    "2",
+                    "¥250-350万"
+                ]
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "户型介绍",
+                "page_slug": "property-types"
+            }
+        },
+        {
+            "name": "产品规格对比表",
+            "slug": "product-comparison",
+            "description": "产品规格对比",
+            "columns": [
+                "特性",
+                "基础版",
+                "专业版",
+                "企业版"
+            ],
+            "data": [
+                [
+                    "价格",
+                    "¥99\/月",
+                    "¥299\/月",
+                    "¥999\/月"
+                ],
+                [
+                    "用户数",
+                    "1人",
+                    "5人",
+                    "无限"
+                ],
+                [
+                    "存储空间",
+                    "10GB",
+                    "100GB",
+                    "1TB"
+                ],
+                [
+                    "技术支持",
+                    "邮件",
+                    "邮件+电话",
+                    "24\/7专属"
+                ]
+            ],
+            "embed_config": {
+                "create_page": true,
+                "page_title": "价格方案",
+                "page_slug": "pricing"
+            }
+        },
+        {
+            "name": "营养成分表",
+            "slug": "nutrition-facts",
+            "description": "食谱营养成分",
+            "columns": [
+                "营养成分",
+                "每份含量",
+                "每日推荐%"
+            ],
+            "data": [
+                [
+                    "热量",
+                    "250卡路里",
+                    "12%"
+                ],
+                [
+                    "蛋白质",
+                    "15g",
+                    "30%"
+                ],
+                [
+                    "碳水化合物",
+                    "30g",
+                    "10%"
+                ],
+                [
+                    "脂肪",
+                    "8g",
+                    "12%"
+                ],
+                [
+                    "膳食纤维",
+                    "5g",
+                    "20%"
+                ]
+            ],
+            "embed_config": {
+                "post_types": [
+                    "cp_recipe"
+                ],
+                "embed_position": "after_content",
+                "target_count": 3
+            }
+        }
+    ]
+}

@@ -1,0 +1,116 @@
+{
+    "_meta": {
+        "plugin_slug": "envira-gallery-lite",
+        "plugin_name": "Envira Gallery",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Envira Gallery seed data for galleries",
+        "note": "Galleries use {{media:filename}} references for images, auto-uploaded from media/ directory.",
+        "fields_source": "v4-scanner (unknown-envira.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "envira": [
+            {
+                "post_title": "Product Showcase Gallery",
+                "post_content": "",
+                "post_excerpt": "Featured products gallery for homepage display.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "_envira_gallery_data": {
+                        "gallery": [
+                            {"id": 1, "src": "{{media:product-1.jpg}}", "title": "Product Showcase 1", "alt": "Featured product image 1"},
+                            {"id": 2, "src": "{{media:product-2.jpg}}", "title": "Product Showcase 2", "alt": "Featured product image 2"},
+                            {"id": 3, "src": "{{media:product-3.jpg}}", "title": "Product Showcase 3", "alt": "Featured product image 3"}
+                        ],
+                        "config": {
+                            "columns": "4",
+                            "gutter": "10",
+                            "margin": "10",
+                            "lightbox": "1",
+                            "lightbox_theme": "base"
+                        }
+                    },
+                    "_envira_gallery_description": "Showcase of our featured products"
+                }
+            },
+            {
+                "post_title": "Team Members Gallery",
+                "post_content": "",
+                "post_excerpt": "Photos of our team members.",
+                "post_status": "publish",
+                "meta": {
+                    "_envira_gallery_data": {
+                        "gallery": [
+                            {"id": 1, "src": "{{media:avatar-1.jpg}}", "title": "Team Member 1", "alt": "Team member photo"},
+                            {"id": 2, "src": "{{media:featured-1.jpg}}", "title": "Team Member 2", "alt": "Team member photo"}
+                        ],
+                        "config": {
+                            "columns": "3",
+                            "lightbox": "1"
+                        }
+                    },
+                    "_envira_gallery_description": "Meet our team"
+                }
+            },
+            {
+                "post_title": "Office Gallery",
+                "post_content": "",
+                "post_excerpt": "Photos of our office spaces.",
+                "post_status": "publish",
+                "meta": {
+                    "_envira_gallery_data": {
+                        "gallery": [
+                            {"id": 1, "src": "{{media:featured-1.jpg}}", "title": "Office Lobby", "alt": "Modern office lobby area"},
+                            {"id": 2, "src": "{{media:featured-2.jpg}}", "title": "Meeting Room", "alt": "Conference meeting room"},
+                            {"id": 3, "src": "{{media:gallery-1.png}}", "title": "Open Workspace", "alt": "Open plan workspace"}
+                        ],
+                        "config": {
+                            "columns": "4",
+                            "lightbox": "1"
+                        }
+                    }
+                }
+            },
+            {
+                "post_title": "Customer Success Stories",
+                "post_content": "",
+                "post_excerpt": "Visual testimonials from customers.",
+                "post_status": "publish",
+                "meta": {
+                    "_envira_gallery_data": {
+                        "gallery": [
+                            {"id": 1, "src": "{{media:product-1.jpg}}", "title": "Client Project A", "alt": "Successful client project showcase"},
+                            {"id": 2, "src": "{{media:product-2.jpg}}", "title": "Client Project B", "alt": "Enterprise solution deployment"}
+                        ],
+                        "config": {
+                            "columns": "2",
+                            "lightbox": "1"
+                        }
+                    }
+                }
+            },
+            {
+                "post_title": "Event Photos 2024",
+                "post_content": "",
+                "post_excerpt": "Photos from our annual conference.",
+                "post_status": "publish",
+                "meta": {
+                    "_envira_gallery_data": {
+                        "gallery": [
+                            {"id": 1, "src": "{{media:featured-1.jpg}}", "title": "Keynote Speech", "alt": "Conference keynote presentation"},
+                            {"id": 2, "src": "{{media:featured-2.jpg}}", "title": "Panel Discussion", "alt": "Expert panel at the conference"},
+                            {"id": 3, "src": "{{media:avatar-1.jpg}}", "title": "Networking Session", "alt": "Attendees networking at the event"},
+                            {"id": 4, "src": "{{media:gallery-1.png}}", "title": "Exhibition Hall", "alt": "Product exhibition area"}
+                        ],
+                        "config": {
+                            "columns": "4",
+                            "lightbox": "1"
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -540,6 +540,23 @@ add_action( 'wptsall_activate', 'wptsall_run_migrations' );
 add_action( 'admin_init', 'wptsall_run_migrations' );
 
 /**
+ * Apply migrations after WordPress replaces plugin files.
+ *
+ * The updater does not fire the activation hook. admin_init covers wp-admin;
+ * this covers the next front-end, cron, or WP-CLI load.
+ *
+ * @return void
+ */
+function wptsall_maybe_upgrade_on_load() {
+	$plugin_version  = defined( 'WPTSALL_VERSION' ) ? WPTSALL_VERSION : '2.1.0';
+	$current_version = (string) get_option( 'wptsall_db_version', '0.0.0' );
+	if ( version_compare( $current_version, $plugin_version, '<' ) ) {
+		wptsall_run_migrations();
+	}
+}
+add_action( 'plugins_loaded', 'wptsall_maybe_upgrade_on_load', 20 );
+
+/**
  * Migrate hooks table to add new fields.
  */
 function wptsall_migrate_hooks_table() {
@@ -830,11 +847,6 @@ function wptsall_migrate_virtual_sites_table_v030() {
 }
 
 /**
- * Get database schema version.
- *
- * @return string Database version.
- */
-/**
  * Migrate to v0.3.1
  *
  * - Create plugin_mappings table
@@ -861,10 +873,6 @@ function wptsall_migrate_to_v031() {
 			'tables_created' => array( 'plugin_mappings' ),
 		)
 	);
-}
-
-function wptsall_get_db_version() {
-	return get_option( 'wptsall_db_version', '0.0.0' );
 }
 
 /**
@@ -1113,20 +1121,6 @@ function wptsall_get_site_theme_info_for_migration( $site_id ) {
 }
 
 /**
- * Check if migrations are needed.
- *
- * @return bool True if migrations needed.
- */
-function wptsall_needs_migration() {
-	$current_version = wptsall_get_db_version();
-	// Same WPTSALL_VERSION rule as wptsall_run_migrations(); the fallback only
-	// covers standalone test harnesses that load this file without the plugin
-	// header.
-	$plugin_version  = defined( 'WPTSALL_VERSION' ) ? WPTSALL_VERSION : '1.1.0';
-	return version_compare( $current_version, $plugin_version, '<' );
-}
-
-/**
  * Migrate to v0.5.0
  *
  * Field mappings and enhanced translation rules:
@@ -1207,11 +1201,6 @@ function wptsall_migrate_translation_rules_table_v050() {
 	}
 }
 
-/**
- * Get migration status.
- *
- * @return array Migration status information.
- */
 /**
  * Migrate to v0.6.0
  *

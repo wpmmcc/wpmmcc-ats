@@ -1,0 +1,11 @@
+{
+  "$id": "wp-virtual-sites-create.response.schema.json",
+  "type": "object",
+  "required": ["success", "site_id"],
+  "properties": {
+    "success": { "const": true },
+    "site_id": { "type": ["integer", "number"] },
+    "message": { "type": "string" }
+  },
+  "additionalProperties": true
+}

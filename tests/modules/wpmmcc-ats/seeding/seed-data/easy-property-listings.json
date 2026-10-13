@@ -1,0 +1,121 @@
+{
+    "_meta": {
+        "plugin_slug": "easy-property-listings",
+        "plugin_name": "Easy Property Listings",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Easy Property Listings seed data for properties",
+        "fields_source": "database query (property meta_keys, property_* prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "property_category": [
+            {"name": "House", "slug": "house"},
+            {"name": "Apartment", "slug": "apartment"},
+            {"name": "Commercial", "slug": "commercial"}
+        ],
+        "property_status": [
+            {"name": "For Sale", "slug": "for-sale"},
+            {"name": "For Rent", "slug": "for-rent"},
+            {"name": "Sold", "slug": "sold"}
+        ]
+    },
+    "posts": {
+        "property": [
+            {
+                "post_title": "Modern Family Home in Sunset District",
+                "post_content": "<p>Beautiful 4-bedroom family home with open floor plan. Recently renovated kitchen with granite countertops and stainless steel appliances.</p><h3>Property Features</h3><ul><li>Spacious backyard with patio</li><li>Two-car garage</li><li>Central air conditioning</li><li>Hardwood floors throughout</li></ul><p>Walking distance to parks and schools.</p>",
+                "post_excerpt": "Spacious 4-bed family home with modern amenities.",
+                "post_status": "publish",
+                "featured_image": "{{media:property-1.jpg}}",
+                "meta": {
+                    "property_price": "750000",
+                    "property_bedrooms": "4",
+                    "property_bathrooms": "3",
+                    "property_garage": "2",
+                    "property_land_area": "6500",
+                    "property_land_area_unit": "sqft",
+                    "property_building_area": "2800",
+                    "property_building_area_unit": "sqft",
+                    "property_year_built": "2015",
+                    "property_address_street": "456 Sunset Boulevard",
+                    "property_address_city": "San Francisco",
+                    "property_address_state": "CA",
+                    "property_address_postal_code": "94122"
+                },
+                "taxonomy": {
+                    "property_category": ["house"],
+                    "property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Downtown Luxury Apartment with City Views",
+                "post_content": "<p>Stunning 2-bedroom apartment in the heart of downtown. Floor-to-ceiling windows with panoramic city views.</p><p>Building amenities include gym, rooftop pool, and 24/7 concierge service.</p>",
+                "post_excerpt": "Luxury apartment with stunning city views.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "3500",
+                    "property_price_type": "per_month",
+                    "property_bedrooms": "2",
+                    "property_bathrooms": "2",
+                    "property_building_area": "1200",
+                    "property_building_area_unit": "sqft"
+                },
+                "taxonomy": {
+                    "property_category": ["apartment"],
+                    "property_status": ["for-rent"]
+                }
+            },
+            {
+                "post_title": "Prime Retail Space - Main Street Location",
+                "post_content": "<p>High-visibility retail space perfect for restaurants or retail stores. Heavy foot traffic area with ample parking.</p>",
+                "post_excerpt": "Prime retail location on Main Street.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "5000",
+                    "property_price_type": "per_month",
+                    "property_building_area": "3000",
+                    "property_building_area_unit": "sqft"
+                },
+                "taxonomy": {
+                    "property_category": ["commercial"],
+                    "property_status": ["for-rent"]
+                }
+            },
+            {
+                "post_title": "Cozy Starter Home - Great Investment",
+                "post_content": "<p>Charming 3-bedroom home perfect for first-time buyers. Updated electrical and plumbing. Large fenced yard.</p>",
+                "post_excerpt": "Affordable starter home with recent updates.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "385000",
+                    "property_bedrooms": "3",
+                    "property_bathrooms": "2",
+                    "property_garage": "1",
+                    "property_land_area": "5000",
+                    "property_land_area_unit": "sqft"
+                },
+                "taxonomy": {
+                    "property_category": ["house"],
+                    "property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Waterfront Condo with Marina Access",
+                "post_content": "<p>Exclusive waterfront living with direct marina access. Perfect for boating enthusiasts.</p>",
+                "post_excerpt": "Waterfront condo with marina access.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "895000",
+                    "property_bedrooms": "3",
+                    "property_bathrooms": "2",
+                    "property_building_area": "1800"
+                },
+                "taxonomy": {
+                    "property_category": ["apartment"],
+                    "property_status": ["for-sale"]
+                }
+            }
+        ]
+    }
+}

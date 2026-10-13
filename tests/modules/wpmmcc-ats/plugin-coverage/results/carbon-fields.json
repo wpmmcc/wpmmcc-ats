@@ -1,0 +1,200 @@
+{
+  "slug": "carbon-fields",
+  "started": "2026-08-13T06:28:11+00:00",
+  "pass": true,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "isolated",
+      "ok": true,
+      "detail": {
+        "file": "carbon-fields/carbon-fields-plugin.php",
+        "active": [
+          "carbon-fields/carbon-fields-plugin.php",
+          "plugin-check/plugin.php",
+          "wpmmcc-ats/wpmmcc-ats.php",
+          "wpmmcc-ats/wptsall.php"
+        ]
+      }
+    },
+    {
+      "name": "post_type_ready",
+      "ok": true,
+      "detail": "post"
+    },
+    {
+      "name": "model_or_overlay",
+      "ok": true,
+      "detail": {
+        "model_id": null,
+        "storage": null
+      }
+    },
+    {
+      "name": "hooks_listen_only",
+      "ok": true,
+      "detail": [
+        "save_post",
+        "added_post_meta",
+        "updated_post_meta",
+        "deleted_post_meta",
+        "set_object_terms",
+        "edit_attachment",
+        "save_post_forum",
+        "delete_post",
+        "trash_post",
+        "save_post_reply",
+        "save_post_topic",
+        "created_term",
+        "edited_term",
+        "delete_term",
+        "save_post_betterdocs_faq",
+        "save_post_docs",
+        "save_post_buddypress",
+        "save_post_download",
+        "save_post_ecwid_menu_item",
+        "save_post_elementor_library",
+        "save_post_e-floating-buttons",
+        "save_post_event",
+        "save_post_wp_log",
+        "save_post__pods_field",
+        "save_post__pods_group",
+        "save_post__pods_pod",
+        "save_post__pods_template",
+        "save_post_spt_shortcodes",
+        "save_post_spt_testimonial",
+        "save_post_spt_testimonial_form",
+        "save_post_site-review",
+        "save_post_wpm-testimonial",
+        "save_post_sc_cart",
+        "save_post_sc_form",
+        "save_post_sc_product",
+        "save_post_um_directory",
+        "save_post_um_form",
+        "save_post_product",
+        "save_post_post",
+        "save_post_page",
+        "save_post_wpcr3_review"
+      ]
+    },
+    {
+      "name": "hooks_bound_post_type",
+      "ok": true,
+      "detail": "save_post_post"
+    },
+    {
+      "name": "create_source",
+      "ok": true,
+      "detail": 962
+    },
+    {
+      "name": "map_virtual",
+      "ok": true,
+      "detail": {
+        "target_id": 963,
+        "is_update": false,
+        "relation_id": 626
+      }
+    },
+    {
+      "name": "map_subsite",
+      "ok": true,
+      "detail": {
+        "target_id": 95,
+        "is_update": false,
+        "relation_id": 627
+      }
+    },
+    {
+      "name": "mapping_row",
+      "ok": true,
+      "detail": {
+        "id": "306",
+        "relation_id": "626",
+        "source_post_id": "962",
+        "source_post_type": "post",
+        "source_site_id": "1",
+        "target_post_id": "963",
+        "target_post_type": "post",
+        "target_site_id": "v_424",
+        "relationship_type": "translation",
+        "needs_resync": "0",
+        "claimed_at": null,
+        "created_at": "2026-08-13 06:28:12",
+        "updated_at": "2026-08-13 06:28:12"
+      }
+    },
+    {
+      "name": "url_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV源 carbon-fields – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_virtual",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV EN carbon-fields – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV SUB carbon-fields – English Subsite"
+      }
+    },
+    {
+      "name": "lang_links_follow",
+      "ok": true,
+      "detail": {
+        "hreflang": true,
+        "switcher": true,
+        "prefix": true
+      }
+    },
+    {
+      "name": "target_plugin_admin_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Post “COV源 carbon-fields” ‹ WPTSALL Blog Lab — WordPress"
+      }
+    },
+    {
+      "name": "target_plugin_admin_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Post “COV SUB carbon-fields” ‹ English Subsite — WordPress"
+      }
+    },
+    {
+      "name": "content_manage_dirty_mark",
+      "ok": true,
+      "detail": {
+        "needs_resync": "1"
+      }
+    }
+  ],
+  "urls": {
+    "source": "http://192.168.1.14:9081/blog/2026/08/13/cov-carbon-fields-83bf56/",
+    "virtual": "http://192.168.1.14:9081/en-us/blog/2026/08/13/cov-carbon-fields-83bf56-en/",
+    "wp": "http://192.168.1.14:9081/en/2026/08/13/cov-carbon-fields-83bf56-sub/"
+  },
+  "ids": {
+    "source": 962,
+    "virtual": 963,
+    "wp": 95,
+    "model": null
+  },
+  "notes": [],
+  "name": "Carbon Fields",
+  "category": "cpt-custom-fields",
+  "post_type": "post",
+  "finished": "2026-08-13T06:28:14+00:00"
+}

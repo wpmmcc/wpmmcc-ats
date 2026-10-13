@@ -1,0 +1,68 @@
+# Phase map for content-plugin-full-chain
+# Scripts are relative to tests/modules/wpmmcc-ats/e2e/ unless absolute.
+
+version: 1
+mock_marker: "【{locale}】…【/{locale}】"
+default_projects:
+  - wptsall-content
+  - woocommerce-content
+
+phases:
+  p0_preflight:
+    title: Preflight (WP + mock + Client)
+    required: true
+    impl: internal  # run-gate.sh checks URLs
+
+  p1_wp_plugins:
+    title: Ensure content plugins installed/active
+    required: false
+    script: ../../../../tests/docker-lab/scripts/install-content-plugins.sh
+    note: Lab Docker install; skip if already provisioned
+
+  p2_wp_wptsall_prep:
+    title: Seed / scan / relations per project
+    required: true
+    script: ../../../../scripts/ensure-plugin-project.sh
+    args_from: project_id
+    note: PHP seed+model+relation; not full native plugin setup wizards
+
+  p3_client_ui:
+    title: Client WebUI Sites → provider → bind → Run Once
+    required: true
+    script: ../client-ui-setup/pre-wp-bind/run-gate.sh
+    env:
+      HEADED: "${HEADED:-0}"
+    note: Pure DOM; credentials from export-site-fixture.sh
+
+  p3b_lab_provider_optional:
+    title: Optional mock provider wizard smoke
+    required: false
+    script: ../run-lab-provider-ui-gate.sh
+    env:
+      LAB_CASES_LIMIT: "${LAB_CASES_LIMIT:-3}"
+
+  p4_translate_slice:
+    title: Per-project automatic mock→writeback slice
+    required: true
+    script: ../run-automatic-plugin-slice.sh
+    args_from: project_id
+    env:
+      WPTSALL_LAB: "1"
+
+  p5_verify_markers:
+    title: Marker precision (display fields only)
+    required: true
+    script: verify/run-marker-check.sh
+    note: Wraps php/verify-markers.php + per-project verifier when available
+
+  p6_verify_front:
+    title: Front multilingual reachability + markers
+    required: true
+    script: verify/run-front-asserts.sh
+    note: HTTP checks; optional journey wave via FULL_CHAIN_JOURNEYS=1
+
+  p7_verify_menu_seo:
+    title: Menu sync + hreflang / SEO surfaces
+    required: false
+    script: ../run-manual-only-multilingual-gate.sh
+    note: Heavy; enable with FULL_CHAIN_MENU_SEO=1

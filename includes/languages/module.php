@@ -22,14 +22,15 @@ class Module {
 	 * Initialize the module.
 	 */
 	public static function init() {
-		// Admin page registration.
-		add_action( 'admin_menu', array( '\\WPTSALL\\Languages\\Admin\\Languages_Page', 'add_menu_page' ), 11 );
+		// Admin page registration is centrally handled by
+		// includes/admin/menu.php (priority 10, same 'wptsall-languages'
+		// slug). ATS-P2-01 (3.8flash): this second add_menu_page hook at
+		// priority 11 registered the same submenu again, rendering two
+		// identical "Languages" entries in the WPTSALL sidebar. Only the
+		// form action handlers and admin-bar switcher are wired here.
 
-		// Form action handlers.
-		$cls = '\\WPTSALL\\Languages\\Admin\\Languages_Page';
-		add_action( 'admin_post_wptsall_language_save',        array( $cls, 'handle_save' ) );
-		add_action( 'admin_post_wptsall_language_delete',      array( $cls, 'handle_delete' ) );
-		add_action( 'admin_post_wptsall_language_set_default', array( $cls, 'handle_set_default' ) );
+		// Form action handlers self-register in Languages_Page::init()
+		// (called from includes/admin/menu.php) — do not duplicate here.
 
 		// P1-4 — Admin bar language switcher (Polylang pattern).
 		add_action( 'admin_bar_menu', array( '\\WPTSALL\\Languages\\Admin\\Admin_Bar_Switcher', 'add_node' ), 100 );

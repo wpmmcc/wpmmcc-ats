@@ -14,7 +14,8 @@
  *
  * Consumers:
  *   - wp wptsall audit list (CLI)
- *   - future admin UI
+ *   - Admin → Logs → Audit trail
+ *   - REST GET /wptsall/v2/admin/audit-logs
  *
  * @package WPTSALL\CLI
  * @since 1.5.0
@@ -35,6 +36,11 @@ class Audit_Log {
 	 * Hook into the common actions that mutate translation state.
 	 */
 	public static function init() {
+		static $done = false;
+		if ( $done ) {
+			return;
+		}
+		$done = true;
 		add_action( 'wptsall_post_mapping_created', array( __CLASS__, 'on_post_mapping_created' ), 10, 3 );
 		add_action( 'wptsall_term_mapping_created', array( __CLASS__, 'on_term_mapping_created' ), 10, 3 );
 		add_action( 'wptsall_url_discovery_bulk', array( __CLASS__, 'on_url_discovery_bulk' ), 10, 3 );

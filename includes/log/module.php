@@ -98,6 +98,25 @@ function init() {
 	if ( wptsall_log_enabled() ) {
 		wptsall_log_retention_tick();
 	}
+
+	require_once __DIR__ . '/class-logs-rest-controller.php';
+	require_once __DIR__ . '/admin/class-logs-page.php';
+	add_action( 'rest_api_init', __NAMESPACE__ . '\register_rest_routes' );
+	add_action( 'admin_menu', array( '\\WPTSALL\\Log\\Admin\\Logs_Page', 'add_menu_page' ), 14 );
+	add_action( 'admin_post_wptsall_clear_audit_logs', array( '\\WPTSALL\\Log\\Admin\\Logs_Page', 'handle_clear_audit' ) );
+}
+
+/**
+ * Register admin logs REST routes.
+ *
+ * @return void
+ */
+function register_rest_routes() {
+	if ( ! class_exists( '\\WPTSALL\\Log\\Logs_REST_Controller' ) ) {
+		return;
+	}
+	$controller = new Logs_REST_Controller();
+	$controller->register_routes();
 }
 add_action( 'plugins_loaded', __NAMESPACE__ . '\init', 1 );
 

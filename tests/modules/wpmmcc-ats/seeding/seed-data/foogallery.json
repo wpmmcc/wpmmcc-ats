@@ -1,0 +1,62 @@
+{
+    "_meta": {
+        "plugin_slug": "foogallery",
+        "plugin_name": "FooGallery",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "FooGallery seed data for galleries",
+        "note": "Galleries require images to be uploaded separately.",
+        "fields_source": "database query (foogallery meta_keys)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "foogallery": [
+            {
+                "post_title": "Nature Photography Collection",
+                "post_content": "",
+                "post_excerpt": "Beautiful nature photography from around the world.",
+                "post_status": "publish",
+                "meta": {
+                    "foogallery_default_gallery_template": "default",
+                    "foogallery_items_count": "0"
+                }
+            },
+            {
+                "post_title": "Portfolio Showcase",
+                "post_content": "",
+                "post_excerpt": "Professional portfolio display gallery.",
+                "post_status": "publish",
+                "meta": {
+                    "foogallery_default_gallery_template": "masonry"
+                }
+            },
+            {
+                "post_title": "Product Images Gallery",
+                "post_content": "",
+                "post_excerpt": "Product photography gallery.",
+                "post_status": "publish",
+                "meta": {
+                    "foogallery_default_gallery_template": "default"
+                }
+            },
+            {
+                "post_title": "Behind the Scenes",
+                "post_content": "",
+                "post_excerpt": "Behind the scenes photography.",
+                "post_status": "publish",
+                "meta": {
+                    "foogallery_default_gallery_template": "default"
+                }
+            },
+            {
+                "post_title": "Travel Memories",
+                "post_content": "",
+                "post_excerpt": "Travel photography from recent trips.",
+                "post_status": "publish",
+                "meta": {
+                    "foogallery_default_gallery_template": "masonry"
+                }
+            }
+        ]
+    }
+}

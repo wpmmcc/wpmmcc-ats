@@ -1,0 +1,17 @@
+{
+  "name": "wptsall-backend-import",
+  "version": "1.0.0",
+  "description": "Playwright scripts for WordPress backend data imports",
+  "scripts": {
+    "install-deps": "npx playwright install chromium",
+    "import:learnpress": "npx playwright test import-learnpress.spec.js",
+    "import:masterstudy": "npx playwright test import-masterstudy.spec.js",
+    "import:buddypress": "npx playwright test import-buddypress.spec.js",
+    "import:academy": "npx playwright test import-academy.spec.js",
+    "import:all": "npx playwright test",
+    "test": "npx playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}

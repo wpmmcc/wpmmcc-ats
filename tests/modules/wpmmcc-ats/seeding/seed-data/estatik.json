@@ -1,0 +1,109 @@
+{
+    "_meta": {
+        "plugin_slug": "estatik",
+        "plugin_name": "Estatik",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "Estatik real estate plugin seed data",
+        "fields_source": "database query (properties meta_keys, property_* prefix)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "es_property_type": [
+            {"name": "Residential", "slug": "residential"},
+            {"name": "Commercial", "slug": "commercial"},
+            {"name": "Land", "slug": "land"}
+        ],
+        "es_property_status": [
+            {"name": "For Sale", "slug": "for-sale"},
+            {"name": "For Rent", "slug": "for-rent"},
+            {"name": "Pending", "slug": "pending"}
+        ]
+    },
+    "posts": {
+        "properties": [
+            {
+                "post_title": "Beachfront Villa with Pool",
+                "post_content": "<p>Stunning 4-bedroom villa directly on the beach. Private pool, tropical garden, and modern amenities.</p>",
+                "post_excerpt": "Luxury beachfront villa with ocean views.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "1850000",
+                    "property_bedrooms": "4",
+                    "property_bathrooms": "3",
+                    "property_area": "3800",
+                    "property_area_unit": "sqft",
+                    "property_address": "100 Ocean Drive, Miami Beach, FL"
+                },
+                "taxonomy": {
+                    "es_property_type": ["residential"],
+                    "es_property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Downtown Office Space",
+                "post_content": "<p>Modern office space in prime downtown location. Open floor plan with conference rooms.</p>",
+                "post_excerpt": "Prime downtown office location.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "8500",
+                    "property_price_text": "/month",
+                    "property_area": "2500"
+                },
+                "taxonomy": {
+                    "es_property_type": ["commercial"],
+                    "es_property_status": ["for-rent"]
+                }
+            },
+            {
+                "post_title": "Development Land - 5 Acres",
+                "post_content": "<p>Prime development land with road access and utilities available.</p>",
+                "post_excerpt": "Development opportunity - 5 acre lot.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "450000",
+                    "property_land_area": "5"
+                },
+                "taxonomy": {
+                    "es_property_type": ["land"],
+                    "es_property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Urban Loft Apartment",
+                "post_content": "<p>Trendy loft-style apartment in converted warehouse. High ceilings and exposed brick.</p>",
+                "post_excerpt": "Industrial chic loft apartment.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "2200",
+                    "property_price_text": "/month",
+                    "property_bedrooms": "1",
+                    "property_bathrooms": "1",
+                    "property_area": "950"
+                },
+                "taxonomy": {
+                    "es_property_type": ["residential"],
+                    "es_property_status": ["for-rent"]
+                }
+            },
+            {
+                "post_title": "Modern Family Home",
+                "post_content": "<p>Spacious 3-bedroom home with updated kitchen and large backyard. Perfect for families.</p>",
+                "post_excerpt": "Family home with modern amenities.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "485000",
+                    "property_bedrooms": "3",
+                    "property_bathrooms": "2",
+                    "property_area": "2200",
+                    "property_year_built": "2018",
+                    "property_address": "456 Oak Street, Austin, TX"
+                },
+                "taxonomy": {
+                    "es_property_type": ["residential"],
+                    "es_property_status": ["for-sale"]
+                }
+            }
+        ]
+    }
+}

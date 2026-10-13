@@ -32,6 +32,82 @@ class Relation_Config_Service {
 	const TEMPLATE_PREFLIGHT_POLICIES = array( 'warn', 'block' );
 
 	/**
+	 * Per-request memo for get() (render-path hot getter).
+	 *
+	 * The admin translation-status hooks resolve per row x per relation and
+	 * re-read the same (relation, post_type) config for every row — measured
+	 * 2026-09-26 on the Lab product list: 440 raw re-reads of the SAME
+	 * (relation, post_type) pair in ONE render (20 rows x 22 relations). PHP
+	 * arrays are copy-on-write, so returning the memoized array stays safe.
+	 * Cleared by flush_runtime_memo(), which save() and delete() here call.
+	 *
+	 * @var array<string,array|null>
+	 */
+	private static $config_memo = array();
+
+	/**
+	 * Per-request bulk map of one relation's full config table slice
+	 * (post_type column value => parsed row), loaded by
+	 * preload_for_relation() and consumed by get().
+	 *
+	 * The admin translation-status walk calls get() once per
+	 * ( rule, relation ) — measured 2026-09-27 on the Lab product list: 720
+	 * single-row fetches per render. A walk that preloads the relation's
+	 * slice answers every per-rule get() from this map instead (0 queries
+	 * per rule). Cleared by flush_runtime_memo().
+	 *
+	 * @var array<int,array<string,array>|null>
+	 */
+	private static $relation_bulk_memo = array();
+
+	/**
+	 * Whether the relation's bulk slice is preloaded this request.
+	 *
+	 * @param int $relation_id Relation ID.
+	 * @return bool
+	 */
+	private static function has_bulk_memo( $relation_id ) {
+		return array_key_exists( (int) $relation_id, self::$relation_bulk_memo );
+	}
+
+	/**
+	 * Load one relation's full config slice into the bulk map (one query).
+	 *
+	 * Callers that will resolve many post types for one relation (the
+	 * option-names walk resolves every rule) preload the slice once and
+	 * get() answers every lookup from memory.
+	 *
+	 * @param int $relation_id Relation ID.
+	 * @return void
+	 */
+	public static function preload_for_relation( $relation_id ) {
+		$relation_id = (int) $relation_id;
+		if ( $relation_id <= 0 || self::has_bulk_memo( $relation_id ) ) {
+			return;
+		}
+
+		// Reserve the slot first so a reentrant call cannot re-query.
+		self::$relation_bulk_memo[ $relation_id ] = array();
+		foreach ( self::get_all_by_relation( $relation_id ) as $row ) {
+			$object_key = (string) ( $row['post_type'] ?? '' );
+			if ( '' === $object_key ) {
+				continue;
+			}
+			self::$relation_bulk_memo[ $relation_id ][ $object_key ] = $row;
+		}
+	}
+
+	/**
+	 * Flush the per-request read memo (call on every config write).
+	 *
+	 * @return void
+	 */
+	private static function flush_runtime_memo() {
+		self::$config_memo        = array();
+		self::$relation_bulk_memo = array();
+	}
+
+	/**
 	 * Allowed relation-level missing-component behaviors.
 	 *
 	 * @var string[]
@@ -64,46 +140,103 @@ class Relation_Config_Service {
 	 * @return array|null Configuration array or null.
 	 */
 	public static function get( $relation_id, $post_type, $data_type = '' ) {
+		$memo_key = (int) $relation_id . ':' . (string) $post_type . ':' . sanitize_key( (string) $data_type );
+		if ( array_key_exists( $memo_key, self::$config_memo ) ) {
+			return self::$config_memo[ $memo_key ];
+		}
+
 		global $wpdb;
-		$table = wptsall_table( 'relation_post_type_configs' );
+		$table      = wptsall_table( 'relation_post_type_configs' );
 		$object_key = self::build_object_key( $post_type, $data_type );
+		$plain_key  = sanitize_key( (string) $post_type );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE relation_id = %d AND post_type = %s',
-				$table,
-				$relation_id,
-				$object_key
-			),
-			ARRAY_A
-		);
+		$already_parsed = false;
+		$plain_result   = null;
 
-		if ( ! $result && '' !== $data_type ) {
+		if ( self::has_bulk_memo( $relation_id ) ) {
+			// A walk preloaded this relation's whole slice (one query) —
+			// answer from the map: composite row first, plain row as the
+			// fallback (identical resolution to the IN() query below).
+			$bulk = self::$relation_bulk_memo[ (int) $relation_id ];
+			if ( '' !== $data_type ) {
+				$result       = $bulk[ $object_key ] ?? null;
+				$plain_result = $bulk[ $plain_key ] ?? null;
+				$result       = $result ? $result : $plain_result;
+			} else {
+				$result = $bulk[ $object_key ] ?? null;
+			}
+			// get_all_by_relation() already decoded these rows.
+			$already_parsed = null !== $result;
+		} elseif ( '' !== $data_type ) {
+			// One round-trip resolves the composite form AND its plain
+			// fallback. The old shape ran two queries (composite, then plain
+			// fallback on miss) — the admin translation-status walk calls
+			// get() once per ( rule, relation ) and each walk re-read the
+			// pair twice: measured 2026-09-27 on the Lab product list, 1,440
+			// queries for ~720 resolved pairs.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT * FROM %i WHERE relation_id = %d AND post_type IN (%s, %s)',
+					$table,
+					$relation_id,
+					$object_key,
+					$plain_key
+				),
+				ARRAY_A
+			);
+			$result = null;
+			foreach ( (array) $rows as $row ) {
+				$row_key = (string) ( $row['post_type'] ?? '' );
+				if ( $row_key === $object_key ) {
+					$result = $row;
+				} elseif ( $row_key === $plain_key ) {
+					$plain_result = $row;
+				}
+			}
+			$result = $result ? $result : $plain_result;
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$result = $wpdb->get_row(
 				$wpdb->prepare(
 					'SELECT * FROM %i WHERE relation_id = %d AND post_type = %s',
 					$table,
 					$relation_id,
-					sanitize_key( (string) $post_type )
+					$object_key
 				),
 				ARRAY_A
 			);
 		}
 
-		if ( $result && ! empty( $result['field_overrides'] ) ) {
-			$result['field_overrides'] = json_decode( $result['field_overrides'], true );
-		}
-		if ( $result && is_array( $result ) ) {
-			if ( ! empty( $result['post_type'] ) && strpos( (string) $result['post_type'], ':' ) !== false ) {
-				$parts = explode( ':', (string) $result['post_type'], 2 );
-				$result['data_type']   = sanitize_key( (string) $parts[0] );
-				$result['object_name'] = sanitize_key( (string) $parts[1] );
-			} else {
-				$result['data_type']   = '';
-				$result['object_name'] = sanitize_key( (string) ( $result['post_type'] ?? '' ) );
+		if ( ! $already_parsed ) {
+			if ( $result && ! empty( $result['field_overrides'] ) ) {
+				$result['field_overrides'] = json_decode( $result['field_overrides'], true );
 			}
-			self::hydrate_special_overrides( $result );
+			if ( $result && is_array( $result ) ) {
+				if ( ! empty( $result['post_type'] ) && strpos( (string) $result['post_type'], ':' ) !== false ) {
+					$parts = explode( ':', (string) $result['post_type'], 2 );
+					$result['data_type']   = sanitize_key( (string) $parts[0] );
+					$result['object_name'] = sanitize_key( (string) $parts[1] );
+				} else {
+					$result['data_type']   = '';
+					$result['object_name'] = sanitize_key( (string) ( $result['post_type'] ?? '' ) );
+				}
+				self::hydrate_special_overrides( $result );
+			}
+		}
+
+		self::$config_memo[ $memo_key ] = $result;
+
+		// The composite-form trip also resolved the plain form's answer (the
+		// plain row itself, or its absence — NOT the composite row, which the
+		// plain form never returns) — memoize both so a sibling data_type
+		// spelling or a plain-form call for the same ( relation, post_type )
+		// never re-queries.
+		if ( '' !== $data_type ) {
+			$plain_memo_key = (int) $relation_id . ':' . (string) $post_type . ':';
+			if ( ! array_key_exists( $plain_memo_key, self::$config_memo ) ) {
+				self::$config_memo[ $plain_memo_key ] = $plain_result;
+			}
 		}
 
 		return $result;
@@ -254,6 +387,8 @@ class Relation_Config_Service {
 			 */
 			do_action( 'wptsall_relation_updated', $relation_id );
 
+			self::flush_runtime_memo();
+
 			return (int) $existing['id'];
 		}
 
@@ -297,6 +432,8 @@ class Relation_Config_Service {
 		 * @param int $relation_id The relation ID.
 		 */
 		do_action( 'wptsall_relation_updated', $relation_id );
+
+		self::flush_runtime_memo();
 
 		return $wpdb->insert_id;
 	}
@@ -436,6 +573,8 @@ class Relation_Config_Service {
 				'post_type'   => $post_type,
 			)
 		);
+
+		self::flush_runtime_memo();
 
 		return true;
 	}

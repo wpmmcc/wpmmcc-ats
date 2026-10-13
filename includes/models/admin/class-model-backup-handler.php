@@ -53,10 +53,20 @@ class Model_Backup_Handler {
 
 		Admin_Page_Helper::render_header(
 			__( 'Models Backup & Restore', 'wpmmcc-ats' ),
-			/* translators: %d: <value> */
-			sprintf( __( 'Server-side JSON export/import of the %d model rows in wp_wptsall_models.', 'wpmmcc-ats' ), $count )
+			'models'
 		);
 		?>
+		<p class="description">
+			<?php
+			/* translators: %d: <value> */
+			echo esc_html( sprintf( __( 'Server-side JSON export/import of the %d model rows in wp_wptsall_models.', 'wpmmcc-ats' ), $count ) );
+			?>
+			<?php
+			// ATS-P2-02 (3.8flash C2): cross-reference the two import surfaces so
+			// the entry-point overlap cannot trap a user on the wrong screen.
+			esc_html_e( 'This page is for whole-table backup/restore; to import a single model go back to Model Management and use its "Import Model" button.', 'wpmmcc-ats' );
+			?>
+		</p>
 		<h2><?php esc_html_e( 'Export', 'wpmmcc-ats' ); ?></h2>
 		<p><?php esc_html_e( 'Download all model rows as a JSON file you can archive or share.', 'wpmmcc-ats' ); ?></p>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">

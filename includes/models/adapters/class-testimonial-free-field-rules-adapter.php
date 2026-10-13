@@ -2,7 +2,7 @@
 /**
  * Testimonial Free field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/testimonial-free.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/testimonial-free.json
  * (fields_source: database query, fields_verified: 2026-01-27).
  *
  * Testimonial Free stores user-submitted testimonial metadata. The

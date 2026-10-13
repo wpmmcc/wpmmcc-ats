@@ -1,0 +1,10 @@
+{
+  "$id": "wp-models-scan.request.schema.json",
+  "type": "object",
+  "required": ["plugin_slug"],
+  "properties": {
+    "plugin_slug": { "type": "string", "minLength": 1 },
+    "save": { "type": ["boolean", "string", "integer", "number"] }
+  },
+  "additionalProperties": true
+}

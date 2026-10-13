@@ -148,22 +148,24 @@ class Translation_Progress_Service {
 	 * @param string $target_lang Target language code.
 	 * @param string $post_type   Optional post type filter.
 	 * @param int    $limit       Max rows (default 200).
+	 * @param int    $offset      Row offset for pagination (default 0; ATS-P2-05 / 3.8flash B4).
 	 * @return array<int, array{ID:int, post_title:string, post_type:string, post_status:string, post_date:string, edit_link:string}>
 	 */
-	public static function pending_for_language( string $target_lang, string $post_type = '', int $limit = 200 ): array {
+	public static function pending_for_language( string $target_lang, string $post_type = '', int $limit = 200, int $offset = 0 ): array {
 		global $wpdb;
 
 		$mappings_table  = function_exists( 'wptsall_table' ) ? wptsall_table( 'post_mappings' ) : $wpdb->prefix . 'wptsall_post_mappings';
 		$relations_table = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
 		$where           = "p.post_status IN ('publish','draft','pending','future','private')
 				  AND p.post_type NOT IN ('revision','attachment','nav_menu_item','custom_css','oembed_cache','user_request','wp_block','wp_font_family','wp_font_face')";
-		// posts, mappings, relations, target_lang, mappings (subquery), [post_type], limit
+		// posts, mappings, relations, target_lang, mappings (subquery), [post_type], limit, offset
 		$params = array( $wpdb->posts, $mappings_table, $relations_table, $target_lang, $mappings_table );
 		if ( '' !== $post_type ) {
 			$where   .= ' AND p.post_type = %s';
 			$params[] = $post_type;
 		}
-		$params[] = $limit;
+		$params[] = max( 1, (int) $limit );
+		$params[] = max( 0, (int) $offset );
 
 		$sql = "SELECT p.ID, p.post_title, p.post_type, p.post_status, p.post_date
 				FROM %i p
@@ -178,7 +180,7 @@ class Translation_Progress_Service {
 				  )
 				  AND {$where}
 				ORDER BY p.post_date DESC
-				LIMIT %d";
+				LIMIT %d OFFSET %d";
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$rows = $wpdb->get_results( $wpdb->prepare( $sql, ...$params ) );
@@ -194,6 +196,47 @@ class Translation_Progress_Service {
 			);
 		}
 		return $out;
+	}
+
+	/**
+	 * Count pending source posts with the same filters as pending_for_language()
+	 * (ATS-P2-05 / 3.8flash B4: the pagination bar needs the FILTERED total).
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $target_lang Target language code.
+	 * @param string $post_type   Optional post type filter.
+	 * @return int
+	 */
+	public static function count_pending_for_language( string $target_lang, string $post_type = '' ): int {
+		global $wpdb;
+
+		$mappings_table  = function_exists( 'wptsall_table' ) ? wptsall_table( 'post_mappings' ) : $wpdb->prefix . 'wptsall_post_mappings';
+		$relations_table = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
+		$where           = "p.post_status IN ('publish','draft','pending','future','private')
+				  AND p.post_type NOT IN ('revision','attachment','nav_menu_item','custom_css','oembed_cache','user_request','wp_block','wp_font_family','wp_font_face')";
+		// posts, mappings, relations, target_lang, mappings (subquery), [post_type]
+		$params = array( $wpdb->posts, $mappings_table, $relations_table, $target_lang, $mappings_table );
+		if ( '' !== $post_type ) {
+			$where   .= ' AND p.post_type = %s';
+			$params[] = $post_type;
+		}
+
+		$sql = "SELECT COUNT(*)
+				FROM %i p
+				LEFT JOIN %i m
+				  ON m.source_post_id = p.ID
+				LEFT JOIN %i r
+				  ON r.id = m.relation_id AND r.target_lang = %s AND r.status = 'active'
+				WHERE r.id IS NULL
+				  AND p.ID NOT IN (
+				      SELECT target_post_id FROM %i
+				      WHERE target_post_id IS NOT NULL AND target_post_id > 0
+				  )
+				  AND {$where}";
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot filtered count for the pagination bar.
+		return (int) $wpdb->get_var( $wpdb->prepare( $sql, ...$params ) );
 	}
 
 	/**

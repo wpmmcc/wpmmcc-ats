@@ -1,0 +1,20 @@
+{
+  "$id": "domain-tokens-upsert.response.schema.json",
+  "type": "object",
+  "required": ["success", "data"],
+  "properties": {
+    "success": { "const": true },
+    "data": {
+      "type": "object",
+      "required": ["api_base_url", "token_prefix", "token_len", "route_secret_set"],
+      "properties": {
+        "api_base_url": { "type": "string", "minLength": 1 },
+        "token_prefix": { "type": "string" },
+        "token_len": { "type": "integer", "minimum": 1 },
+        "route_secret_set": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

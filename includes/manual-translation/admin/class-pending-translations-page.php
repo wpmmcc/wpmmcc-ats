@@ -49,12 +49,23 @@ class Pending_Translations_Page {
 			echo '<div class="notice notice-warning"><p>' . esc_html__( 'No active languages configured. Add languages first.', 'wpmmcc-ats' ) . '</p></div>';
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$target_lang = isset( $_GET['target_lang'] ) ? sanitize_text_field( wp_unslash( $_GET['target_lang'] ) ) : ( $languages[0]['code'] ?? '' );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$post_type   = isset( $_GET['post_type'] ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
+		$list_nonce = isset( $_GET['wptsall_list_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['wptsall_list_nonce'] ) ) : '';
+		$filters_ok = '' !== $list_nonce && false !== wp_verify_nonce( $list_nonce, 'wptsall_pending_list' );
+		$target_lang = ( $filters_ok && isset( $_GET['target_lang'] ) ) ? sanitize_text_field( wp_unslash( $_GET['target_lang'] ) ) : ( $languages[0]['code'] ?? '' );
+		$post_type   = ( $filters_ok && isset( $_GET['post_type'] ) ) ? sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) : '';
 
-		$pending = $target_lang ? Translation_Progress_Service::pending_for_language( $target_lang, $post_type, 500 ) : array();
+		// ATS-P2-05 (3.8flash B4): wire the service's own limit/offset to the
+		// shared pagination bar (the old fixed 500-row window had no pager).
+		$per_page = ( $filters_ok && isset( $_GET['per_page'] ) ) ? max( 1, min( 500, absint( wp_unslash( $_GET['per_page'] ) ) ) ) : 50;
+		$paged    = ( $filters_ok && isset( $_GET['paged'] ) ) ? max( 1, absint( wp_unslash( $_GET['paged'] ) ) ) : 1;
+
+		$total  = $target_lang ? Translation_Progress_Service::count_pending_for_language( $target_lang, $post_type ) : 0;
+		$pending = $target_lang ? Translation_Progress_Service::pending_for_language(
+			$target_lang,
+			$post_type,
+			$per_page,
+			( $paged - 1 ) * $per_page
+		) : array();
 
 		Admin_Page_Helper::render_header(
 			__( 'Pending Translations', 'wpmmcc-ats' ),
@@ -63,6 +74,7 @@ class Pending_Translations_Page {
 		?>
 		<form method="get" style="margin-bottom:12px;">
 			<input type="hidden" name="page" value="<?php echo esc_attr( self::PAGE_SLUG ); ?>">
+			<?php wp_nonce_field( 'wptsall_pending_list', 'wptsall_list_nonce', false ); ?>
 			<label><?php esc_html_e( 'Target language', 'wpmmcc-ats' ); ?>:
 				<select name="target_lang" onchange="this.form.submit()">
 					<?php foreach ( $languages as $lang ) : ?>
@@ -82,8 +94,23 @@ class Pending_Translations_Page {
 			</label>
 		</form>
 
+		<?php
+		// B4: the true FILTERED total + range indicator replaces the old
+		// count($pending) figure, which silently capped at the fetch window.
+		Admin_Page_Helper::render_pagination(
+			$total,
+			$per_page,
+			$paged,
+			self::PAGE_SLUG,
+			array(
+				'target_lang'        => $target_lang,
+				'post_type'          => $post_type,
+				'wptsall_list_nonce' => wp_create_nonce( 'wptsall_pending_list' ),
+			)
+		);
+		?>
 		<p>
-			<strong><?php echo count( $pending ); ?></strong> <?php esc_html_e( 'posts pending translation', 'wpmmcc-ats' ); ?>
+			<strong><?php echo (int) $total; ?></strong> <?php esc_html_e( 'posts pending translation', 'wpmmcc-ats' ); ?>
 			<?php if ( $target_lang ) : ?>
 				<?php esc_html_e( 'into', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $target_lang ); ?></code>
 			<?php endif; ?>

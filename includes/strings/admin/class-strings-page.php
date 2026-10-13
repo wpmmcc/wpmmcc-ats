@@ -68,6 +68,30 @@ class Strings_Page {
 			)
 		);
 
+		// UI-28-01/02: visible feedback for the write paths' redirect flags.
+		$scanned = isset( $_GET['scanned'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$updated = isset( $_GET['updated'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$deleted = isset( $_GET['deleted'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $scanned || $updated || $deleted ) : ?>
+			<div class="notice notice-success is-dismissible"><p>
+				<?php
+				if ( $scanned ) {
+					esc_html_e( 'Scan complete.', 'wpmmcc-ats' );
+				} elseif ( $updated ) {
+					echo esc_html(
+						sprintf(
+							/* translators: %d: number of saved strings. */
+							__( 'Saved translations for %d strings.', 'wpmmcc-ats' ),
+							max( 0, (int) $_GET['updated'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+						)
+					);
+				} else {
+					esc_html_e( 'String deleted.', 'wpmmcc-ats' );
+				}
+				?>
+			</p></div>
+		<?php endif;
+
 		// Register site_title automatically so it shows up.
 		$blogname = get_option( 'blogname' );
 		if ( is_string( $blogname ) && '' !== $blogname ) {
@@ -137,19 +161,40 @@ class Strings_Page {
 						</td>
 						<?php foreach ( $languages as $lang ) : ?>
 							<td>
-								<input type="text" name="rows[<?php echo (int) $r['id']; ?>][tr][<?php echo esc_attr( $lang['code'] ); ?>]" value="<?php echo esc_attr( (string) ( $translations[ $lang['code'] ] ?? '' ) ); ?>" class="regular-text">
+								<?php
+								// UI-28-08: keys saved before the case-preserving fix are
+								// lowercase (sanitize_key side effect) — fall back for them.
+								$tr_val = $translations[ $lang['code'] ] ?? $translations[ strtolower( $lang['code'] ) ] ?? '';
+								?>
+								<input type="text" name="rows[<?php echo (int) $r['id']; ?>][tr][<?php echo esc_attr( $lang['code'] ); ?>]" value="<?php echo esc_attr( (string) $tr_val ); ?>" class="regular-text">
 							</td>
 						<?php endforeach; ?>
 						<td>
 							<span class="wptsall-status-<?php echo esc_attr( $r['status'] ); ?>"><?php echo esc_html( $r['status'] ); ?></span>
 						</td>
+						<?php
+						// UI-28-01: this used to be a nested <form> INSIDE the
+						// outer save form — invalid HTML. The parser drops the
+						// inner <form> tags, so 200 delete action/id hidden
+						// inputs landed inside the save form and PHP's
+						// last-wins duplicate-scalar rule turned EVERY submit
+						// (save or delete) into handle_delete(last row) —
+						// "Save Translations" deleted data. Row action is now
+						// a WP-core style GET link (nonce via wp_nonce_url),
+						// and handle_delete accepts GET.
+						$delete_url = wp_nonce_url(
+							add_query_arg(
+								array(
+									'action' => 'wptsall_string_delete',
+									'id'     => (int) $r['id'],
+								),
+								admin_url( 'admin-post.php' )
+							),
+							self::NONCE_DELETE
+						);
+						?>
 						<td>
-							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('<?php echo esc_js( __( 'Delete this string?', 'wpmmcc-ats' ) ); ?>');">
-								<?php wp_nonce_field( self::NONCE_DELETE ); ?>
-								<input type="hidden" name="action" value="wptsall_string_delete">
-								<input type="hidden" name="id" value="<?php echo (int) $r['id']; ?>">
-								<button class="button button-small" type="submit"><?php esc_html_e( 'Delete', 'wpmmcc-ats' ); ?></button>
-							</form>
+							<a class="button button-small" href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Delete this string?', 'wpmmcc-ats' ) ); ?>');"><?php esc_html_e( 'Delete', 'wpmmcc-ats' ); ?></a>
 						</td>
 					</tr>
 				<?php endforeach; endif; ?>
@@ -182,7 +227,13 @@ class Strings_Page {
 			$tr = isset( $payload['tr'] ) && is_array( $payload['tr'] ) ? $payload['tr'] : array();
 			$clean = array();
 			foreach ( $tr as $code => $txt ) {
-				$safe_code = sanitize_key( (string) $code );
+				// UI-28-08: sanitize_key() lowercases the code (en_US → en_us),
+				// but every reader (this page's render, String_Translation_Service
+				// ::translate(), REST consumers) looks up the Language_Service
+				// code in canonical mixed case — so saved values could never be
+				// displayed or served back. Locale codes are [A-Za-z0-9_-]; keep
+				// the case, drop anything else.
+				$safe_code = preg_match( '/^[A-Za-z0-9_-]{1,20}$/', (string) $code ) ? (string) $code : '';
 				if ( '' === $safe_code ) {
 					continue;
 				}
@@ -201,7 +252,9 @@ class Strings_Page {
 			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
 		}
 		check_admin_referer( self::NONCE_DELETE );
-		String_Translation_Service::delete( (int) ( isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : 0 ) );
+		// UI-28-01: the row Delete control is now a GET link (nonce in URL),
+		// so accept the id from either channel.
+		String_Translation_Service::delete( (int) ( isset( $_REQUEST['id'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['id'] ) ) : 0 ) );
 		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'deleted' => '1' ), admin_url( 'admin.php' ) ) );
 		exit;
 	}

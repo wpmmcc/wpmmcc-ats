@@ -1,0 +1,15 @@
+{
+  "scenario_id": "SCN-GHDEPLOY-REQ-001-BUSINESS",
+  "requirement_id": "REQ-GHDEPLOY-001",
+  "owner": "qa",
+  "layer": "business",
+  "product": "github-deployer",
+  "surface": "product-smoke",
+  "description": "GitHub Deployer 模板签名与计划生成的最小业务场景。",
+  "execution": {
+    "command": "bash tests/modules/wpmmcc-ats/e2e/run-product-smoke.sh --product github-deployer --mode business"
+  },
+  "evidence": {
+    "report_hint": "tests/reports/e2e/wpmmcc-ats/product-smoke-github-deployer-business-*.json"
+  }
+}

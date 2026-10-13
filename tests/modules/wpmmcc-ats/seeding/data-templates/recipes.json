@@ -1,0 +1,147 @@
+{
+    "_meta": {
+        "version": "1.1.0",
+        "description": "食谱类插件数据模板",
+        "post_types": ["cp_recipe", "recipe", "wprm_recipe"],
+        "plugins": ["cooked", "delicious-recipes", "wp-recipe-maker"]
+    },
+    "taxonomies": {
+        "recipe_category": [
+            {"name": "中式菜肴", "slug": "chinese"},
+            {"name": "西式料理", "slug": "western"},
+            {"name": "烘焙甜点", "slug": "baking"},
+            {"name": "快手菜", "slug": "quick-meals"}
+        ],
+        "cuisine_type": [
+            {"name": "川菜", "slug": "sichuan"},
+            {"name": "粤菜", "slug": "cantonese"},
+            {"name": "意大利菜", "slug": "italian"}
+        ]
+    },
+    "cooked": {
+        "recipes": [
+            {
+                "id": "cooked_recipe_1",
+                "title": "麻婆豆腐 - 经典川菜家常做法",
+                "slug": "mapo-tofu-classic",
+                "featured_image": "featured-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>麻婆豆腐是一道经典的川菜，麻辣鲜香，下饭神器。这个食谱是家常版本，简单易做。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>食材准备</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>嫩豆腐 400克</li>\n<li>牛肉末 100克</li>\n<li>豆瓣酱 2勺</li>\n<li>花椒粉 适量</li>\n<li>葱姜蒜 适量</li>\n<li>淀粉水 适量</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>制作步骤</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>豆腐切块，用盐水浸泡10分钟</li>\n<li>热锅凉油，爆香葱姜蒜</li>\n<li>加入牛肉末炒散</li>\n<li>加入豆瓣酱炒出红油</li>\n<li>加入适量清水煮开</li>\n<li>放入豆腐，小火炖5分钟</li>\n<li>勾芡，撒花椒粉出锅</li>\n</ol>\n<!-- /wp:list -->",
+                "excerpt": "经典川菜麻婆豆腐家常做法，麻辣鲜香，20分钟搞定",
+                "status": "publish",
+                "categories": ["chinese"],
+                "meta": {
+                    "_cp_recipe_prep_time": "15",
+                    "_cp_recipe_cook_time": "20",
+                    "_cp_recipe_total_time": "35",
+                    "_cp_recipe_servings": "4",
+                    "_cp_recipe_difficulty": "easy",
+                    "_cp_recipe_calories": "180",
+                    "_yoast_wpseo_title": "麻婆豆腐的做法 - 经典川菜家常版",
+                    "_yoast_wpseo_metadesc": "正宗麻婆豆腐家常做法，麻辣鲜香，准备15分钟烹饪20分钟，简单易学。"
+                },
+                "verification": {
+                    "title_contains": "麻婆豆腐",
+                    "content_contains": "豆瓣酱",
+                    "meta_contains": "川菜"
+                }
+            },
+            {
+                "id": "cooked_recipe_2",
+                "title": "意大利肉酱面 - 正宗博洛尼亚风味",
+                "slug": "spaghetti-bolognese",
+                "featured_image": "featured-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>经典的意大利肉酱面，浓郁的番茄肉酱配上弹牙的意面，一口就让人欲罢不能。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>食材</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>意大利面 200克</li>\n<li>牛肉馅 200克</li>\n<li>番茄罐头 400克</li>\n<li>洋葱 1个</li>\n<li>胡萝卜 1根</li>\n<li>芹菜 2根</li>\n<li>红酒 50ml</li>\n<li>帕玛森奶酪 适量</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "正宗意大利博洛尼亚肉酱面，浓郁番茄肉酱，经典美味",
+                "status": "publish",
+                "categories": ["western"],
+                "meta": {
+                    "_cp_recipe_prep_time": "20",
+                    "_cp_recipe_cook_time": "60",
+                    "_cp_recipe_total_time": "80",
+                    "_cp_recipe_servings": "2",
+                    "_cp_recipe_difficulty": "medium",
+                    "_cp_recipe_calories": "520",
+                    "_yoast_wpseo_title": "意大利肉酱面做法 - 正宗博洛尼亚风味",
+                    "_yoast_wpseo_metadesc": "正宗意大利博洛尼亚肉酱面食谱，浓郁番茄肉酱，详细步骤教程。"
+                },
+                "verification": {
+                    "title_contains": "意大利肉酱面",
+                    "content_contains": "帕玛森",
+                    "meta_contains": "博洛尼亚"
+                }
+            },
+            {
+                "id": "cooked_recipe_3",
+                "title": "柠檬戚风蛋糕 - 清新松软",
+                "slug": "lemon-chiffon-cake",
+                "featured_image": "product-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>柠檬戚风蛋糕，口感轻盈松软，带有清新的柠檬香气，是下午茶的完美选择。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>材料</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>低筋面粉 90克</li>\n<li>鸡蛋 5个</li>\n<li>细砂糖 80克</li>\n<li>植物油 40ml</li>\n<li>柠檬汁 30ml</li>\n<li>柠檬皮屑 1个量</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "清新柠檬戚风蛋糕，松软轻盈，烘焙新手也能做",
+                "status": "publish",
+                "categories": ["baking"],
+                "meta": {
+                    "_cp_recipe_prep_time": "30",
+                    "_cp_recipe_cook_time": "45",
+                    "_cp_recipe_total_time": "75",
+                    "_cp_recipe_servings": "8",
+                    "_cp_recipe_difficulty": "medium",
+                    "_cp_recipe_calories": "220",
+                    "_yoast_wpseo_title": "柠檬戚风蛋糕做法 - 清新松软烘焙教程",
+                    "_yoast_wpseo_metadesc": "柠檬戚风蛋糕烘焙教程，清新柠檬香，松软轻盈，详细步骤讲解。"
+                },
+                "verification": {
+                    "title_contains": "柠檬戚风",
+                    "content_contains": "低筋面粉",
+                    "meta_contains": "烘焙"
+                }
+            }
+        ]
+    },
+    "delicious_recipes": {
+        "recipes": [
+            {
+                "id": "dr_recipe_1",
+                "title": "红烧肉 - 入口即化的经典美味",
+                "slug": "braised-pork-belly",
+                "featured_image": "product-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>红烧肉是中国传统名菜，肥而不腻，入口即化。这个食谱教您做出饭店级别的红烧肉。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "_dr_prep_time": "20",
+                    "_dr_cook_time": "90",
+                    "_dr_servings": "6",
+                    "_yoast_wpseo_title": "红烧肉的做法 - 入口即化经典美味",
+                    "_yoast_wpseo_metadesc": "经典红烧肉家常做法，肥而不腻入口即化，详细教程。"
+                },
+                "verification": {
+                    "title_contains": "红烧肉",
+                    "content_contains": "入口即化"
+                }
+            }
+        ]
+    },
+    "wp_recipe_maker": {
+        "recipes": [
+            {
+                "id": "wprm_recipe_1",
+                "title": "蒜蓉西兰花 - 健康快手菜",
+                "slug": "garlic-broccoli",
+                "featured_image": "product-3.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>蒜蓉西兰花是一道营养丰富的快手菜，5分钟就能上桌，健康又美味。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "wprm_prep_time": "5",
+                    "wprm_cook_time": "5",
+                    "wprm_total_time": "10",
+                    "wprm_servings": "2",
+                    "_yoast_wpseo_title": "蒜蓉西兰花 - 5分钟健康快手菜",
+                    "_yoast_wpseo_metadesc": "蒜蓉西兰花快手菜，5分钟上桌，健康营养。"
+                },
+                "verification": {
+                    "title_contains": "蒜蓉西兰花",
+                    "content_contains": "健康"
+                }
+            }
+        ]
+    }
+}

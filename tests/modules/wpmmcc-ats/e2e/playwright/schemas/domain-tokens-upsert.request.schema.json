@@ -1,0 +1,12 @@
+{
+  "$id": "domain-tokens-upsert.request.schema.json",
+  "type": "object",
+  "required": ["api_base_url", "wp_client_token"],
+  "properties": {
+    "api_base_url": { "type": "string", "minLength": 1 },
+    "wp_client_token": { "type": "string", "minLength": 1 },
+    "route_secret": { "type": "string" },
+    "existing_api_base_url": { "type": "string" }
+  },
+  "additionalProperties": true
+}

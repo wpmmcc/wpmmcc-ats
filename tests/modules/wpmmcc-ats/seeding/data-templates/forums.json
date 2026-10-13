@@ -1,0 +1,582 @@
+{
+    "_meta": {
+        "version": "1.2.0",
+        "description": "论坛类插件数据模板 - BBPress/WPForo/ForumWP/Asgaros（完整版）",
+        "post_types": ["forum", "topic", "reply", "wpforo_post", "fmwp_forum", "fmwp_topic"],
+        "custom_tables": ["asgaros_forum", "asgaros_topic", "asgaros_post"],
+        "plugins": ["bbpress", "wpforo", "forumwp", "asgaros-forum"],
+        "updated": "2026-01-16"
+    },
+    "bbpress": {
+        "forums": [
+            {
+                "id": "forum_general",
+                "title": "综合讨论区",
+                "slug": "general-discussion",
+                "content": "欢迎来到综合讨论区！这里可以讨论任何与技术相关的话题。无论是编程问题、技术分享还是职业发展，都可以在这里交流。",
+                "status": "publish",
+                "order": 1,
+                "meta": {
+                    "_bbp_forum_type": "forum",
+                    "_bbp_status": "open",
+                    "_bbp_forum_subforum_count": "0",
+                    "_bbp_forum_topic_count": "1",
+                    "_bbp_forum_reply_count": "2"
+                },
+                "verification": {
+                    "title_contains": "综合讨论区"
+                }
+            },
+            {
+                "id": "forum_wordpress",
+                "title": "WordPress技术交流",
+                "slug": "wordpress-tech",
+                "content": "WordPress主题、插件、开发技术交流专区。分享您的经验，解决您的问题。涵盖主题开发、插件开发、性能优化、安全防护等话题。",
+                "status": "publish",
+                "order": 2,
+                "meta": {
+                    "_bbp_forum_type": "forum",
+                    "_bbp_status": "open",
+                    "_bbp_forum_subforum_count": "0",
+                    "_bbp_forum_topic_count": "2",
+                    "_bbp_forum_reply_count": "4"
+                },
+                "verification": {
+                    "title_contains": "WordPress技术交流"
+                }
+            },
+            {
+                "id": "forum_help",
+                "title": "新手求助区",
+                "slug": "help-center",
+                "content": "新手问题求助专区，热心会员会帮助解答您的疑问。请在提问时详细描述问题，附上错误信息和已尝试的解决方案。",
+                "status": "publish",
+                "order": 3,
+                "meta": {
+                    "_bbp_forum_type": "forum",
+                    "_bbp_status": "open",
+                    "_bbp_forum_subforum_count": "0",
+                    "_bbp_forum_topic_count": "1",
+                    "_bbp_forum_reply_count": "2"
+                },
+                "verification": {
+                    "title_contains": "新手求助区"
+                }
+            }
+        ],
+        "topics": [
+            {
+                "id": "topic_1",
+                "title": "如何优化WordPress网站加载速度？",
+                "slug": "optimize-wordpress-speed",
+                "content": "<!-- wp:paragraph -->\n<p>大家好！我的WordPress网站加载速度比较慢，首页加载需要5-6秒，想请教一下有哪些优化方法？</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>目前已经做了以下优化：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>安装了WP Super Cache缓存插件</li>\n<li>使用TinyPNG压缩了所有图片</li>\n<li>接入了Cloudflare CDN</li>\n<li>禁用了不必要的插件</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>但效果还是不太理想，用GTmetrix测试评分只有C。求大神指点还有哪些优化空间！</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>环境信息：</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>WordPress 6.4</li>\n<li>PHP 8.1</li>\n<li>主题：flavor Theme</li>\n<li>服务器：阿里云ECS 2核4G</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "forum": "forum_wordpress",
+                "author": "speed_seeker",
+                "sticky": false,
+                "tags": ["wordpress", "性能优化", "网站速度"],
+                "meta": {
+                    "_bbp_topic_type": "normal",
+                    "_bbp_voice_count": "3",
+                    "_bbp_reply_count": "2"
+                },
+                "verification": {
+                    "title_contains": "优化WordPress",
+                    "content_contains": "加载速度"
+                }
+            },
+            {
+                "id": "topic_2",
+                "title": "推荐几款好用的WordPress SEO插件",
+                "slug": "recommend-seo-plugins",
+                "content": "<!-- wp:paragraph -->\n<p>想给公司网站做SEO优化，请问大家有什么好用的SEO插件推荐吗？预算有限，免费版能满足需求最好。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>希望插件具备以下功能：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>关键词密度检测和优化建议</li>\n<li>自动生成XML Sitemap</li>\n<li>社交媒体分享优化（OG标签）</li>\n<li>结构化数据支持（Schema.org）</li>\n<li>301重定向管理</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>目前了解到Yoast SEO和Rank Math比较流行，不知道哪个更适合中文网站？另外All in One SEO怎么样？</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "forum_wordpress",
+                "author": "seo_newbie",
+                "sticky": true,
+                "tags": ["seo", "插件推荐", "网站优化"],
+                "meta": {
+                    "_bbp_topic_type": "sticky",
+                    "_bbp_voice_count": "4",
+                    "_bbp_reply_count": "2"
+                },
+                "verification": {
+                    "title_contains": "SEO插件",
+                    "content_contains": "Sitemap"
+                }
+            },
+            {
+                "id": "topic_3",
+                "title": "新手如何开始学习WordPress开发？",
+                "slug": "learn-wordpress-development",
+                "content": "<!-- wp:paragraph -->\n<p>我是一名前端开发者，有3年工作经验，想学习WordPress插件和主题开发，请问应该从哪里开始？</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>我目前掌握的技术：</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>HTML5 / CSS3 / Sass</li>\n<li>JavaScript / TypeScript / Vue.js</li>\n<li>PHP基础（能看懂代码，写简单功能）</li>\n<li>MySQL基础</li>\n<li>Git版本控制</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p><strong>学习目标：</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>能够独立开发WordPress主题</li>\n<li>能够开发功能性插件</li>\n<li>了解WordPress安全最佳实践</li>\n<li>掌握Gutenberg区块开发</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>希望大家能推荐一些学习资源和路径，书籍、视频教程、博客都可以。非常感谢！</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "forum_help",
+                "author": "frontend_dev",
+                "sticky": false,
+                "tags": ["新手", "学习资源", "开发入门"],
+                "meta": {
+                    "_bbp_topic_type": "normal",
+                    "_bbp_voice_count": "3",
+                    "_bbp_reply_count": "2"
+                },
+                "verification": {
+                    "title_contains": "学习WordPress",
+                    "content_contains": "前端开发者"
+                }
+            }
+        ],
+        "replies": [
+            {
+                "id": "reply_1_1",
+                "content": "<!-- wp:paragraph -->\n<p>关于网站速度优化，我有几点实战经验分享：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>1. 服务器层面</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>升级到PHP 8.2，性能提升明显</li>\n<li>启用OPcache加速PHP执行</li>\n<li>开启Gzip/Brotli压缩</li>\n<li>配置HTTP/2或HTTP/3</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>2. WordPress层面</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>使用轻量级主题，避免过度设计</li>\n<li>禁用wp-cron，改用服务器cron</li>\n<li>清理post revision，限制保存数量</li>\n<li>使用Redis或Memcached对象缓存</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>这些优化做完，我的站从6秒降到了1.5秒，GTmetrix评分A。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "topic_1",
+                "author": "wp_expert",
+                "verification": {
+                    "content_contains": "Gzip"
+                }
+            },
+            {
+                "id": "reply_1_2",
+                "content": "<!-- wp:paragraph -->\n<p>补充楼上的，数据库优化也很重要：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>定期清理transient缓存</li>\n<li>优化数据库表（OPTIMIZE TABLE）</li>\n<li>删除垃圾评论和spam</li>\n<li>清理无用的postmeta</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>推荐使用WP-Optimize插件，一键完成这些操作。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "topic_1",
+                "author": "db_master",
+                "verification": {
+                    "content_contains": "WP-Optimize"
+                }
+            },
+            {
+                "id": "reply_2_1",
+                "content": "<!-- wp:paragraph -->\n<p>SEO插件我推荐<strong>Rank Math</strong>，理由如下：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>免费版功能比Yoast Pro还多</li>\n<li>界面更现代，配置更直观</li>\n<li>内置Schema标记生成器</li>\n<li>支持多关键词优化（免费版5个）</li>\n<li>集成Google Search Console</li>\n<li>中文支持良好</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>我从Yoast迁移到Rank Math一年了，很满意。迁移过程也很简单，有一键导入功能。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "topic_2",
+                "author": "seo_pro",
+                "verification": {
+                    "content_contains": "Rank Math"
+                }
+            },
+            {
+                "id": "reply_2_2",
+                "content": "<!-- wp:paragraph -->\n<p>我来说说Yoast SEO的优势：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>市场占有率最高，生态完善</li>\n<li>文档和教程资源丰富</li>\n<li>更新频繁，稳定性好</li>\n<li>与WooCommerce深度集成</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>如果是企业站，建议Yoast；个人博客，Rank Math性价比更高。All in One SEO也不错，但个人觉得界面不够直观。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "topic_2",
+                "author": "wp_veteran",
+                "verification": {
+                    "content_contains": "Yoast SEO"
+                }
+            },
+            {
+                "id": "reply_3_1",
+                "content": "<!-- wp:paragraph -->\n<p>建议从官方文档开始：<strong>developer.wordpress.org</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>推荐学习路径：</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li><strong>了解WordPress架构</strong> - 理解主题、插件、数据库结构</li>\n<li><strong>掌握Hook机制</strong> - Action和Filter是核心</li>\n<li><strong>从Child Theme开始</strong> - 修改现有主题学习</li>\n<li><strong>开发简单插件</strong> - 从Hello World开始</li>\n<li><strong>学习REST API</strong> - 现代WordPress开发必备</li>\n<li><strong>Gutenberg区块开发</strong> - 使用React开发自定义区块</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>推荐资源：</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>书籍：《Professional WordPress Plugin Development》</li>\n<li>视频：YouTube \"Developer of WordPress\"频道</li>\n<li>博客：developer.wordpress.org/news/</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "topic": "topic_3",
+                "author": "senior_dev",
+                "verification": {
+                    "content_contains": "Hook机制"
+                }
+            },
+            {
+                "id": "reply_3_2",
+                "content": "<!-- wp:paragraph -->\n<p>作为同样是前端转WordPress的过来人，补充几点：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>你的Vue.js经验对Gutenberg开发很有帮助，区块开发用React，但概念相通</li>\n<li>PHP能看懂就够了，边写边学更快</li>\n<li>建议本地搭建开发环境，推荐LocalWP或Docker</li>\n<li>多看优秀插件的源码，如Contact Form 7、WooCommerce</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>有问题随时问，大家都很热心！</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "topic_3",
+                "author": "frontend_wp",
+                "verification": {
+                    "content_contains": "LocalWP"
+                }
+            }
+        ]
+    },
+    "wpforo": {
+        "forums": [
+            {
+                "id": "wpforo_forum_1",
+                "title": "WPForo综合讨论",
+                "slug": "wpforo-general",
+                "content": "使用WPForo论坛插件的综合讨论区。欢迎分享使用经验、提问和建议。",
+                "status": "publish",
+                "order": 1,
+                "icon": "fas fa-comments",
+                "color": "#2196F3",
+                "meta": {
+                    "topics_count": "2",
+                    "posts_count": "4"
+                },
+                "verification": {
+                    "title_contains": "WPForo综合讨论"
+                }
+            },
+            {
+                "id": "wpforo_forum_2",
+                "title": "WPForo问题求助",
+                "slug": "wpforo-help",
+                "content": "WPForo使用问题求助区，发帖请详细描述问题。",
+                "status": "publish",
+                "order": 2,
+                "icon": "fas fa-question-circle",
+                "color": "#FF9800",
+                "meta": {
+                    "topics_count": "1",
+                    "posts_count": "2"
+                },
+                "verification": {
+                    "title_contains": "问题求助"
+                }
+            }
+        ],
+        "topics": [
+            {
+                "id": "wpforo_topic_1",
+                "title": "WPForo论坛如何自定义样式？",
+                "slug": "wpforo-custom-style",
+                "content": "<!-- wp:paragraph -->\n<p>想修改WPForo论坛的默认样式，让它更符合网站整体风格。请问应该如何操作？</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>具体需求：</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>修改主题色为品牌色 #1976D2</li>\n<li>调整帖子列表的行距和字体大小</li>\n<li>自定义用户头像显示样式</li>\n<li>修改按钮样式</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>可以通过CSS覆盖还是需要修改模板文件？有没有推荐的方法？</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "wpforo_forum_1",
+                "author": "design_lover",
+                "views": 156,
+                "likes": 8,
+                "meta": {
+                    "is_sticky": false,
+                    "is_closed": false,
+                    "is_private": false
+                },
+                "verification": {
+                    "title_contains": "自定义样式",
+                    "content_contains": "CSS覆盖"
+                }
+            },
+            {
+                "id": "wpforo_topic_2",
+                "title": "WPForo如何实现用户等级系统？",
+                "slug": "wpforo-user-levels",
+                "content": "<!-- wp:paragraph -->\n<p>想给论坛添加用户等级系统，根据发帖数量和积分显示不同的头衔和徽章。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>例如：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>新手会员：0-10帖</li>\n<li>活跃会员：10-50帖</li>\n<li>资深会员：50-200帖</li>\n<li>版主大大：200帖以上</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>WPForo是否自带这个功能？还是需要额外插件？</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "wpforo_forum_1",
+                "author": "forum_admin",
+                "views": 89,
+                "likes": 5,
+                "meta": {
+                    "is_sticky": true,
+                    "is_closed": false,
+                    "is_private": false
+                },
+                "verification": {
+                    "title_contains": "用户等级",
+                    "content_contains": "发帖数量"
+                }
+            },
+            {
+                "id": "wpforo_topic_3",
+                "title": "WPForo邮件通知不发送的问题",
+                "slug": "wpforo-email-issue",
+                "content": "<!-- wp:paragraph -->\n<p>用户订阅帖子后收不到邮件通知，已经检查过：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>WordPress邮件设置正常，可以发送测试邮件</li>\n<li>WPForo邮件设置已开启</li>\n<li>用户已勾选订阅选项</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>但就是收不到通知邮件，请问还有什么地方需要检查？</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "wpforo_forum_2",
+                "author": "email_trouble",
+                "views": 67,
+                "likes": 2,
+                "meta": {
+                    "is_sticky": false,
+                    "is_closed": false,
+                    "is_private": false
+                },
+                "verification": {
+                    "title_contains": "邮件通知",
+                    "content_contains": "收不到"
+                }
+            }
+        ],
+        "replies": [
+            {
+                "id": "wpforo_reply_1_1",
+                "content": "<!-- wp:paragraph -->\n<p>WPForo支持多种自定义方式：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>方法一：使用内置样式设置</h4>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>后台 > WPForo > Settings > Styles 可以修改颜色、字体等基础样式。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>方法二：自定义CSS</h4>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>在主题的style.css或Customizer的Additional CSS中添加覆盖样式：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:code -->\n<pre class=\"wp-block-code\"><code>#wpforo-wrap {\n  --wpf-color-primary: #1976D2;\n}\n.wpforo-post .wpf-post-content {\n  font-size: 15px;\n  line-height: 1.8;\n}</code></pre>\n<!-- /wp:code -->",
+                "status": "publish",
+                "topic": "wpforo_topic_1",
+                "author": "wpforo_helper",
+                "likes": 12,
+                "verification": {
+                    "content_contains": "自定义CSS"
+                }
+            },
+            {
+                "id": "wpforo_reply_1_2",
+                "content": "<!-- wp:paragraph -->\n<p>如果需要更深度的自定义，可以创建模板覆盖：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>复制 wp-content/plugins/wpforo/wpf-themes/ 到主题目录</li>\n<li>修改对应的PHP模板文件</li>\n<li>WPForo会自动加载主题目录下的模板</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>不过建议先用CSS解决，模板覆盖维护成本较高。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "wpforo_topic_1",
+                "author": "theme_dev",
+                "likes": 6,
+                "verification": {
+                    "content_contains": "模板覆盖"
+                }
+            },
+            {
+                "id": "wpforo_reply_2_1",
+                "content": "<!-- wp:paragraph -->\n<p>WPForo自带用户等级功能！</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>设置路径：WPForo > Members > Reputation</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>可以设置：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>等级名称和图标</li>\n<li>升级所需积分</li>\n<li>发帖、回帖获得的积分</li>\n<li>被点赞获得的积分</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>不需要额外插件，免费版就有这个功能。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "wpforo_topic_2",
+                "author": "wpforo_fan",
+                "likes": 15,
+                "verification": {
+                    "content_contains": "Reputation"
+                }
+            },
+            {
+                "id": "wpforo_reply_3_1",
+                "content": "<!-- wp:paragraph -->\n<p>邮件问题通常出在以下几个地方：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li><strong>SMTP配置</strong> - 建议使用WP Mail SMTP插件配置专业邮件服务</li>\n<li><strong>邮件队列</strong> - WPForo > Tools > Emails 检查队列状态</li>\n<li><strong>Cron任务</strong> - 确保wp-cron正常运行</li>\n<li><strong>垃圾邮件</strong> - 让用户检查垃圾邮件文件夹</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>建议先安装WP Mail SMTP，配置SendGrid或Mailgun，测试邮件发送。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "wpforo_topic_3",
+                "author": "email_expert",
+                "likes": 4,
+                "verification": {
+                    "content_contains": "WP Mail SMTP"
+                }
+            }
+        ]
+    },
+    "forumwp": {
+        "forums": [
+            {
+                "id": "fmwp_forum_1",
+                "title": "ForumWP技术讨论",
+                "slug": "forumwp-tech",
+                "content": "ForumWP插件技术讨论区，分享使用技巧和最佳实践。",
+                "status": "publish",
+                "order": 1,
+                "meta": {
+                    "_fmwp_forum_icon": "dashicons-format-chat",
+                    "_fmwp_forum_color": "#4CAF50"
+                },
+                "verification": {
+                    "title_contains": "ForumWP技术讨论"
+                }
+            },
+            {
+                "id": "fmwp_forum_2",
+                "title": "ForumWP功能建议",
+                "slug": "forumwp-suggestions",
+                "content": "欢迎提交ForumWP功能改进建议和Bug反馈。",
+                "status": "publish",
+                "order": 2,
+                "meta": {
+                    "_fmwp_forum_icon": "dashicons-lightbulb",
+                    "_fmwp_forum_color": "#FF5722"
+                },
+                "verification": {
+                    "title_contains": "功能建议"
+                }
+            }
+        ],
+        "topics": [
+            {
+                "id": "fmwp_topic_1",
+                "title": "ForumWP与其他论坛插件的对比",
+                "slug": "forumwp-comparison",
+                "content": "<!-- wp:paragraph -->\n<p>最近在选择WordPress论坛插件，想了解ForumWP和BBPress、WPForo相比有什么优势？</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>我的需求：</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>简洁现代的UI设计</li>\n<li>良好的移动端体验</li>\n<li>用户声誉系统</li>\n<li>与WooCommerce集成</li>\n<li>易于自定义</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>目前倾向于ForumWP，因为界面看起来比较现代。但不确定功能是否够用，希望有使用经验的朋友分享一下。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "fmwp_forum_1",
+                "author": "forum_seeker",
+                "is_sticky": true,
+                "is_closed": false,
+                "views": 234,
+                "meta": {
+                    "_fmwp_topic_views": "234",
+                    "_fmwp_topic_votes": "12"
+                },
+                "verification": {
+                    "title_contains": "论坛插件的对比",
+                    "content_contains": "BBPress"
+                }
+            },
+            {
+                "id": "fmwp_topic_2",
+                "title": "ForumWP如何设置私密论坛？",
+                "slug": "forumwp-private-forum",
+                "content": "<!-- wp:paragraph -->\n<p>想创建一个仅限VIP会员访问的私密论坛，请问ForumWP如何设置权限？</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>需要实现：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>普通用户看不到私密论坛</li>\n<li>VIP用户可以浏览和发帖</li>\n<li>管理员可以管理所有内容</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "forum": "fmwp_forum_1",
+                "author": "vip_admin",
+                "is_sticky": false,
+                "is_closed": false,
+                "views": 89,
+                "meta": {
+                    "_fmwp_topic_views": "89",
+                    "_fmwp_topic_votes": "5"
+                },
+                "verification": {
+                    "title_contains": "私密论坛",
+                    "content_contains": "VIP会员"
+                }
+            },
+            {
+                "id": "fmwp_topic_3",
+                "title": "建议：增加帖子编辑历史功能",
+                "slug": "forumwp-edit-history",
+                "content": "<!-- wp:paragraph -->\n<p>建议ForumWP增加帖子编辑历史功能：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>记录每次编辑的时间和内容</li>\n<li>显示\"已编辑\"标记</li>\n<li>管理员可以查看编辑历史</li>\n<li>可选择性开启或关闭此功能</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>这个功能对于社区管理很有帮助，可以防止用户修改争议性内容。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "forum": "fmwp_forum_2",
+                "author": "feature_requester",
+                "is_sticky": false,
+                "is_closed": false,
+                "views": 56,
+                "meta": {
+                    "_fmwp_topic_views": "56",
+                    "_fmwp_topic_votes": "18"
+                },
+                "verification": {
+                    "title_contains": "编辑历史",
+                    "content_contains": "记录每次编辑"
+                }
+            }
+        ],
+        "replies": [
+            {
+                "id": "fmwp_reply_1_1",
+                "content": "<!-- wp:paragraph -->\n<p>我用过这三个论坛插件，简单对比一下：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>BBPress</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>优点：官方出品，稳定可靠，与WordPress深度集成</li>\n<li>缺点：功能较基础，界面朴素</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>WPForo</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>优点：功能丰富，多种布局，用户系统完善</li>\n<li>缺点：配置选项多，上手需要时间</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":4} -->\n<h4>ForumWP</h4>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>优点：界面现代，响应式好，配置简单</li>\n<li>缺点：插件较新，生态还在发展中</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>如果追求现代UI和简单配置，ForumWP是不错的选择。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "fmwp_topic_1",
+                "author": "forum_expert",
+                "votes": 15,
+                "verification": {
+                    "content_contains": "BBPress"
+                }
+            },
+            {
+                "id": "fmwp_reply_1_2",
+                "content": "<!-- wp:paragraph -->\n<p>补充一下，ForumWP的WooCommerce集成还不错，可以创建付费论坛和会员专区。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>我用它做了一个付费技术问答社区，效果挺好。移动端体验确实比BBPress好很多。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "fmwp_topic_1",
+                "author": "woo_user",
+                "votes": 8,
+                "verification": {
+                    "content_contains": "WooCommerce"
+                }
+            },
+            {
+                "id": "fmwp_reply_2_1",
+                "content": "<!-- wp:paragraph -->\n<p>ForumWP权限设置很灵活：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>创建论坛时选择\"Private\"类型</li>\n<li>在Access选项中设置可访问的用户角色</li>\n<li>如果用会员插件，选择对应的会员等级</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>也可以配合Restrict Content Pro或MemberPress等会员插件使用，实现更精细的权限控制。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "topic": "fmwp_topic_2",
+                "author": "access_guru",
+                "votes": 6,
+                "verification": {
+                    "content_contains": "Private"
+                }
+            },
+            {
+                "id": "fmwp_reply_3_1",
+                "content": "<!-- wp:paragraph -->\n<p>+1 支持这个建议！编辑历史功能确实很有必要。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>另外建议同时增加：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>编辑时间限制（如发布后30分钟内可编辑）</li>\n<li>编辑次数限制</li>\n<li>管理员强制编辑日志</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "topic": "fmwp_topic_3",
+                "author": "mod_helper",
+                "votes": 9,
+                "verification": {
+                    "content_contains": "编辑时间限制"
+                }
+            }
+        ]
+    },
+    "asgaros": {
+        "_note": "Asgaros Forum 使用自定义表 (wp_forum_*)",
+        "forums": [
+            {
+                "id": "asgaros_forum_1",
+                "name": "技术讨论",
+                "description": "探讨各种技术话题，包括编程、网络、系统管理等。欢迎分享您的技术经验和见解。",
+                "parent": 0,
+                "icon": "fas fa-code",
+                "order": 1,
+                "status": "normal",
+                "verification": {
+                    "name_contains": "技术讨论"
+                }
+            },
+            {
+                "id": "asgaros_forum_2",
+                "name": "WordPress开发",
+                "description": "WordPress主题、插件开发交流区。分享开发技巧、解决方案和最佳实践。",
+                "parent": 0,
+                "icon": "fab fa-wordpress",
+                "order": 2,
+                "status": "normal",
+                "verification": {
+                    "name_contains": "WordPress开发"
+                }
+            },
+            {
+                "id": "asgaros_forum_3",
+                "name": "新手入门",
+                "description": "新手问题求助区，老会员热心解答。请描述清楚您的问题和环境信息。",
+                "parent": 0,
+                "icon": "fas fa-question-circle",
+                "order": 3,
+                "status": "normal",
+                "verification": {
+                    "name_contains": "新手入门"
+                }
+            }
+        ],
+        "topics": [
+            {
+                "id": "asgaros_topic_1",
+                "name": "如何提高PHP代码执行效率？",
+                "text": "最近在优化一个大型PHP项目，发现某些页面响应时间超过3秒。请问有什么通用的PHP性能优化技巧？\n\n目前已知的优化方向：\n1. 使用OPcache\n2. 数据库查询优化\n3. 缓存策略\n\n求更多实战经验分享！",
+                "forum": "asgaros_forum_1",
+                "author_id": 1,
+                "verification": {
+                    "name_contains": "PHP代码执行效率"
+                }
+            },
+            {
+                "id": "asgaros_topic_2",
+                "name": "WordPress REST API最佳实践",
+                "text": "想了解一下大家在使用WordPress REST API时的经验：\n\n1. 如何处理认证和授权？\n2. 性能优化有什么建议？\n3. 版本控制怎么做比较好？\n\n特别是在构建headless WordPress时遇到的问题和解决方案。",
+                "forum": "asgaros_forum_2",
+                "author_id": 1,
+                "verification": {
+                    "name_contains": "REST API最佳实践"
+                }
+            },
+            {
+                "id": "asgaros_topic_3",
+                "name": "新手请教：如何选择合适的主机？",
+                "text": "刚开始学习建站，对于主机选择很迷茫：\n\n1. 共享主机、VPS、云服务器有什么区别？\n2. 国内和国外主机怎么选？\n3. 需要备案吗？\n\n预算有限，希望性价比高一些。谢谢大家！",
+                "forum": "asgaros_forum_3",
+                "author_id": 1,
+                "verification": {
+                    "name_contains": "选择合适的主机"
+                }
+            }
+        ],
+        "posts": [
+            {
+                "id": "asgaros_post_1",
+                "text": "关于PHP性能优化，分享几个实用技巧：\n\n1. **使用更高版本的PHP** - PHP 8.x 比 7.x 快很多\n2. **减少文件I/O** - 合并配置文件，使用内存缓存\n3. **异步处理** - 耗时操作放到队列中\n4. **Profile工具** - 使用Xdebug或Blackfire找出瓶颈\n\n希望对你有帮助！",
+                "topic": "asgaros_topic_1",
+                "author_id": 1,
+                "verification": {
+                    "text_contains": "PHP性能优化"
+                }
+            },
+            {
+                "id": "asgaros_post_2",
+                "text": "REST API认证推荐使用JWT或OAuth 2.0。\n\nJWT的优点是无状态，适合分布式系统。\n\n关于版本控制，可以在URL中加版本号，如：\n`/wp-json/myapi/v1/`\n`/wp-json/myapi/v2/`\n\n这样可以平滑升级API而不影响老客户端。",
+                "topic": "asgaros_topic_2",
+                "author_id": 1,
+                "verification": {
+                    "text_contains": "JWT或OAuth"
+                }
+            },
+            {
+                "id": "asgaros_post_3",
+                "text": "新手建议从共享主机开始，便宜且易管理。\n\n国内用户如果主要面向国内访客，建议选国内主机，速度快但需要备案。面向国外访客可以选香港或新加坡主机，不用备案且速度也不错。\n\n推荐几个性价比高的：阿里云学生机、腾讯云轻量应用服务器。",
+                "topic": "asgaros_topic_3",
+                "author_id": 1,
+                "verification": {
+                    "text_contains": "共享主机开始"
+                }
+            }
+        ]
+    }
+}

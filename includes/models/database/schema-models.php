@@ -391,24 +391,6 @@ function wptsall_translation_rules_table_exists() {
 }
 
 /**
- * Check if plugin mappings table exists
- *
- * @return bool
- */
-function wptsall_plugin_mappings_table_exists() {
-	global $wpdb;
-	$table_name = wptsall_table( 'plugin_mappings' );
-
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$result = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name ) );
-
-	return $result === $table_name;
-}
-
-/**
- * Drop model-related tables (for uninstall only)
- */
-/**
  * Get model statistics
  *
  * @return array
@@ -492,43 +474,6 @@ function wptsall_get_models_stats() {
 }
 
 /**
- * Migration: add usage_status field
- *
- * @return bool Whether migration was executed
- */
-function wptsall_migrate_add_usage_status_field() {
-	global $wpdb;
-
-	$table_name = wptsall_table( 'models' );
-
-	// Check if column already exists
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$column_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM %i LIKE %s', $table_name, 'usage_status' ) );
-
-	if ( $column_exists ) {
-		return false; // Column already exists, no migration needed
-	}
-
-	// Add column
-	wptsall_db_alter_table(
-		$table_name,
-		"ADD COLUMN usage_status VARCHAR(20) DEFAULT 'unused' COMMENT 'Usage status: active=has relation references, unused=no relation references' AFTER status"
-	);
-
-	// Add index
-	wptsall_db_alter_table( $table_name, 'ADD INDEX idx_usage_status (usage_status)' );
-
-	wptsall_log(
-		'database',
-		'info',
-		'Migration: added usage_status field to models table',
-		array( 'table' => $table_name )
-	);
-
-	return true;
-}
-
-/**
  * Create link chains table
  *
  * Stores custom model table association config
@@ -580,12 +525,6 @@ function wptsall_create_link_chains_table() {
 	);
 }
 
-/**
- * Check if link chains table exists
- *
- * @since 0.7.0
- * @return bool
- */
 /**
  * Migration: add source_type field to models table
  *
@@ -801,114 +740,4 @@ function wptsall_migrate_translation_rules_v080() {
 	}
 
 	return $migrated;
-}
-
-/**
- * Migration: add custom_tables field to plugin_mappings table (ISS-MOD-019)
- *
- * Support scanning plugins with custom tables only.
- *
- * @since 0.9.1
- * @return bool Whether migration was executed
- */
-function wptsall_migrate_add_custom_tables_field() {
-	global $wpdb;
-
-	$table_name = wptsall_table( 'plugin_mappings' );
-
-	// Check if table exists
-	if ( ! wptsall_plugin_mappings_table_exists() ) {
-		return false;
-	}
-
-	// Check if column already exists
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$column_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW COLUMNS FROM %i LIKE %s', $table_name, 'custom_tables' ) );
-
-	if ( $column_exists ) {
-		return false; // Column already exists, no migration needed
-	}
-
-	// Add column (after meta_fields)
-	wptsall_db_alter_table(
-		$table_name,
-		"ADD COLUMN custom_tables LONGTEXT COMMENT 'Custom database tables (JSON)' AFTER meta_fields"
-	);
-
-	wptsall_log(
-		'database',
-		'info',
-		'Migration: added custom_tables field to plugin_mappings (ISS-MOD-019)',
-		array( 'table' => $table_name )
-	);
-
-	return true;
-}
-
-/**
- * Migration: add unique key constraint to prevent duplicate rules (ISS-MOD-001)
- *
- * Fix model scanner creating duplicate translation rules.
- * Add unique key constraint: UNIQUE (model_id, data_type, object_name, url_type)
- *
- * @since 0.9.0
- * @return bool Whether migration was executed
- */
-function wptsall_migrate_add_unique_rule_constraint() {
-	global $wpdb;
-
-	$table_name = wptsall_table( 'translation_rules' );
-
-	// Check if table exists
-	if ( ! wptsall_translation_rules_table_exists() ) {
-		return false;
-	}
-
-	// Check if unique key already exists
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$index_exists = $wpdb->get_var(
-			$wpdb->prepare( 'SHOW INDEX FROM %i WHERE Key_name = %s', $table_name, 'unique_rule' )
-		);
-
-	if ( $index_exists ) {
-		return false; // Constraint already exists, no migration needed
-	}
-
-	// Clean up duplicate data before adding unique key constraint
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$duplicates_cleaned = $wpdb->query(
-		$wpdb->prepare(
-			'DELETE t1 FROM %i t1
-			INNER JOIN (
-				SELECT MIN(id) as min_id, model_id, data_type, object_name, url_type
-				FROM %i
-				GROUP BY model_id, data_type, object_name, url_type
-				HAVING COUNT(*) > 1
-			) t2 ON t1.model_id = t2.model_id
-				AND t1.data_type = t2.data_type
-				AND t1.object_name = t2.object_name
-				AND t1.url_type = t2.url_type
-				AND t1.id > t2.min_id',
-			$table_name,
-			$table_name
-		)
-	);
-
-	// Add unique key constraint
-	wptsall_db_alter_table(
-		$table_name,
-		'ADD UNIQUE KEY unique_rule (model_id, data_type, object_name, url_type)'
-	);
-
-	wptsall_log(
-		'database',
-		'info',
-		'Migration: added unique constraint to translation_rules (ISS-MOD-001)',
-		array(
-			'table'              => $table_name,
-			'duplicates_cleaned' => $duplicates_cleaned,
-		)
-	);
-
-	return true;
 }

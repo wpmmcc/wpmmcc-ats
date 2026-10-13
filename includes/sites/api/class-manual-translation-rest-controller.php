@@ -233,19 +233,9 @@ class Manual_Translation_REST_Controller {
 		$relation_id     = $request->get_param( 'relation_id' );
 		$translated_data = $request->get_param( 'translated_data' );
 
-		// Sanitize translated data fields.
-		// The service uses field_config to determine which fields accept user input (translate/compute)
-		// vs which are copied from source (sync). We sanitize all submitted keys here.
-		$sanitized_data = array();
-
-		if ( is_array( $translated_data ) ) {
-			foreach ( $translated_data as $key => $value ) {
-				$safe_key                   = sanitize_key( $key );
-				$sanitized_data[ $safe_key ] = Manual_Content_Service::sanitize_editor_payload_value( $safe_key, $value );
-			}
-		}
-
-		$result = Manual_Content_Service::save_translation( $source_post_id, $relation_id, $sanitized_data );
+		// Authorize against the relation first; only that policy may select a
+		// structured writer. Payload shape and normalized aliases grant no rights.
+		$result = Manual_Content_Service::save_translation( $source_post_id, $relation_id, is_array( $translated_data ) ? $translated_data : array() );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
@@ -270,15 +260,7 @@ class Manual_Translation_REST_Controller {
 		$fields      = $request->get_param( 'fields' );
 		$taxonomies  = $request->get_param( 'taxonomies' );
 
-		// Sanitize field values.
-		$sanitized_fields = array();
-
-		if ( is_array( $fields ) ) {
-			foreach ( $fields as $key => $value ) {
-				$safe_key                      = sanitize_key( $key );
-				$sanitized_fields[ $safe_key ] = Manual_Content_Service::sanitize_editor_payload_value( $safe_key, $value );
-			}
-		}
+		$sanitized_fields = is_array( $fields ) ? $fields : array();
 
 		// Pass taxonomies through if provided.
 		if ( ! empty( $taxonomies ) && is_array( $taxonomies ) ) {
@@ -352,6 +334,16 @@ class Manual_Translation_REST_Controller {
 			$relation = Site_Relation_Service::get_relation( $relation_id );
 			if ( ! $relation ) {
 				return $this->rest_object_not_found( __( 'Site relation does not exist.', 'wpmmcc-ats' ) );
+			}
+			// M-01 (opus5): mirror the service-layer rule — an inactive
+			// relation is not a valid target for manual translation REST
+			// reads or writes; reject with 409 before any handler runs.
+			if ( 'active' !== sanitize_key( (string) ( $relation['status'] ?? '' ) ) ) {
+				return new \WP_Error(
+					'relation_inactive',
+					__( 'Site relation is not active.', 'wpmmcc-ats' ),
+					array( 'status' => 409 )
+				);
 			}
 		}
 

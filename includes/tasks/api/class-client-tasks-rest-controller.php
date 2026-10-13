@@ -55,6 +55,18 @@ class Client_Tasks_REST_Controller {
 	protected $request_id_header = 'X-Request-Id';
 
 	/**
+	 * Run-scoped trace header name (GAP-06 收尾).
+	 *
+	 * Echoed back on client routes so client/WP timelines correlate on one
+	 * run id. Purely diagnostic — unlike the request id there is no
+	 * generated fallback: an absent header means the request ran outside a
+	 * client run (WebUI settings pulls etc.), and nothing is echoed.
+	 *
+	 * @var string
+	 */
+	protected $trace_id_header = 'X-WPTSALL-Trace-Id';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -147,9 +159,13 @@ class Client_Tasks_REST_Controller {
 		}
 
 		$request_id = $this->resolve_request_id( $request );
+		$trace_id   = $this->resolve_trace_id( $request );
 
 		if ( $response instanceof \WP_REST_Response ) {
 			$response->header( $this->request_id_header, $request_id );
+			if ( '' !== $trace_id ) {
+				$response->header( $this->trace_id_header, $trace_id );
+			}
 			return $response;
 		}
 
@@ -160,6 +176,9 @@ class Client_Tasks_REST_Controller {
 					$data = array( 'status' => (int) $data );
 				}
 				$data['request_id'] = $request_id;
+				if ( '' !== $trace_id ) {
+					$data['trace_id'] = $trace_id;
+				}
 				$response->add_data( $data, $code );
 			}
 		}
@@ -225,6 +244,7 @@ class Client_Tasks_REST_Controller {
 			array(
 				'success' => true,
 				'data'    => array(
+					'plugin_identity'        => defined( 'WPMMCC_ATS_IDENTITY' ) ? WPMMCC_ATS_IDENTITY : '',
 					'plugin_version'         => defined( 'WPTSALL_VERSION' ) ? WPTSALL_VERSION : '',
 					'encryption_supported'   => true,
 					'sync_execution_mode'    => $task_params['sync_execution_mode'] ?? 'client',
@@ -3418,6 +3438,26 @@ class Client_Tasks_REST_Controller {
 			return $request_id;
 		}
 		return 'wptreq-' . str_replace( '-', '', wp_generate_uuid4() );
+	}
+
+	/**
+	 * Resolve run trace id from the client's X-WPTSALL-Trace-Id header.
+	 *
+	 * Same validation shape as the request id (printable ASCII, max 128
+	 * chars), but no generated fallback: an empty result means "no run
+	 * context" — nothing is echoed on the response and nothing is attached
+	 * to error data. The client only sends the header while a discovery or
+	 * sync run is active (GAP-06 收尾).
+	 *
+	 * @param \WP_REST_Request $request Request.
+	 * @return string
+	 */
+	private function resolve_trace_id( $request ) {
+		$trace_id = trim( (string) $request->get_header( $this->trace_id_header ) );
+		if ( '' !== $trace_id && strlen( $trace_id ) <= 128 && 1 === preg_match( '/^[\x20-\x7E]+$/', $trace_id ) ) {
+			return $trace_id;
+		}
+		return '';
 	}
 
 	/**

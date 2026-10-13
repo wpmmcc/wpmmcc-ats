@@ -1,0 +1,926 @@
+{
+  "plugin_projects": {
+    "woocommerce-content": {
+      "plugin_slug": "woocommerce",
+      "required_wp_plugins": [
+        "woocommerce"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "woocommerce"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "woocommerce"
+      ],
+      "content_types": [
+        "product"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "serialized_php"
+      ],
+      "seed_expectation": {
+        "post_type": "product",
+        "min": 10
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "product"
+        ],
+        "structured_gate": "serialized_product_attributes",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": true,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "product"
+      },
+      "text_domain": "woocommerce"
+    },
+    "easy-digital-downloads-content": {
+      "plugin_slug": "easy-digital-downloads",
+      "required_wp_plugins": [
+        "easy-digital-downloads"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "easy-digital-downloads"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "easy-digital-downloads"
+      ],
+      "content_types": [
+        "download"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "download",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "download"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "excerpt_ratio_min": 60,
+        "publish_days_min": 15,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "download"
+      },
+      "text_domain": "easy-digital-downloads"
+    },
+    "bbpress-content": {
+      "plugin_slug": "bbpress",
+      "required_wp_plugins": [
+        "bbpress"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "bbpress"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "bbpress"
+      ],
+      "content_types": [
+        "topic"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "topic",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "forum",
+          "topic",
+          "reply"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": false,
+        "excerpt_gate": false,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": true
+      },
+      "verifier": {
+        "source_post_type": "topic"
+      },
+      "text_domain": "bbpress"
+    },
+    "tutor-content": {
+      "plugin_slug": "tutor",
+      "required_wp_plugins": [
+        "tutor"
+      ],
+      "seed_plans": [
+        "B"
+      ],
+      "model_plugins": [
+        "tutor"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "tutor"
+      ],
+      "content_types": [
+        "courses"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "courses",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "courses"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "excerpt_ratio_min": 65,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "courses"
+      },
+      "text_domain": "tutor"
+    },
+    "learnpress-content": {
+      "plugin_slug": "learnpress",
+      "required_wp_plugins": [
+        "learnpress"
+      ],
+      "seed_plans": [
+        "D"
+      ],
+      "model_plugins": [
+        "learnpress"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "learnpress"
+      ],
+      "content_types": [
+        "lp_course"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "lp_course",
+        "min": 3
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "lp_course"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "excerpt_ratio_min": 55,
+        "publish_days_min": 15,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_types": [
+          "lp_course",
+          "lesson",
+          "lp_lesson"
+        ]
+      },
+      "text_domain": "learnpress"
+    },
+    "the-events-calendar-content": {
+      "plugin_slug": "the-events-calendar",
+      "required_wp_plugins": [
+        "the-events-calendar"
+      ],
+      "seed_plans": [
+        "B"
+      ],
+      "model_plugins": [
+        "the-events-calendar"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "the-events-calendar"
+      ],
+      "content_types": [
+        "tribe_events"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "tribe_events",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "tribe_events"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "tribe_events"
+      },
+      "text_domain": "the-events-calendar"
+    },
+    "wp-job-manager-content": {
+      "plugin_slug": "wp-job-manager",
+      "required_wp_plugins": [
+        "wp-job-manager"
+      ],
+      "seed_plans": [
+        "B"
+      ],
+      "model_plugins": [
+        "wp-job-manager"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "wp-job-manager"
+      ],
+      "content_types": [
+        "job_listing"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "job_listing",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "job_listing"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "job_listing"
+      },
+      "text_domain": "wp-job-manager"
+    },
+    "envira-gallery-lite-content": {
+      "plugin_slug": "envira-gallery-lite",
+      "required_wp_plugins": [
+        "envira-gallery-lite"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "envira-gallery-lite"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "envira-gallery-lite"
+      ],
+      "content_types": [
+        "envira"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "serialized_php"
+      ],
+      "seed_expectation": {
+        "post_type": "envira",
+        "min": 3
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "envira"
+        ],
+        "structured_gate": "serialized_envira_gallery",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "envira"
+      },
+      "text_domain": "envira"
+    },
+    "seriously-simple-podcasting-content": {
+      "plugin_slug": "seriously-simple-podcasting",
+      "required_wp_plugins": [
+        "seriously-simple-podcasting"
+      ],
+      "seed_plans": [
+        "B"
+      ],
+      "model_plugins": [
+        "seriously-simple-podcasting"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "seriously-simple-podcasting"
+      ],
+      "content_types": [
+        "podcast"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "podcast",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "podcast"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "podcast"
+      },
+      "text_domain": "seriously-simple-podcasting"
+    },
+    "wp-recipe-maker-content": {
+      "plugin_slug": "wp-recipe-maker",
+      "required_wp_plugins": [
+        "wp-recipe-maker"
+      ],
+      "seed_plans": [
+        "C"
+      ],
+      "model_plugins": [
+        "wp-recipe-maker"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "wp-recipe-maker"
+      ],
+      "content_types": [
+        "wprm_recipe"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "wprm_recipe",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "wprm_recipe"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "wprm_recipe"
+      },
+      "text_domain": "wp-recipe-maker"
+    },
+    "elementor-content": {
+      "plugin_slug": "elementor",
+      "required_wp_plugins": [
+        "elementor"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "elementor"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "elementor"
+      ],
+      "content_types": [
+        "page"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "json_structured"
+      ],
+      "seed_expectation": {
+        "post_type": "elementor_library",
+        "min": 1,
+        "meta_key": "_elementor_data"
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "elementor_library"
+        ],
+        "structured_gate": "elementor_json",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "excerpt_ratio_min": 50,
+        "publish_days_min": 15,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "elementor_library",
+        "source_meta_key": "_elementor_data",
+        "target_meta_keys": [
+          "_elementor_data"
+        ],
+        "target_meta_mode": "json_valid"
+      },
+      "text_domain": "elementor"
+    },
+    "wordpress-seo-content": {
+      "plugin_slug": "wordpress-seo",
+      "required_wp_plugins": [
+        "wordpress-seo"
+      ],
+      "seed_plans": [
+        "C"
+      ],
+      "model_plugins": [],
+      "meta_only_plugins": [
+        "wordpress-seo"
+      ],
+      "model_binding_plugins": [
+        "wordpress-blog"
+      ],
+      "content_types": [
+        "post",
+        "page"
+      ],
+      "required_rule_formats": [
+        "plain_text"
+      ],
+      "seed_expectation": {
+        "post_type": "post",
+        "min": 5,
+        "meta_key": "_yoast_wpseo_metadesc"
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "excerpt_ratio_min": 50,
+        "publish_days_min": 14,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "post",
+        "source_meta_key": "_yoast_wpseo_metadesc",
+        "target_meta_keys": [
+          "_yoast_wpseo_title",
+          "_yoast_wpseo_metadesc"
+        ],
+        "target_meta_mode": "marker",
+        "text_markers": false
+      },
+      "text_domain": "wordpress-seo"
+    },
+    "advanced-custom-fields-content": {
+      "plugin_slug": "advanced-custom-fields",
+      "required_wp_plugins": [
+        "advanced-custom-fields",
+        "woocommerce"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [],
+      "meta_only_plugins": [
+        "advanced-custom-fields"
+      ],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "woocommerce"
+      ],
+      "content_types": [
+        "product"
+      ],
+      "required_rule_formats": [
+        "plain_text"
+      ],
+      "seed_expectation": {
+        "post_type": "product",
+        "min": 1,
+        "meta_key": "brand"
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "product"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "product",
+        "source_meta_key": "brand",
+        "text_markers": false
+      },
+      "text_domain": "acf"
+    },
+    "site-reviews-content": {
+      "plugin_slug": "site-reviews",
+      "required_wp_plugins": [
+        "site-reviews"
+      ],
+      "seed_plans": [
+        "A"
+      ],
+      "model_plugins": [
+        "site-reviews"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "site-reviews"
+      ],
+      "content_types": [
+        "site-review"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "site-review",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "site-review"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": false,
+        "excerpt_gate": false,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "site-review"
+      },
+      "text_domain": "site-reviews"
+    },
+    "give-content": {
+      "plugin_slug": "give",
+      "required_wp_plugins": [
+        "give"
+      ],
+      "seed_plans": [
+        "D"
+      ],
+      "model_plugins": [
+        "give"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "give"
+      ],
+      "content_types": [
+        "give_forms"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "give_forms",
+        "min": 3
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "give_forms"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": false,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "give_forms"
+      },
+      "text_domain": "give"
+    },
+    "directorist-content": {
+      "plugin_slug": "directorist",
+      "required_wp_plugins": [
+        "directorist"
+      ],
+      "seed_plans": [
+        "B"
+      ],
+      "model_plugins": [
+        "directorist"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "directorist"
+      ],
+      "content_types": [
+        "at_biz_dir"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "serialized_php"
+      ],
+      "seed_expectation": {
+        "post_type": "at_biz_dir",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "at_biz_dir"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "at_biz_dir"
+      },
+      "text_domain": "directorist"
+    },
+    "lifterlms-content": {
+      "plugin_slug": "lifterlms",
+      "required_wp_plugins": [
+        "lifterlms"
+      ],
+      "seed_plans": [
+        "D"
+      ],
+      "model_plugins": [
+        "lifterlms"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "lifterlms"
+      ],
+      "content_types": [
+        "course"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "course",
+        "min": 3
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "course"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "course"
+      },
+      "text_domain": "lifterlms"
+    },
+    "events-manager-content": {
+      "plugin_slug": "events-manager",
+      "required_wp_plugins": [
+        "events-manager"
+      ],
+      "seed_plans": [
+        "D"
+      ],
+      "model_plugins": [
+        "events-manager"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "events-manager"
+      ],
+      "content_types": [
+        "event"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html"
+      ],
+      "seed_expectation": {
+        "post_type": "event",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "event",
+          "location"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "event"
+      },
+      "text_domain": "events-manager"
+    },
+    "hivepress-content": {
+      "plugin_slug": "hivepress",
+      "required_wp_plugins": [
+        "hivepress"
+      ],
+      "seed_plans": [
+        "D"
+      ],
+      "model_plugins": [
+        "hivepress"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "hivepress"
+      ],
+      "content_types": [
+        "hp_listing"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "json_structured"
+      ],
+      "seed_expectation": {
+        "post_type": "hp_listing",
+        "min": 5
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page",
+          "hp_listing",
+          "hp_vendor"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false
+      },
+      "verifier": {
+        "source_post_type": "hp_listing"
+      },
+      "text_domain": "hivepress"
+    },
+    "wptsall-content": {
+      "plugin_slug": "wptsall",
+      "required_wp_plugins": [],
+      "seed_plans": [],
+      "model_plugins": [
+        "wptsall"
+      ],
+      "meta_only_plugins": [],
+      "model_binding_plugins": [
+        "wordpress-blog",
+        "wptsall"
+      ],
+      "content_types": [
+        "post",
+        "page",
+        "category",
+        "post_tag",
+        "attachment"
+      ],
+      "required_rule_formats": [
+        "plain_text",
+        "rich_html",
+        "serialized_php",
+        "json_structured"
+      ],
+      "seed_expectation": {
+        "post_type": "post",
+        "min": 10,
+        "core": true
+      },
+      "seed_checks": {
+        "realism_post_types": [
+          "post",
+          "page"
+        ],
+        "structured_gate": "skip",
+        "seo_gate": true,
+        "excerpt_gate": true,
+        "woo_review_gate": false,
+        "bbpress_reply_gate": false,
+        "featured_alt_gate": false,
+        "image_alt_gate": false,
+        "fixture_comments_min": 6
+      },
+      "verifier": {
+        "source_post_type": "post"
+      },
+      "text_domain": "wptsall"
+    }
+  }
+}

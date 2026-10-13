@@ -656,7 +656,7 @@ class Task_Orchestrator {
 
 			// For non-locking mode, update status here.
 			if ( ! $enable_task_locking ) {
-				self::update_task_status( $task_id, 'active', 'worker:' . $worker_id );
+				self::update_task_status( $task_id, Task_Status::ACTIVE, 'worker:' . $worker_id );
 			}
 
 			try {
@@ -684,7 +684,7 @@ class Task_Orchestrator {
 				}
 
 				// Update status to 'completed'.
-				self::update_task_status( $task_id, 'completed' );
+				self::update_task_status( $task_id, Task_Status::COMPLETED );
 				$succeeded++;
 
 				$results[] = array(
@@ -693,8 +693,10 @@ class Task_Orchestrator {
 					'result'  => $sync_result,
 				);
 			} catch ( \Exception $e ) {
-				// Update status to 'error'.
-				self::update_task_status( $task_id, 'error', $e->getMessage() );
+				// Update status to 'error' and count it toward the dead-letter cap:
+				// opus5 A-02 makes 'error' retry-eligible, so the increment must
+				// keep poison tasks from retrying unbounded.
+				self::update_task_status( $task_id, Task_Status::ERROR, $e->getMessage(), true );
 				$failed++;
 
 				wptsall_log_error(
@@ -708,7 +710,7 @@ class Task_Orchestrator {
 
 				$results[] = array(
 					'task_id' => $task_id,
-					'status'  => 'error',
+					'status'  => Task_Status::ERROR,
 					'error'   => $e->getMessage(),
 				);
 			}
@@ -737,30 +739,75 @@ class Task_Orchestrator {
 	 *
 	 * @since 0.9.0
 	 *
-	 * @param int    $task_id     Task ID.
-	 * @param string $status      New status.
-	 * @param string $status_note Optional status note.
+	 * @param int    $task_id        Task ID.
+	 * @param string $status         New status.
+	 * @param string $status_note    Optional status note.
+	 * @param bool   $increment_retry Whether to bump retry_count (opus5 A-02: error writes count toward the dead-letter cap).
 	 * @return bool Success.
 	 */
-	private static function update_task_status( $task_id, $status, $status_note = '' ) {
+	private static function update_task_status( $task_id, $status, $status_note = '', $increment_retry = false ) {
 		global $wpdb;
 		$table = wptsall_table( 'tasks' );
 
-		$data = array(
-			'status'     => $status,
-			'updated_at' => current_time( 'mysql' ),
-		);
-
-		if ( ! empty( $status_note ) ) {
-			$data['status_note'] = $status_note;
+		// opus5 A-02: every orchestrator status write goes through the shared
+		// vocabulary gate; out-of-vocabulary values can no longer land here.
+		if ( ! Task_Status::is_valid( $status ) ) {
+			wptsall_log_error(
+				'tasks-orchestrator',
+				'Invalid task status rejected',
+				array(
+					'task_id' => (int) $task_id,
+					'status'  => (string) $status,
+				)
+			);
+			return false;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		$result = $wpdb->update(
-			$table,
-			$data,
-			array( 'id' => $task_id )
-		);
+		$now = current_time( 'mysql' );
+
+		if ( $increment_retry ) {
+			// Single-statement update so the increment cannot race a concurrent claim.
+			if ( '' !== (string) $status_note ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->query(
+					$wpdb->prepare(
+						'UPDATE %i SET status = %s, updated_at = %s, retry_count = retry_count + 1, status_note = %s WHERE id = %d',
+						$table,
+						$status,
+						$now,
+						$status_note,
+						$task_id
+					)
+				);
+			} else {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+				$result = $wpdb->query(
+					$wpdb->prepare(
+						'UPDATE %i SET status = %s, updated_at = %s, retry_count = retry_count + 1 WHERE id = %d',
+						$table,
+						$status,
+						$now,
+						$task_id
+					)
+				);
+			}
+		} else {
+			$data = array(
+				'status'     => $status,
+				'updated_at' => $now,
+			);
+
+			if ( ! empty( $status_note ) ) {
+				$data['status_note'] = $status_note;
+			}
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$result = $wpdb->update(
+				$table,
+				$data,
+				array( 'id' => $task_id )
+			);
+		}
 
 		// Log status change.
 		if ( false !== $result && function_exists( 'wptsall_log_task_event' ) ) {

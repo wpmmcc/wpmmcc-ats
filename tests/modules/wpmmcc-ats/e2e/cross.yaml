@@ -1,0 +1,76 @@
+# Content × Vendor cross sample table (non-Cartesian)
+# Used by: docs/e2e + run-content-vendor-sample-matrix.sh (planning reference)
+# Lab execute: WPTSALL_LAB=1 bash tests/modules/wpmmcc-ats/e2e/run-content-vendor-sample-matrix.sh --execute-worker --worker-limit 12
+#
+# Strategy: two axes stay decoupled; this file only documents the *sample* edges.
+# Hot-plug examples: tests/docs/e2e/examples/wptsall-field-rules.<slug>.example.json (11)
+# Validate: php tests/modules/wpmmcc-ats/unit/adapters/validate-field-rules-examples.php
+# SOP: tests/docs/e2e/MANUAL-FIELD-RULES-ONBOARDING.md + MANUAL-PROVIDER-ONBOARDING.md
+# Acceptance: tests/docs/e2e/MANUAL-ONBOARDING-ACCEPTANCE.md (Gate A/B/C)
+
+version: 1
+updated: "2026-08-27"
+catalog: tests/infra/fixtures/VENDOR_CATALOG.json
+project_specs: tests/modules/wpmmcc-ats/e2e/project-specs.json
+
+# Signature families → one representative mock template each (worker smoke)
+sign_family_reps:
+  baidu_md5: mock-sign-md5
+  youdao_sha256: mock-sign-sha256
+  hmac_sha256: mock-sign-hmac-sha256
+  oauth_jwt: mock-sign-oauth
+  bearer_v1: official-mock-text-v1
+  openai_compatible: official-mock-v1
+  image: official-mock-image-v1
+  audio: official-mock-audio-v1
+  video: official-mock-video-v1
+  document: official-mock-document-v1
+  structured: official-mock-structured-v1
+
+# Content plugins that lack PHP Field_Rules_Adapter → prefer JSON hot-plug
+# Each slug has tests/docs/e2e/examples/wptsall-field-rules.<slug>.example.json
+json_hotplug_first:
+  - give
+  - directorist
+  - hivepress
+  - lifterlms
+  - bbpress
+  - learnpress
+  - the-events-calendar
+  - wp-job-manager
+  - seriously-simple-podcasting
+  - wp-recipe-maker
+  - easy-digital-downloads
+
+# Bounded worker sample (CT-3 filter by template_id) — proven 2026-08-23: 12/12
+worker_sample_limit_default: 12
+worker_sample_proven:
+  - mock-sign-md5
+  - official-mock-audio-v1
+  - official-mock-document-v1
+  - mock-sign-sha256
+  - mock-sign-oauth
+  - official-mock-image-v1
+  - official-mock-structured-v1
+  - official-mock-text-v1
+  - official-mock-v1
+  - official-mock-v2
+  - official-mock-video-v1
+  - mock-sign-hmac-sha256
+
+# Preflight grid: each content project × 2 priority families (script-generated)
+preflight:
+  priority_families: [baidu_md5, bearer_v1, youdao_sha256, oauth_jwt]
+  formats_from: required_rule_formats
+
+# Parallel channels (do not run two Lab E2E/client jobs at once)
+channels:
+  lab_exclusive: [e2e_lanes, ct3_worker_samples, hotplug_prove]
+  cpu_parallel: [m4_sign_family_smoke, mock_cargo_test, playwright_prefetch]
+
+# Nightly orchestrator
+nightly:
+  entry: tests/modules/wpmmcc-ats/e2e/run-lab-nightly.sh
+  test_id: TEST-LAB-NIGHTLY-001
+  cron_example: tests/docker-lab/scripts/cron-lab-nightly.example
+  gha_workflow: .github/workflows/lab-nightly.yml

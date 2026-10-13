@@ -4,7 +4,7 @@ Tags: multilingual, translation, multisite, virtual-site
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.4
+Stable tag: 2.1.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,30 +18,36 @@ WPMMCC ATS is a multilingual content translation manager for WordPress. It scans
 
 = Project links =
 
-* Project website: https://www.wpmm.cc/
-* Documentation and usage help (English / 简体中文): https://www.wpmm.cc/docs/
+* Website: https://www.wpmm.cc/
+* Documentation: https://www.wpmm.cc/docs/
+* Getting started: https://www.wpmm.cc/docs/getting-started.html
+* Manual translation: https://www.wpmm.cc/docs/manual-translation.html
+* Automatic translation: https://www.wpmm.cc/docs/automatic-translation.html
+* FAQ and privacy: https://www.wpmm.cc/docs/faq.html
 * This plugin on WordPress.org: https://wordpress.org/plugins/wpmmcc-ats/
-* Plugin source code: https://github.com/wpmmcc/wpmmcc-ats
-* Optional companion translation client: https://github.com/wpmmcc/wptsall-client
+* Plugin source: https://github.com/wpmmcc/wpmmcc-ats
+* Optional WPTSALL Client source: https://github.com/wpmmcc/wptsall-client
+* Client releases: https://github.com/wpmmcc/wptsall-client/releases
+* Client guide: https://www.wpmm.cc/docs/client-guide.html
 
 = Key Features =
 
 * **Automatic Field Discovery** — Scans WordPress post types, taxonomies, custom fields, and third-party plugin data (WooCommerce, Elementor, Yoast SEO, ACF, and more) to find all translatable content.
 * **Translation Rule Engine** — Classifies fields into translate, sync, ID-mapping, compute, and skip categories automatically.
 * **Manual Translation Editor** — Two-panel editor in wp-admin: source content on the left, translation input on the right.
-* **Virtual Site System** — Creates language-specific virtual sites with URL prefix routing (e.g., `/en_us/`).
+* **Site relations** — Link a source language to a target language. A virtual site gets its own URL prefix (for example `/en_us/`). A network subsite can be the target as well.
 * **Translation Memory** — Remembers previous translations to suggest matches for repeated content.
 * **Gettext/String Translation** — Translates plugin and theme UI strings via the gettext filter.
-* **Client API** — Provides a REST API for an optional standalone translation client that can automate translation via external APIs.
+* **Client API** — Optional. An administrator can let the separate WPTSALL Client call this site, collect source text, and write translations back. This plugin does not call a translation vendor.
 
 = Optional: Standalone Translation Client =
 
 This plugin can expose a REST API on **your own WordPress site** so an optional standalone translation client (a separate program you install) can pull work and push translations back. The plugin does **not** call www.wpmm.cc or any other remote host for this flow. Communication is only between the client and your site.
 
-* **Client download and documentation**: usage help at https://www.wpmm.cc/docs/, source code at https://github.com/wpmmcc/wptsall-client, signed installers and kits at https://github.com/wpmmcc/wptsall-client-releases
-  * Linux/macOS: [install script](https://github.com/wpmmcc/wptsall-client-releases/raw/main/install.sh) — review it, then run: `bash install.sh` (WebUI) or follow Desktop install notes in the same repository
-  * Windows: [installation guide](https://github.com/wpmmcc/wptsall-client-releases)
-* The client's local web UI listens on 127.0.0.1:8977 by default (loopback only, on the machine where you run the client). The Desktop app listens on 127.0.0.1:8978 and stays on this computer. Port 8977 is unregistered and uncommon, so conflicts are rare; if another program has taken it, the WPTSALL_WEB_UI_PORT environment variable selects a different port for the web UI.
+* Client source: https://github.com/wpmmcc/wptsall-client
+* Client releases: https://github.com/wpmmcc/wptsall-client/releases
+* Client guide: https://www.wpmm.cc/docs/client-guide.html
+* The client's local web UI listens on 127.0.0.1:8977 by default (loopback only, on the machine where you run the client). The Desktop app listens on 127.0.0.1:8978 and stays on this computer. Port 8977 is unregistered and uncommon, so conflicts are rare; if another program has taken it, the WPTSALL_WEB_UI_PORT environment variable selects a different port for the web UI. The same client can also pair with the separate WPMMCC sync plugin. A direct WPMMCC pairing only syncs. When the client pairs those sites, sync_and_translate translates the title, content, and excerpt on the client before the push. WPMMCC does not call the translation vendor.
 
 The client is NOT required. All plugin features work for manual translation without it.
 
@@ -51,8 +57,6 @@ The client is NOT required. All plugin features work for manual translation with
 2. Open the WPTSALL menu in wp-admin. The built-in setup wizard walks you through the initial configuration: content languages, a scan of your content plugins, and your first site relation.
 3. Translate posts in the manual translation editor, entirely inside wp-admin — no external service is needed.
 4. (Optional) For automatic translation, enable the Client API under Task Management → Authorization, install the companion WPTSALL Client, and connect it with the generated client token.
-
-Minimum requirements: WordPress 6.2 or newer, PHP 7.4 or newer.
 
 When you configure the optional client with a third-party translation provider, **the client** (not this plugin) may send content you choose to translate to that provider under your own API keys and account terms.
 
@@ -94,6 +98,16 @@ Yes. Both plugins can be installed on the same site, and they stay separate. WPM
 
 English is built in. This plugin's strings are registered with the WordPress.org translation system (translate.wordpress.org): once the plugin is listed, language packs (starting with Simplified Chinese) install automatically from there when your site language is set under Settings → General. The GitHub source distribution additionally bundles a complete zh_CN translation in its languages/ directory. The plugin never downloads language packs from a third-party server.
 
+= Does this plugin call Google, DeepL, OpenAI, or another translation API? =
+
+No. This plugin has no translation-vendor API key and does not call those services. WordPress.org language packs for the plugin interface, once the plugin is listed, are installed by WordPress itself from translate.wordpress.org. They are not downloaded by this plugin from wpmm.cc.
+
+If you install the optional WPTSALL Client and configure a translation provider there, the client sends the source text for the tasks it claimed to that provider, using the account and API key you entered in the client. That provider's terms and privacy policy apply to that call. The key stays in the client, on the computer where you run it. This plugin does not receive it.
+
+= What data stays on this site? =
+
+Site relations, translation rules, translated posts and terms, translation memory, terminology, language-pack entries, and the client token are stored in this site's database and uploads. They are not sent to wpmm.cc. The optional client receives source content only when it calls this site and an administrator has enabled the Client API. See External services for each route.
+
 = Does the plugin write debug logs? =
 
 No. Debug logging is disabled by default and all features work without any logging. A developer can enable file logging by defining WPTSALL_LOG_ENABLED as true in wp-config.php (minimum level and channel filters: WPTSALL_LOG_LEVEL, WPTSALL_LOG_CHANNELS). Logs are then written to wp-content/uploads/wptsall-logs-<hash>/ — a directory whose suffix is derived from your site's security salts so its name cannot be guessed from outside (WPTSALL_LOG_DIR overrides the location; legacy wptsall-logs/ is moved there automatically) — protected from web access. Credentials are automatically redacted before anything is written, and files older than 30 days are pruned automatically.
@@ -104,12 +118,12 @@ Since 2.1.3, deleting the plugin keeps your translation data (tables, virtual po
 
 == Screenshots ==
 
-1. Translation Dashboard — progress overview per translation layer
-2. Model Management — translatable fields discovered by the content scan
-3. Sites — site relations and language-specific virtual sites
-4. Manual Translation Hub — posts and fields pending translation
-5. Translation Editor — two-panel manual translation inside wp-admin
-6. Task Management — client API authorization for the optional automatic translation client
+1. Models — scan installed plugins and manage translation rules. Nothing is scanned until you start a scan.
+2. Languages — content languages used by site relations.
+3. Sites — virtual sites and network subsites.
+4. Manual Translation — translate posts inside wp-admin. The client is not required.
+5. Tasks — connect the optional WPTSALL Client. There is no license key.
+6. Settings — URL form, the client API switch, and logging. Uninstall keeps translation data unless you opt in to delete it.
 
 == External services ==
 
@@ -133,12 +147,13 @@ Communication happens only when:
 What is **not** done by this plugin:
 * No requests to www.wpmm.cc / wpmm.cc.
 * No download of language packs from any remote host.
-* No transmission of site content to WPMMCC or any translation SaaS.
-* If the optional client (outside this plugin) calls Google Translate, DeepL, or another provider, that is done by the client software with credentials you configure there—not by this plugin.
+* No transmission of site content to WPMMCC or any translation service.
+* This plugin does not call Google, DeepL, OpenAI, or any other translation API. If you configure such a provider in the optional client, that program sends the claimed source text to the endpoint you chose, with the API key you stored in the client. The provider's own terms of service and privacy policy apply to that request. This plugin does not store that API key.
 
-Terms of use / privacy for the optional client product distribution and related documentation (not used as an outbound API by the plugin):
-* Terms of Service: https://www.wpmm.cc/terms
-* Privacy Policy: https://www.wpmm.cc/privacy
+Documentation for the optional client (not called by this plugin):
+* Client guide: https://www.wpmm.cc/docs/client-guide.html
+* FAQ and privacy: https://www.wpmm.cc/docs/faq.html
+* Client source: https://github.com/wpmmcc/wptsall-client
 
 = Client REST API: data sent and received =
 
@@ -198,9 +213,10 @@ This plugin does not contact www.wpmm.cc. It does not download language packs fr
 
 If you use the optional translation client, that program talks only to **your** WordPress site via the Client API above. Any call from the client to a third-party translation provider is configured by you in the client, not by this plugin.
 
-Optional product documentation links (for the separate client distribution, not plugin outbound APIs):
-* Terms of Service: https://www.wpmm.cc/terms
-* Privacy Policy: https://www.wpmm.cc/privacy
+Optional product documentation (not called by this plugin):
+* FAQ and privacy: https://www.wpmm.cc/docs/faq.html
+* Client guide: https://www.wpmm.cc/docs/client-guide.html
+* Client source: https://github.com/wpmmcc/wptsall-client
 
 == Credits ==
 
@@ -211,6 +227,13 @@ Interface translations use the WordPress.org translation system (translate.wordp
 For field discovery the plugin reads data from third-party content plugins — WooCommerce, Elementor, ACF, Yoast SEO and more. Those projects are not bundled or modified. The plugin coexists with the multilingual plugins WPML and Polylang; no code from either project is used.
 
 == Changelog ==
+
+= 2.1.10 =
+* Changed: Directory listing describes the current free translation plugin, with screenshots of the WPTSALL admin screens and links to https://www.wpmm.cc/ and the WPTSALL Client on GitHub.
+
+= 2.1.9 =
+* Changed: Release version is 2.1.9, the same number as the WPMMCC sync plugin.
+* Changed: A normal file update from 2.1.4 applies database migrations on the next load, without deactivating the plugin.
 
 = 2.1.4 =
 * Added: Companion client uninstallers (Linux, macOS, Windows) remove the service, shortcuts and PATH entries cleanly; client data is kept by default and removed only with an explicit purge option.

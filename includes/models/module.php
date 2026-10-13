@@ -39,6 +39,13 @@ class Module {
 
 		// Register REST API routes
 		add_action( 'rest_api_init', array( __CLASS__, 'register_rest_routes' ) );
+
+		// UI-28-06: #wptsall-rule-edit-form posts action=wptsall_save_rule
+		// when its AJAX interceptor (field-configurator.js) fails to load.
+		// The action was never registered anywhere, so that fallback was a
+		// silent no-op (POST discarded, page re-rendered). The fallback
+		// handler now bounces back with an explicit notice instead.
+		add_action( 'admin_post_wptsall_save_rule', array( '\\WPTSALL\\Models\\Admin\\Model_Editor_Page', 'handle_save_rule_fallback' ) );
 	}
 
 	/**

@@ -65,7 +65,12 @@ class Dashboard_Page {
 
 		Admin_Page_Helper::render_header(
 			__( 'Translation Dashboard', 'wpmmcc-ats' ),
-			__( 'Progress by language / post type and mappings marked needs_resync.', 'wpmmcc-ats' )
+			// AR-01: declare the stats scope — dual-plugin sites have two
+			// independent multilingual systems; this panel counts only ours.
+			__(
+				'Progress by language / post type and mappings marked needs_resync. Stats count only the wpmmcc-ats channel — translations synced by the separate WPMMCC plugin are tracked by that plugin, not here.',
+				'wpmmcc-ats'
+			)
 		);
 		?>
 		<div class="wptsall-dashboard" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:12px 0 20px;">

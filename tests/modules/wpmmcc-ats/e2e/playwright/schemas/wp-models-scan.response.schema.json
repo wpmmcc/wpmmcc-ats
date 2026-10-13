@@ -1,0 +1,12 @@
+{
+  "$id": "wp-models-scan.response.schema.json",
+  "type": "object",
+  "properties": {
+    "success": { "type": "boolean" },
+    "result": { "type": ["object", "array", "null"] },
+    "warning": { "type": "string" },
+    "model_id": { "type": ["integer", "number", "string"] },
+    "plugin_slug": { "type": "string" }
+  },
+  "additionalProperties": true
+}

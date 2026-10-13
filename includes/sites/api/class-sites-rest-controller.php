@@ -1331,7 +1331,10 @@ class Sites_REST_Controller {
 			$data['direction'] = sanitize_key( $request->get_param( 'direction' ) );
 		}
 		if ( $request->has_param( 'conflict_strategy' ) ) {
-			$data['conflict_strategy'] = sanitize_key( $request->get_param( 'conflict_strategy' ) );
+			// X-1 (tasks/5.3falsh2/12 批 B): normalize to the canonical
+			// five-value vocabulary (legacy synonyms accepted, unknown →
+			// schema default via the service normalizer).
+			$data['conflict_strategy'] = Site_Relation_Service::normalize_conflict_strategy( $request->get_param( 'conflict_strategy' ) );
 		}
 		if ( empty( $data ) ) {
 			return new \WP_Error(

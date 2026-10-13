@@ -1,0 +1,12 @@
+{
+  "$id": "wp-models-rescan.response.schema.json",
+  "type": "object",
+  "required": ["success"],
+  "properties": {
+    "success": { "const": true },
+    "model": { "type": ["object", "null"] },
+    "rule_count": { "type": ["integer", "number"] },
+    "message": { "type": "string" }
+  },
+  "additionalProperties": true
+}

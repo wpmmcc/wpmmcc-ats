@@ -1,0 +1,44 @@
+{
+    "_meta": {
+        "plugin_slug": "lifterlms",
+        "plugin_name": "LifterLMS",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "Minimal LifterLMS courses for content-matrix discover/smoke",
+        "fields_verified": "2026-08-21"
+    },
+    "posts": {
+        "course": [
+            {
+                "post_title": "LifterLMS Intro to Web Development",
+                "post_content": "<p>Learn HTML, CSS, and JavaScript fundamentals with hands-on projects.</p><h3>Outcomes</h3><ul><li>Build static pages</li><li>Style with modern CSS</li><li>Add interactive JS</li></ul>",
+                "post_excerpt": "Foundational web development course.",
+                "post_status": "publish",
+                "meta": {
+                    "_llms_length": "12 hours",
+                    "_llms_difficulty": "beginner"
+                }
+            },
+            {
+                "post_title": "LifterLMS Business Analytics Basics",
+                "post_content": "<p>Use spreadsheets and dashboards to make better product decisions.</p>",
+                "post_excerpt": "Analytics for non-analysts.",
+                "post_status": "publish",
+                "meta": {
+                    "_llms_length": "8 hours",
+                    "_llms_difficulty": "beginner"
+                }
+            },
+            {
+                "post_title": "LifterLMS Customer Support Excellence",
+                "post_content": "<p>Communication patterns, ticket triage, and escalation playbooks.</p>",
+                "post_excerpt": "Support skills for growing teams.",
+                "post_status": "publish",
+                "meta": {
+                    "_llms_length": "6 hours",
+                    "_llms_difficulty": "intermediate"
+                }
+            }
+        ]
+    }
+}

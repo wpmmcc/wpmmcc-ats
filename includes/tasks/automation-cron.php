@@ -234,8 +234,12 @@ function wptsall_recover_stuck_tasks() {
 	global $wpdb;
 	$table = wptsall_table( 'tasks' );
 
-	// Match DEFAULT_CLIENT_CLAIM_LEASE_SECONDS from Client_Tasks_REST_Controller.
-	$lease_timeout        = 600; // 10 minutes.
+	// opus5 A-02: read the claim lease from its single source instead of a
+	// hardcoded 600 that can silently drift from the controller constant.
+	// Fallback keeps the cron working if the client API module is absent.
+	$lease_timeout        = class_exists( '\WPTSALL\Tasks\API\Client_Tasks_REST_Controller' )
+		? (int) \WPTSALL\Tasks\API\Client_Tasks_REST_Controller::DEFAULT_CLIENT_CLAIM_LEASE_SECONDS
+		: 600;
 	$max_recovery_count   = (int) apply_filters( 'wptsall_max_stuck_recovery_count', 3 );
 	$now_mysql            = current_time( 'mysql' );
 
@@ -329,7 +333,11 @@ function wptsall_recover_stuck_tasks() {
 add_action( 'wptsall_retry_failed_tasks', 'wptsall_recover_stuck_tasks', 5 );
 
 /**
- * Retry failed tasks with exponential backoff.
+ * Retry recoverable tasks with the retry_count dead-letter cap.
+ *
+ * opus5 A-02: the eligible set is Task_Status::retry_eligible() — 'retry'
+ * rows plus 'error' rows written by the sync orchestrator. Before 2.1.4 the
+ * query only read 'retry', so 'error' tasks stalled forever with no cap.
  */
 function wptsall_retry_failed_tasks() {
 	global $wpdb;
@@ -338,25 +346,41 @@ function wptsall_retry_failed_tasks() {
 	$max_retries = apply_filters( 'wptsall_max_retries', 3 );
 	$retry_limit = apply_filters( 'wptsall_retry_batch_size', 10 );
 
+	$retryable = \WPTSALL\Tasks\Services\Task_Status::retry_eligible();
+
 	// M21: explicit column list avoids loading payload LONGTEXT in batch queries.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$tasks = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT id FROM %i
-			WHERE status = 'retry'
-			AND retry_count < %d
-			AND (
-				retry_at IS NULL
-				OR retry_at <= NOW()
-			)
-			ORDER BY priority DESC, retry_count ASC
-			LIMIT %d",
-			$table,
-			$max_retries,
-			$retry_limit
-		),
-		ARRAY_A
+	$tasks = array();
+	foreach ( $retryable as $retry_status ) {
+		$part = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, priority, retry_count FROM %i
+				WHERE status = %s
+				AND retry_count < %d
+				AND (
+					retry_at IS NULL
+					OR retry_at <= NOW()
+				)
+				ORDER BY priority DESC, retry_count ASC
+				LIMIT %d",
+				$table,
+				$retry_status,
+				$max_retries,
+				$retry_limit
+			),
+			ARRAY_A
+		);
+		if ( is_array( $part ) ) {
+			$tasks = array_merge( $tasks, $part );
+		}
+	}
+	usort(
+		$tasks,
+		static function ( $left, $right ) {
+			$priority = (int) $right['priority'] <=> (int) $left['priority'];
+			return 0 !== $priority ? $priority : ( (int) $left['retry_count'] <=> (int) $right['retry_count'] );
+		}
 	);
+	$tasks = array_slice( $tasks, 0, max( 1, (int) $retry_limit ) );
 
 	$retried = 0;
 
@@ -376,17 +400,18 @@ function wptsall_retry_failed_tasks() {
 		$retried++;
 	}
 
-	// Mark tasks that exceeded max retries as failed.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-	$wpdb->query(
-		$wpdb->prepare(
-			"UPDATE %i SET status = 'failed', status_note = CONCAT(status_note, ' - Exceeded maximum retry count')
-			WHERE status = 'retry'
-			AND retry_count >= %d",
-			$table,
-			$max_retries
-		)
-	);
+	foreach ( $retryable as $retry_status ) {
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE %i SET status = 'failed', status_note = CONCAT(status_note, ' - Exceeded maximum retry count')
+				WHERE status = %s
+				AND retry_count >= %d",
+				$table,
+				$retry_status,
+				$max_retries
+			)
+		);
+	}
 
 	wptsall_log( 'cron', 'info', 'Retried failed tasks', array(
 		'count' => $retried,

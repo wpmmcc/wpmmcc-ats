@@ -1,0 +1,7 @@
+{
+  "api_base_url": "http://127.0.0.1:9083",
+  "wp_client_token": "REPLACE_WITH_LIVE_TOKEN",
+  "route_secret": "REPLACE_WITH_LIVE_ROUTE_SECRET",
+  "notes": "Copy to site.local.json via export-site-fixture.sh — never commit real secrets",
+  "component_id_hint": "optional-local-component-id-after-provider-wizard"
+}

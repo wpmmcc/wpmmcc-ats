@@ -1,0 +1,87 @@
+{
+    "_meta": {
+        "plugin_slug": "seriously-simple-podcasting",
+        "plugin_name": "Seriously Simple Podcasting",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Seriously Simple Podcasting seed data for podcast episodes",
+        "note": "Audio files need to be uploaded separately.",
+        "fields_source": "v4-scanner (unknown-podcast.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "series": [
+            {"name": "Tech Talk Weekly", "slug": "tech-talk-weekly"},
+            {"name": "Business Insights", "slug": "business-insights"}
+        ]
+    },
+    "posts": {
+        "podcast": [
+            {
+                "post_title": "Episode 1: The Future of AI",
+                "post_content": "<p>In this episode, we discuss the latest developments in artificial intelligence and what it means for businesses and society.</p>",
+                "post_excerpt": "Exploring AI trends and their impact.",
+                "post_status": "publish",
+                "featured_image": "{{media:podcast-cover.png}}",
+                "meta": {
+                    "duration": "45:30",
+                    "episode_type": "audio",
+                    "date_recorded": "2026-01-15",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                },
+                "taxonomy": {"series": ["tech-talk-weekly"]}
+            },
+            {
+                "post_title": "Episode 2: Remote Work Best Practices",
+                "post_content": "<p>Tips and strategies for effective remote work from industry leaders.</p>",
+                "post_excerpt": "Remote work tips from experts.",
+                "post_status": "publish",
+                "featured_image": "{{media:podcast-cover.png}}",
+                "meta": {
+                    "duration": "38:15",
+                    "episode_type": "audio",
+                    "audio_file": "{{media:podcast-episode-2.mp3}}"
+                },
+                "taxonomy": {"series": ["business-insights"]}
+            },
+            {
+                "post_title": "Episode 3: Cybersecurity Essentials",
+                "post_content": "<p>Essential cybersecurity practices every business should implement.</p>",
+                "post_excerpt": "Protecting your business from cyber threats.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "52:00",
+                    "episode_type": "audio",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                },
+                "taxonomy": {"series": ["tech-talk-weekly"]}
+            },
+            {
+                "post_title": "Episode 4: Building a Strong Company Culture",
+                "post_content": "<p>How to create and maintain a positive company culture.</p>",
+                "post_excerpt": "Creating positive workplace culture.",
+                "post_status": "publish",
+                "meta": {
+                    "duration": "41:45",
+                    "episode_type": "audio",
+                    "audio_file": "{{media:podcast-episode-2.mp3}}"
+                },
+                "taxonomy": {"series": ["business-insights"]}
+            },
+            {
+                "post_title": "Episode 5: Customer Support Playbooks",
+                "post_content": "<p>We walk through practical support playbooks for onboarding, incident response, refunds, and multilingual customer communication.</p>",
+                "post_excerpt": "Operational support playbooks for growing teams.",
+                "post_status": "publish",
+                "featured_image": "{{media:podcast-cover.png}}",
+                "meta": {
+                    "duration": "47:10",
+                    "episode_type": "audio",
+                    "date_recorded": "2026-02-12",
+                    "audio_file": "{{media:podcast-episode-1.mp3}}"
+                },
+                "taxonomy": {"series": ["business-insights"]}
+            }
+        ]
+    }
+}

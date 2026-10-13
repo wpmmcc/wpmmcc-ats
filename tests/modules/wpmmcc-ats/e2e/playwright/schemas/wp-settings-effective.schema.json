@@ -1,0 +1,26 @@
+{
+  "$id": "wp-settings-effective.schema.json",
+  "type": "object",
+  "required": [
+    "url_form",
+    "default_language",
+    "media_handling",
+    "sync_mode",
+    "log_retention_days",
+    "client_api_enabled",
+    "debug_mode"
+  ],
+  "properties": {
+    "url_form": { "type": "string", "enum": ["subdir", "subdomain", "param"] },
+    "default_language": { "type": "string", "minLength": 1 },
+    "detect_browser": { "type": "boolean" },
+    "media_handling": { "type": "string", "enum": ["copy", "reference"] },
+    "sync_mode": { "type": "string", "enum": ["new_only", "full", "manual"] },
+    "debug_mode": { "type": "boolean" },
+    "log_retention_days": { "type": ["integer", "number"], "minimum": 0 },
+    "client_api_enabled": { "type": "boolean" },
+    "permalink_fallback": { "type": "boolean" },
+    "directory_for_default_language": { "type": "boolean" }
+  },
+  "additionalProperties": true
+}

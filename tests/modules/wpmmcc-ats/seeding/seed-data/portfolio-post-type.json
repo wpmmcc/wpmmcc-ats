@@ -1,0 +1,67 @@
+{
+    "_meta": {
+        "plugin_slug": "portfolio-post-type",
+        "plugin_name": "Portfolio Post Type",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Portfolio Post Type seed data for portfolio items",
+        "fields_source": "v4-scanner (unknown-portfolio.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "portfolio_category": [
+            {"name": "Web Design", "slug": "web-design"},
+            {"name": "Branding", "slug": "branding"},
+            {"name": "Mobile Apps", "slug": "mobile-apps"},
+            {"name": "Print Design", "slug": "print-design"}
+        ]
+    },
+    "posts": {
+        "portfolio": [
+            {
+                "post_title": "E-Commerce Website Redesign",
+                "post_content": "<p>Complete redesign of an e-commerce platform focusing on user experience and conversion optimization.</p><h3>Project Overview</h3><p>Improved checkout flow, mobile responsiveness, and overall visual design.</p>",
+                "post_excerpt": "E-commerce platform redesign project.",
+                "post_status": "publish",
+                "meta": {
+                    "_portfolio_client": "RetailMax Inc",
+                    "_portfolio_url": "https://retailmax.example.com",
+                    "_portfolio_date": "2026-01"
+                },
+                "taxonomy": {"portfolio_category": ["web-design"]}
+            },
+            {
+                "post_title": "Startup Brand Identity",
+                "post_content": "<p>Developed complete brand identity including logo, color palette, and brand guidelines for a tech startup.</p>",
+                "post_excerpt": "Complete brand identity for tech startup.",
+                "post_status": "publish",
+                "meta": {
+                    "_portfolio_client": "InnovateTech",
+                    "_portfolio_date": "2025-11"
+                },
+                "taxonomy": {"portfolio_category": ["branding"]}
+            },
+            {
+                "post_title": "Fitness Tracking App",
+                "post_content": "<p>Designed and developed a fitness tracking mobile application for iOS and Android.</p>",
+                "post_excerpt": "Cross-platform fitness tracking app.",
+                "post_status": "publish",
+                "meta": {
+                    "_portfolio_client": "FitLife App",
+                    "_portfolio_date": "2025-09"
+                },
+                "taxonomy": {"portfolio_category": ["mobile-apps"]}
+            },
+            {
+                "post_title": "Annual Report Design",
+                "post_content": "<p>Designed the annual report for a financial services company with data visualization.</p>",
+                "post_excerpt": "Corporate annual report design.",
+                "post_status": "publish",
+                "meta": {
+                    "_portfolio_client": "Capital Finance Group"
+                },
+                "taxonomy": {"portfolio_category": ["print-design"]}
+            }
+        ]
+    }
+}

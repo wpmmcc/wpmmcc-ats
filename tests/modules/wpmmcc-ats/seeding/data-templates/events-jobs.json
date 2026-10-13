@@ -1,0 +1,170 @@
+{
+    "_meta": {
+        "version": "1.2.0",
+        "description": "活动和招聘类插件数据模板",
+        "post_types": ["tribe_events", "event", "job_listing", "jobpost"],
+        "plugins": ["the-events-calendar", "events-manager", "wp-job-manager", "simple-job-board"],
+        "_notes": {
+            "complex_routing_types": {
+                "tribe_events": "需要 The Events Calendar 插件配置日期路由",
+                "event": "Events Manager 事件，需要插件配置页面路由"
+            },
+            "reason": "这些 post types 虽然注册为 public，但实际 URL 访问可能需要特定的日期或分类路由配置"
+        }
+    },
+    "events_calendar": {
+        "events": [
+            {
+                "id": "event_1",
+                "title": "2024 WordPress开发者大会",
+                "slug": "wordpress-dev-conference-2024",
+                "featured_image": "featured-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>一年一度的WordPress开发者大会将在北京举行，汇聚国内外顶尖WordPress专家和开发者。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>大会亮点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>50+技术演讲和工作坊</li>\n<li>Gutenberg最新进展分享</li>\n<li>插件开发最佳实践</li>\n<li>性能优化深度解析</li>\n<li>社区交流与networking</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>适合人群</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>WordPress开发者、主题/插件作者、网站管理员、技术爱好者。</p>\n<!-- /wp:paragraph -->",
+                "excerpt": "WordPress开发者年度盛会，50+技术演讲，社区交流",
+                "status": "publish",
+                "meta": {
+                    "_EventStartDate": "2024-06-15 09:00:00",
+                    "_EventEndDate": "2024-06-16 18:00:00",
+                    "_EventVenue": "北京国际会议中心",
+                    "_EventAddress": "北京市朝阳区北辰东路8号",
+                    "_EventCost": "599",
+                    "_EventCurrencySymbol": "¥",
+                    "_EventURL": "https://wpconf.example.com",
+                    "_yoast_wpseo_title": "2024 WordPress开发者大会 - 北京站",
+                    "_yoast_wpseo_metadesc": "2024年WordPress开发者大会北京站，6月15-16日，50+技术演讲，早鸟票599元。"
+                },
+                "verification": {
+                    "title_contains": "WordPress开发者大会",
+                    "content_contains": "Gutenberg",
+                    "meta_contains": "599"
+                }
+            },
+            {
+                "id": "event_2",
+                "title": "前端技术沙龙 - React与Vue实战对比",
+                "slug": "frontend-salon-react-vue",
+                "featured_image": "featured-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>本次沙龙将深入对比React和Vue两大前端框架，分享实战经验和最佳实践。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>React 18新特性解读</li>\n<li>Vue 3 Composition API实战</li>\n<li>状态管理方案对比</li>\n<li>性能优化技巧分享</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "React与Vue实战对比，前端技术深度交流",
+                "status": "publish",
+                "meta": {
+                    "_EventStartDate": "2024-05-20 14:00:00",
+                    "_EventEndDate": "2024-05-20 18:00:00",
+                    "_EventVenue": "上海创客空间",
+                    "_EventAddress": "上海市浦东新区张江高科技园区",
+                    "_EventCost": "0",
+                    "_EventCurrencySymbol": "¥",
+                    "_yoast_wpseo_title": "前端技术沙龙 - React与Vue实战对比",
+                    "_yoast_wpseo_metadesc": "前端技术沙龙，React与Vue深度对比，免费参加，5月20日上海。"
+                },
+                "verification": {
+                    "title_contains": "前端技术沙龙",
+                    "content_contains": "React",
+                    "meta_contains": "Vue"
+                }
+            }
+        ]
+    },
+    "events_manager": {
+        "events": [
+            {
+                "id": "em_event_1",
+                "title": "人工智能应用研讨会",
+                "slug": "ai-application-seminar",
+                "featured_image": "product-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>探讨AI在各行业的应用场景，分享成功案例和实施经验。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "_event_start_date": "2024-07-10",
+                    "_event_start_time": "09:00:00",
+                    "_event_end_date": "2024-07-10",
+                    "_event_end_time": "17:00:00",
+                    "_location_name": "深圳会展中心",
+                    "_location_address": "深圳市福田区福华三路",
+                    "_yoast_wpseo_title": "人工智能应用研讨会 - 深圳站",
+                    "_yoast_wpseo_metadesc": "AI应用研讨会，探讨人工智能在各行业的应用，7月10日深圳。"
+                },
+                "verification": {
+                    "title_contains": "人工智能",
+                    "content_contains": "应用场景"
+                }
+            }
+        ]
+    },
+    "wp_job_manager": {
+        "jobs": [
+            {
+                "id": "job_1",
+                "title": "高级PHP开发工程师",
+                "slug": "senior-php-developer",
+                "featured_image": "product-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>我们正在寻找一位经验丰富的PHP开发工程师，参与公司核心产品的开发和维护。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>岗位职责</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>负责公司WordPress产品的开发和维护</li>\n<li>参与技术架构设计和优化</li>\n<li>编写高质量、可维护的代码</li>\n<li>指导初级开发人员</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>任职要求</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>5年以上PHP开发经验</li>\n<li>精通WordPress开发</li>\n<li>熟悉MySQL、Redis等数据库</li>\n<li>良好的代码规范和文档能力</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "高级PHP开发工程师，5年经验，精通WordPress",
+                "status": "publish",
+                "meta": {
+                    "_job_location": "北京市海淀区",
+                    "_company_name": "优码科技有限公司",
+                    "_company_website": "https://youma-tech.example.com",
+                    "_job_salary": "25K-40K",
+                    "_job_type": "full-time",
+                    "_job_expires": "2024-06-30",
+                    "_application_email": "hr@youma-tech.example.com",
+                    "_yoast_wpseo_title": "高级PHP开发工程师 - 优码科技招聘",
+                    "_yoast_wpseo_metadesc": "优码科技招聘高级PHP开发工程师，5年经验，25K-40K，北京海淀。"
+                },
+                "verification": {
+                    "title_contains": "PHP开发工程师",
+                    "content_contains": "WordPress",
+                    "meta_contains": "25K"
+                }
+            },
+            {
+                "id": "job_2",
+                "title": "前端开发工程师（React方向）",
+                "slug": "frontend-developer-react",
+                "featured_image": "product-3.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>寻找热爱前端技术的开发者，参与公司SaaS产品的前端开发。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>岗位职责</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>负责SaaS产品前端开发</li>\n<li>优化前端性能和用户体验</li>\n<li>参与技术选型和架构设计</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>任职要求</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>3年以上前端开发经验</li>\n<li>精通React及其生态</li>\n<li>熟悉TypeScript</li>\n<li>有性能优化经验者优先</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "前端开发工程师，React方向，3年经验",
+                "status": "publish",
+                "meta": {
+                    "_job_location": "上海市浦东新区",
+                    "_company_name": "云端软件科技",
+                    "_job_salary": "20K-35K",
+                    "_job_type": "full-time",
+                    "_application_email": "hr@cloudsoft.example.com",
+                    "_yoast_wpseo_title": "前端开发工程师 - React方向 - 云端软件招聘",
+                    "_yoast_wpseo_metadesc": "云端软件招聘前端开发工程师，React方向，20K-35K，上海浦东。"
+                },
+                "verification": {
+                    "title_contains": "前端开发工程师",
+                    "content_contains": "React",
+                    "meta_contains": "20K"
+                }
+            }
+        ]
+    },
+    "simple_job_board": {
+        "jobs": [
+            {
+                "id": "sjb_job_1",
+                "title": "产品经理",
+                "slug": "product-manager",
+                "featured_image": "featured-text-1.png",
+                "content": "<!-- wp:paragraph -->\n<p>负责公司互联网产品的规划、设计和迭代优化。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "jobpost_location": "广州市天河区",
+                    "jobpost_company": "创新互联科技",
+                    "jobpost_salary": "18K-30K",
+                    "jobpost_type": "全职",
+                    "_yoast_wpseo_title": "产品经理 - 创新互联科技招聘",
+                    "_yoast_wpseo_metadesc": "创新互联科技招聘产品经理，18K-30K，广州天河。"
+                },
+                "verification": {
+                    "title_contains": "产品经理",
+                    "meta_contains": "18K"
+                }
+            }
+        ]
+    }
+}

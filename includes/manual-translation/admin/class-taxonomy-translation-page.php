@@ -49,14 +49,12 @@ class Taxonomy_Translation_Page {
 		}
 		$languages = Language_Service::get_all( array( 'status' => 'active' ) );
 		$taxonomies = get_taxonomies( array( 'public' => true ), 'objects' );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$taxonomy   = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'category';
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$target_lang = isset( $_GET['target_lang'] ) ? sanitize_text_field( wp_unslash( $_GET['target_lang'] ) ) : ( $languages[0]['code'] ?? '' );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$relation_id = isset( $_GET['relation_id'] ) ? absint( wp_unslash( $_GET['relation_id'] ) ) : 0;
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$filter = isset( $_GET['filter'] ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'pending';
+		$list_nonce = isset( $_GET['wptsall_list_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['wptsall_list_nonce'] ) ) : '';
+		$filters_ok = '' !== $list_nonce && false !== wp_verify_nonce( $list_nonce, 'wptsall_taxonomy_list' );
+		$taxonomy   = ( $filters_ok && isset( $_GET['taxonomy'] ) ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'category';
+		$target_lang = ( $filters_ok && isset( $_GET['target_lang'] ) ) ? sanitize_text_field( wp_unslash( $_GET['target_lang'] ) ) : ( $languages[0]['code'] ?? '' );
+		$relation_id = ( $filters_ok && isset( $_GET['relation_id'] ) ) ? absint( wp_unslash( $_GET['relation_id'] ) ) : 0;
+		$filter = ( $filters_ok && isset( $_GET['filter'] ) ) ? sanitize_text_field( wp_unslash( $_GET['filter'] ) ) : 'pending';
 
 		$relations = class_exists( Site_Relation_Service::class ) ? Site_Relation_Service::get_all_relations( array( 'status' => 'active' ), false ) : array();
 		$relation_options = array();
@@ -83,15 +81,28 @@ class Taxonomy_Translation_Page {
 			$taxonomy = 'category';
 		}
 
+		// ATS-P2-05 (3.8flash B4): wire both views to the shared pagination bar.
+		// The pending windowed scan honors limit/offset over the FILTERED
+		// pending set; the all-terms view uses get_terms' own offset + a
+		// wp_count_terms total.
+		$per_page = ( $filters_ok && isset( $_GET['per_page'] ) ) ? max( 1, min( 500, absint( wp_unslash( $_GET['per_page'] ) ) ) ) : 50;
+		$paged    = ( $filters_ok && isset( $_GET['paged'] ) ) ? max( 1, absint( wp_unslash( $_GET['paged'] ) ) ) : 1;
+		$offset = ( $paged - 1 ) * $per_page;
+
+		$pending_total = ( $filter === 'pending' )
+			? Taxonomy_Translation_Service::count_pending_terms( $taxonomy, $target_lang, $relation_id )
+			: 0;
 		$pending = ( $filter === 'pending' )
-			? Taxonomy_Translation_Service::pending_terms( $taxonomy, $target_lang, 500, $relation_id )
+			? Taxonomy_Translation_Service::pending_terms( $taxonomy, $target_lang, $per_page, $relation_id, $offset )
 			: array();
 
-		// For "all" view, list every term in the taxonomy.
+		// For "all" view, page through every term in the taxonomy.
+		$all_total = ( $filter === 'all' ) ? (int) wp_count_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) ) : 0;
 		$all_terms = ( $filter === 'all' ) ? get_terms( array(
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => false,
-			'number'     => 500,
+			'number'     => $per_page,
+			'offset'     => $offset,
 		) ) : array();
 		if ( is_wp_error( $all_terms ) ) {
 			$all_terms = array();
@@ -104,6 +115,7 @@ class Taxonomy_Translation_Page {
 		?>
 		<form method="get" style="margin-bottom:12px;">
 			<input type="hidden" name="page" value="<?php echo esc_attr( self::PAGE_SLUG ); ?>">
+			<?php wp_nonce_field( 'wptsall_taxonomy_list', 'wptsall_list_nonce', false ); ?>
 			<label><?php esc_html_e( 'Taxonomy', 'wpmmcc-ats' ); ?>:
 				<select name="taxonomy" onchange="this.form.submit()">
 					<?php foreach ( $taxonomies as $tax ) : ?>
@@ -146,7 +158,24 @@ class Taxonomy_Translation_Page {
 		</form>
 
 		<?php if ( 'pending' === $filter ) : ?>
-			<p><strong><?php echo count( $pending ); ?></strong> <?php esc_html_e( 'pending term(s)', 'wpmmcc-ats' ); ?> <?php esc_html_e( 'for', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $taxonomy ); ?></code> → <code><?php echo esc_html( $target_lang ); ?></code><?php if ( $relation_id > 0 ) : ?> · <?php esc_html_e( 'relation', 'wpmmcc-ats' ); ?> <code>#<?php echo (int) $relation_id; ?></code><?php endif; ?></p>
+			<?php
+			// B4: true pending total + range indicator (the old count($pending)
+			// figure silently capped at the fetch window).
+			Admin_Page_Helper::render_pagination(
+				$pending_total,
+				$per_page,
+				$paged,
+				self::PAGE_SLUG,
+				array(
+					'taxonomy'           => $taxonomy,
+					'target_lang'        => $target_lang,
+					'relation_id'        => (string) $relation_id,
+					'filter'             => $filter,
+					'wptsall_list_nonce' => wp_create_nonce( 'wptsall_taxonomy_list' ),
+				)
+			);
+			?>
+			<p><strong><?php echo (int) $pending_total; ?></strong> <?php esc_html_e( 'pending term(s)', 'wpmmcc-ats' ); ?> <?php esc_html_e( 'for', 'wpmmcc-ats' ); ?> <code><?php echo esc_html( $taxonomy ); ?></code> → <code><?php echo esc_html( $target_lang ); ?></code><?php if ( $relation_id > 0 ) : ?> · <?php esc_html_e( 'relation', 'wpmmcc-ats' ); ?> <code>#<?php echo (int) $relation_id; ?></code><?php endif; ?></p>
 			<?php if ( empty( $pending ) ) : ?>
 				<p><?php esc_html_e( 'All terms are already linked. Switch to "All terms" to manage existing links.', 'wpmmcc-ats' ); ?></p>
 			<?php else : ?>
@@ -185,6 +214,23 @@ class Taxonomy_Translation_Page {
 				</table>
 			<?php endif; ?>
 		<?php else : ?>
+			<?php
+			// B4: the all-terms view gets the same pagination bar (the old
+			// fixed 500-fetch had no pager and no total).
+			Admin_Page_Helper::render_pagination(
+				$all_total,
+				$per_page,
+				$paged,
+				self::PAGE_SLUG,
+				array(
+					'taxonomy'           => $taxonomy,
+					'target_lang'        => $target_lang,
+					'relation_id'        => (string) $relation_id,
+					'filter'             => $filter,
+					'wptsall_list_nonce' => wp_create_nonce( 'wptsall_taxonomy_list' ),
+				)
+			);
+			?>
 			<table class="wp-list-table widefat striped">
 				<thead>
 					<tr>

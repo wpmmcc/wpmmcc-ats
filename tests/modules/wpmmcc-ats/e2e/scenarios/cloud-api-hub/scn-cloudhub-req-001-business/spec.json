@@ -1,0 +1,15 @@
+{
+  "scenario_id": "SCN-CLOUDHUB-REQ-001-BUSINESS",
+  "requirement_id": "REQ-CLOUDHUB-001",
+  "owner": "qa",
+  "layer": "business",
+  "product": "cloud-api-hub",
+  "surface": "product-smoke",
+  "description": "Cloud API Hub 权益与 provider 可用性最小业务场景。",
+  "execution": {
+    "command": "bash tests/modules/wpmmcc-ats/e2e/run-product-smoke.sh --product cloud-api-hub --mode business"
+  },
+  "evidence": {
+    "report_hint": "tests/reports/e2e/wpmmcc-ats/product-smoke-cloud-api-hub-business-*.json"
+  }
+}

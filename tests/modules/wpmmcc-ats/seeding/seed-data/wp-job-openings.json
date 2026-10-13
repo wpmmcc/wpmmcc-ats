@@ -1,0 +1,81 @@
+{
+    "_meta": {
+        "plugin_slug": "wp-job-openings",
+        "plugin_name": "WP Job Openings",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "WP Job Openings seed data for job postings",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "awsm_job_type": [
+            {"name": "Full Time", "slug": "full-time"},
+            {"name": "Part Time", "slug": "part-time"},
+            {"name": "Internship", "slug": "internship"}
+        ],
+        "awsm_job_location": [
+            {"name": "Remote", "slug": "remote"},
+            {"name": "New York", "slug": "new-york"},
+            {"name": "London", "slug": "london"}
+        ]
+    },
+    "posts": {
+        "awsm_job_openings": [
+            {
+                "post_title": "Product Manager",
+                "post_content": "<p>Lead product development for our flagship platform. Work with engineering, design, and stakeholders to deliver great products.</p><h3>Requirements</h3><ul><li>5+ years product management experience</li><li>Strong analytical skills</li><li>Excellent communication</li></ul>",
+                "post_excerpt": "Lead product strategy and development.",
+                "post_status": "publish",
+                "meta": {
+                    "awsm_job_company": "TechVentures Inc",
+                    "awsm_job_salary": "$120,000 - $150,000"
+                },
+                "taxonomy": {
+                    "awsm_job_type": ["full-time"],
+                    "awsm_job_location": ["new-york"]
+                }
+            },
+            {
+                "post_title": "DevOps Engineer",
+                "post_content": "<p>Build and maintain our cloud infrastructure. Experience with AWS, Docker, and Kubernetes required.</p>",
+                "post_excerpt": "Infrastructure and DevOps role.",
+                "post_status": "publish",
+                "meta": {
+                    "awsm_job_company": "CloudScale Systems",
+                    "awsm_job_salary": "$100,000 - $130,000"
+                },
+                "taxonomy": {
+                    "awsm_job_type": ["full-time"],
+                    "awsm_job_location": ["remote"]
+                }
+            },
+            {
+                "post_title": "Marketing Coordinator",
+                "post_content": "<p>Support marketing initiatives including campaign management, content creation, and analytics reporting.</p>",
+                "post_excerpt": "Entry-level marketing position.",
+                "post_status": "publish",
+                "meta": {
+                    "awsm_job_company": "BrandWorks Agency"
+                },
+                "taxonomy": {
+                    "awsm_job_type": ["full-time"],
+                    "awsm_job_location": ["london"]
+                }
+            },
+            {
+                "post_title": "Summer Internship - Software Development",
+                "post_content": "<p>12-week internship program for computer science students. Work on real projects with mentorship.</p>",
+                "post_excerpt": "Summer internship for CS students.",
+                "post_status": "publish",
+                "meta": {
+                    "awsm_job_company": "InnoTech Labs"
+                },
+                "taxonomy": {
+                    "awsm_job_type": ["internship"],
+                    "awsm_job_location": ["new-york"]
+                }
+            }
+        ]
+    }
+}

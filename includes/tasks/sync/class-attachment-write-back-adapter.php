@@ -158,6 +158,18 @@ class Attachment_Write_Back_Adapter extends Write_Back_Adapter_Base {
 		$source_id   = (int) ( $item['source_id'] ?? 0 );
 		$switched    = false;
 
+		// Resolve the source attachment URL BEFORE any target-blog switch:
+		// Sync_Executor::replace_media_urls_in_content() pass 1 rewrites
+		// content URLs from source_file_url → target_file_url, and an
+		// id_reference row that leaves source_file_url empty can never
+		// rewrite <img src> references (only Gutenberg block-comment ids).
+		// The URL must be resolved in the source blog context to match the
+		// URL form that appears in the source content.
+		$source_file_url = '';
+		if ( $source_id > 0 ) {
+			$source_file_url = (string) wp_get_attachment_url( $source_id );
+		}
+
 		// Switch to target blog for WP multisite targets.
 		if ( 'wp' === $target_type && $target_blog > 0 && is_multisite() ) {
 			switch_to_blog( $target_blog );
@@ -193,7 +205,7 @@ class Attachment_Write_Back_Adapter extends Write_Back_Adapter_Base {
 				'relation_id'      => absint( $context['relation_id'] ?? 0 ),
 				'source_site_id'   => $source_site_id,
 				'source_file_path' => '',
-				'source_file_url'  => '',
+				'source_file_url'  => $source_file_url,
 				'target_media_id'  => $attachment_id,
 				'target_site_id'   => $target_site_str,
 				'target_file_path' => '',

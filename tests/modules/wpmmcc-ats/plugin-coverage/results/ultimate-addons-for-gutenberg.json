@@ -1,0 +1,243 @@
+{
+  "slug": "ultimate-addons-for-gutenberg",
+  "started": "2026-08-13T07:11:59+00:00",
+  "pass": true,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "isolated",
+      "ok": true,
+      "detail": {
+        "file": "ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php",
+        "active": [
+          "wpmmcc-ats/wpmmcc-ats.php",
+          "plugin-check/plugin.php",
+          "ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php"
+        ]
+      }
+    },
+    {
+      "name": "post_type_ready",
+      "ok": true,
+      "detail": "page"
+    },
+    {
+      "name": "model_or_overlay",
+      "ok": true,
+      "detail": {
+        "model_id": "445",
+        "storage": null
+      }
+    },
+    {
+      "name": "hooks_listen_only",
+      "ok": true,
+      "detail": [
+        "save_post_academy_announcement",
+        "delete_post",
+        "trash_post",
+        "save_post_academy_courses",
+        "save_post_academy_lessons",
+        "save_post",
+        "created_term",
+        "edited_term",
+        "delete_term",
+        "added_post_meta",
+        "updated_post_meta",
+        "deleted_post_meta",
+        "set_object_terms",
+        "edit_attachment",
+        "save_post_wpa-events",
+        "save_post_forum",
+        "save_post_reply",
+        "save_post_topic",
+        "save_post_fl-builder-history",
+        "save_post_betterdocs_faq",
+        "save_post_docs",
+        "save_post_buddypress",
+        "save_post_wpbdp_listing",
+        "save_post_rtcl_listing",
+        "save_post_wpcf7_contact_form",
+        "save_post_cp_recipe",
+        "save_post_dlp_document",
+        "save_post_dlm_download",
+        "save_post_dlm_download_version",
+        "save_post_download",
+        "save_post_epl_contact",
+        "save_post_ecwid_menu_item",
+        "save_post_elementor_component",
+        "save_post_elementor_library",
+        "save_post_envira",
+        "save_post_agent",
+        "save_post_invoice",
+        "save_post_property",
+        "save_post_trans_log",
+        "save_post_user_package",
+        "save_post_properties",
+        "save_post_saved_search",
+        "save_post_event",
+        "save_post_frm_form_actions",
+        "save_post_frm_styles",
+        "save_post_forminator_forms",
+        "save_post_forminator_polls",
+        "save_post_forminator_quizzes",
+        "save_post_helpie_faq",
+        "save_post_helpie_menu",
+        "save_post_kadence_form",
+        "save_post_kadence_header",
+        "save_post_kadence_lottie",
+        "save_post_kadence_navigation",
+        "save_post_kadence_vector",
+        "save_post_wp_log",
+        "save_post_mc4wp-form",
+        "save_post_nf_sub",
+        "save_post__pods_field",
+        "save_post__pods_group",
+        "save_post__pods_pod",
+        "save_post__pods_template",
+        "save_post_spt_shortcodes",
+        "save_post_spt_testimonial",
+        "save_post_spt_testimonial_form",
+        "save_post_site-review",
+        "save_post_spectra-popup",
+        "save_post_wpm-testimonial",
+        "save_post_sc_cart",
+        "save_post_sc_form",
+        "save_post_sc_product",
+        "save_post_tablepress_table",
+        "save_post_ufaq",
+        "save_post_um_directory",
+        "save_post_um_form",
+        "save_post_web-story",
+        "save_post_web-story-font",
+        "save_post_web-story-page",
+        "save_post_product",
+        "save_post_post",
+        "save_post_page",
+        "save_post_wpcr3_review",
+        "save_post_recipe",
+        "save_post_wpforms",
+        "save_post_wpforms-template"
+      ]
+    },
+    {
+      "name": "hooks_bound_post_type",
+      "ok": true,
+      "detail": "save_post_page"
+    },
+    {
+      "name": "create_source",
+      "ok": true,
+      "detail": 1148
+    },
+    {
+      "name": "map_virtual",
+      "ok": true,
+      "detail": {
+        "target_id": 1149,
+        "is_update": false,
+        "relation_id": 626
+      }
+    },
+    {
+      "name": "map_subsite",
+      "ok": true,
+      "detail": {
+        "target_id": 163,
+        "is_update": false,
+        "relation_id": 627
+      }
+    },
+    {
+      "name": "mapping_row",
+      "ok": true,
+      "detail": {
+        "id": "392",
+        "relation_id": "626",
+        "source_post_id": "1148",
+        "source_post_type": "page",
+        "source_site_id": "1",
+        "target_post_id": "1149",
+        "target_post_type": "page",
+        "target_site_id": "v_424",
+        "relationship_type": "translation",
+        "needs_resync": "0",
+        "claimed_at": null,
+        "created_at": "2026-08-13 07:12:00",
+        "updated_at": "2026-08-13 07:12:00"
+      }
+    },
+    {
+      "name": "url_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV源 ultimate-addons-for-gutenberg – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_virtual",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV EN ultimate-addons-for-gutenberg – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV SUB ultimate-addons-for-gutenberg – English Subsite"
+      }
+    },
+    {
+      "name": "lang_links_follow",
+      "ok": true,
+      "detail": {
+        "hreflang": true,
+        "switcher": true,
+        "prefix": true
+      }
+    },
+    {
+      "name": "target_plugin_admin_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Page “COV源 ultimate-addons-for-gutenberg” ‹ WPTSALL Blog Lab — WordPress"
+      }
+    },
+    {
+      "name": "target_plugin_admin_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Page “COV SUB ultimate-addons-for-gutenberg” ‹ English Subsite — WordPress"
+      }
+    },
+    {
+      "name": "content_manage_dirty_mark",
+      "ok": true,
+      "detail": {
+        "needs_resync": "1"
+      }
+    }
+  ],
+  "urls": {
+    "source": "http://192.168.1.14:9081/cov-ultimate-addons-for-gutenberg-99eb96/",
+    "virtual": "http://192.168.1.14:9081/en-us/cov-ultimate-addons-for-gutenberg-99eb96-en/",
+    "wp": "http://192.168.1.14:9081/en/cov-ultimate-addons-for-gutenberg-99eb96-sub/"
+  },
+  "ids": {
+    "source": 1148,
+    "virtual": 1149,
+    "wp": 163,
+    "model": "445"
+  },
+  "notes": [],
+  "name": "Spectra",
+  "category": "page-builders",
+  "post_type": "page",
+  "finished": "2026-08-13T07:12:02+00:00"
+}

@@ -1,0 +1,128 @@
+{
+    "_meta": {
+        "plugin_slug": "events-manager",
+        "plugin_name": "Events Manager",
+        "plan": "D",
+        "version": "1.0.0",
+        "description": "Events Manager seed data for events and locations",
+        "fields_source": "manual-definition (based on plugin documentation)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "event-categories": [
+            {"name": "Conference", "slug": "conference"},
+            {"name": "Workshop", "slug": "workshop"},
+            {"name": "Meetup", "slug": "meetup"},
+            {"name": "Concert", "slug": "concert"}
+        ]
+    },
+    "posts": {
+        "location": [
+            {
+                "post_title": "City Convention Center",
+                "post_content": "<p>Premier convention venue with multiple halls and meeting rooms.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_location_address": "500 Convention Plaza",
+                    "_location_town": "Seattle",
+                    "_location_state": "WA",
+                    "_location_country": "US"
+                }
+            },
+            {
+                "post_title": "Community Arts Center",
+                "post_content": "<p>Local arts center with theater and gallery spaces.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_location_address": "200 Arts Avenue",
+                    "_location_town": "Seattle",
+                    "_location_state": "WA"
+                }
+            },
+            {
+                "post_title": "Tech Hub Campus",
+                "post_content": "<p>Modern campus for tech events and workshops.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "_location_address": "100 Innovation Drive"
+                }
+            }
+        ],
+        "event": [
+            {
+                "post_title": "Annual Developer Conference",
+                "post_content": "<p>Join developers from around the world for two days of learning and networking.</p>",
+                "post_excerpt": "Premier developer conference.",
+                "post_status": "publish",
+                "meta": {
+                    "_event_start_date": "2026-05-15",
+                    "_event_end_date": "2026-05-16",
+                    "_event_start_time": "09:00:00",
+                    "_event_end_time": "18:00:00",
+                    "_location_id": "{{location:0}}",
+                    "_event_tickets_price": "199"
+                },
+                "taxonomy": {"event-categories": ["conference"]}
+            },
+            {
+                "post_title": "UX Design Workshop",
+                "post_content": "<p>Hands-on workshop covering user research and prototyping.</p>",
+                "post_excerpt": "Practical UX design skills.",
+                "post_status": "publish",
+                "meta": {
+                    "_event_start_date": "2026-04-10",
+                    "_event_end_date": "2026-04-10",
+                    "_event_start_time": "10:00:00",
+                    "_event_end_time": "16:00:00",
+                    "_location_id": "{{location:2}}",
+                    "_event_tickets_price": "75"
+                },
+                "taxonomy": {"event-categories": ["workshop"]}
+            },
+            {
+                "post_title": "Monthly Tech Meetup",
+                "post_content": "<p>Casual meetup for tech professionals to network and share ideas.</p>",
+                "post_excerpt": "Monthly networking event.",
+                "post_status": "publish",
+                "meta": {
+                    "_event_start_date": "2026-03-20",
+                    "_event_start_time": "18:30:00",
+                    "_event_end_time": "21:00:00",
+                    "_location_id": "{{location:1}}",
+                    "_event_tickets_price": "0"
+                },
+                "taxonomy": {"event-categories": ["meetup"]}
+            },
+            {
+                "post_title": "Indie Music Night",
+                "post_content": "<p>An evening of local bands, acoustic sets, and community performances.</p>",
+                "post_excerpt": "Local indie music showcase.",
+                "post_status": "publish",
+                "meta": {
+                    "_event_start_date": "2026-06-05",
+                    "_event_end_date": "2026-06-05",
+                    "_event_start_time": "19:00:00",
+                    "_event_end_time": "22:30:00",
+                    "_location_id": "{{location:1}}",
+                    "_event_tickets_price": "25"
+                },
+                "taxonomy": {"event-categories": ["concert"]}
+            },
+            {
+                "post_title": "Startup Hiring Mixer",
+                "post_content": "<p>Founders, recruiters, and candidates meet for short talks and networking sessions.</p>",
+                "post_excerpt": "Networking mixer for startup hiring.",
+                "post_status": "publish",
+                "meta": {
+                    "_event_start_date": "2026-07-12",
+                    "_event_end_date": "2026-07-12",
+                    "_event_start_time": "17:30:00",
+                    "_event_end_time": "20:00:00",
+                    "_location_id": "{{location:2}}",
+                    "_event_tickets_price": "0"
+                },
+                "taxonomy": {"event-categories": ["meetup"]}
+            }
+        ]
+    }
+}

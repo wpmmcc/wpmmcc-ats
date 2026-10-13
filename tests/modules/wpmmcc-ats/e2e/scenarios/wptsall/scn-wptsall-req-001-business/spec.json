@@ -1,0 +1,15 @@
+{
+  "scenario_id": "SCN-WPTSALL-REQ-001-BUSINESS",
+  "requirement_id": "REQ-WPTSALL-001",
+  "owner": "qa",
+  "layer": "business",
+  "product": "wptsall",
+  "surface": "product-smoke",
+  "description": "WPTSALL 最小业务链路场景：WP -> Client -> 回调写回。",
+  "execution": {
+    "command": "bash tests/modules/wpmmcc-ats/e2e/run-product-smoke.sh --product wptsall --mode business"
+  },
+  "evidence": {
+    "report_hint": "tests/reports/e2e/wpmmcc-ats/product-smoke-wptsall-business-*.json"
+  }
+}

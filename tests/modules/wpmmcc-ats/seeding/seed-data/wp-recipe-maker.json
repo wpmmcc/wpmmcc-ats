@@ -1,0 +1,113 @@
+{
+    "_meta": {
+        "plugin_slug": "wp-recipe-maker",
+        "plugin_name": "WP Recipe Maker",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "WP Recipe Maker seed data for recipes",
+        "fields_source": "v4-scanner (wprm-wprm_recipe.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "wprm_course": [
+            {"name": "Breakfast", "slug": "breakfast"},
+            {"name": "Main Course", "slug": "main-course"},
+            {"name": "Dessert", "slug": "dessert"},
+            {"name": "Appetizer", "slug": "appetizer"}
+        ],
+        "wprm_cuisine": [
+            {"name": "American", "slug": "american"},
+            {"name": "Mexican", "slug": "mexican"},
+            {"name": "French", "slug": "french"},
+            {"name": "Japanese", "slug": "japanese"}
+        ]
+    },
+    "posts": {
+        "wprm_recipe": [
+            {
+                "post_title": "Avocado Toast with Poached Eggs",
+                "post_content": "<p>A simple yet delicious breakfast combining creamy avocado with perfectly poached eggs on crusty bread.</p>",
+                "post_excerpt": "Classic avocado toast topped with poached eggs.",
+                "post_status": "publish",
+                "meta": {
+                    "wprm_prep_time": "10",
+                    "wprm_cook_time": "5",
+                    "wprm_total_time": "15",
+                    "wprm_servings": "2",
+                    "wprm_servings_unit": "servings",
+                    "wprm_calories": "280"
+                },
+                "taxonomy": {
+                    "wprm_course": ["breakfast"],
+                    "wprm_cuisine": ["american"]
+                }
+            },
+            {
+                "post_title": "Beef Tacos with Fresh Salsa",
+                "post_content": "<p>Authentic Mexican-style tacos with seasoned beef, fresh salsa, and all the toppings.</p>",
+                "post_excerpt": "Traditional beef tacos with homemade salsa.",
+                "post_status": "publish",
+                "meta": {
+                    "wprm_prep_time": "20",
+                    "wprm_cook_time": "15",
+                    "wprm_total_time": "35",
+                    "wprm_servings": "4"
+                },
+                "taxonomy": {
+                    "wprm_course": ["main-course"],
+                    "wprm_cuisine": ["mexican"]
+                }
+            },
+            {
+                "post_title": "Crème Brûlée",
+                "post_content": "<p>Classic French dessert with rich vanilla custard and caramelized sugar top.</p>",
+                "post_excerpt": "Elegant French vanilla custard dessert.",
+                "post_status": "publish",
+                "meta": {
+                    "wprm_prep_time": "30",
+                    "wprm_cook_time": "60",
+                    "wprm_total_time": "90",
+                    "wprm_servings": "6"
+                },
+                "taxonomy": {
+                    "wprm_course": ["dessert"],
+                    "wprm_cuisine": ["french"]
+                }
+            },
+            {
+                "post_title": "Miso Soup",
+                "post_content": "<p>Traditional Japanese soup with tofu, wakame seaweed, and green onions in a savory miso broth.</p>",
+                "post_excerpt": "Authentic Japanese miso soup.",
+                "post_status": "publish",
+                "meta": {
+                    "wprm_prep_time": "10",
+                    "wprm_cook_time": "10",
+                    "wprm_total_time": "20",
+                    "wprm_servings": "4"
+                },
+                "taxonomy": {
+                    "wprm_course": ["appetizer"],
+                    "wprm_cuisine": ["japanese"]
+                }
+            },
+            {
+                "post_title": "Mediterranean Chickpea Salad",
+                "post_content": "<p>A bright make-ahead salad with chickpeas, cucumber, tomatoes, herbs, lemon dressing, and feta.</p>",
+                "post_excerpt": "Fresh Mediterranean chickpea salad for lunches and picnics.",
+                "post_status": "publish",
+                "meta": {
+                    "wprm_prep_time": "15",
+                    "wprm_cook_time": "0",
+                    "wprm_total_time": "15",
+                    "wprm_servings": "4",
+                    "wprm_servings_unit": "servings",
+                    "wprm_calories": "320"
+                },
+                "taxonomy": {
+                    "wprm_course": ["main-course"],
+                    "wprm_cuisine": ["american"]
+                }
+            }
+        ]
+    }
+}

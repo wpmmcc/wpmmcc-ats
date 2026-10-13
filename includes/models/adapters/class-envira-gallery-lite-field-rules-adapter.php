@@ -2,7 +2,7 @@
 /**
  * Envira Gallery Lite field rules adapter
  *
- * Meta keys extracted from wp-plugin/tests/seeding/seed-data/envira-gallery-lite.json
+ * Meta keys extracted from wpmmcc-ats/tests/seeding/seed-data/envira-gallery-lite.json
  * (fields_source: database query, fields_verified: 2026-01-27).
  *
  * Envira Gallery Lite stores gallery configuration in a serialized

@@ -50,11 +50,23 @@ class Translation_Memory_Page {
 		$search    = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore
 		$src       = isset( $_GET['src'] ) ? sanitize_text_field( wp_unslash( $_GET['src'] ) ) : ''; // phpcs:ignore
 		$tgt       = isset( $_GET['tgt'] ) ? sanitize_text_field( wp_unslash( $_GET['tgt'] ) ) : ''; // phpcs:ignore
-		$rows      = Translation_Memory_Service::list_pairs( array(
+		// ATS-P2-05 (3.8flash B4): the hardcoded 200-row window with no pager made
+		// deep TM rows silently unreachable. Wire the service layer's own
+		// limit/offset to a shared pagination bar.
+		$per_page = isset( $_GET['per_page'] ) ? max( 1, min( 500, (int) wp_unslash( $_GET['per_page'] ) ) ) : 50; // phpcs:ignore
+		$paged    = isset( $_GET['paged'] ) ? max( 1, (int) wp_unslash( $_GET['paged'] ) ) : 1; // phpcs:ignore
+		$filter_args = array(
 			'search'      => $search,
 			'source_lang' => $src,
 			'target_lang' => $tgt,
-			'limit'       => 200,
+		);
+		$total = Translation_Memory_Service::count_pairs( $filter_args );
+		$rows  = Translation_Memory_Service::list_pairs( array_merge(
+			$filter_args,
+			array(
+				'limit'  => $per_page,
+				'offset' => ( $paged - 1 ) * $per_page,
+			)
 		) );
 
 		Admin_Page_Helper::render_header(
@@ -63,7 +75,19 @@ class Translation_Memory_Page {
 			sprintf( __( '%1$d entries across %2$d language pairs. Lookup runs on every translation request.', 'wpmmcc-ats' ), $counts['total'], $counts['pairs'] )
 		);
 
+		// opus5 M-04: automatic recording toggle (manual saves + client callback success).
+		$tm_auto_record = Translation_Memory_Service::is_auto_record_enabled();
 		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom:12px;">
+			<?php wp_nonce_field( 'wptsall_tm_settings' ); ?>
+			<input type="hidden" name="action" value="wptsall_tm_settings">
+			<label style="display:inline-flex;align-items:center;gap:6px;">
+				<input type="checkbox" name="auto_record" value="1" <?php checked( $tm_auto_record ); ?>>
+				<?php esc_html_e( 'Automatically record pairs on manual saves and client callback success', 'wpmmcc-ats' ); ?>
+			</label>
+			<button class="button" type="submit"><?php esc_html_e( 'Save setting', 'wpmmcc-ats' ); ?></button>
+		</form>
+
 		<form method="get" style="margin-bottom:12px;">
 			<input type="hidden" name="page" value="<?php echo esc_attr( self::PAGE_SLUG ); ?>">
 			<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search source / target…', 'wpmmcc-ats' ); ?>">
@@ -117,6 +141,19 @@ class Translation_Memory_Page {
 
 		<hr>
 		<h2><?php esc_html_e( 'Existing entries', 'wpmmcc-ats' ); ?></h2>
+		<?php
+		Admin_Page_Helper::render_pagination(
+			$total,
+			$per_page,
+			$paged,
+			self::PAGE_SLUG,
+			array(
+				's'   => $search,
+				'src' => $src,
+				'tgt' => $tgt,
+			)
+		);
+		?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom:8px;">
 			<?php wp_nonce_field( 'wptsall_tm_export' ); ?>
 			<input type="hidden" name="action" value="wptsall_tm_export">
@@ -207,6 +244,19 @@ class Translation_Memory_Page {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- TSV file download (Content-Type: text/tab-separated-values), not browser output.
 			echo implode( "\t", $clean ) . "\n";
 		}
+		exit;
+	}
+
+	/**
+	 * Persist the automatic-recording toggle (opus5 M-04).
+	 */
+	public static function handle_settings() {
+		if ( ! current_user_can( self::CAP ) ) {
+			wp_die( esc_html__( 'Forbidden', 'wpmmcc-ats' ) );
+		}
+		check_admin_referer( 'wptsall_tm_settings' );
+		update_option( Translation_Memory_Service::OPTION_AUTO_RECORD, isset( $_POST['auto_record'] ) ? 1 : 0 );
+		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'tm-settings' => '1' ), admin_url( 'admin.php' ) ) );
 		exit;
 	}
 }

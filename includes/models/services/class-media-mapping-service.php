@@ -254,7 +254,11 @@ class Media_Mapping_Service {
 				array( '%d' )
 			);
 
-			return $result !== false ? (int) $existing['id'] : false;
+			if ( $result !== false ) {
+				wp_cache_flush_group( 'wptsall_media_counts' );
+				return (int) $existing['id'];
+			}
+			return false;
 		} else {
 			// Create new mapping
 			$data['created_at'] = $now;
@@ -266,7 +270,11 @@ class Media_Mapping_Service {
 				array( '%d', '%d', '%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s' )
 			);
 
-			return $result ? (int) $wpdb->insert_id : false;
+			if ( $result ) {
+				wp_cache_flush_group( 'wptsall_media_counts' );
+				return (int) $wpdb->insert_id;
+			}
+			return false;
 		}
 	}
 
@@ -530,6 +538,9 @@ class Media_Mapping_Service {
 				(int) $mapping['id']
 			)
 		);
+		if ( (int) $wpdb->rows_affected > 0 ) {
+			wp_cache_flush_group( 'wptsall_media_counts' );
+		}
 	}
 
 	/**
@@ -740,6 +751,10 @@ class Media_Mapping_Service {
 			array( 'id' => $mapping_id ),
 			array( '%d' )
 		);
+
+		if ( false !== $result && $result > 0 ) {
+			wp_cache_flush_group( 'wptsall_media_counts' );
+		}
 
 		return $result !== false;
 	}

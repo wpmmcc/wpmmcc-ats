@@ -1,0 +1,42 @@
+# Provider fault profiles for Client mock matrix (ISS T5 / W5).
+# Consumed by lab mock / client test harnesses.
+profiles:
+  rate_limit_then_ok:
+    sequence:
+      - { status: 429, body: '{"error":"rate_limited"}', delay_ms: 0 }
+      - { status: 429, body: '{"error":"rate_limited"}', delay_ms: 100 }
+      - { status: 200, body: '{"ok":true}', delay_ms: 0 }
+    expect:
+      max_writebacks: 1
+      retries_min: 2
+
+  server_error_recovery:
+    sequence:
+      - { status: 503, body: '{"error":"unavailable"}', delay_ms: 0 }
+      - { status: 200, body: '{"ok":true}', delay_ms: 0 }
+    expect:
+      max_writebacks: 1
+
+  timeout_then_ok:
+    sequence:
+      - { status: 0, timeout: true, delay_ms: 5000 }
+      - { status: 200, body: '{"ok":true}', delay_ms: 0 }
+    expect:
+      max_writebacks: 1
+
+  duplicate_callback:
+    sequence:
+      - { status: 200, body: '{"ok":true,"duplicate":false}', delay_ms: 0 }
+      - { status: 200, body: '{"ok":true,"duplicate":true}', delay_ms: 0 }
+    expect:
+      max_writebacks: 1
+      idempotent: true
+
+  client_restart_resume:
+    sequence:
+      - { status: 200, body: '{"ok":true,"partial":true}', delay_ms: 0 }
+      - { action: restart_client }
+      - { status: 200, body: '{"ok":true}', delay_ms: 0 }
+    expect:
+      max_writebacks: 1
+      resume: true

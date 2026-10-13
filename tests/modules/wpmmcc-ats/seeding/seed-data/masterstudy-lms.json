@@ -1,0 +1,145 @@
+{
+    "_meta": {
+        "plugin_slug": "masterstudy-lms-learning-management-system",
+        "plugin_name": "MasterStudy LMS",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "MasterStudy LMS seed data for courses, lessons, and quizzes",
+        "fields_source": "v4-scanner (masterstudy-lms-learning-management-system-stm-courses.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "stm_lms_course_taxonomy": [
+            {"name": "Technology", "slug": "technology"},
+            {"name": "Design", "slug": "design"},
+            {"name": "Marketing", "slug": "marketing"}
+        ]
+    },
+    "posts": {
+        "stm-courses": [
+            {
+                "post_title": "UI/UX Design Masterclass",
+                "post_content": "<p>Learn professional UI/UX design from research to prototyping. Master Figma, user research, and design systems.</p><h3>Course Content</h3><ul><li>Design Thinking Process</li><li>User Research Methods</li><li>Wireframing & Prototyping</li><li>Visual Design Principles</li></ul>",
+                "post_excerpt": "Become a professional UI/UX designer with hands-on projects.",
+                "post_status": "publish",
+                "meta": {
+                    "_ms_course_price": "299",
+                    "_ms_course_sale_price": "249",
+                    "_ms_course_duration": "50 hours",
+                    "_ms_course_students": "0",
+                    "_ms_course_rating": "0",
+                    "level": "intermediate"
+                },
+                "taxonomy": {"stm_lms_course_taxonomy": ["design"]}
+            },
+            {
+                "post_title": "Digital Marketing Strategy",
+                "post_content": "<p>Master digital marketing channels and strategies. Learn SEO, social media, email marketing, and analytics.</p>",
+                "post_excerpt": "Comprehensive digital marketing training for modern marketers.",
+                "post_status": "publish",
+                "meta": {
+                    "_ms_course_price": "199",
+                    "_ms_course_sale_price": "149",
+                    "_ms_course_duration": "35 hours",
+                    "_ms_course_students": "0",
+                    "_ms_course_rating": "0"
+                },
+                "taxonomy": {"stm_lms_course_taxonomy": ["marketing"]}
+            },
+            {
+                "post_title": "Cloud Computing with AWS",
+                "post_content": "<p>Learn Amazon Web Services from scratch. Deploy applications, manage infrastructure, and prepare for certification.</p>",
+                "post_excerpt": "Get AWS certified and master cloud infrastructure.",
+                "post_status": "publish",
+                "meta": {
+                    "_ms_course_price": "349",
+                    "_ms_course_duration": "60 hours"
+                },
+                "taxonomy": {"stm_lms_course_taxonomy": ["technology"]}
+            },
+            {
+                "post_title": "Mobile App Design",
+                "post_content": "<p>Design mobile apps for iOS and Android. Learn platform guidelines, interaction patterns, and responsive design.</p>",
+                "post_excerpt": "Create beautiful and functional mobile app interfaces.",
+                "post_status": "publish",
+                "meta": {
+                    "_ms_course_price": "179",
+                    "_ms_course_duration": "25 hours"
+                },
+                "taxonomy": {"stm_lms_course_taxonomy": ["design"]}
+            },
+            {
+                "post_title": "Content Marketing Fundamentals",
+                "post_content": "<p>Build your content marketing strategy. Learn content creation, distribution, and performance measurement.</p>",
+                "post_excerpt": "Create content that drives engagement and conversions.",
+                "post_status": "publish",
+                "meta": {
+                    "_ms_course_price": "129",
+                    "_ms_course_sale_price": "99",
+                    "_ms_course_duration": "20 hours"
+                },
+                "taxonomy": {"stm_lms_course_taxonomy": ["marketing"]}
+            }
+        ],
+        "stm-lessons": [
+            {
+                "post_title": "Introduction to UX Design",
+                "post_content": "<p>Understand the role of UX design in product development. Learn key concepts and career opportunities.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "lesson_course_id": "{{stm-courses:0}}",
+                    "lesson_duration": "45"
+                }
+            },
+            {
+                "post_title": "User Research Techniques",
+                "post_content": "<p>Learn various user research methods including interviews, surveys, and usability testing.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "lesson_course_id": "{{stm-courses:0}}",
+                    "lesson_duration": "60"
+                }
+            },
+            {
+                "post_title": "SEO Fundamentals",
+                "post_content": "<p>Understand search engine optimization basics. Learn keyword research, on-page SEO, and content optimization.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "lesson_course_id": "{{stm-courses:1}}",
+                    "lesson_duration": "50"
+                }
+            },
+            {
+                "post_title": "AWS EC2 Basics",
+                "post_content": "<p>Launch and manage EC2 instances. Learn instance types, security groups, and best practices.</p>",
+                "post_status": "publish",
+                "meta": {
+                    "lesson_course_id": "{{stm-courses:2}}",
+                    "lesson_duration": "55"
+                }
+            }
+        ],
+        "stm-quizzes": [
+            {
+                "post_title": "UX Design Principles Quiz",
+                "post_content": "",
+                "post_status": "publish",
+                "meta": {
+                    "quiz_course_id": "{{stm-courses:0}}",
+                    "quiz_duration": "20",
+                    "quiz_passing_score": "70"
+                }
+            },
+            {
+                "post_title": "Digital Marketing Quiz",
+                "post_content": "",
+                "post_status": "publish",
+                "meta": {
+                    "quiz_course_id": "{{stm-courses:1}}",
+                    "quiz_duration": "15",
+                    "quiz_passing_score": "60"
+                }
+            }
+        ]
+    }
+}

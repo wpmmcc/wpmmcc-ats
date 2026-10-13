@@ -89,73 +89,6 @@ function wptsall_get_task_parameters() {
 	return wp_parse_args( $saved, $defaults );
 }
 
-/**
- * Get environment presets for task parameters.
- *
- * @since 0.9.1
- * @return array Environment presets.
- */
-function wptsall_get_environment_presets() {
-	return array(
-		'shared_hosting' => array(
-			'label'                   => __( 'Shared Hosting', 'wpmmcc-ats' ),
-			'description'             => __( 'Conservative settings for shared hosting environments', 'wpmmcc-ats' ),
-			'max_cycles_per_run'      => 5,
-			'max_items_per_cycle'     => 50,
-			'max_total_items_per_run' => 250,
-			'monitoring_batch'        => 30,
-			'task_timeout'            => 120,
-			'run_timeout'             => 300,
-			'item_timeout'            => 15,
-			'memory_limit_percent'    => 60,
-			'cycle_cooldown_seconds'  => 2,
-		),
-		'vps_small'      => array(
-			'label'                   => __( 'VPS Small (1-2 CPU, 2GB RAM)', 'wpmmcc-ats' ),
-			'description'             => __( 'Balanced settings for small VPS instances', 'wpmmcc-ats' ),
-			'max_cycles_per_run'      => 10,
-			'max_items_per_cycle'     => 100,
-			'max_total_items_per_run' => 500,
-			'monitoring_batch'        => 50,
-			'task_timeout'            => 300,
-			'run_timeout'             => 600,
-			'item_timeout'            => 30,
-			'memory_limit_percent'    => 70,
-			'cycle_cooldown_seconds'  => 1,
-		),
-		'vps_medium'     => array(
-			'label'                   => __( 'VPS Medium (2-4 CPU, 4GB RAM)', 'wpmmcc-ats' ),
-			'description'             => __( 'Default settings for medium VPS instances', 'wpmmcc-ats' ),
-			'max_cycles_per_run'      => 15,
-			'max_items_per_cycle'     => 200,
-			'max_total_items_per_run' => 1000,
-			'monitoring_batch'        => 100,
-			'task_timeout'            => 300,
-			'run_timeout'             => 900,
-			'item_timeout'            => 30,
-			'memory_limit_percent'    => 75,
-			'cycle_cooldown_seconds'  => 1,
-		),
-		'vps_large'      => array(
-			'label'                   => __( 'VPS Large (4+ CPU, 8GB+ RAM)', 'wpmmcc-ats' ),
-			'description'             => __( 'Aggressive settings for powerful VPS instances', 'wpmmcc-ats' ),
-			'max_cycles_per_run'      => 20,
-			'max_items_per_cycle'     => 500,
-			'max_total_items_per_run' => 2000,
-			'monitoring_batch'        => 200,
-			'task_timeout'            => 300,
-			'run_timeout'             => 1800,
-			'item_timeout'            => 30,
-			'memory_limit_percent'    => 80,
-			'cycle_cooldown_seconds'  => 0,
-		),
-		'custom'         => array(
-			'label'       => __( 'Custom', 'wpmmcc-ats' ),
-			'description' => __( 'Manually configured settings', 'wpmmcc-ats' ),
-		),
-	);
-}
-
 
 /**
  * Save task parameters settings.
@@ -1515,45 +1448,6 @@ function wptsall_get_pending_template_entries( $template_id ) {
  *
  * @param int $template_id Template ID.
  */
-function wptsall_update_template_translation_stats( $template_id ) {
-    global $wpdb;
-    $templates_table = wptsall_table( 'templates' );
-    $entries_table   = wptsall_table( 'template_entries' );
-
-    // Check if tables exist.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    $table_exists = $wpdb->get_var(
-        $wpdb->prepare( 'SHOW TABLES LIKE %s', $templates_table )
-    );
-
-    if ( ! $table_exists ) {
-        return;
-    }
-
-    // Count translated entries.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    $translated_count = (int) $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM %i WHERE template_id = %d AND status = %s",
-            $entries_table,
-            $template_id,
-            'translated'
-        )
-    );
-
-    // Update templates table.
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    $wpdb->update(
-        $templates_table,
-        array(
-            'translated_entries' => $translated_count,
-            'updated_at'         => current_time( 'mysql', true ),
-        ),
-        array( 'id' => $template_id ),
-        array( '%d', '%s' ),
-        array( '%d' )
-    );
-}
 
 function wptsall_get_saved_template( $plugin_slug ) {
     $plugin_slug = sanitize_key( $plugin_slug );
@@ -2872,7 +2766,7 @@ function wptsall_get_task_job_snapshot( $job_id ) {
  * @return array<int,string>
  */
 function wptsall_get_open_task_statuses_for_insert() {
-	return array( 'pending', 'retry', 'processing', 'active' );
+	return \WPTSALL\Tasks\Services\Task_Status::open_states();
 }
 
 /**
@@ -3078,6 +2972,17 @@ function wptsall_insert_tasks( $tasks, $lang_from = '', $lang_to = '' ) {
 			$count++;
 		}
     }
+    if ( $count > 0 ) {
+        /**
+         * Fires when a task batch creates or refreshes open tasks.
+         *
+         * Listeners: wptsall_cache_invalidate_tasks (task_stats cache).
+         *
+         * @param int    $count Number of tasks inserted/updated in the batch.
+         * @param string $batch_job_id Batch job id.
+         */
+        do_action( 'wptsall_task_created', $count, $batch_job_id );
+    }
     wptsall_log( 'task', 'info', 'insert_tasks', array_merge( array( 'count' => $count ), $stats ) );
 	return array_merge( array( 'count' => $count ), $stats );
 }
@@ -3179,8 +3084,8 @@ function wptsall_log_task_event( $task_id, $from, $to, $note = '', $context = ar
  * @return bool
  */
 function wptsall_is_valid_task_status( $status ) {
-    $valid = array( 'pending', 'processing', 'active', 'paused', 'completed', 'skipped', 'retry', 'failed', 'error' );
-    return in_array( $status, $valid, true );
+    // opus5 A-02: the closed vocabulary lives in Task_Status (single source of truth).
+    return \WPTSALL\Tasks\Services\Task_Status::is_valid( $status );
 }
 
 function wptsall_update_task_status( $row, $status_to, $note = '', $increment_retry = false, $context = array() ) {
@@ -3209,6 +3114,15 @@ function wptsall_update_task_status( $row, $status_to, $note = '', $increment_re
         array( 'id' => intval( $row['id'] ) )
     );
     wptsall_log_task_event( $row['id'], $row['status'] ?? '', $status_to, $note, $context );
+    /**
+     * Fires after a task status transition is persisted.
+     *
+     * Listeners: wptsall_cache_invalidate_tasks (task_stats cache).
+     *
+     * @param int    $task_id Task id.
+     * @param string $status_to New status.
+     */
+    do_action( 'wptsall_task_updated', intval( $row['id'] ), $status_to );
 }
 
 
@@ -3221,31 +3135,6 @@ function wptsall_update_task_status( $row, $status_to, $note = '', $increment_re
  * @param int $task_id Task ID.
  * @return bool Whether successful.
  */
-function wptsall_requeue_failed_task( $task_id ) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'wptsall_tasks';
-
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-    $result = $wpdb->update(
-        $table,
-        array(
-            'status'      => 'pending',
-            'retry_count' => 0,
-            'status_note' => 'Manually re-queued',
-            'updated_at'  => current_time( 'mysql', true ),
-        ),
-        array(
-            'id'     => intval( $task_id ),
-            'status' => 'failed',
-        )
-    );
-
-    if ( $result ) {
-        wptsall_log( 'task', 'info', 'requeued_task', array( 'task_id' => $task_id ) );
-    }
-
-    return $result !== false;
-}
 
 
 function wptsall_fetch_task_row( $blog_id, $object_id, $subtype, $template ) {
@@ -4391,9 +4280,11 @@ function wptsall_insert_translation_result( $args ) {
         // return its primary key instead of failing. The schema enforces
         // UNIQUE KEY on client_task_id, so a duplicate INSERT surfaces as
         // a "Duplicate entry" error from $wpdb->last_error.
+        // Use a current locking read: a callback transaction's repeatable-read
+        // snapshot may predate the competing INSERT it just waited for.
         $existing_id = $wpdb->get_var(
             $wpdb->prepare(
-                'SELECT id FROM %i WHERE client_task_id = %s',
+                'SELECT id FROM %i WHERE client_task_id = %s FOR UPDATE',
                 $table,
                 $args['client_task_id']
             )

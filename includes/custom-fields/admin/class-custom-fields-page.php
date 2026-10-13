@@ -102,7 +102,11 @@ class Custom_Fields_Page {
 						</td>
 						<?php foreach ( $languages as $lang ) : ?>
 							<td>
-								<input type="text" name="rows[<?php echo (int) $r['id']; ?>][tr][<?php echo esc_attr( $lang['code'] ); ?>]" value="<?php echo esc_attr( (string) ( $tr[ $lang['code'] ] ?? '' ) ); ?>" class="regular-text">
+								<?php
+								// UI-28-08: legacy lowercase keys fallback (see handle_save).
+								$tr_val = $tr[ $lang['code'] ] ?? $tr[ strtolower( $lang['code'] ) ] ?? '';
+								?>
+								<input type="text" name="rows[<?php echo (int) $r['id']; ?>][tr][<?php echo esc_attr( $lang['code'] ); ?>]" value="<?php echo esc_attr( (string) $tr_val ); ?>" class="regular-text">
 							</td>
 						<?php endforeach; ?>
 						<td><?php echo esc_html( $r['status'] ); ?></td>
@@ -134,7 +138,9 @@ class Custom_Fields_Page {
 			$tr = isset( $payload['tr'] ) && is_array( $payload['tr'] ) ? $payload['tr'] : array();
 			$clean = array();
 			foreach ( $tr as $code => $txt ) {
-				$safe_code = sanitize_key( (string) $code );
+				// UI-28-08 (same as Strings page): sanitize_key() lowercases
+				// locale codes, but readers look up canonical mixed case.
+				$safe_code = preg_match( '/^[A-Za-z0-9_-]{1,20}$/', (string) $code ) ? (string) $code : '';
 				if ( '' === $safe_code ) {
 					continue;
 				}

@@ -130,7 +130,7 @@ jobs:
           {
             echo "wpmmcc-ats v$RELEASE_VERSION"
             echo
-            echo "WordPress plugin source release, tagged from the repository tree at this commit. CI (php lint + WordPress plugin-check) and the compat-matrix (PHP 7.4-8.3 × WP 6.2-7.1 real-install matrix + multisite lanes) were green at this commit."
+            echo "WordPress plugin source release, tagged from the repository tree at this commit. CI (php lint + WordPress plugin-check) and the compat-matrix (PHP 7.4-8.3 × WP 6.2-7.0 and 7.1.3 real-install matrix + multisite lanes) were green at this commit."
             echo
             echo "Install: upload the auto-generated source ZIP via wp-admin → Plugins → Add New → Upload Plugin, or download from WordPress.org once published there."
             if [ -n "$NOTES" ]; then

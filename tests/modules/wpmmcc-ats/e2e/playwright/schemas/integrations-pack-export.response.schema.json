@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "integrations-pack-export.response.schema.json",
+  "type": "object",
+  "required": ["success"],
+  "properties": {
+    "success": { "const": true },
+    "data": {
+      "type": "object",
+      "required": ["pack"],
+      "properties": {
+        "pack": { "type": "object" },
+        "export_mode": { "type": "string" },
+        "encrypted": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

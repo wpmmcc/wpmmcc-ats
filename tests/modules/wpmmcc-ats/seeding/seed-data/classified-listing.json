@@ -1,0 +1,114 @@
+{
+    "_meta": {
+        "plugin_slug": "classified-listing",
+        "plugin_name": "Classified Listing",
+        "plan": "A",
+        "version": "1.0.0",
+        "description": "Classified Listing seed data for listings",
+        "fields_source": "v4-scanner (classified-listing-rtcl_listing.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "rtcl_category": [
+            {"name": "Vehicles", "slug": "vehicles", "children": [
+                {"name": "Cars", "slug": "cars"},
+                {"name": "Motorcycles", "slug": "motorcycles"}
+            ]},
+            {"name": "Electronics", "slug": "electronics", "children": [
+                {"name": "Phones", "slug": "phones"},
+                {"name": "Computers", "slug": "computers"}
+            ]},
+            {"name": "Services", "slug": "services"}
+        ],
+        "rtcl_location": [
+            {"name": "New York", "slug": "new-york"},
+            {"name": "Los Angeles", "slug": "los-angeles"},
+            {"name": "Chicago", "slug": "chicago"}
+        ]
+    },
+    "posts": {
+        "rtcl_listing": [
+            {
+                "post_title": "2020 Toyota Camry - Excellent Condition",
+                "post_content": "<p>Well-maintained 2020 Toyota Camry with low mileage. Single owner, full service history available.</p><h3>Features</h3><ul><li>Automatic transmission</li><li>Leather seats</li><li>Navigation system</li><li>Backup camera</li></ul><p>Contact for test drive scheduling.</p>",
+                "post_excerpt": "Low mileage Camry with full service history. Great fuel economy.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "_rtcl_price": "25000",
+                    "_rtcl_price_type": "fixed",
+                    "_rtcl_listing_type": "sell",
+                    "_rtcl_phone": "555-0101",
+                    "_rtcl_email": "seller@example.com",
+                    "_rtcl_address": "123 Main St, New York, NY 10001",
+                    "_rtcl_latitude": "40.7128",
+                    "_rtcl_longitude": "-74.0060"
+                },
+                "taxonomy": {
+                    "rtcl_category": ["cars"],
+                    "rtcl_location": ["new-york"]
+                }
+            },
+            {
+                "post_title": "iPhone 14 Pro Max - 256GB",
+                "post_content": "<p>Selling my iPhone 14 Pro Max. Phone is in perfect condition with original box and accessories.</p><p>Battery health: 95%. No scratches or dents.</p>",
+                "post_excerpt": "iPhone 14 Pro Max in excellent condition with all accessories.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-2.jpg}}",
+                "meta": {
+                    "_rtcl_price": "899",
+                    "_rtcl_price_type": "negotiable",
+                    "_rtcl_listing_type": "sell",
+                    "_rtcl_phone": "555-0102"
+                },
+                "taxonomy": {
+                    "rtcl_category": ["phones"],
+                    "rtcl_location": ["los-angeles"]
+                }
+            },
+            {
+                "post_title": "Honda CBR600RR 2019",
+                "post_content": "<p>Sport bike in excellent mechanical condition. Recent oil change and new tires. Perfect for weekend rides.</p>",
+                "post_excerpt": "Well-maintained CBR600RR with recent service.",
+                "post_status": "publish",
+                "meta": {
+                    "_rtcl_price": "8500",
+                    "_rtcl_listing_type": "sell"
+                },
+                "taxonomy": {
+                    "rtcl_category": ["motorcycles"],
+                    "rtcl_location": ["chicago"]
+                }
+            },
+            {
+                "post_title": "Professional Photography Services",
+                "post_content": "<p>Experienced photographer offering services for weddings, portraits, and corporate events.</p><ul><li>10+ years experience</li><li>Professional equipment</li><li>Quick turnaround</li></ul>",
+                "post_excerpt": "Professional photography for all occasions.",
+                "post_status": "publish",
+                "meta": {
+                    "_rtcl_price": "500",
+                    "_rtcl_price_type": "on_call",
+                    "_rtcl_listing_type": "sell"
+                },
+                "taxonomy": {
+                    "rtcl_category": ["services"],
+                    "rtcl_location": ["new-york"]
+                }
+            },
+            {
+                "post_title": "MacBook Pro 16\" M2 Pro",
+                "post_content": "<p>2023 MacBook Pro with M2 Pro chip, 32GB RAM, 1TB SSD. Perfect for developers and content creators.</p>",
+                "post_excerpt": "Latest MacBook Pro with M2 Pro chip.",
+                "post_status": "publish",
+                "meta": {
+                    "_rtcl_price": "2200",
+                    "_rtcl_listing_type": "sell"
+                },
+                "taxonomy": {
+                    "rtcl_category": ["computers"],
+                    "rtcl_location": ["los-angeles"]
+                }
+            }
+        ]
+    }
+}

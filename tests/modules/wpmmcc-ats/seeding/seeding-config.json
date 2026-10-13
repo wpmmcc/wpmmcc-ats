@@ -1,0 +1,853 @@
+{
+    "_meta": {
+        "version": "1.1.0",
+        "updated_at": "2026-01-27",
+        "description": "WPTSALL 数据填充计划配置文件",
+        "workflow": {
+            "phase_0": "准备阶段：公共插件网络激活，计划插件卸载重装",
+            "phase_1": "官方数据填充：导入有官方数据的插件",
+            "phase_2": "自定义数据填充：填充无官方数据的内容插件",
+            "phase_3": "工具插件关联：Utility 与 Content 插件组合填充",
+            "phase_4": "验证阶段：前后台访问验证、业务流程验证"
+        }
+    },
+
+    "seed_data_config": {
+        "_description": "自定义填充数据文件配置",
+        "base_path": "__SEED_DATA_DIR__",
+        "files": {
+            "academy": "academy.json",
+            "masterstudy-lms-learning-management-system": "masterstudy-lms.json",
+            "classified-listing": "classified-listing.json",
+            "easy-property-listings": "easy-property-listings.json",
+            "cooked": "cooked.json",
+            "envira-gallery-lite": "envira-gallery-lite.json",
+            "site-reviews": "site-reviews.json",
+            "testimonial-free": "testimonial-free.json",
+            "directorist": "directorist.json",
+            "the-events-calendar": "the-events-calendar.json",
+            "wp-job-manager": "wp-job-manager.json",
+            "essential-real-estate": "essential-real-estate.json",
+            "asgaros-forum": "asgaros-forum.json",
+            "delicious-recipes": "delicious-recipes.json",
+            "foogallery": "foogallery.json",
+            "portfolio-post-type": "portfolio-post-type.json",
+            "seriously-simple-podcasting": "seriously-simple-podcasting.json",
+            "wp-easycart": "wp-easycart.json",
+            "wpforo": "wpforo.json",
+            "estatik": "estatik.json",
+            "wp-recipe-maker": "wp-recipe-maker.json",
+            "simple-job-board": "simple-job-board.json",
+            "ultimate-faqs": "ultimate-faqs.json",
+            "wp-customer-reviews": "wp-customer-reviews.json",
+            "storeengine": "storeengine.json",
+            "hivepress": "hivepress.json",
+            "geodirectory": "geodirectory.json",
+            "forumwp": "forumwp.json",
+            "propertyhive": "propertyhive.json",
+            "events-manager": "events-manager.json",
+            "wp-job-openings": "wp-job-openings.json",
+            "give": "give.json",
+            "lifterlms": "lifterlms.json",
+            "tutor": "tutor.json",
+            "podlove-podcasting-plugin-for-wordpress": "podlove.json",
+            "woocommerce-extra": "woocommerce-extra.json",
+            "wordpress-long-content": "wordpress-long-content.json"
+        }
+    },
+
+    "common_plugins": {
+        "_description": "公共插件：所有计划都需要，网络激活，不需要数据填充",
+        "activation_mode": "network",
+        "plugins": [
+            {
+                "slug": "wptsall",
+                "name": "WPTSALL",
+                "type": "core",
+                "description": "被测试的插件本身"
+            },
+            {
+                "slug": "classic-editor",
+                "name": "Classic Editor",
+                "type": "tool",
+                "description": "经典编辑器"
+            },
+            {
+                "slug": "loco-translate",
+                "name": "Loco Translate",
+                "type": "tool",
+                "description": "翻译管理"
+            },
+            {
+                "slug": "duplicate-post",
+                "name": "Duplicate Post",
+                "type": "tool",
+                "description": "复制文章"
+            },
+            {
+                "slug": "custom-post-type-ui",
+                "name": "Custom Post Type UI",
+                "type": "tool",
+                "description": "CPT 管理"
+            },
+            {
+                "slug": "akismet",
+                "name": "Akismet",
+                "type": "tool",
+                "description": "反垃圾评论"
+            }
+        ]
+    },
+
+    "ignored_plugins": {
+        "_description": "忽略插件：网络激活但不参与测试",
+        "plugins": [
+            "action-scheduler",
+            "hello",
+            "plugin-check",
+            "simple-custom-css",
+            "updraftplus",
+            "wp-super-cache",
+            "wordfence",
+            "insert-headers-and-footers",
+            "easy-accordion-free"
+        ]
+    },
+
+    "official_data_sources": {
+        "_description": "官方数据源配置",
+        "base_path": "__SEED_OFFICIAL_DIR__",
+        "plugins": {
+            "wordpress-core": {
+                "method": "wp_import",
+                "file": "wordpress-core/themeunittestdata.wordpress.xml",
+                "command": "wp import {file} --authors=create"
+            },
+            "woocommerce": {
+                "method": "php_script",
+                "file": "scripts/wc-csv-import.php",
+                "command": "wp eval-file {file}"
+            },
+            "bbpress": {
+                "method": "wp_import",
+                "file": "downloads/bbpress/bbpress-sample-data.xml",
+                "command": "wp import {file} --authors=create"
+            },
+            "easy-digital-downloads": {
+                "method": "wp_import",
+                "file": "easy-digital-downloads/sample-products-import.xml",
+                "command": "wp import {file} --authors=create"
+            },
+            "buddypress": {
+                "method": "wp_cli",
+                "commands": [
+                    "wp bp component activate groups",
+                    "wp bp member generate --count=20",
+                    "wp bp group generate --count=5"
+                ]
+            },
+            "tutor": {
+                "method": "wp_import",
+                "file": "downloads/tutor-lms/tutor-sample-course.xml",
+                "command": "wp import {file} --authors=create --skip=attachment"
+            },
+            "sensei-lms": {
+                "method": "php_script",
+                "file": "scripts/sensei-import.php",
+                "command": "wp eval-file {file} --user=admin"
+            },
+            "lifterlms": {
+                "method": "php_script",
+                "file": "scripts/llms-json-import.php",
+                "command": "wp eval-file {file} --user=admin"
+            },
+            "learnpress": {
+                "method": "php_script",
+                "file": "scripts/learnpress-seed.php",
+                "command": "wp eval-file {file}"
+            },
+            "wp-easycart": {
+                "method": "php_script",
+                "file": "scripts/easycart-seed.php",
+                "command": "wp eval-file {file} --user=admin"
+            },
+            "wpforo": {
+                "method": "skip",
+                "note": "WPForo 安装时自动创建示例数据，无需额外填充"
+            }
+        }
+    },
+
+    "plans": {
+        "A": {
+            "name": "基础商业套件",
+            "description": "电商、论坛、LMS、下载、分类、房产、食谱",
+
+            "content_plugins": {
+                "official_data": [
+                    {
+                        "slug": "woocommerce",
+                        "name": "WooCommerce",
+                        "post_types": ["product", "product_variation"],
+                        "taxonomies": ["product_cat", "product_tag"],
+                        "data_source": "woocommerce"
+                    },
+                    {
+                        "slug": "bbpress",
+                        "name": "bbPress",
+                        "post_types": ["forum", "topic", "reply"],
+                        "data_source": "bbpress"
+                    },
+                    {
+                        "slug": "easy-digital-downloads",
+                        "name": "Easy Digital Downloads",
+                        "post_types": ["download"],
+                        "taxonomies": ["download_category", "download_tag"],
+                        "data_source": "easy-digital-downloads"
+                    },
+                    {
+                        "slug": "buddypress",
+                        "name": "BuddyPress",
+                        "features": ["members", "groups", "activity"],
+                        "data_source": "buddypress"
+                    }
+                ],
+                "custom_seeding": [
+                    {
+                        "slug": "academy",
+                        "name": "Academy LMS",
+                        "post_types": ["academy_courses", "academy_lessons", "academy_quizzes"],
+                        "seed_count": {"courses": 7, "lessons": 5, "quizzes": 2}
+                    },
+                    {
+                        "slug": "masterstudy-lms-learning-management-system",
+                        "name": "MasterStudy LMS",
+                        "post_types": ["stm-courses", "stm-lessons", "stm-quizzes"],
+                        "seed_count": {"courses": 5, "lessons": 4, "quizzes": 2}
+                    },
+                    {
+                        "slug": "classified-listing",
+                        "name": "Classified Listing",
+                        "post_types": ["rtcl_listing"],
+                        "taxonomies": ["rtcl_category", "rtcl_location"],
+                        "seed_count": {"listings": 5}
+                    },
+                    {
+                        "slug": "easy-property-listings",
+                        "name": "Easy Property Listings",
+                        "post_types": ["property"],
+                        "seed_count": {"properties": 5}
+                    },
+                    {
+                        "slug": "cooked",
+                        "name": "Cooked",
+                        "post_types": ["cp_recipe"],
+                        "taxonomies": ["cp_recipe_category"],
+                        "seed_count": {"recipes": 5}
+                    },
+                    {
+                        "slug": "envira-gallery-lite",
+                        "name": "Envira Gallery",
+                        "post_types": ["envira"],
+                        "seed_count": {"galleries": 5}
+                    },
+                    {
+                        "slug": "site-reviews",
+                        "name": "Site Reviews",
+                        "post_types": ["site-review"],
+                        "seed_count": {"reviews": 6}
+                    },
+                    {
+                        "slug": "testimonial-free",
+                        "name": "Testimonial Free",
+                        "post_types": ["spt_testimonial"],
+                        "seed_count": {"testimonials": 5}
+                    },
+                    {
+                        "slug": "woocommerce-extra",
+                        "name": "WooCommerce (Supplementary)",
+                        "post_types": ["product"],
+                        "seed_count": {"products": 5},
+                        "note": "Supplementary products with realistic English content, loaded after official CSV import"
+                    }
+                ]
+            },
+
+            "utility_plugins": [
+                {
+                    "slug": "wordpress-seo",
+                    "name": "Yoast SEO",
+                    "type": "seo",
+                    "associations": {
+                        "_description": "为以下内容类型添加 SEO meta 数据",
+                        "targets": ["product", "forum", "topic", "download", "rtcl_listing", "property"],
+                        "fields": ["_yoast_wpseo_title", "_yoast_wpseo_metadesc", "_yoast_wpseo_focuskw"]
+                    }
+                },
+                {
+                    "slug": "advanced-custom-fields",
+                    "name": "ACF",
+                    "type": "custom_fields",
+                    "associations": {
+                        "_description": "为以下内容类型添加自定义字段",
+                        "field_groups": [
+                            {
+                                "name": "产品扩展信息",
+                                "post_types": ["product"],
+                                "fields": ["brand", "warranty_period", "manufacturer"]
+                            },
+                            {
+                                "name": "房产详情",
+                                "post_types": ["property", "rtcl_listing"],
+                                "fields": ["bedrooms", "bathrooms", "square_feet", "year_built"]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "slug": "contact-form-7",
+                    "name": "Contact Form 7",
+                    "type": "forms",
+                    "associations": {
+                        "_description": "在页面中嵌入联系表单",
+                        "forms": [
+                            {"name": "联系我们", "embed_in": "contact-page"},
+                            {"name": "询价表单", "embed_in": "product-inquiry"},
+                            {"name": "房产咨询", "embed_in": "property-inquiry"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "tablepress",
+                    "name": "TablePress",
+                    "type": "tables",
+                    "associations": {
+                        "_description": "创建数据表格并嵌入内容",
+                        "tables": [
+                            {"name": "产品规格表", "embed_in": "product"},
+                            {"name": "价格对比表", "embed_in": "page"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "easy-appointments",
+                    "name": "Easy Appointments",
+                    "type": "booking",
+                    "associations": {
+                        "_description": "为服务类内容添加预约功能",
+                        "services": [
+                            {"name": "餐厅预约", "related_to": "cooked"},
+                            {"name": "房产看房", "related_to": "property"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "simply-schedule-appointments",
+                    "name": "Simply Schedule Appointments",
+                    "type": "booking",
+                    "associations": {
+                        "services": [
+                            {"name": "课程咨询", "related_to": "academy"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "powerpress",
+                    "name": "PowerPress",
+                    "type": "podcast",
+                    "associations": {
+                        "_description": "为文章添加播客内容",
+                        "post_types": ["post"],
+                        "episodes_count": 5
+                    }
+                },
+                {
+                    "slug": "redirection",
+                    "name": "Redirection",
+                    "type": "redirect",
+                    "associations": {
+                        "_description": "配置型插件，创建示例重定向规则",
+                        "rules": [
+                            {"from": "/old-product/*", "to": "/product/*"},
+                            {"from": "/legacy-forum/*", "to": "/forums/*"}
+                        ]
+                    }
+                }
+            ]
+        },
+
+        "B": {
+            "name": "替代套件",
+            "description": "目录、活动、招聘、论坛、食谱、图库",
+
+            "content_plugins": {
+                "official_data": [
+                    {
+                        "slug": "tutor",
+                        "name": "Tutor LMS",
+                        "post_types": ["courses", "lesson", "tutor_quiz"],
+                        "data_source": "tutor"
+                    }
+                ],
+                "custom_seeding": [
+                    {
+                        "slug": "directorist",
+                        "name": "Directorist",
+                        "post_types": ["at_biz_dir"],
+                        "taxonomies": ["at_biz_dir-category", "at_biz_dir-location"],
+                        "seed_count": {"listings": 6}
+                    },
+                    {
+                        "slug": "the-events-calendar",
+                        "name": "The Events Calendar",
+                        "post_types": ["tribe_events", "tribe_venue", "tribe_organizer"],
+                        "seed_count": {"events": 3, "venues": 3, "organizers": 2}
+                    },
+                    {
+                        "slug": "wp-job-manager",
+                        "name": "WP Job Manager",
+                        "post_types": ["job_listing"],
+                        "taxonomies": ["job_listing_category", "job_listing_type"],
+                        "seed_count": {"jobs": 5}
+                    },
+                    {
+                        "slug": "essential-real-estate",
+                        "name": "Essential Real Estate",
+                        "post_types": ["property"],
+                        "seed_count": {"properties": 3}
+                    },
+                    {
+                        "slug": "asgaros-forum",
+                        "name": "Asgaros Forum",
+                        "custom_tables": true,
+                        "seed_count": {"forums": 5, "topics": 6, "posts": 5}
+                    },
+                    {
+                        "slug": "delicious-recipes",
+                        "name": "Delicious Recipes",
+                        "post_types": ["recipe"],
+                        "seed_count": {"recipes": 4}
+                    },
+                    {
+                        "slug": "foogallery",
+                        "name": "FooGallery",
+                        "post_types": ["foogallery"],
+                        "seed_count": {"galleries": 5}
+                    },
+                    {
+                        "slug": "portfolio-post-type",
+                        "name": "Portfolio",
+                        "post_types": ["portfolio"],
+                        "seed_count": {"items": 4}
+                    },
+                    {
+                        "slug": "seriously-simple-podcasting",
+                        "name": "Seriously Simple Podcasting",
+                        "post_types": ["podcast"],
+                        "seed_count": {"episodes": 4}
+                    }
+                ]
+            },
+
+            "utility_plugins": [
+                {
+                    "slug": "all-in-one-seo-pack",
+                    "name": "All in One SEO",
+                    "type": "seo",
+                    "associations": {
+                        "targets": ["courses", "at_biz_dir", "tribe_events", "job_listing"],
+                        "fields": ["_aioseo_title", "_aioseo_description"]
+                    }
+                },
+                {
+                    "slug": "meta-box",
+                    "name": "Meta Box",
+                    "type": "custom_fields",
+                    "associations": {
+                        "field_groups": [
+                            {
+                                "name": "目录扩展",
+                                "post_types": ["at_biz_dir"],
+                                "fields": ["business_hours", "social_links", "features"]
+                            },
+                            {
+                                "name": "招聘详情",
+                                "post_types": ["job_listing"],
+                                "fields": ["salary_range", "experience_required", "remote_option"]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "slug": "ninja-forms",
+                    "name": "Ninja Forms",
+                    "type": "forms",
+                    "associations": {
+                        "forms": [
+                            {"name": "活动报名", "embed_in": "tribe_events"},
+                            {"name": "职位申请", "embed_in": "job_listing"},
+                            {"name": "商家入驻", "embed_in": "page"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "paid-member-subscriptions",
+                    "name": "Paid Member Subscriptions",
+                    "type": "membership",
+                    "associations": {
+                        "_description": "创建会员计划并限制内容访问",
+                        "plans": [
+                            {"name": "基础会员", "price": 9.99, "access": ["courses"]},
+                            {"name": "高级会员", "price": 29.99, "access": ["courses", "at_biz_dir"]}
+                        ]
+                    }
+                },
+                {
+                    "slug": "booking",
+                    "name": "Booking Calendar",
+                    "type": "booking",
+                    "associations": {
+                        "resources": [
+                            {"name": "活动场地", "related_to": "tribe_events"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "fluent-booking",
+                    "name": "Fluent Booking",
+                    "type": "booking",
+                    "associations": {
+                        "services": [
+                            {"name": "课程预约", "related_to": "courses"}
+                        ]
+                    }
+                }
+            ]
+        },
+
+        "C": {
+            "name": "传统小众套件",
+            "description": "Estatik房产、WPForo论坛、食谱、FAQ",
+
+            "content_plugins": {
+                "official_data": [
+                    {
+                        "slug": "sensei-lms",
+                        "name": "Sensei LMS",
+                        "post_types": ["course", "lesson", "quiz"],
+                        "data_source": "sensei-lms"
+                    },
+                    {
+                        "slug": "wp-easycart",
+                        "name": "WP EasyCart",
+                        "custom_tables": true,
+                        "data_source": "wp-easycart",
+                        "note": "使用自定义表 ec_product，通过 php_script 填充"
+                    },
+                    {
+                        "slug": "wpforo",
+                        "name": "WPForo",
+                        "custom_tables": true,
+                        "skip_seeding": true,
+                        "note": "WPForo 安装时自动创建示例数据，跳过填充"
+                    }
+                ],
+                "custom_seeding": [
+                    {
+                        "slug": "estatik",
+                        "name": "Estatik",
+                        "post_types": ["properties"],
+                        "seed_count": {"properties": 5}
+                    },
+                    {
+                        "slug": "wp-recipe-maker",
+                        "name": "WP Recipe Maker",
+                        "post_types": ["wprm_recipe"],
+                        "seed_count": {"recipes": 4}
+                    },
+                    {
+                        "slug": "simple-job-board",
+                        "name": "Simple Job Board",
+                        "post_types": ["jobpost"],
+                        "seed_count": {"jobs": 4}
+                    },
+                    {
+                        "slug": "ultimate-faqs",
+                        "name": "Ultimate FAQs",
+                        "post_types": ["ufaq"],
+                        "taxonomies": ["ufaq-category"],
+                        "seed_count": {"faqs": 8}
+                    },
+                    {
+                        "slug": "wp-customer-reviews",
+                        "name": "WP Customer Reviews",
+                        "seed_count": {"reviews": 6}
+                    }
+                ]
+            },
+
+            "utility_plugins": [
+                {
+                    "slug": "seo-by-rank-math",
+                    "name": "Rank Math SEO",
+                    "type": "seo",
+                    "associations": {
+                        "targets": ["course", "lesson", "properties", "wprm_recipe", "jobpost"],
+                        "fields": ["rank_math_title", "rank_math_description", "rank_math_focus_keyword"]
+                    }
+                },
+                {
+                    "slug": "pods",
+                    "name": "Pods",
+                    "type": "custom_fields",
+                    "associations": {
+                        "field_groups": [
+                            {
+                                "name": "房产扩展",
+                                "post_types": ["properties"],
+                                "fields": ["property_type", "listing_status", "virtual_tour_url"]
+                            },
+                            {
+                                "name": "食谱营养",
+                                "post_types": ["wprm_recipe"],
+                                "fields": ["calories", "protein", "carbs", "fat"]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "slug": "restrict-content",
+                    "name": "Restrict Content",
+                    "type": "membership",
+                    "associations": {
+                        "_description": "限制课程内容访问",
+                        "restrictions": [
+                            {"content_type": "lesson", "access_level": "member"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "bookly-responsive-appointment-booking-tool",
+                    "name": "Bookly",
+                    "type": "booking",
+                    "associations": {
+                        "services": [
+                            {"name": "房产看房预约", "related_to": "properties"}
+                        ]
+                    }
+                },
+                {
+                    "slug": "podcast-player",
+                    "name": "Podcast Player",
+                    "type": "podcast",
+                    "associations": {
+                        "_description": "在页面中嵌入播客播放器",
+                        "embed_in": ["post", "page"]
+                    }
+                }
+            ]
+        },
+
+        "D": {
+            "name": "扩展套件",
+            "description": "LearnPress、HivePress、GeoDirectory、ForumWP",
+
+            "content_plugins": {
+                "official_data": [
+                    {
+                        "slug": "learnpress",
+                        "name": "LearnPress",
+                        "post_types": ["lp_course", "lp_lesson", "lp_quiz"],
+                        "data_source": "learnpress"
+                    },
+                    {
+                        "slug": "lifterlms",
+                        "name": "LifterLMS",
+                        "post_types": ["course", "lesson", "llms_quiz"],
+                        "data_source": "lifterlms"
+                    }
+                ],
+                "custom_seeding": [
+                    {
+                        "slug": "lifterlms",
+                        "name": "LifterLMS",
+                        "post_types": ["course"],
+                        "seed_count": {"courses": 3}
+                    },
+                    {
+                        "slug": "storeengine",
+                        "name": "StoreEngine",
+                        "post_types": ["storeengine_product"],
+                        "seed_count": {"products": 4}
+                    },
+                    {
+                        "slug": "hivepress",
+                        "name": "HivePress",
+                        "post_types": ["hp_listing", "hp_vendor"],
+                        "seed_count": {"listings": 4, "vendors": 3}
+                    },
+                    {
+                        "slug": "geodirectory",
+                        "name": "GeoDirectory",
+                        "post_types": ["gd_place"],
+                        "seed_count": {"places": 4}
+                    },
+                    {
+                        "slug": "forumwp",
+                        "name": "ForumWP",
+                        "post_types": ["fmwp_forum", "fmwp_topic", "fmwp_reply"],
+                        "seed_count": {"forums": 5, "topics": 4, "replies": 4}
+                    },
+                    {
+                        "slug": "propertyhive",
+                        "name": "PropertyHive",
+                        "post_types": ["property"],
+                        "seed_count": {"properties": 4}
+                    },
+                    {
+                        "slug": "events-manager",
+                        "name": "Events Manager",
+                        "post_types": ["event", "location"],
+                        "seed_count": {"events": 3, "locations": 3}
+                    },
+                    {
+                        "slug": "wp-job-openings",
+                        "name": "WP Job Openings",
+                        "post_types": ["awsm_job_openings"],
+                        "seed_count": {"jobs": 4}
+                    },
+                    {
+                        "slug": "give",
+                        "name": "GiveWP",
+                        "post_types": ["give_forms"],
+                        "seed_count": {"forms": 7}
+                    },
+                    {
+                        "slug": "podlove-podcasting-plugin-for-wordpress",
+                        "name": "Podlove",
+                        "post_types": ["podcast"],
+                        "seed_count": {"episodes": 5}
+                    }
+                ]
+            },
+
+            "utility_plugins": [
+                {
+                    "slug": "simple-membership",
+                    "name": "Simple Membership",
+                    "type": "membership",
+                    "associations": {
+                        "plans": [
+                            {"name": "学员会员", "access": ["lp_course", "course"]},
+                            {"name": "VIP会员", "access": ["lp_course", "course", "hp_listing"]}
+                        ]
+                    }
+                },
+                {
+                    "slug": "ameliabooking",
+                    "name": "Amelia",
+                    "type": "booking",
+                    "associations": {
+                        "services": [
+                            {"name": "课程咨询", "related_to": "lp_course"},
+                            {"name": "活动预约", "related_to": "event"},
+                            {"name": "房产看房", "related_to": "property"}
+                        ]
+                    }
+                }
+            ]
+        },
+
+        "E": {
+            "name": "WordPress 核心内容",
+            "description": "WordPress 核心 post/page 数据 - 企业官网模式",
+            "content_plugins": {
+                "official_data": [],
+                "custom_seeding": [
+                    {
+                        "slug": "wordpress-core",
+                        "name": "WordPress Core",
+                        "post_types": ["post", "page"],
+                        "taxonomies": ["category", "post_tag", "nav_menu"],
+                        "seed_script": "corporate-site-seed.php",
+                        "content_summary": {
+                            "pages": 5,
+                            "posts": 10,
+                            "categories": 4,
+                            "tags": 10,
+                            "comments": 6,
+                            "menus": 1
+                        },
+                        "pages": [
+                            {"title": "首页", "slug": "home"},
+                            {"title": "服务项目", "slug": "services"},
+                            {"title": "关于我们", "slug": "about"},
+                            {"title": "联系我们", "slug": "contact"},
+                            {"title": "新闻中心", "slug": "news"}
+                        ],
+                        "categories": [
+                            {"name": "公司新闻", "slug": "company-news"},
+                            {"name": "行业动态", "slug": "industry-news"},
+                            {"name": "产品更新", "slug": "product-updates"},
+                            {"name": "技术分享", "slug": "tech-sharing"}
+                        ],
+                        "posts": [
+                            {"title": "公司荣获2025年度创新企业奖", "category": "公司新闻"},
+                            {"title": "公司与行业领先企业达成战略合作", "category": "公司新闻"},
+                            {"title": "公司成功举办年度技术峰会", "category": "公司新闻"},
+                            {"title": "新版产品 3.0 正式发布", "category": "产品更新"},
+                            {"title": "移动端 App 2.5 版本更新", "category": "产品更新"},
+                            {"title": "数字化转型：企业发展的必由之路", "category": "行业动态"},
+                            {"title": "2025年人工智能发展趋势展望", "category": "行业动态"},
+                            {"title": "云计算市场格局与发展机遇", "category": "行业动态"},
+                            {"title": "API 设计最佳实践指南", "category": "技术分享"},
+                            {"title": "微服务架构实践经验分享", "category": "技术分享"}
+                        ]
+                    }
+                ]
+            },
+            "utility_plugins": [],
+            "notes": {
+                "seed_type": "企业官网",
+                "nav_menu_note": "Navigation menu (nav_menu) is created by corporate-site-seed.php, not the JSON seeder. The script creates a '主导航' menu with 5 page links and assigns it to the 'primary' location.",
+                "cleanup_command": "wp eval-file cleanup-wp-core.php",
+                "seed_command": "wp eval-file corporate-site-seed.php",
+                "workflow": [
+                    "1. 运行清理脚本: wp eval-file cleanup-wp-core.php",
+                    "2. 填充数据: wp eval-file corporate-site-seed.php",
+                    "3. 验证: wp eval-file wordpress-core-verify.php"
+                ],
+                "purpose": "测试 WordPress 核心内容的同步和翻译功能",
+                "alternative_data": {
+                    "theme_unit_test": {
+                        "description": "WordPress 官方 Theme Unit Test Data（更多数据）",
+                        "github_repo": "https://github.com/WordPress/theme-test-data",
+                        "data_file": "themeunittestdata.wordpress.xml",
+                        "import_command": "wp import themeunittestdata.wordpress.xml --authors=create"
+                    }
+                }
+            }
+        }
+    },
+
+    "verification": {
+        "_description": "Phase 4 验证配置",
+        "frontend_checks": {
+            "archive_pages": "验证归档页面可访问",
+            "single_pages": "验证单篇内容页面可访问",
+            "taxonomy_pages": "验证分类/标签页面可访问",
+            "search": "验证搜索功能正常"
+        },
+        "backend_checks": {
+            "admin_list": "验证后台列表页显示正常",
+            "admin_edit": "验证后台编辑页可访问",
+            "admin_create": "验证后台可创建新内容"
+        },
+        "business_checks": {
+            "woocommerce": ["add_to_cart", "checkout_page", "my_account"],
+            "lms_plugins": ["course_enrollment", "lesson_access", "quiz_attempt"],
+            "forum_plugins": ["create_topic", "reply_topic"],
+            "booking_plugins": ["view_calendar", "make_booking"]
+        }
+    }
+}

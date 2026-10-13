@@ -1,0 +1,82 @@
+{
+    "_meta": {
+        "plugin_slug": "wp-customer-reviews",
+        "plugin_name": "WP Customer Reviews",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "WP Customer Reviews seed data",
+        "note": "WP Customer Reviews uses wpcr3_review post type with custom meta fields.",
+        "fields_source": "v4-scanner (wpcr3-wpcr3_review.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "wpcr3_review": [
+            {
+                "post_title": "Outstanding Service!",
+                "post_content": "The team went above and beyond to help me. Very professional and knowledgeable. Would highly recommend to anyone.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "5",
+                    "wpcr3_review_name": "Jennifer Wilson",
+                    "wpcr3_review_email": "jennifer@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            },
+            {
+                "post_title": "Great Product Quality",
+                "post_content": "Purchased multiple items and each one exceeded my expectations. The quality is excellent for the price.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "5",
+                    "wpcr3_review_name": "Michael Thompson",
+                    "wpcr3_review_email": "michael@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            },
+            {
+                "post_title": "Fast Shipping",
+                "post_content": "Ordered on Monday, received on Wednesday. Packaging was secure and product arrived in perfect condition.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "4",
+                    "wpcr3_review_name": "Sarah Martinez",
+                    "wpcr3_review_email": "sarah@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            },
+            {
+                "post_title": "Good Value",
+                "post_content": "Decent product for the price. Does what it's supposed to do. Customer service was helpful when I had questions.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "4",
+                    "wpcr3_review_name": "David Lee",
+                    "wpcr3_review_email": "david@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            },
+            {
+                "post_title": "Impressive Quality",
+                "post_content": "I've tried similar products from other companies, but this one stands out. Will definitely be ordering again.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "5",
+                    "wpcr3_review_name": "Amanda Clark",
+                    "wpcr3_review_email": "amanda@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            },
+            {
+                "post_title": "Helpful Support Team",
+                "post_content": "Had an issue with my order and support resolved it within hours. Great customer care.",
+                "post_status": "publish",
+                "meta": {
+                    "wpcr3_review_rating": "5",
+                    "wpcr3_review_name": "Robert Johnson",
+                    "wpcr3_review_email": "robert@example.com",
+                    "wpcr3_review_status": "1"
+                }
+            }
+        ]
+    }
+}

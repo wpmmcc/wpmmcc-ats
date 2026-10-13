@@ -1,0 +1,360 @@
+{
+  "slug": "tutor",
+  "started": "2026-09-25T04:00:55+00:00",
+  "pass": true,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "relations_resolved",
+      "ok": true,
+      "detail": {
+        "virtual": 626,
+        "wp": 627
+      }
+    },
+    {
+      "name": "isolated",
+      "ok": true,
+      "detail": {
+        "file": "tutor/tutor.php",
+        "active": [
+          "plugin-check/plugin.php",
+          "tutor/tutor.php",
+          "wpmmcc-ats/wpmmcc-ats.php"
+        ]
+      }
+    },
+    {
+      "name": "post_type_ready",
+      "ok": true,
+      "detail": "courses"
+    },
+    {
+      "name": "model_or_overlay",
+      "ok": true,
+      "detail": {
+        "model_id": "3987",
+        "storage": null
+      }
+    },
+    {
+      "name": "hooks_listen_only",
+      "ok": true,
+      "detail": [
+        "save_post_academy_announcement",
+        "delete_post",
+        "trash_post",
+        "save_post_academy_courses",
+        "save_post_academy_lessons",
+        "save_post",
+        "wp_after_insert_post",
+        "transition_post_status",
+        "created_term",
+        "edited_term",
+        "delete_term",
+        "added_post_meta",
+        "updated_post_meta",
+        "deleted_post_meta",
+        "set_object_terms",
+        "edit_attachment",
+        "save_post_wpa-events",
+        "save_post_forum",
+        "save_post_topic",
+        "save_post_reply",
+        "save_post_fl-builder-history",
+        "save_post_betterdocs_faq",
+        "save_post_docs",
+        "save_post_buddypress",
+        "save_post_wpbdp_listing",
+        "save_post_rtcl_listing",
+        "save_post_wpcf7_contact_form",
+        "save_post_cp_recipe",
+        "save_post_dlp_document",
+        "save_post_product",
+        "save_post_dlm_download",
+        "save_post_dlm_download_version",
+        "save_post_download",
+        "save_post_epl_contact",
+        "save_post_ecwid_menu_item",
+        "save_post_e-floating-buttons",
+        "save_post_elementor_component",
+        "save_post_elementor_library",
+        "save_post_envira",
+        "save_post_agent",
+        "save_post_invoice",
+        "save_post_property",
+        "save_post_trans_log",
+        "save_post_user_package",
+        "save_post_properties",
+        "save_post_saved_search",
+        "save_post_event",
+        "save_post_location",
+        "save_post_tribe_events",
+        "save_post_foogallery",
+        "save_post_frm_form_actions",
+        "save_post_frm_styles",
+        "save_post_forminator_forms",
+        "save_post_forminator_polls",
+        "save_post_forminator_quizzes",
+        "save_post_fmwp_forum",
+        "save_post_fmwp_reply",
+        "save_post_fmwp_topic",
+        "save_post_gd_place",
+        "save_post_give_forms",
+        "save_post_give_payment",
+        "save_post_helpie_faq",
+        "save_post_helpie_menu",
+        "save_post_awsm_job_openings",
+        "save_post_hp_email",
+        "save_post_hp_listing",
+        "save_post_hp_template",
+        "save_post_hp_vendor",
+        "save_post_hp_vendor_attribute",
+        "save_post_kadence_form",
+        "save_post_kadence_header",
+        "save_post_kadence_lottie",
+        "save_post_kadence_navigation",
+        "save_post_kadence_vector",
+        "save_post_wp_log",
+        "save_post_lp_course",
+        "save_post_lp_lesson",
+        "save_post_lp_order",
+        "save_post_lp_question",
+        "save_post_lp_quiz",
+        "save_post_course",
+        "save_post_lesson",
+        "save_post_llms_access_plan",
+        "save_post_llms_achievement",
+        "save_post_llms_certificate",
+        "save_post_llms_coupon",
+        "save_post_llms_email",
+        "save_post_llms_engagement",
+        "save_post_llms_form",
+        "save_post_llms_membership",
+        "save_post_llms_my_achievement",
+        "save_post_llms_my_certificate",
+        "save_post_llms_order",
+        "save_post_llms_question",
+        "save_post_llms_quiz",
+        "save_post_llms_review",
+        "save_post_llms_voucher",
+        "save_post_section",
+        "save_post_stm-courses",
+        "save_post_stm-questions",
+        "save_post_stm-reviews",
+        "save_post_stm-orders",
+        "save_post_stm-lessons",
+        "save_post_stm-quizzes",
+        "save_post_mc4wp-form",
+        "save_post_ml-slide",
+        "save_post_ml-slider",
+        "save_post_mec_calendars",
+        "save_post_mec-events",
+        "save_post_mc-events",
+        "save_post_mc-locations",
+        "save_post_displayed_gallery",
+        "save_post_nf_sub",
+        "save_post_podcast_player",
+        "save_post__pods_template",
+        "save_post__pods_pod",
+        "save_post__pods_group",
+        "save_post__pods_field",
+        "save_post_portfolio",
+        "save_post_contact",
+        "save_post_enquiry",
+        "save_post_office",
+        "save_post_spt_shortcodes",
+        "save_post_spt_testimonial",
+        "save_post_spt_testimonial_form",
+        "save_post_multiple_question",
+        "save_post_question",
+        "save_post_sensei_email",
+        "save_post_sensei_message",
+        "save_post_podcast",
+        "save_post_jobpost",
+        "save_post_jobpost_applicants",
+        "save_post_site-review",
+        "save_post_spectra-popup",
+        "save_post_wpm-testimonial",
+        "save_post_sc_cart",
+        "save_post_sc_form",
+        "save_post_sc_product",
+        "save_post_tablepress_table",
+        "save_post_tribe_venue",
+        "save_post_tribe_organizer",
+        "save_post_tutor_quiz",
+        "save_post_topics",
+        "save_post_tutor_assignments",
+        "save_post_tutor_enrolled",
+        "save_post_courses",
+        "save_post_ufaq",
+        "save_post_um_form",
+        "save_post_um_directory",
+        "save_post_vp_lists",
+        "save_post_web-story",
+        "save_post_web-story-font",
+        "save_post_web-story-page",
+        "save_post_product_variation",
+        "save_post_post",
+        "save_post_page",
+        "save_post_wp_template",
+        "save_post_wp_template_part",
+        "save_post_wp_navigation",
+        "save_post_wp_global_styles",
+        "save_post_wpcr3_review",
+        "save_post_recipe",
+        "save_post_event_listing",
+        "save_post_event_organizer",
+        "save_post_event_venue",
+        "save_post_job_listing",
+        "save_post_wprm_recipe",
+        "save_post_wpdiscuz_form",
+        "save_post_wpforms",
+        "save_post_wpforms-template"
+      ]
+    },
+    {
+      "name": "hooks_bound_post_type",
+      "ok": true,
+      "detail": "save_post_courses"
+    },
+    {
+      "name": "create_source",
+      "ok": true,
+      "detail": 5980
+    },
+    {
+      "name": "map_virtual",
+      "ok": true,
+      "detail": {
+        "target_id": 5981,
+        "is_update": false,
+        "relation_id": 626
+      }
+    },
+    {
+      "name": "map_subsite",
+      "ok": true,
+      "detail": {
+        "target_id": 510,
+        "is_update": false,
+        "relation_id": 627
+      }
+    },
+    {
+      "name": "mapping_row",
+      "ok": true,
+      "detail": {
+        "id": "1303",
+        "relation_id": "626",
+        "source_post_id": "5980",
+        "source_post_type": "courses",
+        "source_site_id": "1",
+        "target_post_id": "5981",
+        "target_post_type": "courses",
+        "target_site_id": "v_424",
+        "relationship_type": "translation",
+        "needs_resync": "0",
+        "claimed_at": null,
+        "claim_owner_hash": null,
+        "created_at": "2026-09-25 04:00:55",
+        "updated_at": "2026-09-25 04:00:55"
+      }
+    },
+    {
+      "name": "url_source",
+      "ok": true,
+      "detail": {
+        "viewable": true,
+        "attempts": [
+          {
+            "form": "faithful",
+            "url": "http://192.168.1.12:9081/courses/cov-tutor-ab5e9a/",
+            "code": 200,
+            "title": "COV源 tutor – WPTSALL Blog Lab"
+          }
+        ]
+      }
+    },
+    {
+      "name": "url_virtual",
+      "ok": true,
+      "detail": {
+        "attempts": [
+          {
+            "form": "faithful",
+            "url": "http://192.168.1.12:9081/en-us/courses/cov-en-tutor-3/",
+            "code": 200,
+            "title": "COV EN tutor - WPTSALL Blog Lab"
+          }
+        ]
+      }
+    },
+    {
+      "name": "url_subsite",
+      "ok": true,
+      "detail": {
+        "viewable": true,
+        "attempts": [
+          {
+            "form": "faithful",
+            "url": "http://192.168.1.12:9081/en/courses/cov-sub-tutor-3/",
+            "code": 200,
+            "title": "COV SUB tutor – English Subsite"
+          }
+        ]
+      }
+    },
+    {
+      "name": "lang_links_follow",
+      "ok": true,
+      "detail": {
+        "hreflang": true,
+        "switcher": true,
+        "prefix": true
+      }
+    },
+    {
+      "name": "target_plugin_admin_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Course “COV源 tutor” ‹ WPTSALL Blog Lab — WordPress"
+      }
+    },
+    {
+      "name": "target_plugin_admin_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Course “COV SUB tutor” ‹ English Subsite — WordPress"
+      }
+    },
+    {
+      "name": "content_manage_dirty_mark",
+      "ok": true,
+      "detail": {
+        "needs_resync": "1"
+      }
+    }
+  ],
+  "urls": {
+    "source": "http://192.168.1.12:9081/courses/cov-tutor-ab5e9a/",
+    "virtual": "http://192.168.1.12:9081/en-us/courses/cov-en-tutor-3/",
+    "wp": "http://192.168.1.12:9081/en/courses/cov-sub-tutor-3/"
+  },
+  "ids": {
+    "source": 5980,
+    "virtual": 5981,
+    "wp": 510,
+    "model": "3987"
+  },
+  "notes": [
+    "marked tutor welcome as seen",
+    "marked tutor welcome as seen"
+  ],
+  "name": "Tutor LMS",
+  "category": "lms",
+  "post_type": "courses",
+  "finished": "2026-09-25T04:00:57+00:00"
+}

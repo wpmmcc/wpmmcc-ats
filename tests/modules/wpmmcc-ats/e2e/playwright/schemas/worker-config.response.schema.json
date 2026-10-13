@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "worker-config.response.schema.json",
+  "type": "object",
+  "required": ["success"],
+  "properties": {
+    "success": { "type": "boolean" },
+    "data": {
+      "type": "object",
+      "properties": {
+        "review_mode": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "error": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

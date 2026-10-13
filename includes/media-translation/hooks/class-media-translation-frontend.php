@@ -118,6 +118,10 @@ class Media_Translation_Frontend {
 			$context  = 'media_alt';
 			$key      = 'attachment_' . (int) $attachment->ID;
 			$alt      = (string) $attrs['alt'];
+			// M-02 (opus5): $lang was previously used undefined in this branch,
+			// degrading the ALT lookup to the default language (plus a PHP
+			// notice). Resolve the request's language explicitly.
+			$lang     = self::current_lang();
 			$tr = \WPTSALL\Strings\Services\String_Translation_Service::translate( $context, $key, $alt, $lang );
 			if ( '' !== $tr && $tr !== $alt ) {
 				$attrs['alt'] = $tr;

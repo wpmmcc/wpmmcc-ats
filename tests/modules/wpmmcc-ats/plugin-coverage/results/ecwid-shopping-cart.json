@@ -1,0 +1,178 @@
+{
+  "slug": "ecwid-shopping-cart",
+  "started": "2026-08-13T06:21:21+00:00",
+  "pass": true,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "isolated",
+      "ok": true,
+      "detail": {
+        "file": "ecwid-shopping-cart/ecwid-shopping-cart.php",
+        "active": [
+          "ecwid-shopping-cart/ecwid-shopping-cart.php",
+          "plugin-check/plugin.php",
+          "wpmmcc-ats/wpmmcc-ats.php",
+          "wpmmcc-ats/wptsall.php"
+        ]
+      }
+    },
+    {
+      "name": "post_type_ready",
+      "ok": true,
+      "detail": "post"
+    },
+    {
+      "name": "model_or_overlay",
+      "ok": true,
+      "detail": {
+        "model_id": "396",
+        "storage": null
+      }
+    },
+    {
+      "name": "hooks_listen_only",
+      "ok": true,
+      "detail": [
+        "save_post_download",
+        "delete_post",
+        "trash_post",
+        "save_post",
+        "created_term",
+        "edited_term",
+        "delete_term",
+        "added_post_meta",
+        "updated_post_meta",
+        "deleted_post_meta",
+        "set_object_terms",
+        "edit_attachment",
+        "save_post_ecwid_menu_item",
+        "save_post_elementor_library",
+        "save_post_e-floating-buttons",
+        "save_post_event",
+        "save_post_product",
+        "save_post_post",
+        "save_post_page"
+      ]
+    },
+    {
+      "name": "hooks_bound_post_type",
+      "ok": true,
+      "detail": "save_post_post"
+    },
+    {
+      "name": "create_source",
+      "ok": true,
+      "detail": 655
+    },
+    {
+      "name": "map_virtual",
+      "ok": true,
+      "detail": {
+        "target_id": 656,
+        "is_update": false,
+        "relation_id": 626
+      }
+    },
+    {
+      "name": "map_subsite",
+      "ok": true,
+      "detail": {
+        "target_id": 35,
+        "is_update": false,
+        "relation_id": 627
+      }
+    },
+    {
+      "name": "mapping_row",
+      "ok": true,
+      "detail": {
+        "id": "270",
+        "relation_id": "626",
+        "source_post_id": "655",
+        "source_post_type": "post",
+        "source_site_id": "1",
+        "target_post_id": "656",
+        "target_post_type": "post",
+        "target_site_id": "v_424",
+        "relationship_type": "translation",
+        "needs_resync": "0",
+        "claimed_at": null,
+        "created_at": "2026-08-13 06:21:22",
+        "updated_at": "2026-08-13 06:21:22"
+      }
+    },
+    {
+      "name": "url_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV源 ecwid-shopping-cart – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_virtual",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV EN ecwid-shopping-cart – WPTSALL Blog Lab"
+      }
+    },
+    {
+      "name": "url_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "COV SUB ecwid-shopping-cart – English Subsite"
+      }
+    },
+    {
+      "name": "lang_links_follow",
+      "ok": true,
+      "detail": {
+        "hreflang": true,
+        "switcher": true,
+        "prefix": true
+      }
+    },
+    {
+      "name": "target_plugin_admin_source",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Post “COV源 ecwid-shopping-cart” ‹ WPTSALL Blog Lab — WordPress"
+      }
+    },
+    {
+      "name": "target_plugin_admin_subsite",
+      "ok": true,
+      "detail": {
+        "code": 200,
+        "title": "Edit Post “COV SUB ecwid-shopping-cart” ‹ English Subsite — WordPress"
+      }
+    },
+    {
+      "name": "content_manage_dirty_mark",
+      "ok": true,
+      "detail": {
+        "needs_resync": "1"
+      }
+    }
+  ],
+  "urls": {
+    "source": "http://192.168.1.14:9081/blog/2026/08/13/cov-ecwid-shopping-cart-8095b1/",
+    "virtual": "http://192.168.1.14:9081/en-us/blog/2026/08/13/cov-ecwid-shopping-cart-8095b1-en/",
+    "wp": "http://192.168.1.14:9081/en/2026/08/13/cov-ecwid-shopping-cart-8095b1-sub/"
+  },
+  "ids": {
+    "source": 655,
+    "virtual": 656,
+    "wp": 35,
+    "model": "396"
+  },
+  "notes": [],
+  "name": "Ecwid",
+  "category": "ecommerce",
+  "post_type": "post",
+  "finished": "2026-08-13T06:21:23+00:00"
+}

@@ -13,7 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define plugin constants.
 // ISS-COR-011: canonical version is in wpmmcc-ats.php plugin header. Keep in sync.
 if ( ! defined( 'WPTSALL_VERSION' ) ) {
-	define( 'WPTSALL_VERSION', '2.1.4' );
+	define( 'WPTSALL_VERSION', '2.1.10' );
+}
+
+// WP-ID-0 (contract/identity-v1): canonical plugin identity for cross-plugin
+// disambiguation. Surfaced additively in client/ping and /site/verify data
+// blocks; do not change without a contract version bump.
+if ( ! defined( 'WPMMCC_ATS_IDENTITY' ) ) {
+	define( 'WPMMCC_ATS_IDENTITY', 'wpmmcc_ats' );
 }
 
 if ( ! defined( 'WPTSALL_PATH' ) ) {

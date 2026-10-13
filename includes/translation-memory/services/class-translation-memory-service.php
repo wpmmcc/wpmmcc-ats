@@ -19,6 +19,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Translation_Memory_Service {
 
 	/**
+	 * Option name for the automatic-recording toggle (opus5 M-04).
+	 *
+	 * Shared by the manual save path, the client callback path and the
+	 * Translation Memory settings card.
+	 */
+	const OPTION_AUTO_RECORD = 'wptsall_tm_auto_record';
+
+	/**
 	 * Full table name.
 	 *
 	 * @return string
@@ -185,14 +193,18 @@ class Translation_Memory_Service {
 		);
 		if ( $existing_id > 0 ) {
 			// Existing rows already have occurrence count, leave it intact.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-			return (bool) $wpdb->update( self::table(), $row, array( 'id' => $existing_id ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$ok = (bool) $wpdb->update( self::table(), $row, array( 'id' => $existing_id ) );
+			if ( $ok ) {
+				wp_cache_flush_group( 'wptsall_tm_counts' );
+			}
+			return $ok;
 		}
 		$row['occurrences'] = 1;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
 		$ok = $wpdb->insert( self::table(), $row );
 		if ( $ok ) {
-			// Audit log hook (P6-3).
+			wp_cache_flush_group( 'wptsall_tm_counts' );
 			do_action( 'wptsall_tm_recorded', $source_text, $source_lang, $target_lang, $target_text );
 		}
 		return (bool) $ok;
@@ -208,7 +220,6 @@ class Translation_Memory_Service {
 		if ( ! self::table_exists() ) {
 			return array();
 		}
-		global $wpdb;
 		$defaults = array(
 			'source_lang' => '',
 			'target_lang' => '',
@@ -220,9 +231,85 @@ class Translation_Memory_Service {
 		$limit  = max( 1, (int) $args['limit'] );
 		$offset = max( 0, (int) $args['offset'] );
 
-		$table  = self::table();
-		$params = array( $table );
+		$built = self::build_pair_where( $args );
+		$rows  = wptsall_db_get_results(
+			'SELECT * FROM %i WHERE ' . $built['where_sql'] . ' ORDER BY occurrences DESC, id DESC LIMIT %d OFFSET %d',
+			array_merge( array( self::table() ), $built['params'], array( $limit, $offset ) ),
+			ARRAY_A
+		);
+		return is_array( $rows ) ? $rows : array();
+	}
+
+	/**
+	 * Count TM pairs with the same filters as list_pairs() (ATS-P2-05 / 3.8flash B4:
+	 * pagination needs the FILTERED total, not the global count() aggregate).
+	 *
+	 * @param array $args Query args (source_lang/target_lang/search; limit/offset ignored).
+	 * @return int
+	 */
+	public static function count_pairs( $args = array() ) {
+		if ( ! self::table_exists() ) {
+			return 0;
+		}
+		$defaults = array(
+			'source_lang' => '',
+			'target_lang' => '',
+			'search'      => '',
+		);
+		$args = array_merge( $defaults, $args );
+
+		global $wpdb;
+		$table     = self::table();
+		$source    = (string) $args['source_lang'];
+		$target    = (string) $args['target_lang'];
+		$search    = (string) $args['search'];
+		$like      = '%' . $wpdb->esc_like( $search ) . '%';
+		$cache_key = 'count:' . md5( $source . "\n" . $target . "\n" . $search );
+		$cached    = wp_cache_get( $cache_key, 'wptsall_tm_counts' );
+		if ( is_int( $cached ) ) {
+			return $cached;
+		}
+		if ( '' !== $source && '' !== $target && '' !== $search ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE source_lang = %s AND target_lang = %s AND (source_text LIKE %s OR target_text LIKE %s)', $table, $source, $target, $like, $like ) );
+		} elseif ( '' !== $source && '' !== $target ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE source_lang = %s AND target_lang = %s', $table, $source, $target ) );
+		} elseif ( '' !== $source && '' !== $search ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE source_lang = %s AND (source_text LIKE %s OR target_text LIKE %s)', $table, $source, $like, $like ) );
+		} elseif ( '' !== $target && '' !== $search ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE target_lang = %s AND (source_text LIKE %s OR target_text LIKE %s)', $table, $target, $like, $like ) );
+		} elseif ( '' !== $source ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE source_lang = %s', $table, $source ) );
+		} elseif ( '' !== $target ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE target_lang = %s', $table, $target ) );
+		} elseif ( '' !== $search ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE source_text LIKE %s OR target_text LIKE %s', $table, $like, $like ) );
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE 1 = %d', $table, 1 ) );
+		}
+		wp_cache_set( $cache_key, $count, 'wptsall_tm_counts' );
+		return $count;
+	}
+
+	/**
+	 * Build the shared WHERE fragment (with %i placeholders already in $params)
+	 * for list_pairs()/count_pairs() so the filtered count always matches the
+	 * filtered listing.
+	 *
+	 * @param array $args Filter args.
+	 * @return array{where_sql:string,params:array}
+	 */
+	private static function build_pair_where( $args ) {
+		global $wpdb;
 		$where  = array( '1=1' );
+		$params = array();
 
 		if ( $args['source_lang'] ) {
 			$where[]  = 'source_lang = %s';
@@ -238,17 +325,10 @@ class Translation_Memory_Service {
 			$params[] = $like;
 			$params[] = $like;
 		}
-
-		$where_sql = implode( ' AND ', $where );
-		$params[]  = $limit;
-		$params[]  = $offset;
-
-		$rows = wptsall_db_get_results(
-			'SELECT * FROM %i WHERE ' . $where_sql . ' ORDER BY occurrences DESC, id DESC LIMIT %d OFFSET %d',
-			$params,
-			ARRAY_A
+		return array(
+			'where_sql' => implode( ' AND ', $where ),
+			'params'    => $params,
 		);
-		return is_array( $rows ) ? $rows : array();
 	}
 
 	/**
@@ -262,8 +342,12 @@ class Translation_Memory_Service {
 			return false;
 		}
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+		$deleted = (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		if ( $deleted ) {
+			wp_cache_flush_group( 'wptsall_tm_counts' );
+		}
+		return $deleted;
 	}
 
 	/**
@@ -293,5 +377,86 @@ class Translation_Memory_Service {
 			'total' => $total,
 			'pairs' => $pairs,
 		);
+	}
+
+	/**
+	 * Whether automatic TM recording is enabled (opus5 M-04).
+	 *
+	 * Default on: every manual save and client callback success feeds the
+	 * memory. Site admins switch it off via Translation Memory → settings;
+	 * the filter allows per-environment overrides.
+	 *
+	 * @return bool
+	 */
+	public static function is_auto_record_enabled() {
+		$enabled = get_option( self::OPTION_AUTO_RECORD, true );
+		return (bool) apply_filters( 'wptsall_tm_auto_record_enabled', $enabled );
+	}
+
+	/**
+	 * Standard text-column source values for a post (TM pairing side).
+	 *
+	 * @param int $post_id Source post ID (resolvable in the current blog).
+	 * @return array<string,string> field_key => source text (empty array when the post is unavailable).
+	 */
+	public static function get_source_values_for_post( $post_id ) {
+		$post = get_post( $post_id );
+		if ( ! $post instanceof \WP_Post ) {
+			return array();
+		}
+		return array(
+			'post_title'   => (string) $post->post_title,
+			'post_excerpt' => (string) $post->post_excerpt,
+			'post_content' => (string) $post->post_content,
+		);
+	}
+
+	/**
+	 * Record TM pairs for one saved translation (opus5 M-04).
+	 *
+	 * Mirrors the suggest-side caps: only string fields, both sides
+	 * non-empty, each side at most 1200 characters — the same limit
+	 * get_editor_data applies to suggestions, so nothing enters the
+	 * memory that lookup would never accept.
+	 *
+	 * @param array  $source_values     field_key => source text.
+	 * @param string $source_lang       Source language.
+	 * @param string $target_lang       Target language.
+	 * @param array  $translated_values field_key => translated text.
+	 * @param string $domain            Memory domain (resolve_memory_text_domain).
+	 * @return int Number of recorded pairs.
+	 */
+	public static function record_translation_pairs( $source_values, $source_lang, $target_lang, $translated_values, $domain = '' ) {
+		if ( ! self::is_auto_record_enabled() || ! is_array( $translated_values ) || ! is_array( $source_values ) ) {
+			return 0;
+		}
+
+		$recorded = 0;
+		foreach ( $translated_values as $field => $target_text ) {
+			if ( ! is_string( $target_text ) || '' === trim( $target_text ) ) {
+				continue;
+			}
+			$source_text = (string) ( $source_values[ $field ] ?? '' );
+			if ( '' === trim( $source_text ) ) {
+				continue;
+			}
+			if ( self::text_length( $source_text ) > 1200 || self::text_length( $target_text ) > 1200 ) {
+				continue;
+			}
+			if ( self::record( $source_text, $source_lang, $target_lang, $target_text, $domain, (string) $field ) ) {
+				$recorded++;
+			}
+		}
+		return $recorded;
+	}
+
+	/**
+	 * Multibyte-safe length used by the pair caps.
+	 *
+	 * @param string $text Text.
+	 * @return int
+	 */
+	private static function text_length( $text ) {
+		return function_exists( 'mb_strlen' ) ? mb_strlen( (string) $text ) : strlen( (string) $text );
 	}
 }

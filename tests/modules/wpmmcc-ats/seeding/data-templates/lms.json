@@ -1,0 +1,348 @@
+{
+    "_meta": {
+        "version": "1.2.0",
+        "description": "LMS学习管理系统数据模板",
+        "post_types": ["academy_courses", "academy_lessons", "academy_announcement", "lp_course", "lp_lesson"],
+        "plugins": ["academy", "learnpress", "tutor", "sensei-lms", "lifterlms", "masterstudy-lms-learning-management-system"],
+        "_notes": {
+            "complex_routing_types": {
+                "academy_lessons": "课程子内容，通过课程页面访问，需要管理界面配置",
+                "lp_lesson": "课程子内容，通过课程页面访问，需要管理界面配置",
+                "lp_quiz": "测验内容，通过课程页面访问，需要管理界面配置"
+            },
+            "reason": "这些 post types 虽然注册为 public，但实际 URL 访问需要通过父内容（课程）路由"
+        }
+    },
+    "taxonomies": {
+        "course_category": [
+            {"name": "编程开发", "slug": "programming"},
+            {"name": "设计创意", "slug": "design"},
+            {"name": "商业管理", "slug": "business"},
+            {"name": "语言学习", "slug": "language"}
+        ],
+        "course_level": [
+            {"name": "入门级", "slug": "beginner"},
+            {"name": "中级", "slug": "intermediate"},
+            {"name": "高级", "slug": "advanced"}
+        ]
+    },
+    "academy": {
+        "courses": [
+            {
+                "id": "academy_course_1",
+                "title": "Python全栈开发实战课程",
+                "slug": "python-fullstack-course",
+                "featured_image": "course-1.jpg",
+                "video_url": "https://example.com/videos/python-intro.mp4",
+                "content": "<!-- wp:paragraph -->\n<p>本课程将带您从零开始学习Python全栈开发，涵盖Python基础、Web框架、数据库、前端技术等核心内容。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>课程目标</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>掌握Python编程语言核心语法</li>\n<li>学会使用Django/Flask框架开发Web应用</li>\n<li>掌握数据库设计和SQL操作</li>\n<li>了解前端HTML/CSS/JavaScript基础</li>\n<li>能够独立完成全栈项目开发</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>适合人群</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>零基础编程爱好者、想转行做开发的职场人士、计算机相关专业学生。</p>\n<!-- /wp:paragraph -->",
+                "excerpt": "从零开始学习Python全栈开发，包含60+课时，实战项目驱动",
+                "status": "publish",
+                "categories": ["programming"],
+                "level": "beginner",
+                "meta": {
+                    "academy_course_price": "1299",
+                    "academy_course_duration": "60小时",
+                    "academy_course_lessons": "45",
+                    "academy_course_students": "1280",
+                    "academy_course_rating": "4.8",
+                    "_yoast_wpseo_title": "Python全栈开发实战课程 - 零基础入门到精通",
+                    "_yoast_wpseo_metadesc": "Python全栈开发课程，60+课时，从零基础到独立开发，1299元，已有1280名学员。"
+                },
+                "verification": {
+                    "title_contains": "Python全栈开发",
+                    "price_contains": "1299",
+                    "meta_contains": "60"
+                }
+            },
+            {
+                "id": "academy_course_2",
+                "title": "UI/UX设计从入门到精通",
+                "slug": "ui-ux-design-course",
+                "featured_image": "course-text-1.png",
+                "content": "<!-- wp:paragraph -->\n<p>系统学习UI/UX设计的完整课程，包含设计理论、工具使用、实战案例等内容。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>课程内容</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>设计基础理论与原则</li>\n<li>Figma/Sketch工具精通</li>\n<li>用户研究与需求分析</li>\n<li>原型设计与交互设计</li>\n<li>设计规范与组件库搭建</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "UI/UX设计系统课程，掌握Figma/Sketch，学会用户研究和交互设计",
+                "status": "publish",
+                "categories": ["design"],
+                "level": "beginner",
+                "meta": {
+                    "academy_course_price": "999",
+                    "academy_course_duration": "40小时",
+                    "academy_course_lessons": "32",
+                    "academy_course_students": "860",
+                    "academy_course_rating": "4.7",
+                    "_yoast_wpseo_title": "UI/UX设计从入门到精通 - 系统学习设计",
+                    "_yoast_wpseo_metadesc": "UI/UX设计完整课程，40课时，掌握Figma/Sketch，学会交互设计，999元。"
+                },
+                "verification": {
+                    "title_contains": "UI/UX设计",
+                    "price_contains": "999",
+                    "meta_contains": "40"
+                }
+            },
+            {
+                "id": "academy_course_3",
+                "title": "商业数据分析与可视化",
+                "slug": "business-data-analysis",
+                "featured_image": "featured-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>学习使用Excel、Python、Tableau等工具进行商业数据分析，掌握数据可视化技能。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>学习收获</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>Excel高级数据分析技巧</li>\n<li>Python数据分析库（Pandas/NumPy）</li>\n<li>数据可视化工具（Tableau/PowerBI）</li>\n<li>统计学基础与商业分析方法</li>\n<li>真实商业案例实战</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "商业数据分析课程，Excel+Python+Tableau，适合职场人士提升",
+                "status": "publish",
+                "categories": ["business"],
+                "level": "intermediate",
+                "meta": {
+                    "academy_course_price": "1599",
+                    "academy_course_duration": "50小时",
+                    "academy_course_lessons": "38",
+                    "academy_course_students": "720",
+                    "academy_course_rating": "4.9",
+                    "_yoast_wpseo_title": "商业数据分析与可视化 - Excel+Python+Tableau",
+                    "_yoast_wpseo_metadesc": "商业数据分析课程，学习Excel、Python、Tableau数据分析和可视化，1599元。"
+                },
+                "verification": {
+                    "title_contains": "数据分析",
+                    "price_contains": "1599",
+                    "meta_contains": "50"
+                }
+            }
+        ],
+        "lessons": [
+            {
+                "id": "academy_lesson_1",
+                "title": "Python环境搭建与基础语法",
+                "slug": "python-setup-basics",
+                "content": "<!-- wp:paragraph -->\n<p>本节课将介绍Python开发环境的搭建，包括Python安装、IDE选择、第一个Python程序等内容。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>学习内容</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>Python 3.x 安装配置</li>\n<li>PyCharm/VS Code 开发环境</li>\n<li>Hello World 程序</li>\n<li>变量与数据类型</li>\n</ul>\n<!-- /wp:list -->",
+                "status": "publish",
+                "course": "academy_course_1",
+                "meta": {
+                    "academy_lesson_duration": "45分钟",
+                    "academy_lesson_order": "1"
+                },
+                "verification": {
+                    "title_contains": "Python环境搭建",
+                    "content_contains": "PyCharm"
+                }
+            },
+            {
+                "id": "academy_lesson_2",
+                "title": "Python流程控制与函数",
+                "slug": "python-control-flow-functions",
+                "content": "<!-- wp:paragraph -->\n<p>学习Python的条件语句、循环语句和函数定义，掌握程序逻辑控制能力。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "course": "academy_course_1",
+                "meta": {
+                    "academy_lesson_duration": "60分钟",
+                    "academy_lesson_order": "2"
+                },
+                "verification": {
+                    "title_contains": "流程控制",
+                    "content_contains": "函数定义"
+                }
+            }
+        ],
+        "announcements": [
+            {
+                "id": "academy_announcement_1",
+                "title": "新课程上线通知：人工智能入门课程",
+                "slug": "new-ai-course-announcement",
+                "content": "<!-- wp:paragraph -->\n<p>我们很高兴地宣布，全新的人工智能入门课程已经上线！本课程由资深AI工程师授课，带您走进人工智能的世界。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>早鸟优惠：前100名报名学员享受8折优惠！</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "meta": {
+                    "_yoast_wpseo_title": "新课程上线：人工智能入门课程",
+                    "_yoast_wpseo_metadesc": "人工智能入门课程上线，资深AI工程师授课，前100名8折优惠。"
+                },
+                "verification": {
+                    "title_contains": "人工智能入门",
+                    "content_contains": "8折优惠"
+                }
+            }
+        ]
+    },
+    "learnpress": {
+        "courses": [
+            {
+                "id": "lp_course_1",
+                "title": "WordPress主题开发完全指南",
+                "slug": "wordpress-theme-development",
+                "featured_image": "featured-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>从零开始学习WordPress主题开发，掌握主题结构、模板层级、钩子机制等核心知识。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>课程特色</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>循序渐进的学习路径</li>\n<li>实战项目驱动</li>\n<li>覆盖最新WordPress特性</li>\n<li>包含Gutenberg区块开发</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "WordPress主题开发完整教程，从基础到高级，含Gutenberg开发",
+                "status": "publish",
+                "meta": {
+                    "_lp_price": "799",
+                    "_lp_duration": "30小时",
+                    "_lp_students": "450",
+                    "_lp_level": "intermediate",
+                    "_yoast_wpseo_title": "WordPress主题开发完全指南 - LearnPress课程",
+                    "_yoast_wpseo_metadesc": "WordPress主题开发完整教程，30课时，含Gutenberg区块开发，799元。"
+                },
+                "verification": {
+                    "title_contains": "WordPress主题开发",
+                    "price_contains": "799",
+                    "meta_contains": "30"
+                }
+            }
+        ],
+        "lessons": [
+            {
+                "id": "lp_lesson_1",
+                "title": "WordPress主题基础结构",
+                "slug": "wp-theme-basic-structure",
+                "content": "<!-- wp:paragraph -->\n<p>了解WordPress主题的基本文件结构，包括style.css、index.php、functions.php等核心文件。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "course": "lp_course_1",
+                "meta": {
+                    "_lp_duration": "30分钟",
+                    "_lp_preview": "yes"
+                },
+                "verification": {
+                    "title_contains": "主题基础结构",
+                    "content_contains": "style.css"
+                }
+            }
+        ]
+    },
+    "masterstudy": {
+        "courses": [
+            {
+                "id": "ms_course_1",
+                "title": "机器学习入门与实战",
+                "slug": "machine-learning-fundamentals",
+                "featured_image": "course-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>系统学习机器学习的核心概念和算法，通过Python实战项目掌握ML技能。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>课程内容</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>机器学习基础理论</li>\n<li>监督学习算法（回归、分类）</li>\n<li>无监督学习（聚类、降维）</li>\n<li>神经网络入门</li>\n<li>Scikit-learn实战</li>\n<li>真实项目案例</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "机器学习系统教程，Python实战驱动，从理论到应用",
+                "status": "publish",
+                "categories": ["programming"],
+                "level": "intermediate",
+                "meta": {
+                    "_ms_course_price": "1999",
+                    "_ms_course_sale_price": "1499",
+                    "_ms_course_duration": "55小时",
+                    "_ms_course_lessons": "48",
+                    "_ms_course_students": "890",
+                    "_ms_course_rating": "4.9",
+                    "_yoast_wpseo_title": "机器学习入门与实战 - MasterStudy课程",
+                    "_yoast_wpseo_metadesc": "机器学习系统课程，55课时，Python实战驱动，原价1999现价1499元。"
+                },
+                "verification": {
+                    "title_contains": "机器学习",
+                    "price_contains": "1499",
+                    "meta_contains": "55"
+                }
+            },
+            {
+                "id": "ms_course_2",
+                "title": "React前端开发进阶",
+                "slug": "react-advanced-development",
+                "featured_image": "course-text-1.png",
+                "content": "<!-- wp:paragraph -->\n<p>深入学习React生态系统，包括Redux、React Router、Hooks等高级特性。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>React Hooks深度解析</li>\n<li>Redux状态管理</li>\n<li>React Router路由</li>\n<li>性能优化技巧</li>\n<li>TypeScript集成</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "React进阶课程，掌握Hooks、Redux和性能优化",
+                "status": "publish",
+                "categories": ["programming"],
+                "level": "advanced",
+                "meta": {
+                    "_ms_course_price": "1299",
+                    "_ms_course_duration": "35小时",
+                    "_ms_course_lessons": "30",
+                    "_ms_course_students": "650",
+                    "_ms_course_rating": "4.8",
+                    "_yoast_wpseo_title": "React前端开发进阶 - MasterStudy课程",
+                    "_yoast_wpseo_metadesc": "React进阶开发课程，35课时，深入Hooks和Redux，1299元。"
+                },
+                "verification": {
+                    "title_contains": "React",
+                    "price_contains": "1299"
+                }
+            }
+        ],
+        "lessons": [
+            {
+                "id": "ms_lesson_1",
+                "title": "机器学习概述与环境搭建",
+                "slug": "ml-overview-setup",
+                "content": "<!-- wp:paragraph -->\n<p>了解机器学习的发展历史、应用场景，搭建Python开发环境和Jupyter Notebook。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "course": "ms_course_1",
+                "meta": {
+                    "_ms_lesson_duration": "45分钟",
+                    "_ms_lesson_order": "1",
+                    "_ms_lesson_free": "yes"
+                },
+                "verification": {
+                    "title_contains": "机器学习概述",
+                    "content_contains": "Jupyter"
+                }
+            }
+        ]
+    },
+    "tutor": {
+        "courses": [
+            {
+                "id": "tutor_course_1",
+                "title": "Docker容器化部署实战",
+                "slug": "docker-containerization",
+                "featured_image": "featured-1.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>全面学习Docker容器技术，从基础到生产环境部署，掌握容器化应用开发。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>课程大纲</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>Docker基础概念与架构</li>\n<li>镜像构建与管理</li>\n<li>容器编排与Docker Compose</li>\n<li>Docker网络与存储</li>\n<li>生产环境最佳实践</li>\n<li>Kubernetes入门</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "Docker容器化完整教程，从入门到生产部署",
+                "status": "publish",
+                "categories": ["programming"],
+                "level": "intermediate",
+                "meta": {
+                    "_tutor_course_price": "899",
+                    "_tutor_course_duration": "28小时",
+                    "_tutor_course_level": "intermediate",
+                    "_tutor_enrolled": "520",
+                    "_tutor_course_rating": "4.7",
+                    "_yoast_wpseo_title": "Docker容器化部署实战 - Tutor LMS课程",
+                    "_yoast_wpseo_metadesc": "Docker容器化实战课程，28课时，从基础到生产部署，899元。"
+                },
+                "verification": {
+                    "title_contains": "Docker",
+                    "price_contains": "899",
+                    "meta_contains": "28"
+                }
+            },
+            {
+                "id": "tutor_course_2",
+                "title": "云计算与AWS实战认证",
+                "slug": "aws-cloud-certification",
+                "featured_image": "featured-2.jpg",
+                "content": "<!-- wp:paragraph -->\n<p>系统学习AWS云服务，备考AWS解决方案架构师认证，掌握云原生开发技能。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>AWS核心服务（EC2、S3、RDS）</li>\n<li>网络与安全（VPC、IAM）</li>\n<li>无服务器架构（Lambda、API Gateway）</li>\n<li>高可用与容灾设计</li>\n<li>认证考试准备</li>\n</ul>\n<!-- /wp:list -->",
+                "excerpt": "AWS云计算认证课程，系统学习云原生架构",
+                "status": "publish",
+                "categories": ["programming"],
+                "level": "advanced",
+                "meta": {
+                    "_tutor_course_price": "1599",
+                    "_tutor_course_duration": "42小时",
+                    "_tutor_course_level": "advanced",
+                    "_tutor_enrolled": "380",
+                    "_tutor_course_rating": "4.9",
+                    "_yoast_wpseo_title": "云计算与AWS实战认证 - Tutor LMS课程",
+                    "_yoast_wpseo_metadesc": "AWS云计算认证课程，42课时，系统学习云原生架构，1599元。"
+                },
+                "verification": {
+                    "title_contains": "AWS",
+                    "price_contains": "1599"
+                }
+            }
+        ],
+        "lessons": [
+            {
+                "id": "tutor_lesson_1",
+                "title": "Docker安装与基础命令",
+                "slug": "docker-installation-basics",
+                "content": "<!-- wp:paragraph -->\n<p>学习在Windows、Mac和Linux上安装Docker，掌握基础命令行操作。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "course": "tutor_course_1",
+                "meta": {
+                    "_tutor_lesson_duration": "35分钟",
+                    "_tutor_lesson_order": "1"
+                },
+                "verification": {
+                    "title_contains": "Docker安装",
+                    "content_contains": "命令行"
+                }
+            }
+        ]
+    }
+}

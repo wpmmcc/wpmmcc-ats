@@ -61,7 +61,7 @@ function wptsall_create_site_relations_table() {
 		media_handling VARCHAR(20) DEFAULT 'copy' COMMENT 'Media handling strategy: copy / reference',
 		sync_mode VARCHAR(20) DEFAULT 'new_only' COMMENT 'Sync mode: new_only (create only)',
 		direction VARCHAR(20) DEFAULT 'source_to_target' COMMENT 'Sync direction: source_to_target / bidirectional',
-		conflict_strategy VARCHAR(20) DEFAULT 'source_wins' COMMENT 'Conflict strategy: source_wins / target_wins / newest_wins / manual / merge',
+		conflict_strategy VARCHAR(20) DEFAULT 'source_wins' COMMENT 'Conflict strategy (canonical): lww / source_wins / target_wins / manual_review / merge',
 
 		-- Status
 		status VARCHAR(20) DEFAULT 'active' COMMENT 'Relation status: active / inactive',
@@ -204,7 +204,7 @@ function wptsall_migrate_site_relations_081() {
 	if ( empty( $column_exists ) ) {
 		wptsall_db_alter_table(
 			$table_name,
-			"ADD COLUMN conflict_strategy VARCHAR(20) DEFAULT 'source_wins' COMMENT 'Conflict strategy: source_wins / target_wins / newest_wins / manual / merge' AFTER direction"
+			"ADD COLUMN conflict_strategy VARCHAR(20) DEFAULT 'source_wins' COMMENT 'Conflict strategy (canonical): lww / source_wins / target_wins / manual_review / merge' AFTER direction"
 		);
 		$added_columns[] = 'conflict_strategy';
 	}

@@ -184,13 +184,56 @@ class Media_Translation_Service {
 		return is_array( $rows ) ? $rows : array();
 	}
 
+	/**
+	 * Count media translations with the same filters as list_mappings()
+	 * (ATS-P2-05 / 3.8flash B4: the pagination bar needs the FILTERED total).
+	 *
+	 * @param array $args Filter args (source_id/target_lang; limit/offset ignored).
+	 * @return int
+	 */
+	public static function count_mappings( $args = array() ) {
+		if ( ! self::table_exists() ) {
+			return 0;
+		}
+		global $wpdb;
+		$defaults = array( 'source_id' => 0, 'target_lang' => '' );
+		$args = array_merge( $defaults, $args );
+		$source_id = (int) $args['source_id'];
+		$target_lang = (string) $args['target_lang'];
+		$relations_table = function_exists( 'wptsall_table' ) ? wptsall_table( 'site_relations' ) : $wpdb->prefix . 'wptsall_site_relations';
+		$cache_key = 'count:' . $source_id . ':' . $target_lang;
+		$cached = wp_cache_get( $cache_key, 'wptsall_media_counts' );
+		if ( is_int( $cached ) ) {
+			return $cached;
+		}
+		if ( $source_id > 0 && '' !== $target_lang ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i m LEFT JOIN %i r ON r.target_site_id = m.target_site_id AND r.source_site_id = m.source_site_id AND r.status = %s WHERE source_media_id = %d AND (m.target_site_id = %s OR r.target_lang = %s)', self::table(), $relations_table, 'active', $source_id, $target_lang, $target_lang ) );
+		} elseif ( $source_id > 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i m LEFT JOIN %i r ON r.target_site_id = m.target_site_id AND r.source_site_id = m.source_site_id AND r.status = %s WHERE source_media_id = %d', self::table(), $relations_table, 'active', $source_id ) );
+		} elseif ( '' !== $target_lang ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i m LEFT JOIN %i r ON r.target_site_id = m.target_site_id AND r.source_site_id = m.source_site_id AND r.status = %s WHERE (m.target_site_id = %s OR r.target_lang = %s)', self::table(), $relations_table, 'active', $target_lang, $target_lang ) );
+		} else {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+			$count = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i m LEFT JOIN %i r ON r.target_site_id = m.target_site_id AND r.source_site_id = m.source_site_id AND r.status = %s WHERE 1 = %d', self::table(), $relations_table, 'active', 1 ) );
+		}
+		wp_cache_set( $cache_key, $count, 'wptsall_media_counts', 30 );
+		return $count;
+	}
+
 	public static function delete( $id ) {
 		if ( ! self::table_exists() ) {
 			return false;
 		}
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
-		return (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- plugin table or connection command; WordPress has no replacement API
+		$deleted = (bool) $wpdb->delete( self::table(), array( 'id' => (int) $id ) );
+		if ( $deleted ) {
+			wp_cache_flush_group( 'wptsall_media_counts' );
+		}
+		return $deleted;
 	}
 
 	public static function counts() {

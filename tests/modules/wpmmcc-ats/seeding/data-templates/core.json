@@ -1,0 +1,263 @@
+{
+    "_meta": {
+        "version": "1.1.0",
+        "description": "WordPress 核心内容模板 - 文章和页面（完整版）",
+        "post_types": ["post", "page"],
+        "plugins": ["wordpress-core"],
+        "updated": "2026-01-10"
+    },
+    "authors": [
+        {
+            "id": "author_admin",
+            "login": "admin",
+            "display_name": "站点管理员",
+            "role": "administrator"
+        },
+        {
+            "id": "author_editor",
+            "login": "editor",
+            "display_name": "内容编辑",
+            "role": "editor"
+        }
+    ],
+    "categories": [
+        {
+            "name": "技术教程",
+            "slug": "tech-tutorial",
+            "description": "WordPress开发和技术相关教程"
+        },
+        {
+            "name": "产品评测",
+            "slug": "product-review",
+            "description": "WordPress主题、插件评测"
+        },
+        {
+            "name": "行业资讯",
+            "slug": "industry-news",
+            "description": "WordPress和网站行业最新动态"
+        }
+    ],
+    "tags": [
+        {"name": "WordPress", "slug": "wordpress"},
+        {"name": "插件开发", "slug": "plugin-dev"},
+        {"name": "主题开发", "slug": "theme-dev"},
+        {"name": "SEO", "slug": "seo"},
+        {"name": "前端开发", "slug": "frontend"},
+        {"name": "PHP", "slug": "php"},
+        {"name": "性能优化", "slug": "performance"}
+    ],
+    "posts": [
+        {
+            "id": "post_1",
+            "post_type": "post",
+            "title": "WordPress插件开发入门指南",
+            "slug": "wordpress-plugin-dev-guide",
+            "content": "<!-- wp:paragraph -->\n<p>欢迎阅读WordPress插件开发入门指南。本文将介绍插件开发的基础知识，包括插件结构、钩子系统和最佳实践。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>什么是WordPress插件</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>WordPress插件是扩展WordPress功能的PHP程序。通过插件，您可以添加新功能、修改现有行为或与第三方服务集成。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>插件基本结构</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>一个基本的WordPress插件包含以下组成部分：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>主插件文件（包含插件头部信息）</li>\n<li>readme.txt 文件（插件说明文档）</li>\n<li>includes 目录（功能代码）</li>\n<li>assets 目录（CSS、JS资源文件）</li>\n<li>languages 目录（翻译文件）</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>钩子系统详解</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>WordPress的钩子分为两种：动作钩子(Actions)和过滤器钩子(Filters)。动作钩子用于在特定时机执行代码，过滤器钩子用于修改数据。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:code -->\n<pre class=\"wp-block-code\"><code>// 动作钩子示例\nadd_action( 'init', 'my_custom_init' );\n\n// 过滤器钩子示例\nadd_filter( 'the_title', 'my_custom_title' );</code></pre>\n<!-- /wp:code -->\n\n<!-- wp:heading -->\n<h2>最佳实践</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>使用唯一的函数前缀避免命名冲突</li>\n<li>遵循WordPress编码标准</li>\n<li>使用nonce验证确保安全</li>\n<li>正确转义输出防止XSS攻击</li>\n<li>使用prepare语句防止SQL注入</li>\n</ol>\n<!-- /wp:list -->",
+            "excerpt": "本文介绍WordPress插件开发的基础知识，包括插件结构、钩子系统和开发最佳实践，适合初学者入门。",
+            "status": "publish",
+            "author": "author_admin",
+            "featured_image": "featured-1.jpg",
+            "comment_status": "open",
+            "ping_status": "open",
+            "categories": ["tech-tutorial"],
+            "tags": ["wordpress", "plugin-dev", "php"],
+            "meta": {
+                "_yoast_wpseo_title": "WordPress插件开发入门指南 - 完整教程",
+                "_yoast_wpseo_metadesc": "学习WordPress插件开发的基础知识，从零开始创建自己的WordPress插件。包含代码示例和最佳实践。",
+                "_yoast_wpseo_focuskw": "WordPress插件开发",
+                "_aioseo_title": "WordPress插件开发入门指南 - 完整教程",
+                "_aioseo_description": "学习WordPress插件开发的基础知识，从零开始创建自己的WordPress插件。",
+                "_aioseo_keywords": "WordPress,插件开发,PHP,钩子",
+                "rank_math_title": "WordPress插件开发入门指南 - 完整教程",
+                "rank_math_description": "学习WordPress插件开发的基础知识，从零开始创建自己的WordPress插件。",
+                "rank_math_focus_keyword": "WordPress插件开发"
+            },
+            "comments": [
+                {
+                    "author": "张三",
+                    "email": "zhangsan@example.com",
+                    "content": "非常详细的教程，对于初学者非常有帮助！请问有后续进阶教程吗？",
+                    "approved": true
+                },
+                {
+                    "author": "李四",
+                    "email": "lisi@example.com",
+                    "content": "关于钩子系统的讲解很清晰，代码示例也很实用。",
+                    "approved": true
+                }
+            ],
+            "verification": {
+                "title_contains": "WordPress插件开发入门指南",
+                "meta_contains": "插件开发的基础知识",
+                "content_contains": "钩子系统"
+            }
+        },
+        {
+            "id": "post_2",
+            "post_type": "post",
+            "title": "2024年最佳WordPress主题推荐",
+            "slug": "best-wordpress-themes-2024",
+            "content": "<!-- wp:paragraph -->\n<p>选择合适的WordPress主题对于网站的成功至关重要。本文将为您推荐2024年最值得使用的WordPress主题。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>选择主题的标准</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>在选择主题时，需要考虑以下因素：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li><strong>响应式设计</strong> - 适配各种设备屏幕</li>\n<li><strong>加载速度</strong> - 轻量级代码，快速加载</li>\n<li><strong>SEO友好</strong> - 良好的代码结构和Schema标记</li>\n<li><strong>自定义选项</strong> - 灵活的主题设置</li>\n<li><strong>技术支持</strong> - 及时的更新和客服响应</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>企业站主题推荐</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>1. flavor Enterprise</strong> - 功能强大的企业级多功能主题，支持多种行业模板。价格：￥499/年</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>2. flavor Corporate</strong> - 专业简洁的企业官网主题，加载速度极快。价格：￥299/年</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>博客主题推荐</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>1. flavor Blog Pro</strong> - 极简风格博客主题，专为内容创作者设计。价格：￥199/年</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>电商主题推荐</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>1. flavor Shop</strong> - 完美兼容WooCommerce的电商主题，支持多种支付方式。价格：￥599/年</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:table -->\n<figure class=\"wp-block-table\"><table><thead><tr><th>主题名称</th><th>适用场景</th><th>价格</th><th>评分</th></tr></thead><tbody><tr><td>flavor Enterprise</td><td>企业官网</td><td>￥499/年</td><td>4.9/5</td></tr><tr><td>flavor Blog Pro</td><td>个人博客</td><td>￥199/年</td><td>4.8/5</td></tr><tr><td>flavor Shop</td><td>电商网站</td><td>￥599/年</td><td>4.7/5</td></tr></tbody></table></figure>\n<!-- /wp:table -->",
+            "excerpt": "精选2024年最佳WordPress主题，涵盖企业站、博客、电商等多种类型，助您打造专业网站。",
+            "status": "publish",
+            "author": "author_editor",
+            "featured_image": "featured-2.jpg",
+            "comment_status": "open",
+            "ping_status": "open",
+            "categories": ["product-review"],
+            "tags": ["wordpress", "theme-dev", "frontend"],
+            "meta": {
+                "_yoast_wpseo_title": "2024年最佳WordPress主题推荐 - 精选TOP10",
+                "_yoast_wpseo_metadesc": "精选2024年最优秀的WordPress主题，包括企业站、博客、电商等类型，助您打造专业网站。",
+                "_yoast_wpseo_focuskw": "WordPress主题推荐",
+                "_aioseo_title": "2024年最佳WordPress主题推荐 - 精选TOP10",
+                "_aioseo_description": "精选2024年最优秀的WordPress主题，包括企业站、博客、电商等类型。",
+                "_aioseo_keywords": "WordPress,主题,2024,推荐",
+                "rank_math_title": "2024年最佳WordPress主题推荐 - 精选TOP10",
+                "rank_math_description": "精选2024年最优秀的WordPress主题，包括企业站、博客、电商等类型。",
+                "rank_math_focus_keyword": "WordPress主题推荐"
+            },
+            "comments": [
+                {
+                    "author": "王五",
+                    "email": "wangwu@example.com",
+                    "content": "flavor Enterprise 确实很不错，我们公司网站就在用，客户反馈很好！",
+                    "approved": true
+                }
+            ],
+            "verification": {
+                "title_contains": "WordPress主题推荐",
+                "meta_contains": "最优秀的WordPress主题",
+                "content_contains": "响应式设计"
+            }
+        },
+        {
+            "id": "post_3",
+            "post_type": "post",
+            "title": "网站SEO优化完全指南",
+            "slug": "complete-seo-guide",
+            "content": "<!-- wp:paragraph -->\n<p>SEO（搜索引擎优化）是提高网站在搜索结果中排名的关键技术。本文将全面介绍SEO优化的各个方面。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>SEO基础概念</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>SEO分为站内优化和站外优化两大类：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li><strong>站内优化</strong>：内容优化、技术优化、用户体验优化</li>\n<li><strong>站外优化</strong>：外链建设、品牌推广、社交媒体营销</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>关键词研究</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>关键词研究是SEO的基础。通过分析用户搜索意图，选择合适的关键词，才能制定有效的优化策略。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>推荐的关键词工具：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol>\n<li>Google Keyword Planner - 免费，数据准确</li>\n<li>SEMrush - 功能全面，竞品分析</li>\n<li>Ahrefs - 外链分析强大</li>\n<li>5118 - 中文关键词必备</li>\n</ol>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>内容优化技巧</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>优质内容是SEO的核心。以下是内容优化的关键要点：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>标题包含主要关键词，长度控制在60字符内</li>\n<li>Meta描述包含关键词，长度控制在155字符内</li>\n<li>正文自然融入关键词，密度控制在2-3%</li>\n<li>使用H1-H6标签构建清晰的内容层次</li>\n<li>添加内链和外链，提供更多价值</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>技术SEO要点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>技术SEO确保搜索引擎能够正确抓取和索引您的网站：</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>网站加载速度优化（目标：3秒内）</li>\n<li>移动端适配（Mobile-First）</li>\n<li>SSL证书配置（HTTPS）</li>\n<li>XML Sitemap 提交</li>\n<li>Robots.txt 正确配置</li>\n<li>结构化数据标记（Schema.org）</li>\n</ul>\n<!-- /wp:list -->",
+            "excerpt": "全面介绍网站SEO优化技巧，包括关键词研究、内容优化、技术SEO等核心内容，助您提升网站搜索排名。",
+            "status": "publish",
+            "author": "author_admin",
+            "featured_image": "featured-1.jpg",
+            "comment_status": "open",
+            "ping_status": "open",
+            "categories": ["tech-tutorial"],
+            "tags": ["seo", "performance", "frontend"],
+            "meta": {
+                "_yoast_wpseo_title": "网站SEO优化完全指南 - 从入门到精通",
+                "_yoast_wpseo_metadesc": "全面的SEO优化教程，涵盖关键词研究、内容优化、技术SEO、外链建设等核心知识点。",
+                "_yoast_wpseo_focuskw": "SEO优化",
+                "_aioseo_title": "网站SEO优化完全指南 - 从入门到精通",
+                "_aioseo_description": "全面的SEO优化教程，涵盖关键词研究、内容优化、技术SEO等核心知识点。",
+                "_aioseo_keywords": "SEO,优化,关键词,搜索引擎",
+                "rank_math_title": "网站SEO优化完全指南 - 从入门到精通",
+                "rank_math_description": "全面的SEO优化教程，涵盖关键词研究、内容优化、技术SEO等核心知识点。",
+                "rank_math_focus_keyword": "SEO优化"
+            },
+            "comments": [
+                {
+                    "author": "刘技术",
+                    "email": "liujs@example.com",
+                    "content": "很实用的SEO指南，特别是技术SEO部分讲得很详细。",
+                    "approved": true
+                },
+                {
+                    "author": "陈SEO",
+                    "email": "chenseo@example.com",
+                    "content": "作为SEO从业者，这篇文章的内容很全面，推荐给新手看！",
+                    "approved": true
+                }
+            ],
+            "verification": {
+                "title_contains": "SEO优化完全指南",
+                "meta_contains": "SEO优化教程",
+                "content_contains": "关键词研究"
+            }
+        }
+    ],
+    "pages": [
+        {
+            "id": "page_about",
+            "post_type": "page",
+            "title": "关于我们",
+            "slug": "about-us",
+            "content": "<!-- wp:paragraph {\"className\":\"lead\"} -->\n<p class=\"lead\">欢迎来到我们的网站！我们是一家专注于WordPress解决方案的技术团队，成立于2015年。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>公司简介</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>我们是一支由资深WordPress开发者组成的专业团队，累计服务客户超过5000家，开发插件被下载超过100万次。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>我们的使命</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>致力于为用户提供最优质的WordPress插件和技术支持，帮助每一位用户轻松搭建专业网站。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>核心团队</h2>\n<!-- /wp:heading -->\n\n<!-- wp:columns -->\n<div class=\"wp-block-columns\">\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<p><strong>张伟</strong> - CEO & 创始人<br>10年WordPress开发经验</p>\n</div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<p><strong>李娜</strong> - 技术总监<br>前百度高级工程师</p>\n</div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<p><strong>王强</strong> - 产品经理<br>8年产品管理经验</p>\n</div>\n<!-- /wp:column -->\n</div>\n<!-- /wp:columns -->\n\n<!-- wp:heading -->\n<h2>联系方式</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>公司地址：</strong>北京市朝阳区科技园区A座10层<br>\n<strong>邮箱：</strong>contact@example.com<br>\n<strong>电话：</strong>400-123-4567</p>\n<!-- /wp:paragraph -->",
+            "excerpt": "了解我们的团队、使命和发展历程",
+            "status": "publish",
+            "author": "author_admin",
+            "featured_image": "featured-1.jpg",
+            "comment_status": "closed",
+            "ping_status": "closed",
+            "menu_order": 1,
+            "meta": {
+                "_yoast_wpseo_title": "关于我们 - 专业WordPress解决方案",
+                "_yoast_wpseo_metadesc": "我们是专注于WordPress解决方案的技术团队，提供优质插件和技术支持服务，累计服务客户超5000家。",
+                "_aioseo_title": "关于我们 - 专业WordPress解决方案",
+                "_aioseo_description": "我们是专注于WordPress解决方案的技术团队，提供优质插件和技术支持服务。",
+                "rank_math_title": "关于我们 - 专业WordPress解决方案",
+                "rank_math_description": "我们是专注于WordPress解决方案的技术团队，累计服务客户超5000家。"
+            },
+            "verification": {
+                "title_contains": "关于我们",
+                "meta_contains": "WordPress解决方案",
+                "content_contains": "技术团队"
+            }
+        },
+        {
+            "id": "page_services",
+            "post_type": "page",
+            "title": "服务项目",
+            "slug": "services",
+            "content": "<!-- wp:paragraph {\"className\":\"lead\"} -->\n<p class=\"lead\">我们提供全方位的WordPress服务，满足您的各种需求。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>网站开发</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>从企业官网到电商平台，我们可以为您定制开发各类WordPress网站。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>企业官网开发 - 起价 ￥9,800</li>\n<li>电商网站开发 - 起价 ￥19,800</li>\n<li>多语言网站开发 - 起价 ￥15,800</li>\n<li>响应式网站改版 - 起价 ￥6,800</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>插件定制</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>根据您的业务需求，开发专属WordPress插件，实现特定功能。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>功能插件开发 - ￥5,000起</li>\n<li>API集成插件 - ￥8,000起</li>\n<li>电商功能插件 - ￥10,000起</li>\n<li>多站点插件 - ￥15,000起</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>技术支持</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>7x24小时技术支持，确保您的网站稳定运行。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>基础支持套餐 - ￥500/月</li>\n<li>标准支持套餐 - ￥1,500/月</li>\n<li>高级支持套餐 - ￥3,000/月</li>\n<li>企业级SLA支持 - 定制价格</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>培训服务</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>为您的团队提供WordPress开发和管理培训。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:list -->\n<ul>\n<li>WordPress基础培训 - 2天 ￥3,000/人</li>\n<li>WordPress开发培训 - 5天 ￥8,000/人</li>\n<li>团队定制培训 - 按需报价</li>\n</ul>\n<!-- /wp:list -->",
+            "excerpt": "了解我们提供的WordPress服务项目，包括网站开发、插件定制、技术支持等",
+            "status": "publish",
+            "author": "author_admin",
+            "featured_image": "featured-2.jpg",
+            "comment_status": "closed",
+            "ping_status": "closed",
+            "menu_order": 2,
+            "meta": {
+                "_yoast_wpseo_title": "服务项目 - 网站开发、插件定制、技术支持",
+                "_yoast_wpseo_metadesc": "提供WordPress网站开发、插件定制、技术支持等全方位服务，满足您的各种需求。",
+                "_aioseo_title": "服务项目 - 网站开发、插件定制、技术支持",
+                "_aioseo_description": "提供WordPress网站开发、插件定制、技术支持等全方位服务。",
+                "rank_math_title": "服务项目 - 网站开发、插件定制、技术支持",
+                "rank_math_description": "提供WordPress网站开发、插件定制、技术支持等全方位服务。"
+            },
+            "verification": {
+                "title_contains": "服务项目",
+                "meta_contains": "网站开发",
+                "content_contains": "插件定制"
+            }
+        },
+        {
+            "id": "page_contact",
+            "post_type": "page",
+            "title": "联系我们",
+            "slug": "contact",
+            "content": "<!-- wp:paragraph {\"className\":\"lead\"} -->\n<p class=\"lead\">如有任何问题或合作意向，请随时与我们联系。我们将在24小时内回复您。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>联系信息</h2>\n<!-- /wp:heading -->\n\n<!-- wp:columns -->\n<div class=\"wp-block-columns\">\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<h3>总部地址</h3>\n<p>北京市朝阳区科技园区A座10层<br>邮编：100020</p>\n</div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<h3>联系电话</h3>\n<p>客服热线：400-123-4567<br>技术支持：400-123-4568</p>\n</div>\n<!-- /wp:column -->\n\n<!-- wp:column -->\n<div class=\"wp-block-column\">\n<h3>电子邮箱</h3>\n<p>商务合作：business@example.com<br>技术支持：support@example.com</p>\n</div>\n<!-- /wp:column -->\n</div>\n<!-- /wp:columns -->\n\n<!-- wp:heading -->\n<h2>工作时间</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>工作日：</strong>周一至周五 9:00-18:00<br>\n<strong>周末：</strong>周六 10:00-16:00（仅技术支持）<br>\n<strong>节假日：</strong>紧急支持热线 400-123-4569</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>社交媒体</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p><strong>微信公众号：</strong>WordPress技术圈<br>\n<strong>微博：</strong>@WordPress技术圈<br>\n<strong>GitHub：</strong>github.com/example-team</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>在线留言</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>您也可以通过下方表单直接给我们留言，我们会尽快与您联系。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[contact-form-7 id=\"123\" title=\"联系表单\"]\n<!-- /wp:shortcode -->",
+            "excerpt": "联系我们获取帮助和支持，多种联系方式任您选择",
+            "status": "publish",
+            "author": "author_admin",
+            "featured_image": "featured-1.jpg",
+            "comment_status": "closed",
+            "ping_status": "closed",
+            "menu_order": 3,
+            "meta": {
+                "_yoast_wpseo_title": "联系我们 - 获取帮助和支持",
+                "_yoast_wpseo_metadesc": "联系我们获取WordPress相关帮助和技术支持，客服电话400-123-4567，工作日9:00-18:00。",
+                "_aioseo_title": "联系我们 - 获取帮助和支持",
+                "_aioseo_description": "联系我们获取WordPress相关帮助和技术支持。",
+                "rank_math_title": "联系我们 - 获取帮助和支持",
+                "rank_math_description": "联系我们获取WordPress相关帮助和技术支持。"
+            },
+            "verification": {
+                "title_contains": "联系我们",
+                "meta_contains": "帮助和支持",
+                "content_contains": "400-123-4567"
+            }
+        }
+    ]
+}

@@ -236,21 +236,27 @@ class Write_Back_Dispatcher {
 	 * @since 1.1.0
 	 *
 	 * @param array $media_mappings Media mappings from translation result.
-	 *   Each mapping: { 'source_url', 'translated_url', 'entity_type', 'source_id', 'metadata' }.
+	 *   Each mapping: { 'source_url', 'translated_ref' (client wire key; the
+	 *   legacy doc form 'translated_url' is also accepted), 'entity_type',
+	 *   'source_id', 'attachment_id', 'metadata' }.
 	 * @param array $context        Sync context (relation_id, task_id, source_blog, target_blog, target_type, lang_to).
 	 * @return array Summary from dispatch_batch().
 	 */
 	public static function dispatch_translation_media( array $media_mappings, array $context ): array {
 		$items = array();
 		foreach ( $media_mappings as $mapping ) {
-			$items[] = array(
+			// URL-form refs arrive from the client under its wire key
+			// 'translated_ref'; 'translated_url' is the legacy documented
+			// form. Accept both so URL-form mappings never dispatch empty.
+			$translated_url = (string) ( $mapping['translated_ref'] ?? $mapping['translated_url'] ?? '' );
+			$items[]        = array(
 				'entity_type'    => sanitize_key( (string) ( $mapping['entity_type'] ?? 'attachment' ) ),
 				'source_id'      => (int) ( $mapping['source_id'] ?? 0 ),
 				'translated_ref' => array(
 					'ref_type'  => ! empty( $mapping['attachment_id'] ) ? 'id' : 'url',
 					'ref_value' => ! empty( $mapping['attachment_id'] )
 						? (int) $mapping['attachment_id']
-						: ( $mapping['translated_url'] ?? '' ),
+						: $translated_url,
 				),
 				'metadata'       => $mapping['metadata'] ?? array(),
 			);

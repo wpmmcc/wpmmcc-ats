@@ -1,0 +1,128 @@
+{
+    "_meta": {
+        "plugin_slug": "directorist",
+        "plugin_name": "Directorist",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Directorist seed data for business directory listings",
+        "fields_source": "database query (at_biz_dir meta_keys)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "at_biz_dir-category": [
+            {"name": "Restaurants", "slug": "restaurants"},
+            {"name": "Hotels", "slug": "hotels"},
+            {"name": "Shopping", "slug": "shopping"},
+            {"name": "Health & Medical", "slug": "health-medical"}
+        ],
+        "at_biz_dir-location": [
+            {"name": "Downtown", "slug": "downtown"},
+            {"name": "Suburbs", "slug": "suburbs"},
+            {"name": "Business District", "slug": "business-district"}
+        ]
+    },
+    "posts": {
+        "at_biz_dir": [
+            {
+                "post_title": "The Grand Italian Kitchen",
+                "post_content": "<p>Authentic Italian cuisine in a cozy atmosphere. Family-owned since 1985.</p><h3>Specialties</h3><ul><li>Fresh homemade pasta</li><li>Wood-fired pizza</li><li>Imported wines</li></ul>",
+                "post_excerpt": "Authentic Italian restaurant with fresh homemade pasta.",
+                "post_status": "publish",
+                "featured_image": "{{media:product-1.jpg}}",
+                "meta": {
+                    "_address": "123 Main Street, Downtown",
+                    "_phone": "555-0201",
+                    "_email": "info@granditalian.example.com",
+                    "_website": "https://granditalian.example.com",
+                    "_price_range": "$$",
+                    "_latitude": "40.7589",
+                    "_longitude": "-73.9851",
+                    "_business_hours": "Mon-Sun: 11:00 AM - 10:00 PM"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["restaurants"],
+                    "at_biz_dir-location": ["downtown"]
+                }
+            },
+            {
+                "post_title": "City Center Hotel & Spa",
+                "post_content": "<p>Luxury accommodation in the heart of the city. Modern amenities with classic elegance.</p>",
+                "post_excerpt": "Four-star hotel with spa and conference facilities.",
+                "post_status": "publish",
+                "featured_image": "{{media:property-1.jpg}}",
+                "meta": {
+                    "_address": "500 Business Avenue",
+                    "_phone": "555-0202",
+                    "_email": "reservations@citycenter.example.com",
+                    "_website": "https://citycenterhotel.example.com",
+                    "_price_range": "$$$"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["hotels"],
+                    "at_biz_dir-location": ["business-district"]
+                }
+            },
+            {
+                "post_title": "Fashion Forward Boutique",
+                "post_content": "<p>Curated collection of designer fashion and accessories. Personal styling services available.</p>",
+                "post_excerpt": "Designer boutique with personal styling services.",
+                "post_status": "publish",
+                "meta": {
+                    "_address": "78 Fashion Lane",
+                    "_phone": "555-0203",
+                    "_price_range": "$$$"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["shopping"],
+                    "at_biz_dir-location": ["downtown"]
+                }
+            },
+            {
+                "post_title": "HealthFirst Medical Center",
+                "post_content": "<p>Comprehensive healthcare services. Board-certified physicians in multiple specialties.</p>",
+                "post_excerpt": "Full-service medical center with multiple specialties.",
+                "post_status": "publish",
+                "featured_image": "{{media:featured-1.jpg}}",
+                "meta": {
+                    "_address": "200 Health Drive",
+                    "_phone": "555-0204",
+                    "_email": "appointments@healthfirst.example.com"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["health-medical"],
+                    "at_biz_dir-location": ["suburbs"]
+                }
+            },
+            {
+                "post_title": "Sunset Yoga Studio",
+                "post_content": "<p>Yoga and meditation classes for all levels. Experienced instructors in a peaceful setting.</p>",
+                "post_excerpt": "Yoga studio with classes for beginners to advanced.",
+                "post_status": "draft",
+                "meta": {
+                    "_address": "45 Serenity Lane",
+                    "_phone": "555-0205",
+                    "_price_range": "$$"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["health-medical"],
+                    "at_biz_dir-location": ["suburbs"]
+                }
+            },
+            {
+                "post_title": "Harbor Seafood Restaurant",
+                "post_content": "<p>Fresh seafood daily from local fishermen. Waterfront dining with ocean views.</p>",
+                "post_excerpt": "Fresh seafood restaurant with waterfront dining.",
+                "post_status": "pending",
+                "meta": {
+                    "_address": "88 Harbor Road",
+                    "_phone": "555-0206",
+                    "_price_range": "$$$"
+                },
+                "taxonomy": {
+                    "at_biz_dir-category": ["restaurants"],
+                    "at_biz_dir-location": ["downtown"]
+                }
+            }
+        ]
+    }
+}

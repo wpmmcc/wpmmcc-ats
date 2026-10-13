@@ -1,0 +1,242 @@
+{
+    "_meta": {
+        "version": "1.1.0",
+        "description": "房产类插件数据模板",
+        "post_types": ["property", "properties", "agent"],
+        "plugins": ["easy-property-listings", "essential-real-estate", "estatik", "propertyhive", "geodirectory"]
+    },
+    "taxonomies": {
+        "property_type": [
+            {"name": "住宅公寓", "slug": "apartment"},
+            {"name": "别墅", "slug": "villa"},
+            {"name": "商铺", "slug": "commercial"},
+            {"name": "写字楼", "slug": "office"}
+        ],
+        "property_status": [
+            {"name": "出售", "slug": "for-sale"},
+            {"name": "出租", "slug": "for-rent"},
+            {"name": "已售", "slug": "sold"}
+        ],
+        "location": [
+            {"name": "北京", "slug": "beijing"},
+            {"name": "上海", "slug": "shanghai"},
+            {"name": "广州", "slug": "guangzhou"},
+            {"name": "深圳", "slug": "shenzhen"}
+        ],
+        "property_feature": [
+            {"name": "精装修", "slug": "decorated"},
+            {"name": "南北通透", "slug": "north-south"},
+            {"name": "学区房", "slug": "school-district"},
+            {"name": "地铁房", "slug": "near-metro"}
+        ]
+    },
+    "properties": [
+        {
+            "id": "property_1",
+            "title": "朝阳区CBD核心地段豪华三居室",
+            "slug": "chaoyang-cbd-3br-luxury",
+            "featured_image": "property-1.jpg",
+            "gallery_images": ["property-text-1.png", "featured-1.jpg"],
+            "content": "<!-- wp:paragraph -->\n<p>位于朝阳区CBD核心地段的豪华三居室公寓，地理位置优越，交通便利，周边配套设施齐全。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>房源特点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>建筑面积：128平方米</li>\n<li>户型：三室两厅两卫</li>\n<li>楼层：18/32层</li>\n<li>朝向：南北通透</li>\n<li>装修：精装修，拎包入住</li>\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>周边配套</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>距离地铁1号线仅500米，周边有大型购物中心、优质学校、三甲医院等配套设施。</p>\n<!-- /wp:paragraph -->",
+            "status": "publish",
+            "property_type": "apartment",
+            "property_status": "for-sale",
+            "location": "beijing",
+            "features": ["decorated", "north-south", "near-metro"],
+            "meta": {
+                "property_price": "8500000",
+                "property_price_text": "850万",
+                "_price": "8500000",
+                "price": "8500000",
+                "property_bedrooms": "3",
+                "_bedrooms": "3",
+                "bedrooms": "3",
+                "property_bathrooms": "2",
+                "_bathrooms": "2",
+                "bathrooms": "2",
+                "property_area": "128",
+                "_area": "128",
+                "property_area_unit": "平方米",
+                "property_address": "北京市朝阳区CBD国贸商圈",
+                "_address": "北京市朝阳区CBD国贸商圈",
+                "property_floor": "18/32",
+                "property_year_built": "2020",
+                "_yoast_wpseo_title": "朝阳CBD豪华三居室 - 精装修南北通透 850万",
+                "_yoast_wpseo_metadesc": "朝阳区CBD核心地段豪华三居室，128平精装修，南北通透，近地铁，850万元。"
+            },
+            "verification": {
+                "title_contains": "豪华三居室",
+                "price_contains": "850",
+                "meta_contains": "CBD"
+            }
+        },
+        {
+            "id": "property_2",
+            "title": "浦东新区陆家嘴江景豪宅",
+            "slug": "pudong-lujiazui-riverside",
+            "featured_image": "featured-2.jpg",
+            "gallery_images": ["featured-text-1.png", "product-1.jpg"],
+            "content": "<!-- wp:paragraph -->\n<p>浦东新区陆家嘴核心区域江景豪宅，坐拥黄浦江一线江景，尽享都市繁华。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>房源亮点</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>建筑面积：256平方米</li>\n<li>户型：四室两厅三卫</li>\n<li>楼层：35/48层</li>\n<li>一线江景，视野开阔</li>\n<li>国际化物业管理</li>\n</ul>\n<!-- /wp:list -->",
+            "status": "publish",
+            "property_type": "apartment",
+            "property_status": "for-sale",
+            "location": "shanghai",
+            "features": ["decorated"],
+            "meta": {
+                "property_price": "28000000",
+                "property_price_text": "2800万",
+                "_price": "28000000",
+                "price": "28000000",
+                "property_bedrooms": "4",
+                "_bedrooms": "4",
+                "bedrooms": "4",
+                "property_bathrooms": "3",
+                "_bathrooms": "3",
+                "bathrooms": "3",
+                "property_area": "256",
+                "_area": "256",
+                "property_address": "上海市浦东新区陆家嘴环路",
+                "_address": "上海市浦东新区陆家嘴环路",
+                "property_floor": "35/48",
+                "_yoast_wpseo_title": "陆家嘴江景豪宅 - 256平四居室 2800万",
+                "_yoast_wpseo_metadesc": "浦东陆家嘴核心区江景豪宅，256平四居室，一线江景，2800万元。"
+            },
+            "verification": {
+                "title_contains": "江景豪宅",
+                "price_contains": "2800",
+                "meta_contains": "陆家嘴"
+            }
+        },
+        {
+            "id": "property_3",
+            "title": "南山科技园精品写字楼整层出租",
+            "slug": "nanshan-tech-park-office",
+            "featured_image": "product-2.jpg",
+            "content": "<!-- wp:paragraph -->\n<p>南山区科技园核心区域甲级写字楼整层出租，适合科技企业、互联网公司等入驻。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>物业详情</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>建筑面积：1200平方米</li>\n<li>层高：4.2米</li>\n<li>精装交付，配套齐全</li>\n<li>24小时中央空调</li>\n<li>充足车位</li>\n</ul>\n<!-- /wp:list -->",
+            "status": "publish",
+            "property_type": "office",
+            "property_status": "for-rent",
+            "location": "shenzhen",
+            "features": ["decorated"],
+            "meta": {
+                "property_price": "180",
+                "property_price_text": "180元/平/月",
+                "_price": "180",
+                "price": "180",
+                "property_price_unit": "元/平方米/月",
+                "property_area": "1200",
+                "_area": "1200",
+                "property_address": "深圳市南山区科技园南区",
+                "_address": "深圳市南山区科技园南区",
+                "_yoast_wpseo_title": "南山科技园写字楼整层出租 - 1200平 180元/平/月",
+                "_yoast_wpseo_metadesc": "南山科技园甲级写字楼整层出租，1200平方米，180元/平/月，精装交付。"
+            },
+            "verification": {
+                "title_contains": "写字楼",
+                "price_contains": "180",
+                "meta_contains": "科技园"
+            }
+        },
+        {
+            "id": "property_4",
+            "title": "珠江新城独栋别墅带花园",
+            "slug": "zhujiang-villa-garden",
+            "featured_image": "product-3.jpg",
+            "gallery_images": ["property-1.jpg", "featured-1.jpg", "featured-2.jpg"],
+            "content": "<!-- wp:paragraph -->\n<p>广州珠江新城核心区域独栋别墅，占地面积大，带私家花园和游泳池，尊享奢华生活。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>别墅概况</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul>\n<li>建筑面积：480平方米</li>\n<li>占地面积：800平方米</li>\n<li>户型：五室四厅五卫</li>\n<li>私家花园+游泳池</li>\n<li>独立车库可停4车</li>\n</ul>\n<!-- /wp:list -->",
+            "status": "publish",
+            "property_type": "villa",
+            "property_status": "for-sale",
+            "location": "guangzhou",
+            "features": ["decorated"],
+            "meta": {
+                "property_price": "45000000",
+                "property_price_text": "4500万",
+                "_price": "45000000",
+                "price": "45000000",
+                "property_bedrooms": "5",
+                "_bedrooms": "5",
+                "bedrooms": "5",
+                "property_bathrooms": "5",
+                "_bathrooms": "5",
+                "bathrooms": "5",
+                "property_area": "480",
+                "_area": "480",
+                "property_land_area": "800",
+                "property_address": "广州市天河区珠江新城",
+                "_address": "广州市天河区珠江新城",
+                "_yoast_wpseo_title": "珠江新城独栋别墅 - 480平带花园泳池 4500万",
+                "_yoast_wpseo_metadesc": "广州珠江新城独栋别墅，480平建筑面积，带私家花园和游泳池，4500万元。"
+            },
+            "verification": {
+                "title_contains": "独栋别墅",
+                "price_contains": "4500",
+                "meta_contains": "珠江新城"
+            }
+        }
+    ],
+    "agents": [
+        {
+            "id": "agent_1",
+            "title": "张经理",
+            "slug": "agent-zhang",
+            "featured_image": "avatar-1.jpg",
+            "content": "<!-- wp:paragraph -->\n<p>资深房产顾问，从业10年，专注高端住宅和商业地产。服务过上千位客户，口碑良好。</p>\n<!-- /wp:paragraph -->",
+            "status": "publish",
+            "meta": {
+                "agent_phone": "13800138001",
+                "agent_email": "zhang@realestate.com",
+                "agent_wechat": "agent_zhang_wx",
+                "agent_experience": "10年",
+                "_yoast_wpseo_title": "张经理 - 资深房产顾问",
+                "_yoast_wpseo_metadesc": "10年从业经验的资深房产顾问，专注高端住宅和商业地产。"
+            },
+            "verification": {
+                "title_contains": "张经理",
+                "content_contains": "资深房产顾问"
+            }
+        },
+        {
+            "id": "agent_2",
+            "title": "李顾问",
+            "slug": "agent-li",
+            "featured_image": "avatar-text-1.png",
+            "content": "<!-- wp:paragraph -->\n<p>专业房产顾问，熟悉本地市场，擅长为客户匹配最合适的房源。</p>\n<!-- /wp:paragraph -->",
+            "status": "publish",
+            "meta": {
+                "agent_phone": "13800138002",
+                "agent_email": "li@realestate.com",
+                "agent_wechat": "agent_li_wx",
+                "agent_experience": "5年",
+                "_yoast_wpseo_title": "李顾问 - 专业房产顾问",
+                "_yoast_wpseo_metadesc": "专业房产顾问，熟悉本地市场，为您匹配最合适的房源。"
+            },
+            "verification": {
+                "title_contains": "李顾问",
+                "content_contains": "房产顾问"
+            }
+        }
+    ],
+    "geodirectory": {
+        "places": [
+            {
+                "id": "gd_place_1",
+                "title": "星巴克咖啡 - 国贸店",
+                "slug": "starbucks-guomao",
+                "content": "位于国贸商圈核心位置的星巴克咖啡店，环境优雅，适合商务洽谈和休闲。",
+                "status": "publish",
+                "meta": {
+                    "geodir_street": "北京市朝阳区建国门外大街1号",
+                    "geodir_city": "北京",
+                    "geodir_phone": "010-12345678",
+                    "geodir_email": "guomao@starbucks.com",
+                    "geodir_business_hours": "07:00-22:00"
+                },
+                "verification": {
+                    "title_contains": "星巴克咖啡",
+                    "content_contains": "商务洽谈"
+                }
+            }
+        ]
+    }
+}

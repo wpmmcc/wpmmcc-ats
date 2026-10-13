@@ -1,0 +1,4 @@
+# Generated lab case JSON (do not commit bulk)
+
+*.json
+!manifest.json

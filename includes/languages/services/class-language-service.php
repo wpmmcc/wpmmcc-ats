@@ -219,6 +219,38 @@ class Language_Service {
 	}
 
 	/**
+	 * Set a language record's status (active/inactive).
+	 *
+	 * The canonical single-record enable/disable write (the delete() cascade
+	 * at the bottom of this class already writes status directly; this lifts
+	 * that precedent into a named API so callers — e.g. the setup wizard's
+	 * target-languages step — stop reaching around the service).
+	 *
+	 * @param int    $id Language row id.
+	 * @param string $status 'active' | 'inactive'.
+	 * @return bool
+	 */
+	public static function set_status( $id, $status ) {
+		if ( ! self::table_exists() ) {
+			return false;
+		}
+		if ( ! in_array( $status, array( 'active', 'inactive' ), true ) || (int) $id <= 0 ) {
+			return false;
+		}
+		global $wpdb;
+		$table = function_exists( 'wptsall_table' ) ? wptsall_table( 'languages' ) : $wpdb->prefix . 'wptsall_languages';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$ok = $wpdb->update(
+			$table,
+			array( 'status' => $status, 'updated_at' => current_time( 'mysql' ) ),
+			array( 'id' => (int) $id ),
+			array( '%s', '%s' ),
+			array( '%d' )
+		);
+		return false !== $ok;
+	}
+
+	/**
 	 * Delete a language by id (refuses if default or referenced).
 	 *
 	 * @param int $id

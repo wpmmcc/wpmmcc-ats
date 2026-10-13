@@ -270,6 +270,19 @@ function wptsall_create_site_connection_pack( $device_id = '', $device_label = '
 	);
 	wptsall_save_client_pairing_codes( $records );
 
+	if ( function_exists( 'wptsall_log_info' ) ) {
+		wptsall_log_info(
+			'client-pairing',
+			'Pairing code generated',
+			array(
+				'device_id'        => $device_id,
+				'code_hash_prefix' => substr( (string) wptsall_hash_client_pairing_code( $code ), 0, 8 ),
+				'expires_in'       => $ttl,
+				'scopes'            => $scopes,
+			)
+		);
+	}
+
 	$pack                 = wptsall_build_site_connection_pack_base( $device_id, $scopes, $expires );
 	$pack['pairing_code'] = $code;
 	$pack['device_label'] = sanitize_text_field( (string) $device_label );
@@ -290,6 +303,16 @@ function wptsall_claim_client_pairing_code( $device_id, $pairing_code, $device_l
 	$device_id = sanitize_key( (string) $device_id );
 	$code_hash = wptsall_hash_client_pairing_code( (string) $pairing_code );
 	if ( '' === $device_id || '' === trim( (string) $pairing_code ) ) {
+		if ( function_exists( 'wptsall_log_warning' ) ) {
+			wptsall_log_warning(
+				'client-pairing',
+				'Pairing code claim rejected: invalid request',
+				array(
+					'device_id' => $device_id,
+					'reason'    => 'invalid_request',
+				)
+			);
+		}
 		return new \WP_Error( 'pairing_invalid_request', __( 'device_id and pairing_code are required.', 'wpmmcc-ats' ), array( 'status' => 400 ) );
 	}
 
@@ -313,6 +336,17 @@ function wptsall_claim_client_pairing_code( $device_id, $pairing_code, $device_l
 
 	if ( null === $matched ) {
 		wptsall_save_client_pairing_codes( $kept );
+		if ( function_exists( 'wptsall_log_warning' ) ) {
+			wptsall_log_warning(
+				'client-pairing',
+				'Pairing code claim failed: invalid, expired, replayed, or device-mismatched code',
+				array(
+					'device_id'        => $device_id,
+					'code_hash_prefix' => substr( (string) $code_hash, 0, 8 ),
+					'reason'           => 'invalid_expired_claimed_or_device_mismatch',
+				)
+			);
+		}
 		return new \WP_Error( 'pairing_code_invalid', __( 'Pairing code is invalid, expired, already claimed, or bound to another device.', 'wpmmcc-ats' ), array( 'status' => 403 ) );
 	}
 
@@ -320,6 +354,18 @@ function wptsall_claim_client_pairing_code( $device_id, $pairing_code, $device_l
 	$label  = '' !== trim( (string) $device_label ) ? (string) $device_label : (string) ( $matched['device_label'] ?? 'paired-client' );
 	$issued = wptsall_issue_client_device_token( $device_id, $label, null );
 	$scopes = ! empty( $matched['scopes'] ) && is_array( $matched['scopes'] ) ? array_values( $matched['scopes'] ) : wptsall_default_client_pairing_scopes();
+
+	if ( function_exists( 'wptsall_log_info' ) ) {
+		wptsall_log_info(
+			'client-pairing',
+			'Pairing code claimed successfully',
+			array(
+				'device_id'        => $device_id,
+				'code_hash_prefix' => substr( (string) $code_hash, 0, 8 ),
+				'scopes'           => $scopes,
+			)
+		);
+	}
 
 	return array(
 		'device_id'    => (string) ( $issued['device_id'] ?? $device_id ),

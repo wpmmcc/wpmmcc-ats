@@ -1,0 +1,140 @@
+{
+    "_meta": {
+        "plugin_slug": "advanced-custom-fields",
+        "plugin_name": "Advanced Custom Fields",
+        "type": "custom_fields",
+        "version": "1.0.0",
+        "description": "ACF 字段组和字段值配置"
+    },
+
+    "field_groups": [
+        {
+            "key": "group_product_extended",
+            "title": "产品扩展信息",
+            "post_types": ["product"],
+            "fields": [
+                {
+                    "key": "field_brand",
+                    "name": "brand",
+                    "label": "品牌",
+                    "type": "text"
+                },
+                {
+                    "key": "field_warranty_period",
+                    "name": "warranty_period",
+                    "label": "保修期",
+                    "type": "text"
+                },
+                {
+                    "key": "field_manufacturer",
+                    "name": "manufacturer",
+                    "label": "制造商",
+                    "type": "text"
+                },
+                {
+                    "key": "field_model_number",
+                    "name": "model_number",
+                    "label": "型号",
+                    "type": "text"
+                }
+            ],
+            "sample_values": [
+                {"brand": "Apple", "warranty_period": "1年", "manufacturer": "Apple Inc.", "model_number": "A2442"},
+                {"brand": "Samsung", "warranty_period": "2年", "manufacturer": "Samsung Electronics", "model_number": "SM-G998B"},
+                {"brand": "Sony", "warranty_period": "1年", "manufacturer": "Sony Corporation", "model_number": "WH-1000XM4"},
+                {"brand": "Dell", "warranty_period": "3年", "manufacturer": "Dell Technologies", "model_number": "XPS-15-9510"},
+                {"brand": "Nike", "warranty_period": "6个月", "manufacturer": "Nike Inc.", "model_number": "CW2288-111"}
+            ]
+        },
+        {
+            "key": "group_property_details",
+            "title": "房产详情",
+            "post_types": ["property", "rtcl_listing"],
+            "fields": [
+                {
+                    "key": "field_bedrooms",
+                    "name": "bedrooms",
+                    "label": "卧室数量",
+                    "type": "number"
+                },
+                {
+                    "key": "field_bathrooms",
+                    "name": "bathrooms",
+                    "label": "浴室数量",
+                    "type": "number"
+                },
+                {
+                    "key": "field_square_feet",
+                    "name": "square_feet",
+                    "label": "面积(平方英尺)",
+                    "type": "number"
+                },
+                {
+                    "key": "field_year_built",
+                    "name": "year_built",
+                    "label": "建造年份",
+                    "type": "number"
+                },
+                {
+                    "key": "field_parking_spaces",
+                    "name": "parking_spaces",
+                    "label": "停车位",
+                    "type": "number"
+                },
+                {
+                    "key": "field_property_type",
+                    "name": "property_type",
+                    "label": "房产类型",
+                    "type": "select",
+                    "choices": ["公寓", "别墅", "联排别墅", "独栋住宅", "商铺"]
+                }
+            ],
+            "sample_values": [
+                {"bedrooms": 3, "bathrooms": 2, "square_feet": 1500, "year_built": 2018, "parking_spaces": 2, "property_type": "公寓"},
+                {"bedrooms": 4, "bathrooms": 3, "square_feet": 2500, "year_built": 2015, "parking_spaces": 3, "property_type": "别墅"},
+                {"bedrooms": 2, "bathrooms": 1, "square_feet": 900, "year_built": 2020, "parking_spaces": 1, "property_type": "公寓"},
+                {"bedrooms": 5, "bathrooms": 4, "square_feet": 3500, "year_built": 2010, "parking_spaces": 4, "property_type": "独栋住宅"},
+                {"bedrooms": 3, "bathrooms": 2, "square_feet": 1800, "year_built": 2019, "parking_spaces": 2, "property_type": "联排别墅"}
+            ]
+        },
+        {
+            "key": "group_course_extra",
+            "title": "课程额外信息",
+            "post_types": ["academy_courses", "stm-courses"],
+            "fields": [
+                {
+                    "key": "field_skill_level",
+                    "name": "skill_level",
+                    "label": "技能级别",
+                    "type": "select",
+                    "choices": ["初级", "中级", "高级", "专家"]
+                },
+                {
+                    "key": "field_language",
+                    "name": "language",
+                    "label": "授课语言",
+                    "type": "text"
+                },
+                {
+                    "key": "field_certificate",
+                    "name": "certificate",
+                    "label": "证书",
+                    "type": "true_false"
+                },
+                {
+                    "key": "field_total_hours",
+                    "name": "total_hours",
+                    "label": "总学时",
+                    "type": "number"
+                }
+            ],
+            "sample_values": [
+                {"skill_level": "初级", "language": "中文", "certificate": true, "total_hours": 40},
+                {"skill_level": "中级", "language": "英文", "certificate": true, "total_hours": 60},
+                {"skill_level": "高级", "language": "中文", "certificate": true, "total_hours": 80},
+                {"skill_level": "初级", "language": "中文", "certificate": false, "total_hours": 20},
+                {"skill_level": "专家", "language": "英文", "certificate": true, "total_hours": 120}
+            ]
+        }
+    ]
+}

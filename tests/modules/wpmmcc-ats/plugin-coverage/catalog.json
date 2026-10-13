@@ -1,0 +1,1018 @@
+{
+  "version": 1,
+  "goal": "Nearly 20 categories and ~100 content plugins. Isolate-activate, test WPTSALL mapping + target plugin FE/admin + URLs + language links.",
+  "relations": {
+    "virtual": 626,
+    "wp": 627,
+    "_comment": "Hints only — harness falls back to env WPTSALL_COV_*_RELATION or first active DB rows via cov-relations.php"
+  },
+  "lab": {
+    "container": "wptsall-wp-lab-wordpress-blog-1",
+    "home": "http://192.168.1.14:9081"
+  },
+  "categories": [
+    {
+      "id": "wordpress-core",
+      "label": "WordPress 核心",
+      "count": 1
+    },
+    {
+      "id": "ecommerce",
+      "label": "电商",
+      "count": 6
+    },
+    {
+      "id": "forum-community",
+      "label": "论坛/社区",
+      "count": 6
+    },
+    {
+      "id": "lms",
+      "label": "在线教育",
+      "count": 6
+    },
+    {
+      "id": "events-booking",
+      "label": "活动/预约",
+      "count": 12
+    },
+    {
+      "id": "donations",
+      "label": "捐赠",
+      "count": 1
+    },
+    {
+      "id": "directory-listings",
+      "label": "目录/分类信息",
+      "count": 5
+    },
+    {
+      "id": "jobs",
+      "label": "招聘",
+      "count": 3
+    },
+    {
+      "id": "real-estate",
+      "label": "房地产",
+      "count": 4
+    },
+    {
+      "id": "gallery-portfolio",
+      "label": "图库/作品集",
+      "count": 6
+    },
+    {
+      "id": "podcasts",
+      "label": "播客",
+      "count": 4
+    },
+    {
+      "id": "recipes",
+      "label": "食谱",
+      "count": 3
+    },
+    {
+      "id": "reviews-testimonials",
+      "label": "评价/推荐",
+      "count": 5
+    },
+    {
+      "id": "faq-kb",
+      "label": "FAQ/知识库",
+      "count": 3
+    },
+    {
+      "id": "membership",
+      "label": "会员/订阅",
+      "count": 3
+    },
+    {
+      "id": "cpt-custom-fields",
+      "label": "CPT/自定义字段",
+      "count": 5
+    },
+    {
+      "id": "seo",
+      "label": "SEO",
+      "count": 7
+    },
+    {
+      "id": "page-builders",
+      "label": "页面构建器",
+      "count": 7
+    },
+    {
+      "id": "forms",
+      "label": "表单",
+      "count": 6
+    },
+    {
+      "id": "documents-tables-misc",
+      "label": "文档/表格/其它内容",
+      "count": 7
+    }
+  ],
+  "plugins": [
+    {
+      "slug": "wordpress-blog",
+      "name": "WordPress Blog",
+      "category": "wordpress-core",
+      "category_label": "WordPress 核心",
+      "primary_post_type": "post",
+      "source": "core",
+      "wporg": false
+    },
+    {
+      "slug": "woocommerce",
+      "name": "WooCommerce",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "product",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "easy-digital-downloads",
+      "name": "Easy Digital Downloads",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "download",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "ecwid-shopping-cart",
+      "name": "Ecwid",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "product",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wp-easycart",
+      "name": "WP EasyCart",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "ec_store",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "surecart",
+      "name": "SureCart",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "sc_product",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "dokan-lite",
+      "name": "Dokan Lite",
+      "category": "ecommerce",
+      "category_label": "电商",
+      "primary_post_type": "product",
+      "companions": ["woocommerce/woocommerce.php"],
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "bbpress",
+      "name": "bbPress",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "topic",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "buddypress",
+      "name": "BuddyPress",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wpforo",
+      "name": "wpForo",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "wpforo_forum",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "asgaros-forum",
+      "name": "Asgaros Forum",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "forumwp",
+      "name": "ForumWP",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "um_forum",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wpdiscuz",
+      "name": "wpDiscuz",
+      "category": "forum-community",
+      "category_label": "论坛/社区",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "learnpress",
+      "name": "LearnPress",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "lp_course",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "sensei-lms",
+      "name": "Sensei LMS",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "course",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "tutor",
+      "name": "Tutor LMS",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "courses",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "lifterlms",
+      "name": "LifterLMS",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "course",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "masterstudy-lms-learning-management-system",
+      "name": "MasterStudy LMS",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "stm-courses",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "academy",
+      "name": "Academy LMS",
+      "category": "lms",
+      "category_label": "在线教育",
+      "primary_post_type": "academy_courses",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "the-events-calendar",
+      "name": "The Events Calendar",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "tribe_events",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "events-manager",
+      "name": "Events Manager",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "event",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "ameliabooking",
+      "name": "Amelia",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "amelia",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "bookly-responsive-appointment-booking-tool",
+      "name": "Bookly",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "simply-schedule-appointments",
+      "name": "Simply Schedule Appointments",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "fluent-booking",
+      "name": "Fluent Booking",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "easy-appointments",
+      "name": "Easy Appointments",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "booking",
+      "name": "Booking Calendar",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "modern-events-calendar-lite",
+      "name": "Modern Events Calendar Lite",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "mec-events",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "wp-event-manager",
+      "name": "WP Event Manager",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "event_listing",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "event-organiser",
+      "name": "Event Organiser",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "event",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "my-calendar",
+      "name": "My Calendar",
+      "category": "events-booking",
+      "category_label": "活动/预约",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "give",
+      "name": "GiveWP",
+      "category": "donations",
+      "category_label": "捐赠",
+      "primary_post_type": "give_forms",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "directorist",
+      "name": "Directorist",
+      "category": "directory-listings",
+      "category_label": "目录/分类信息",
+      "primary_post_type": "at_biz_dir",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "geodirectory",
+      "name": "GeoDirectory",
+      "category": "directory-listings",
+      "category_label": "目录/分类信息",
+      "primary_post_type": "gd_place",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "hivepress",
+      "name": "HivePress",
+      "category": "directory-listings",
+      "category_label": "目录/分类信息",
+      "primary_post_type": "hp_listing",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "classified-listing",
+      "name": "Classified Listing",
+      "category": "directory-listings",
+      "category_label": "目录/分类信息",
+      "primary_post_type": "rtcl_listing",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "business-directory-plugin",
+      "name": "Business Directory",
+      "category": "directory-listings",
+      "category_label": "目录/分类信息",
+      "primary_post_type": "wpbdp_listing",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "wp-job-manager",
+      "name": "WP Job Manager",
+      "category": "jobs",
+      "category_label": "招聘",
+      "primary_post_type": "job_listing",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wp-job-openings",
+      "name": "WP Job Openings",
+      "category": "jobs",
+      "category_label": "招聘",
+      "primary_post_type": "awsm_job_openings",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "simple-job-board",
+      "name": "Simple Job Board",
+      "category": "jobs",
+      "category_label": "招聘",
+      "primary_post_type": "jobpost",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "estatik",
+      "name": "Estatik",
+      "category": "real-estate",
+      "category_label": "房地产",
+      "primary_post_type": "properties",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "essential-real-estate",
+      "name": "Essential Real Estate",
+      "category": "real-estate",
+      "category_label": "房地产",
+      "primary_post_type": "property",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "easy-property-listings",
+      "name": "Easy Property Listings",
+      "category": "real-estate",
+      "category_label": "房地产",
+      "primary_post_type": "property",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "propertyhive",
+      "name": "Property Hive",
+      "category": "real-estate",
+      "category_label": "房地产",
+      "primary_post_type": "property",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "envira-gallery-lite",
+      "name": "Envira Gallery Lite",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "envira",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "foogallery",
+      "name": "FooGallery",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "foogallery",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "visual-portfolio",
+      "name": "Visual Portfolio",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "portfolio",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "portfolio-post-type",
+      "name": "Portfolio Post Type",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "portfolio",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "nextgen-gallery",
+      "name": "NextGEN Gallery",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "ml-slider",
+      "name": "MetaSlider",
+      "category": "gallery-portfolio",
+      "category_label": "图库/作品集",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "powerpress",
+      "name": "PowerPress",
+      "category": "podcasts",
+      "category_label": "播客",
+      "primary_post_type": "post",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "seriously-simple-podcasting",
+      "name": "Seriously Simple Podcasting",
+      "category": "podcasts",
+      "category_label": "播客",
+      "primary_post_type": "podcast",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "podlove-podcasting-plugin-for-wordpress",
+      "name": "Podlove",
+      "category": "podcasts",
+      "category_label": "播客",
+      "primary_post_type": "podcast",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "podcast-player",
+      "name": "Podcast Player",
+      "category": "podcasts",
+      "category_label": "播客",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wp-recipe-maker",
+      "name": "WP Recipe Maker",
+      "category": "recipes",
+      "category_label": "食谱",
+      "primary_post_type": "wprm_recipe",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "delicious-recipes",
+      "name": "Delicious Recipes",
+      "category": "recipes",
+      "category_label": "食谱",
+      "primary_post_type": "recipe",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "cooked",
+      "name": "Cooked",
+      "category": "recipes",
+      "category_label": "食谱",
+      "primary_post_type": "cp_recipe",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "reviews-feed",
+      "name": "Reviews Feed",
+      "category": "reviews-testimonials",
+      "category_label": "评价/推荐",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "site-reviews",
+      "name": "Site Reviews",
+      "category": "reviews-testimonials",
+      "category_label": "评价/推荐",
+      "primary_post_type": "site-review",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "testimonial-free",
+      "name": "Testimonial Free",
+      "category": "reviews-testimonials",
+      "category_label": "评价/推荐",
+      "primary_post_type": "spt_testimonial",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "wp-customer-reviews",
+      "name": "WP Customer Reviews",
+      "category": "reviews-testimonials",
+      "category_label": "评价/推荐",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "strong-testimonials",
+      "name": "Strong Testimonials",
+      "category": "reviews-testimonials",
+      "category_label": "评价/推荐",
+      "primary_post_type": "wpm-testimonial",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "ultimate-faqs",
+      "name": "Ultimate FAQ",
+      "category": "faq-kb",
+      "category_label": "FAQ/知识库",
+      "primary_post_type": "ufaq",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "helpie-faq",
+      "name": "Helpie FAQ",
+      "category": "faq-kb",
+      "category_label": "FAQ/知识库",
+      "primary_post_type": "helpie_faq",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "betterdocs",
+      "name": "BetterDocs",
+      "category": "faq-kb",
+      "category_label": "FAQ/知识库",
+      "primary_post_type": "docs",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "restrict-content",
+      "name": "Restrict Content",
+      "category": "membership",
+      "category_label": "会员/订阅",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "paid-memberships-pro",
+      "name": "Paid Memberships Pro",
+      "category": "membership",
+      "category_label": "会员/订阅",
+      "primary_post_type": "page",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "ultimate-member",
+      "name": "Ultimate Member",
+      "category": "membership",
+      "category_label": "会员/订阅",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "custom-post-type-ui",
+      "name": "Custom Post Type UI",
+      "category": "cpt-custom-fields",
+      "category_label": "CPT/自定义字段",
+      "primary_post_type": "post",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "pods",
+      "name": "Pods",
+      "category": "cpt-custom-fields",
+      "category_label": "CPT/自定义字段",
+      "primary_post_type": "post",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "meta-box",
+      "name": "Meta Box",
+      "category": "cpt-custom-fields",
+      "category_label": "CPT/自定义字段",
+      "primary_post_type": "post",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "advanced-custom-fields",
+      "name": "Advanced Custom Fields",
+      "category": "cpt-custom-fields",
+      "category_label": "CPT/自定义字段",
+      "primary_post_type": "post",
+      "source": "known",
+      "wporg": true
+    },
+    {
+      "slug": "carbon-fields",
+      "name": "Carbon Fields",
+      "category": "cpt-custom-fields",
+      "category_label": "CPT/自定义字段",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "wordpress-seo",
+      "name": "Yoast SEO",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "seo-by-rank-math",
+      "name": "Rank Math",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "all-in-one-seo-pack",
+      "name": "All in One SEO",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "wp-seopress",
+      "name": "SEOPress",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "autodescription",
+      "name": "The SEO Framework",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "slim-seo",
+      "name": "Slim SEO",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "schema-and-structured-data-for-wp",
+      "name": "Schema & Structured Data",
+      "category": "seo",
+      "category_label": "SEO",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "elementor",
+      "name": "Elementor",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "classic-editor",
+      "name": "Classic Editor",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "beaver-builder-lite-version",
+      "name": "Beaver Builder Lite",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "siteorigin-panels",
+      "name": "SiteOrigin Page Builder",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "kadence-blocks",
+      "name": "Kadence Blocks",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "generateblocks",
+      "name": "GenerateBlocks",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "ultimate-addons-for-gutenberg",
+      "name": "Spectra",
+      "category": "page-builders",
+      "category_label": "页面构建器",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "contact-form-7",
+      "name": "Contact Form 7",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "wpcf7_contact_form",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "wpforms-lite",
+      "name": "WPForms Lite",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "wpforms",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "formidable",
+      "name": "Formidable Forms",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "formidable",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "forminator",
+      "name": "Forminator",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "forminator_forms",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "fluentform",
+      "name": "Fluent Forms",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "fluentform",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "ninja-forms",
+      "name": "Ninja Forms",
+      "category": "forms",
+      "category_label": "表单",
+      "primary_post_type": "nf_sub",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "tablepress",
+      "name": "TablePress",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "tablepress_table",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "download-monitor",
+      "name": "Download Monitor",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "dlm_download",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "newsletter",
+      "name": "Newsletter",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "mailchimp-for-wp",
+      "name": "MC4WP",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "page",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "web-stories",
+      "name": "Web Stories",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "web-story",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "amp",
+      "name": "AMP",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "post",
+      "source": "extra",
+      "wporg": true
+    },
+    {
+      "slug": "document-library-lite",
+      "name": "Document Library Lite",
+      "category": "documents-tables-misc",
+      "category_label": "文档/表格/其它内容",
+      "primary_post_type": "dlp_document",
+      "source": "extra",
+      "wporg": true
+    }
+  ]
+}

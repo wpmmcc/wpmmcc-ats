@@ -132,6 +132,11 @@ class Admin_Virtual_Site_Manager {
 		add_filter( 'post_row_actions', array( $this, 'add_translation_row_actions' ), 10, 2 );
 		add_filter( 'page_row_actions', array( $this, 'add_translation_row_actions' ), 10, 2 );
 
+		// Render-level prefetch: warm the translation-target meta leg for
+		// the WHOLE list before its rows render (one switch + two batched
+		// queries per target blog instead of a switch/restore pair per row).
+		add_action( 'admin_head', array( $this, 'prefetch_translation_targets' ), 5 );
+
 		// Admin View / Preview links for shadow posts → virtual-site URLs.
 		add_filter( 'post_link', array( $this, 'rewrite_admin_virtual_permalink' ), 20, 2 );
 		add_filter( 'page_link', array( $this, 'rewrite_admin_virtual_permalink' ), 20, 2 );
@@ -1923,6 +1928,68 @@ class Admin_Virtual_Site_Manager {
 		}
 
 		return $virtual_sites;
+	}
+
+	/**
+	 * Prefetch translation-target lookups for the whole admin post list.
+	 *
+	 * admin_head on an edit screen fires after WP_List_Table::prepare_items()
+	 * filled ->items but before the rows render (render_site_column +
+	 * add_translation_row_actions both call Manual_Content_Service::
+	 * get_translation_status() per row, which runs the wp/self meta leg
+	 * per row x target blog). One prefetch here resolves every row x every
+	 * wp/self bucket in ONE switch + two batched queries per target blog —
+	 * measured 2026-09-27 on the Lab product list, 50 row switch/restore
+	 * pairs (100 wp_user_roles reloads) collapse to one pair per bucket,
+	 * and the per-row calls consult the warm map with no queries.
+	 *
+	 * @return void
+	 */
+	public function prefetch_translation_targets() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( ! $screen || 'edit' !== $screen->base ) {
+			return;
+		}
+		if ( ! class_exists( '\WPTSALL\Sites\Services\Translation_Identity' ) || ! class_exists( '\WPTSALL\Sites\Services\Site_Relation_Service' ) ) {
+			return;
+		}
+
+		// The list's rows: WP_Posts_List_Table::prepare_items() does NOT set
+		// ->items — it swaps the GLOBAL $wp_query via wp_edit_posts_query()
+		// (wp-admin/includes/post.php) and the rows render off that query
+		// (have_posts()/the_post() in display_rows). admin_head fires after
+		// prepare_items (edit.php:235) and before the rows render.
+		global $wp_query;
+		$items = ( $wp_query && ! empty( $wp_query->posts ) ) ? $wp_query->posts : array();
+		if ( empty( $items ) ) {
+			return;
+		}
+
+		$source_ids = array();
+		foreach ( $items as $item ) {
+			$source_id = is_object( $item ) ? (int) $item->ID : (int) ( is_array( $item ) ? ( $item['ID'] ?? 0 ) : 0 );
+			if ( $source_id > 0 ) {
+				$source_ids[] = $source_id;
+			}
+		}
+		if ( empty( $source_ids ) ) {
+			return;
+		}
+
+		// The SAME relation set the per-row path uses (get_translation_status()
+		// -> get_all_relations(source_site_id, active)) — Site_Relation_Service
+		// memoizes, so the rows and this prefetch share one fetch.
+		$relations = \WPTSALL\Sites\Services\Site_Relation_Service::get_all_relations(
+			array(
+				'source_site_id' => get_current_blog_id(),
+				'status'         => 'active',
+			)
+		);
+
+		\WPTSALL\Sites\Services\Translation_Identity::prefetch_wp_meta_targets( $source_ids, $relations );
 	}
 
 	/**

@@ -1,0 +1,152 @@
+{
+    "_meta": {
+        "version": "1.0.0",
+        "description": "图库类插件数据模板",
+        "post_types": ["envira", "foogallery"],
+        "plugins": ["envira-gallery-lite", "foogallery"]
+    },
+    "envira_gallery": {
+        "galleries": [
+            {
+                "id": "envira_gallery_1",
+                "title": "城市风光摄影集",
+                "slug": "city-landscape-photography",
+                "content": "<!-- wp:paragraph -->\n<p>精选城市风光摄影作品，记录都市的繁华与美丽。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["gallery-1.png", "featured-1.jpg", "featured-2.jpg", "property-1.jpg"],
+                "meta": {
+                    "_envira_gallery_data": {
+                        "config": {
+                            "columns": "4",
+                            "gallery_theme": "base",
+                            "lightbox": "1",
+                            "lazy_loading": "1"
+                        }
+                    },
+                    "_yoast_wpseo_title": "城市风光摄影集 - 图库展示",
+                    "_yoast_wpseo_metadesc": "精选城市风光摄影作品，记录都市繁华与美丽，高清图片展示。"
+                },
+                "verification": {
+                    "title_contains": "城市风光",
+                    "content_contains": "都市"
+                }
+            },
+            {
+                "id": "envira_gallery_2",
+                "title": "美食摄影作品展",
+                "slug": "food-photography-showcase",
+                "content": "<!-- wp:paragraph -->\n<p>诱人美食摄影作品集，展示中西美食的色香味。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["product-1.jpg", "product-2.jpg", "product-3.jpg"],
+                "meta": {
+                    "_envira_gallery_data": {
+                        "config": {
+                            "columns": "3",
+                            "gallery_theme": "base",
+                            "lightbox": "1"
+                        }
+                    },
+                    "_yoast_wpseo_title": "美食摄影作品展 - 图库展示",
+                    "_yoast_wpseo_metadesc": "诱人美食摄影作品集，展示中西美食的色香味。"
+                },
+                "verification": {
+                    "title_contains": "美食摄影",
+                    "content_contains": "色香味"
+                }
+            },
+            {
+                "id": "envira_gallery_3",
+                "title": "自然风景精选",
+                "slug": "nature-scenery-collection",
+                "content": "<!-- wp:paragraph -->\n<p>自然风景摄影精选，山川湖海的壮丽画卷。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["featured-text-1.png", "featured-text-2.png", "course-1.jpg"],
+                "meta": {
+                    "_envira_gallery_data": {
+                        "config": {
+                            "columns": "3",
+                            "gallery_theme": "base",
+                            "lightbox": "1",
+                            "lazy_loading": "1"
+                        }
+                    },
+                    "_yoast_wpseo_title": "自然风景精选 - 图库展示",
+                    "_yoast_wpseo_metadesc": "自然风景摄影精选，山川湖海的壮丽画卷。"
+                },
+                "verification": {
+                    "title_contains": "自然风景",
+                    "content_contains": "山川湖海"
+                }
+            }
+        ]
+    },
+    "foogallery": {
+        "galleries": [
+            {
+                "id": "foogallery_1",
+                "title": "产品展示图库",
+                "slug": "product-showcase-gallery",
+                "content": "<!-- wp:paragraph -->\n<p>精美产品展示图库，高清图片呈现产品细节。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["product-1.jpg", "product-2.jpg", "product-3.jpg", "gallery-1.png"],
+                "meta": {
+                    "_foogallery_template": "default",
+                    "_foogallery_settings": {
+                        "columns": "4",
+                        "lightbox": "foogallery",
+                        "hover_effect": "zoom"
+                    },
+                    "_yoast_wpseo_title": "产品展示图库 - FooGallery展示",
+                    "_yoast_wpseo_metadesc": "精美产品展示图库，高清图片呈现产品细节和特色。"
+                },
+                "verification": {
+                    "title_contains": "产品展示",
+                    "content_contains": "产品细节"
+                }
+            },
+            {
+                "id": "foogallery_2",
+                "title": "团队成员展示",
+                "slug": "team-members-gallery",
+                "content": "<!-- wp:paragraph -->\n<p>公司团队成员展示，认识我们专业的团队。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["avatar-1.jpg", "avatar-text-1.png"],
+                "meta": {
+                    "_foogallery_template": "masonry",
+                    "_foogallery_settings": {
+                        "columns": "3",
+                        "lightbox": "foogallery",
+                        "caption_style": "simple"
+                    },
+                    "_yoast_wpseo_title": "团队成员展示 - FooGallery展示",
+                    "_yoast_wpseo_metadesc": "公司团队成员展示，认识我们专业的团队成员。"
+                },
+                "verification": {
+                    "title_contains": "团队成员",
+                    "content_contains": "专业的团队"
+                }
+            },
+            {
+                "id": "foogallery_3",
+                "title": "活动精彩瞬间",
+                "slug": "event-highlights-gallery",
+                "content": "<!-- wp:paragraph -->\n<p>记录活动的精彩瞬间，回顾难忘时刻。</p>\n<!-- /wp:paragraph -->",
+                "status": "publish",
+                "images": ["featured-1.jpg", "featured-2.jpg", "course-text-1.png"],
+                "meta": {
+                    "_foogallery_template": "justified",
+                    "_foogallery_settings": {
+                        "row_height": "200",
+                        "lightbox": "foogallery"
+                    },
+                    "_yoast_wpseo_title": "活动精彩瞬间 - FooGallery展示",
+                    "_yoast_wpseo_metadesc": "记录活动的精彩瞬间，回顾难忘时刻和美好记忆。"
+                },
+                "verification": {
+                    "title_contains": "活动精彩",
+                    "content_contains": "难忘时刻"
+                }
+            }
+        ]
+    }
+}

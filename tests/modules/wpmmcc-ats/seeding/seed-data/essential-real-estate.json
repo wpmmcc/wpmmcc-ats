@@ -1,0 +1,79 @@
+{
+    "_meta": {
+        "plugin_slug": "essential-real-estate",
+        "plugin_name": "Essential Real Estate",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Essential Real Estate seed data for property listings",
+        "fields_source": "database query (property meta_keys, property_ prefix format)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "property_type": [
+            {"name": "Single Family", "slug": "single-family"},
+            {"name": "Condo", "slug": "condo"},
+            {"name": "Townhouse", "slug": "townhouse"}
+        ],
+        "property_status": [
+            {"name": "For Sale", "slug": "for-sale"},
+            {"name": "For Rent", "slug": "for-rent"}
+        ]
+    },
+    "posts": {
+        "property": [
+            {
+                "post_title": "Stunning Mountain View Estate",
+                "post_content": "<p>Luxurious 5-bedroom estate with breathtaking mountain views. Custom-built with premium finishes throughout.</p>",
+                "post_excerpt": "Luxury estate with mountain views.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "1250000",
+                    "property_bedrooms": "5",
+                    "property_bathrooms": "4",
+                    "property_area": "4500",
+                    "property_garage": "3",
+                    "property_address": "1500 Mountain Ridge Road",
+                    "property_city": "Denver",
+                    "property_state": "CO"
+                },
+                "taxonomy": {
+                    "property_type": ["single-family"],
+                    "property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Modern Downtown Condo",
+                "post_content": "<p>Sleek 2-bedroom condo in the heart of downtown. Building amenities include pool, gym, and rooftop terrace.</p>",
+                "post_excerpt": "Modern condo with city views.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "425000",
+                    "property_bedrooms": "2",
+                    "property_bathrooms": "2",
+                    "property_area": "1100"
+                },
+                "taxonomy": {
+                    "property_type": ["condo"],
+                    "property_status": ["for-sale"]
+                }
+            },
+            {
+                "post_title": "Family Townhouse with Backyard",
+                "post_content": "<p>Spacious townhouse perfect for families. Private backyard and attached garage.</p>",
+                "post_excerpt": "Family-friendly townhouse.",
+                "post_status": "publish",
+                "meta": {
+                    "property_price": "2800",
+                    "property_price_suffix": "/month",
+                    "property_bedrooms": "3",
+                    "property_bathrooms": "2.5",
+                    "property_area": "2000"
+                },
+                "taxonomy": {
+                    "property_type": ["townhouse"],
+                    "property_status": ["for-rent"]
+                }
+            }
+        ]
+    }
+}

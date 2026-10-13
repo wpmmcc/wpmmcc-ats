@@ -143,6 +143,12 @@ function wptsall_render_dashboard_widget() {
 			</div>
 			<?php endforeach; ?>
 		</div>
+		<p class="description" style="margin:6px 0 0;">
+			<?php
+			// AR-01: declare the stats scope on dual-plugin sites.
+			esc_html_e( 'Stats count only the wpmmcc-ats channel; translations synced by the separate WPMMCC plugin are tracked by that plugin.', 'wpmmcc-ats' );
+			?>
+		</p>
 		<?php endif; ?>
 
 		<!-- Quick Actions -->

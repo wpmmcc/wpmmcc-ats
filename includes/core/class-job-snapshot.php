@@ -174,12 +174,17 @@ class Job_Snapshot {
 	/**
 	 * Hash canonical JSON body for idempotency conflict detection.
 	 *
+	 * Besides the transport fields, `outbox_id` is left out: it names the
+	 * durable event that carried the work, not the work. The same translation
+	 * delivered for two outbox rows of one snapshot, or by the outbox lane and
+	 * the scan lane, is one callback and must replay instead of conflicting.
+	 *
 	 * @param array $body Request body.
 	 * @return string
 	 */
 	public static function request_body_hash( array $body ) {
 		$copy = $body;
-		unset( $copy['timestamp'], $copy['nonce'], $copy['signature'] );
+		unset( $copy['timestamp'], $copy['nonce'], $copy['signature'], $copy['outbox_id'] );
 		ksort( $copy );
 		return hash( 'sha256', (string) wp_json_encode( $copy ) );
 	}

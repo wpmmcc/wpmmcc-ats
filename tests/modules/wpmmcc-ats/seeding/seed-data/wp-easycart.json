@@ -1,0 +1,75 @@
+{
+    "_meta": {
+        "plugin_slug": "wp-easycart",
+        "plugin_name": "WP EasyCart",
+        "plan": "C",
+        "version": "1.0.0",
+        "description": "WP EasyCart seed data for products",
+        "note": "WP EasyCart uses custom tables for product data (price, stock, etc.). Post meta fields may not work - requires custom table insertion.",
+        "fields_source": "custom tables (ec_product, ec_option, ec_category)",
+        "fields_verified": "2026-01-27"
+    },
+    "posts": {
+        "ec_store_product": [
+            {
+                "post_title": "Premium Wireless Headphones",
+                "post_content": "<p>High-quality wireless headphones with noise cancellation. 30-hour battery life and premium sound quality.</p>",
+                "post_excerpt": "Premium noise-cancelling wireless headphones.",
+                "post_status": "publish",
+                "meta": {
+                    "_ec_product_price": "149.99",
+                    "_ec_product_sale_price": "129.99",
+                    "_ec_product_sku": "WH-001",
+                    "_ec_product_weight": "0.5",
+                    "_ec_product_stock": "100"
+                }
+            },
+            {
+                "post_title": "Ergonomic Office Chair",
+                "post_content": "<p>Adjustable office chair with lumbar support. Perfect for long work sessions.</p>",
+                "post_excerpt": "Ergonomic chair for home office.",
+                "post_status": "publish",
+                "meta": {
+                    "_ec_product_price": "299.99",
+                    "_ec_product_sku": "OC-002",
+                    "_ec_product_weight": "15",
+                    "_ec_product_stock": "50"
+                }
+            },
+            {
+                "post_title": "Smart Fitness Watch",
+                "post_content": "<p>Track your fitness goals with heart rate monitoring, GPS, and workout tracking.</p>",
+                "post_excerpt": "Advanced fitness tracking watch.",
+                "post_status": "publish",
+                "meta": {
+                    "_ec_product_price": "199.99",
+                    "_ec_product_sale_price": "179.99",
+                    "_ec_product_sku": "FW-003",
+                    "_ec_product_stock": "75"
+                }
+            },
+            {
+                "post_title": "USB-C Hub 7-in-1",
+                "post_content": "<p>Expand your laptop connectivity with HDMI, USB-A, SD card, and more.</p>",
+                "post_excerpt": "7-port USB-C hub for laptops.",
+                "post_status": "publish",
+                "meta": {
+                    "_ec_product_price": "49.99",
+                    "_ec_product_sku": "HUB-004",
+                    "_ec_product_stock": "200"
+                }
+            },
+            {
+                "post_title": "Portable Bluetooth Speaker",
+                "post_content": "<p>Waterproof speaker with 360-degree sound. Perfect for outdoor adventures.</p>",
+                "post_excerpt": "Waterproof Bluetooth speaker.",
+                "post_status": "draft",
+                "meta": {
+                    "_ec_product_price": "79.99",
+                    "_ec_product_sku": "SPK-005",
+                    "_ec_product_stock": "150"
+                }
+            }
+        ]
+    }
+}

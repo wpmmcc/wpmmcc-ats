@@ -1,0 +1,114 @@
+# Per content-plugin user journeys (guest / member / native admin)
+# Consumed by: php/generate-plugin-journey-targets.php + Playwright Stage 8
+version: 1
+updated: "2026-08-24"
+
+defaults:
+  guest_min_body_chars: 800
+  # Member account/dashboard shells (e.g. Tutor /dashboard/ login gate) are often ~500–700 chars.
+  member_min_body_chars: 500
+  admin_min_body_chars: 1200
+  # Thin CPT singles on block themes (listings, jobs) may land ~600–750 visible chars.
+  guest_min_body_chars_thin_cpt: 600
+  wait_until: domcontentloaded
+  network_idle_ms: 0
+
+# member_center: path relative to site root; login required before visit
+# admin_native: wp-admin path after plugin menu (query or post_type list)
+plugins:
+  woocommerce-content:
+    slug: woocommerce
+    # After multi-plugin slot ensure, Woo pages may be missing — treat as optional in Lab.
+    member_center: { path: /my-account/, expect_text: /account|订单|orders/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=product, expect_selector: ".wp-list-table", optional: true }
+    storefront: { path: /shop/, expect_selector: "ul.products, .woocommerce", optional: true, virtual_optional: true }
+
+  easy-digital-downloads-content:
+    slug: easy-digital-downloads
+    # Prefer edd_settings page ID; leaf slug /order-history/ also resolves nested permalinks.
+    member_center: { path: /order-history/, page_option: edd_settings.purchase_history_page, expect_text: /purchase|order|download|购买|历史/i, optional: true }
+    storefront: { path: /products/, expect_selector: ".edd_downloads_list, .edd-download, article.type-download", virtual_optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=download, expect_selector: ".wp-list-table" }
+
+  bbpress-content:
+    slug: bbpress
+    member_center: { path: /forums/, expect_selector: "#bbpress-forums, .bbp-forums", optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=forum, expect_selector: ".wp-list-table" }
+
+  tutor-content:
+    slug: tutor
+    member_center: { path: /dashboard/, expect_text: /dashboard|course|课程/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=courses, expect_selector: ".wp-list-table" }
+
+  learnpress-content:
+    slug: learnpress
+    member_center: { path: /lp-profile/, expect_text: /profile|course/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=lp_course, expect_selector: ".wp-list-table" }
+
+  lifterlms-content:
+    slug: lifterlms
+    member_center: { path: /my-account/, expect_text: /account|course/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=course, expect_selector: ".wp-list-table" }
+
+  the-events-calendar-content:
+    slug: the-events-calendar
+    admin_native: { path: /wp-admin/edit.php?post_type=tribe_events, expect_selector: ".wp-list-table" }
+    archive: { path: /events/, expect_text: /event|活动/i, optional: true }
+
+  events-manager-content:
+    slug: events-manager
+    archive: { path: /events/, expect_text: /event|活动/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=event, expect_selector: ".wp-list-table" }
+
+  wp-job-manager-content:
+    slug: wp-job-manager
+    admin_native: { path: /wp-admin/edit.php?post_type=job_listing, expect_selector: ".wp-list-table" }
+    archive: { path: /jobs/, expect_text: /job|职位/i, optional: true }
+
+  envira-gallery-lite-content:
+    slug: envira-gallery-lite
+    admin_native: { path: /wp-admin/edit.php?post_type=envira, expect_selector: ".wp-list-table" }
+
+  seriously-simple-podcasting-content:
+    slug: seriously-simple-podcasting
+    admin_native: { path: /wp-admin/edit.php?post_type=podcast, expect_selector: ".wp-list-table" }
+
+  elementor-content:
+    slug: elementor
+    admin_native: { path: /wp-admin/edit.php?post_type=page, expect_selector: ".wp-list-table" }
+
+  wordpress-seo-content:
+    slug: wordpress-seo
+    admin_native: { path: /wp-admin/edit.php, expect_selector: ".wp-list-table" }
+
+  advanced-custom-fields-content:
+    slug: advanced-custom-fields
+    admin_native: { path: /wp-admin/edit.php?post_type=acf-field-group, expect_selector: ".wp-list-table", optional: true }
+
+  wp-recipe-maker-content:
+    slug: wp-recipe-maker
+    # Lab: edit.php?post_type=wprm_recipe/wprm_list returns HTTP 500 even with WPTSALL off (WPRM env).
+    # Use WPRM manage screen which loads successfully.
+    admin_native: { path: /wp-admin/admin.php?page=wprm_manage, expect_selector: "#wprm-admin-manage, .wprm-manage, #wpbody-content" }
+
+  site-reviews-content:
+    slug: site-reviews
+    admin_native: { path: /wp-admin/edit.php?post_type=site-review, expect_selector: ".wp-list-table" }
+
+  give-content:
+    slug: give
+    admin_native: { path: /wp-admin/edit.php?post_type=give_forms, expect_selector: ".wp-list-table" }
+
+  directorist-content:
+    slug: directorist
+    admin_native: { path: /wp-admin/edit.php?post_type=at_biz_dir, expect_selector: ".wp-list-table" }
+    avoid_paths: [search-home]
+
+  hivepress-content:
+    slug: hivepress
+    archive: { path: /listings/, expect_text: /listing|listings/i, optional: true }
+    admin_native: { path: /wp-admin/edit.php?post_type=hp_listing, expect_selector: ".wp-list-table" }
+
+  wptsall-content:
+    slug: wptsall
+    admin_native: { path: /wp-admin/admin.php?page=wptsall-tasks, expect_selector: "#wptsall-add-task-btn, .wptsall-task-card" }

@@ -288,18 +288,17 @@ class WPTSALL_Tasks_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_status( $item ) {
-		$status_colors = array(
-			'pending'    => '#0073aa',
-			'processing' => '#f0b849',
-			'completed'  => '#46b450',
-			'failed'     => '#dc3232',
-			'retry'      => '#dc3232',
-		);
-		$color = isset( $status_colors[ $item['status'] ] ) ? $status_colors[ $item['status'] ] : '#999';
-		$badge = sprintf(
+		// opus5 A-02: badge palette + labels come from the shared vocabulary SSOT,
+		// so error/paused/active/skipped are colored here instead of gray.
+		$status_colors = \WPTSALL\Tasks\Services\Task_Status::badge_colors();
+		$status_labels = \WPTSALL\Tasks\Services\Task_Status::badge_labels();
+		$status        = (string) ( $item['status'] ?? '' );
+		$color         = isset( $status_colors[ $status ] ) ? $status_colors[ $status ] : '#999';
+		$label         = isset( $status_labels[ $status ] ) ? $status_labels[ $status ] : $status;
+		$badge         = sprintf(
 			'<span style="display:inline-block;padding:3px 8px;border-radius:3px;background:%s;color:#fff;font-size:11px;font-weight:600;">%s</span>',
 			esc_attr( $color ),
-			esc_html( $item['status'] )
+			esc_html( $label )
 		);
 
 		$retry_count = isset( $item['retry_count'] ) ? intval( $item['retry_count'] ) : 0;

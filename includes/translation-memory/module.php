@@ -7,5 +7,7 @@ class Module {
 		add_action( 'admin_post_wptsall_tm_save',   array( '\\WPTSALL\\TranslationMemory\\Admin\\Translation_Memory_Page', 'handle_save' ) );
 		add_action( 'admin_post_wptsall_tm_delete', array( '\\WPTSALL\\TranslationMemory\\Admin\\Translation_Memory_Page', 'handle_delete' ) );
 		add_action( 'admin_post_wptsall_tm_export', array( '\\WPTSALL\\TranslationMemory\\Admin\\Translation_Memory_Page', 'handle_export' ) );
+		// opus5 M-04: automatic-recording toggle (wptsall_tm_auto_record option).
+		add_action( 'admin_post_wptsall_tm_settings', array( '\\WPTSALL\\TranslationMemory\\Admin\\Translation_Memory_Page', 'handle_settings' ) );
 	}
 }

@@ -1,0 +1,100 @@
+{
+    "_meta": {
+        "plugin_slug": "asgaros-forum",
+        "plugin_name": "Asgaros Forum",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Asgaros Forum seed data - uses custom tables",
+        "note": "Asgaros Forum uses custom database tables. This seed data requires special handling.",
+        "fields_source": "custom tables (asgaros_forum_forums, asgaros_forum_topics, asgaros_forum_posts)",
+        "fields_verified": "2026-01-27"
+    },
+    "custom_tables": {
+        "forums": [
+            {
+                "name": "General Discussion",
+                "description": "Talk about anything related to our community.",
+                "parent_id": "0",
+                "sort": "1"
+            },
+            {
+                "name": "Support & Help",
+                "description": "Get help from the community and our support team.",
+                "parent_id": "0",
+                "sort": "2"
+            },
+            {
+                "name": "Feature Requests",
+                "description": "Share your ideas for new features.",
+                "parent_id": "0",
+                "sort": "3"
+            },
+            {
+                "name": "Off Topic",
+                "description": "Casual conversations not related to our products.",
+                "parent_id": "0",
+                "sort": "4"
+            },
+            {
+                "name": "Announcements",
+                "description": "Official announcements from the team.",
+                "parent_id": "0",
+                "sort": "5"
+            }
+        ],
+        "topics": [
+            {
+                "forum_ref": "General Discussion",
+                "name": "Welcome to our community!",
+                "first_post_content": "<p>Welcome everyone! This is a space for our community to connect, share ideas, and help each other. Please read the community guidelines before posting.</p>"
+            },
+            {
+                "forum_ref": "Support & Help",
+                "name": "How to reset my password?",
+                "first_post_content": "<p>I'm having trouble logging in. Can someone explain how to reset my password?</p>"
+            },
+            {
+                "forum_ref": "Support & Help",
+                "name": "Product compatibility question",
+                "first_post_content": "<p>Is the latest version compatible with older systems? Looking for some guidance.</p>"
+            },
+            {
+                "forum_ref": "Feature Requests",
+                "name": "Suggestion: Dark mode support",
+                "first_post_content": "<p>Would love to see a dark mode option. Many of us prefer working in low-light environments.</p>"
+            },
+            {
+                "forum_ref": "Feature Requests",
+                "name": "Mobile app request",
+                "first_post_content": "<p>Any plans for a dedicated mobile app? Would make things much more convenient.</p>"
+            },
+            {
+                "forum_ref": "Announcements",
+                "name": "Version 2.0 is now available!",
+                "first_post_content": "<p>We're excited to announce that version 2.0 is now available with many new features and improvements.</p>"
+            }
+        ],
+        "posts": [
+            {
+                "topic_ref": "Welcome to our community!",
+                "text": "<p>Thanks for the welcome! Excited to be part of this community.</p>"
+            },
+            {
+                "topic_ref": "Welcome to our community!",
+                "text": "<p>Great to be here. Looking forward to learning from everyone.</p>"
+            },
+            {
+                "topic_ref": "How to reset my password?",
+                "text": "<p>Go to the login page and click 'Forgot Password'. You'll receive an email with reset instructions.</p>"
+            },
+            {
+                "topic_ref": "Suggestion: Dark mode support",
+                "text": "<p>+1 for dark mode! My eyes would thank you.</p>"
+            },
+            {
+                "topic_ref": "Suggestion: Dark mode support",
+                "text": "<p>This feature is on our roadmap for Q2. Stay tuned!</p>"
+            }
+        ]
+    }
+}

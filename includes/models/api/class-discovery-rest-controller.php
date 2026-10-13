@@ -141,7 +141,7 @@ class Discovery_REST_Controller {
 	 * @return bool
 	 */
 	public function check_permission() {
-		return wptsall_user_can_manage_translations();
+		return wptsall_user_can_manage_settings();
 	}
 
 	/**
@@ -189,6 +189,9 @@ class Discovery_REST_Controller {
 		$config    = $request->get_param( 'config' );
 		$sample_id = $request->get_param( 'sample_id' );
 		$value     = Field_Discovery_Service::test_field_config( $config, $sample_id );
+		if ( is_wp_error( $value ) ) {
+			return $value;
+		}
 
 		return rest_ensure_response(
 			array(

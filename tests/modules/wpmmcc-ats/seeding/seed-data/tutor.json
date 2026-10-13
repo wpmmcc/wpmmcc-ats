@@ -1,0 +1,158 @@
+{
+    "_meta": {
+        "plugin_slug": "tutor",
+        "plugin_name": "Tutor LMS",
+        "plan": "B",
+        "version": "1.0.0",
+        "description": "Tutor LMS seed data for online courses",
+        "fields_source": "v4-scanner (unknown-courses.json, unknown-lesson.json, tutor-tutor_quiz.json)",
+        "fields_verified": "2026-01-27"
+    },
+    "taxonomies": {
+        "course-category": [
+            {"name": "Programming", "slug": "programming"},
+            {"name": "Design", "slug": "design"},
+            {"name": "Business", "slug": "business"},
+            {"name": "Marketing", "slug": "marketing"}
+        ],
+        "course-tag": [
+            {"name": "Beginner", "slug": "beginner"},
+            {"name": "Advanced", "slug": "advanced"},
+            {"name": "Certification", "slug": "certification"}
+        ]
+    },
+    "posts": {
+        "courses": [
+            {
+                "post_title": "Complete Python Programming Masterclass",
+                "post_content": "<p>Learn Python from scratch to advanced level. This comprehensive course covers everything from basic syntax to advanced concepts like decorators and generators.</p><h3>What You'll Learn</h3><ul><li>Python fundamentals and syntax</li><li>Object-oriented programming</li><li>File handling and databases</li><li>Web scraping and automation</li></ul>",
+                "post_excerpt": "Master Python programming from beginner to advanced level.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_level": "all_levels",
+                    "_tutor_course_duration": "40 hours",
+                    "_tutor_course_benefits": "Master Python programming|Build real-world projects|Get job-ready skills",
+                    "_tutor_course_requirements": "Basic computer knowledge|No prior programming experience needed",
+                    "_tutor_course_target_audience": "Beginners who want to learn programming|Developers looking to add Python skills",
+                    "_tutor_course_price": "99.00"
+                },
+                "taxonomy": {
+                    "course-category": ["programming"],
+                    "course-tag": ["beginner", "certification"]
+                }
+            },
+            {
+                "post_title": "UI/UX Design Fundamentals",
+                "post_content": "<p>Learn the principles of user interface and user experience design. Create beautiful, functional designs that users love.</p><h3>Course Highlights</h3><ul><li>Design thinking methodology</li><li>Wireframing and prototyping</li><li>User research techniques</li><li>Figma and Sketch tools</li></ul>",
+                "post_excerpt": "Master UI/UX design principles and tools.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_level": "beginner",
+                    "_tutor_course_duration": "25 hours",
+                    "_tutor_course_benefits": "Create professional designs|Understand user psychology|Build a design portfolio",
+                    "_tutor_course_requirements": "Basic computer skills|Creative mindset",
+                    "_tutor_course_target_audience": "Aspiring designers|Product managers|Entrepreneurs",
+                    "_tutor_course_price": "79.00"
+                },
+                "taxonomy": {
+                    "course-category": ["design"],
+                    "course-tag": ["beginner"]
+                }
+            },
+            {
+                "post_title": "Digital Marketing Strategy",
+                "post_content": "<p>Comprehensive digital marketing course covering SEO, social media, email marketing, and paid advertising strategies.</p>",
+                "post_excerpt": "Learn effective digital marketing strategies.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_level": "intermediate",
+                    "_tutor_course_duration": "30 hours",
+                    "_tutor_course_benefits": "Drive more traffic|Increase conversions|Build brand awareness",
+                    "_tutor_course_requirements": "Basic marketing knowledge",
+                    "_tutor_course_target_audience": "Marketing professionals|Business owners|Entrepreneurs",
+                    "_tutor_course_price": "149.00"
+                },
+                "taxonomy": {
+                    "course-category": ["marketing"],
+                    "course-tag": ["advanced", "certification"]
+                }
+            },
+            {
+                "post_title": "Business Management Essentials",
+                "post_content": "<p>Essential business management skills for aspiring managers and entrepreneurs. Learn leadership, strategy, and operations.</p>",
+                "post_excerpt": "Essential skills for business management.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_level": "beginner",
+                    "_tutor_course_duration": "20 hours",
+                    "_tutor_course_benefits": "Develop leadership skills|Understand business operations|Make better decisions",
+                    "_tutor_course_requirements": "Interest in business",
+                    "_tutor_course_target_audience": "Aspiring managers|Small business owners|Team leaders",
+                    "_tutor_course_price": "89.00"
+                },
+                "taxonomy": {
+                    "course-category": ["business"],
+                    "course-tag": ["beginner"]
+                }
+            }
+        ],
+        "lesson": [
+            {
+                "post_title": "Introduction to Python",
+                "post_content": "<p>Welcome to Python! In this lesson, we'll cover what Python is, why it's popular, and how to set up your development environment.</p>",
+                "post_excerpt": "Getting started with Python programming.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_id_for_lesson": "{{courses:Complete Python Programming Masterclass}}"
+                }
+            },
+            {
+                "post_title": "Variables and Data Types",
+                "post_content": "<p>Learn about Python variables, data types including strings, integers, floats, and booleans.</p>",
+                "post_excerpt": "Understanding Python variables and data types.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_id_for_lesson": "{{courses:Complete Python Programming Masterclass}}"
+                }
+            },
+            {
+                "post_title": "Design Thinking Overview",
+                "post_content": "<p>Introduction to design thinking methodology and its five stages: Empathize, Define, Ideate, Prototype, and Test.</p>",
+                "post_excerpt": "Learn the design thinking process.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_id_for_lesson": "{{courses:UI/UX Design Fundamentals}}"
+                }
+            },
+            {
+                "post_title": "Understanding User Research",
+                "post_content": "<p>Learn how to conduct user research, including interviews, surveys, and usability testing.</p>",
+                "post_excerpt": "Master user research techniques.",
+                "post_status": "publish",
+                "meta": {
+                    "_tutor_course_id_for_lesson": "{{courses:UI/UX Design Fundamentals}}"
+                }
+            }
+        ],
+        "topics": [
+            {
+                "post_title": "Python Basics",
+                "post_content": "Foundation concepts of Python programming.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Advanced Python",
+                "post_content": "Advanced Python concepts and techniques.",
+                "post_status": "publish",
+                "meta": {}
+            },
+            {
+                "post_title": "Design Principles",
+                "post_content": "Core principles of UI/UX design.",
+                "post_status": "publish",
+                "meta": {}
+            }
+        ]
+    }
+}
